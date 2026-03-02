@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>DevLaunch - Developer Utility Suite</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+    
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#306ee8",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#1B1D21",
+                        "panel-dark": "#23262B",
+                        "border-dark": "#2D3139",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"],
+                        "mono": ["'JetBrains Mono'", "monospace"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "4px",
+                        "lg": "6px",
+                        "xl": "8px",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #2D3139;
+            border-radius: 10px;
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
+    <div id="root"></div>
+
+    <!-- React and Libraries -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/history@5/umd/history.development.js"></script>
+    <script src="https://unpkg.com/react-router@6.3.0/umd/react-router.development.js"></script>
+    <script src="https://unpkg.com/react-router-dom@6.3.0/umd/react-router-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+
+    <script type="text/babel">
+        const { useState, useEffect, useMemo } = React;
+        const { createRoot } = ReactDOM;
+        const { MemoryRouter, Routes, Route, Link, useNavigate, useLocation } = ReactRouterDOM;
+
+        // --- Shared Components ---
+
+        const Sidebar = () => {
+            const location = useLocation();
+            const isActive = (path) => location.pathname === path;
+
+            return (
+                <aside className="w-[64px] flex flex-col items-center py-6 border-r border-slate-200 dark:border-border-dark bg-white dark:bg-background-dark z-20 shrink-0 h-screen">
+                    <div className="mb-8">
+                        <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-white">
+                            <span className="material-symbols-outlined text-[24px]">terminal</span>
+                        </div>
+                    </div>
+                    <nav className="flex flex-col gap-6 flex-1 items-center">
+                        <Link to="/" className={`relative group p-2 rounded-lg transition-colors ${isActive('/') ? 'text-primary' : 'text-slate-400 hover:text-primary'}`}>
+                            <span className="material-symbols-outlined text-[24px]" style={{ fontVariationSettings: isActive('/') ? "'FILL' 1" : "''" }}>home</span>
+                            {isActive('/') && <div className="absolute -left-[14px] top-1/2 -translate-y-1/2 w-1 h-6 bg-primary rounded-r-full"></div>}
+                        </Link>
+                        <Link to="/library" className={`relative group p-2 rounded-lg transition-colors ${isActive('/library') ? 'text-primary' : 'text-slate-400 hover:text-primary'}`}>
+                            <span className="material-symbols-outlined text-[24px]" style={{ fontVariationSettings: isActive('/library') ? "'FILL' 1" : "''" }}>grid_view</span>
+                            {isActive('/library') && <div className="absolute -left-[14px] top-1/2 -translate-y-1/2 w-1 h-6 bg-primary rounded-r-full"></div>}
+                        </Link>
+                        <Link to="/chains" className={`relative group p-2 rounded-lg transition-colors ${isActive('/chains') ? 'text-primary' : 'text-slate-400 hover:text-primary'}`}>
+                            <span className="material-symbols-outlined text-[24px]" style={{ fontVariationSettings: isActive('/chains') ? "'FILL' 1" : "''" }}>account_tree</span>
+                            {isActive('/chains') && <div className="absolute -left-[14px] top-1/2 -translate-y-1/2 w-1 h-6 bg-primary rounded-r-full"></div>}
+                        </Link>
+                        <button className="relative group p-2 text-slate-400 hover:text-primary transition-colors">
+                            <span className="material-symbols-outlined text-[24px]">history</span>
+                        </button>
+                    </nav>
+                    <div className="flex flex-col gap-6 items-center">
+                        <button className="p-2 text-slate-400 hover:text-primary transition-colors">
+                            <span className="material-symbols-outlined text-[24px]">settings</span>
+                        </button>
+                        <div className="w-8 h-8 rounded-full bg-slate-800 border border-border-dark overflow-hidden">
+                            <img className="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC43XzvUwgtBYu3mdwk-aBYVkuW6goWhOLGksR10a5EeEq66zEl8lW1cXFQ6ZnQq90GmM6KoG2wRkxyM8AEFSBOFx3OY77y_KU6G3tH7HZgysIoPmxNG1FRnSlM6l551G5O_g3I2x_yvuvw1TVfXwP13-4L5U6Nqs_C2luxE5_J_JpJHhN1hPZDdQ1a2pAKJ71y3ohHTqdGvrVDe9BI7F0eEiGXDrck1RKO_hCg0pdzqwDbXo0hp2QXQ361vQUwDCnaU-CP92DX2xs" alt="User" />
+                        </div>
+                    </div>
+                </aside>
+            );
+        };
+
+        const StatusBar = ({ engineLabel = "Connected to local-node:8080" }) => (
+            <footer className="h-8 flex items-center px-6 border-t border-slate-200 dark:border-border-dark bg-white dark:bg-background-dark text-[10px] text-slate-500 gap-6 shrink-0">
+                <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span className="font-mono">{engineLabel}</span>
+                </div>
+                <div className="ml-auto flex items-center gap-4">
+                    <span className="font-mono">v1.2.0-stable</span>
+                    <span className="material-symbols-outlined text-[16px] cursor-pointer hover:text-slate-100">notifications</span>
+                </div>
+            </footer>
+        );
+
+        // --- Page Components ---
+
+        const DashboardPage = () => {
+            return (
+                <div className="flex h-screen w-full overflow-hidden">
+                    <Sidebar />
+                    <main className="flex-1 flex flex-col overflow-hidden">
+                        <header className="h-24 flex items-center px-8 border-b border-slate-200 dark:border-border-dark bg-white/50 dark:bg-background-dark/50 backdrop-blur-md shrink-0">
+                            <div className="max-w-3xl w-full mx-auto relative group">
+                                <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[20px]">search</span>
+                                <input className="w-full bg-slate-100 dark:bg-panel-dark border border-slate-200 dark:border-border-dark rounded-lg pl-10 pr-16 text-base outline-none transition-all py-4" placeholder="Search tools, run commands... (⌘K)" type="text"/>
+                                <div className="absolute right-3 top-1/2 -translate-y-1/2 flex gap-1 items-center">
+                                    <kbd className="px-1.5 py-0.5 rounded border border-slate-300 dark:border-slate-600 text-[10px] text-slate-500 font-mono">⌘</kbd>
+                                    <kbd className="px-1.5 py-0.5 rounded border border-slate-300 dark:border-slate-600 text-[10px] text-slate-500 font-mono">K</kbd>
+                                </div>
+                            </div>
+                        </header>
+                        <div className="flex-1 overflow-y-auto custom-scrollbar p-8">
+                            <div className="max-w-5xl mx-auto space-y-10">
+                                <section>
+                                    <div className="flex items-center justify-between mb-4">
+                                        <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-500 flex items-center gap-2">
+                                            <span className="material-symbols-outlined text-[18px]">push_pin</span>
+                                            Pinned Tools
+                                        </h2>
+                                        <button className="text-xs text-slate-500 hover:text-primary hover:underline font-medium">Edit Pins</button>
+                                    </div>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                                        {[
+                                            { name: "JSON Formatter", icon: "code_blocks", desc: "Prettify and validate JSON structures instantly." },
+                                            { name: "JWT Decoder", icon: "security", desc: "Inspect header, payload, and signature of tokens." },
+                                            { name: "Base64 Tool", icon: "key", desc: "Encode and decode text to base64 format." },
+                                            { name: "Crontab Guru", icon: "schedule", desc: "Visual helper for cron job expressions." }
+                                        ].map(tool => (
+                                            <div key={tool.name} className="bg-white dark:bg-panel-dark border border-slate-200 dark:border-border-dark p-4 rounded-lg hover:border-primary/50 transition-colors cursor-pointer group">
+                                                <div className="w-10 h-10 rounded bg-slate-800 flex items-center justify-center text-slate-500 mb-3 group-hover:bg-primary/20 group-hover:text-primary transition-colors">
+                                                    <span className="material-symbols-outlined">{tool.icon}</span>
+                                                </div>
+                                                <h3 className="text-sm font-medium mb-1">{tool.name}</h3>
+                                                <p className="text-xs text-slate-500 line-clamp-2">{tool.desc}</p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </section>
+
+                                <section>
+                                    <div className="flex items-center justify-between mb-4">
+                                        <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-500 flex items-center gap-2">
+                                            <span className="material-symbols-outlined text-[18px]">account_tree</span>
+                                            Recent Chains
+                                        </h2>
+                                        <button className="text-xs text-slate-500 hover:text-primary hover:underline font-medium">View All</button>
+                                    </div>
+                                    <div className="space-y-3">
+                                        <div className="bg-white dark:bg-panel-dark border border-slate-200 dark:border-border-dark p-4 rounded-lg flex items-center gap-6 hover:bg-slate-50 dark:hover:bg-panel-dark/80 transition-all cursor-pointer">
+                                            <div className="flex-shrink-0">
+                                                <div className="w-8 h-8 rounded border border-border-dark flex items-center justify-center bg-background-dark text-slate-400">
+                                                    <span className="material-symbols-outlined text-[16px]">play_arrow</span>
+                                                </div>
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <div className="flex items-center gap-2 mb-1">
+                                                    <h3 className="text-sm font-medium">API Payload Pipeline</h3>
+                                                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-500">Active</span>
+                                                </div>
+                                                <div className="flex items-center gap-3 text-[11px] text-slate-500">
+                                                    <div className="flex items-center gap-1"><span className="material-symbols-outlined text-[14px]">description</span> JSON Parse</div>
+                                                    <span className="text-slate-700">•</span>
+                                                    <div className="flex items-center gap-1"><span className="material-symbols-outlined text-[14px]">transform</span> Map Keys</div>
+                                                    <span className="text-slate-700">•</span>
+                                                    <div className="flex items-center gap-1"><span className="material-symbols-outlined text-[14px]">database</span> Post to Mock</div>
+                                                </div>
+                                            </div>
+                                            <div className="text-right flex-shrink-0">
+                                                <p className="text-[11px] text-slate-500 mb-1">2 mins ago</p>
+                                                <div className="flex gap-1 justify-end">
+                                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </section>
+                            </div>
+                        </div>
+                        <StatusBar />
+                    </main>
+                </div>
+            );
+        };
+
+        const LibraryPage = () => {
+            const sidebarMapping = {
+                'All': ['Encoding', 'Formatting', 'Security', 'Network', 'JSON Tools', 'Regex', 'SQL Formatting'],
+                'Frontend': ['Encoding', 'Formatting', 'JSON Tools', 'Regex'],
+                'Backend': ['Security', 'JSON Tools', 'SQL Formatting', 'Network', 'Encoding'],
+                'DevOps': ['Network', 'Security', 'Formatting'],
+                'Security': ['Security', 'Encoding', 'Network'],
+                'Data': ['JSON Tools', 'SQL Formatting', 'Formatting', 'Encoding']
+            };
+
+            const categorySubtitles = {
+                'Encoding': 'Convert and transform data formats safely.',
+                'Formatting': 'Prettify and organize code structures.',
+                'Security': 'Analyze and protect sensitive data.',
+                'Network': 'Test and troubleshoot network connectivity.',
+                'JSON Tools': 'Manipulate and validate JSON structures.',
+                'Regex': 'Build and test regular expressions.',
+                'SQL Formatting': 'Beautify and optimize SQL queries.'
+            };
+
+            const gridRoleMapping = {
+                'All': 'all',
+                'Frontend': ['Standard', 'Web Utility', 'String', 'Media'],
+                'Backend': ['OAuth', 'Standard', 'Security', 'Conversion'],
+                'DevOps': ['Web Utility', 'Security'],
+                'Security': ['Security', 'OAuth'],
+                'Data': ['Standard', 'Conversion', 'String']
+            };
+
+            const allTools = [
+                { category: 'Encoding', type: 'Standard', name: 'Base64 Encoder', icon: 'data_array', desc: 'Convert binary data to text using base-64 encoding schemes.' },
+                { category: 'Encoding', type: 'Web Utility', name: 'URL Encoder', icon: 'link', desc: 'Encode or decode a text string for use in URLs.' },
+                { category: 'Encoding', type: 'Security', name: 'HTML Entity', icon: 'html', desc: 'Encode special characters into HTML entities.' },
+                { category: 'Security', type: 'OAuth', name: 'JWT Decoder', icon: 'token', desc: 'Decode and inspect JSON Web Tokens instantly.' },
+                { category: 'Encoding', type: 'Conversion', name: 'Hex to ASCII', icon: 'transgender', desc: 'Translate hexadecimal strings into ASCII text.' },
+                { category: 'Encoding', type: 'String', name: 'Unicode Escape', icon: 'keyboard', desc: 'Handle escape sequences for Unicode characters.' },
+                { category: 'Encoding', type: 'Media', name: 'Base64 to Image', icon: 'difference', desc: 'Convert Base64 strings back into viewable image files.' },
+                { category: 'Security', type: 'Security', name: 'JS Obfuscator', icon: 'javascript', desc: 'Protect your JS code by making it unreadable but functional.' },
+            ];
+
+            const [currentRole, setCurrentRole] = useState('All');
+            const [currentCategory, setCurrentCategory] = useState('Encoding');
+
+            const filteredCategories = useMemo(() => sidebarMapping[currentRole], [currentRole]);
+            const filteredTools = useMemo(() => {
+                const allowedTypes = gridRoleMapping[currentRole];
+                return allTools.filter(tool => {
+                    const matchesCategory = tool.category === currentCategory;
+                    const matchesRole = allowedTypes === 'all' || (allowedTypes && allowedTypes.includes(tool.type));
+                    return matchesCategory && matchesRole;
+                });
+            }, [currentRole, currentCategory]);
+
+            return (
+                <div className="flex h-screen w-full overflow-hidden">
+                    <Sidebar />
+                    <aside className="w-[260px] flex flex-col border-r border-slate-200 dark:border-slate-800 bg-background-light dark:bg-background-dark shrink-0">
+                        <div className="p-6 border-b border-slate-200 dark:border-slate-800">
+                            <h1 className="text-sm font-semibold tracking-wider text-slate-500 dark:text-slate-400 uppercase">Library</h1>
+                            <p className="text-xs text-slate-400 mt-1">32 Tools available</p>
+                        </div>
+                        <div className="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-1">
+                            <div className="px-3 mb-4">
+                                <div className="flex flex-wrap gap-1.5">
+                                    {Object.keys(sidebarMapping).map(role => (
+                                        <span 
+                                            key={role}
+                                            onClick={() => {
+                                                setCurrentRole(role);
+                                                setCurrentCategory(sidebarMapping[role][0]);
+                                            }}
+                                            className={`px-2 py-0.5 text-[10px] font-semibold rounded-full cursor-pointer transition-colors ${currentRole === role ? 'bg-primary text-white' : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50'}`}>
+                                            {role}
+                                        </span>
+                                    ))}
+                                </div>
+                                <div className="mt-4 h-px bg-slate-200 dark:bg-slate-800"></div>
+                            </div>
+                            
+                            {filteredCategories.map(cat => (
+                                <div 
+                                    key={cat}
+                                    onClick={() => setCurrentCategory(cat)}
+                                    className={`flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer transition-colors ${currentCategory === cat ? 'bg-primary/10 text-primary' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50'}`}>
+                                    <span className="material-symbols-outlined text-[20px]">
+                                        {cat === 'Encoding' ? 'binary' : 
+                                         cat === 'Formatting' ? 'format_indent_increase' : 
+                                         cat === 'Security' ? 'verified_user' : 
+                                         cat === 'Network' ? 'router' : 
+                                         cat === 'JSON Tools' ? 'javascript' : 
+                                         cat === 'Regex' ? 'regular_expression' : 'storage'}
+                                    </span>
+                                    <span className="text-sm font-medium">{cat}</span>
+                                </div>
+                            ))}
+                        </div>
+                        <div className="p-4 border-t border-slate-200 dark:border-slate-800">
+                            <div className="flex items-center gap-2 px-3 py-2 text-slate-400 hover:text-slate-200 cursor-pointer">
+                                <span className="material-symbols-outlined text-[20px]">help_outline</span>
+                                <span className="text-xs">Documentation</span>
+                            </div>
+                        </div>
+                    </aside>
+                    <main className="flex-1 flex flex-col bg-slate-50 dark:bg-[#0d1117] overflow-hidden">
+                        <header className="h-16 border-b border-slate-200 dark:border-slate-800 flex items-center px-8 bg-background-light dark:bg-background-dark shrink-0">
+                            <div className="relative w-full max-w-xl">
+                                <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[20px]">search</span>
+                                <input className="w-full bg-slate-100 dark:bg-slate-900 border-none rounded-lg pl-11 pr-4 py-2 text-sm focus:ring-1 focus:ring-primary dark:text-slate-200" placeholder="Search for a utility..." type="text"/>
+                            </div>
+                        </header>
+                        <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
+                            <div className="mb-8">
+                                <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100">{currentCategory} Tools</h2>
+                                <p className="text-sm text-slate-500 mt-1">{categorySubtitles[currentCategory]}</p>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
+                                {filteredTools.map((tool, idx) => (
+                                    <div key={idx} className="group flex flex-col p-4 bg-background-light dark:bg-background-dark border border-slate-200 dark:border-slate-800 rounded-lg hover:border-primary/50 transition-all cursor-pointer">
+                                        <div className="size-10 rounded bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-4 text-slate-600 dark:text-slate-400 group-hover:bg-primary/20 group-hover:text-primary transition-colors">
+                                            <span className="material-symbols-outlined">{tool.icon}</span>
+                                        </div>
+                                        <h3 className="text-sm font-semibold mb-1">{tool.name}</h3>
+                                        <p className="text-xs text-slate-500 line-clamp-2">{tool.desc}</p>
+                                        <div className="mt-4 flex items-center justify-between text-[10px] text-slate-400">
+                                            <span className="uppercase tracking-widest font-bold">{tool.type}</span>
+                                            <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                        <StatusBar engineLabel="Engine Online | 32 Tools available" />
+                    </main>
+                </div>
+            );
+        };
+
+        const ChainsPage = () => {
+            return (
+                <div className="flex h-screen w-full overflow-hidden">
+                    <Sidebar />
+                    <section className="w-64 flex flex-col border-r border-slate-200 dark:border-border-dark bg-slate-50 dark:bg-panel-dark/30 shrink-0">
+                        <div className="p-4 flex items-center justify-between border-b border-slate-200 dark:border-border-dark">
+                            <h2 className="font-bold text-lg tracking-tight dark:text-slate-100">Chains</h2>
+                            <button className="p-1 hover:bg-slate-200 dark:hover:bg-border-dark rounded-lg transition-colors text-slate-500">
+                                <span className="material-symbols-outlined text-xl">filter_list</span>
+                            </button>
+                        </div>
+                        <div className="p-4">
+                            <button className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white py-2 rounded-lg font-semibold text-sm transition-all shadow-sm">
+                                <span className="material-symbols-outlined text-lg">add</span> New Chain
+                            </button>
+                        </div>
+                        <div className="flex-1 overflow-y-auto no-scrollbar">
+                            <div className="space-y-1 px-2">
+                                <div className="p-3 rounded-lg bg-white dark:bg-primary/10 border border-slate-200 dark:border-primary/30 cursor-pointer">
+                                    <div className="flex items-center justify-between mb-1">
+                                        <span className="font-semibold text-sm dark:text-slate-100">Auth Flow</span>
+                                        <span className="text-[10px] uppercase font-bold text-primary">Active</span>
+                                    </div>
+                                    <p className="text-xs text-slate-500 dark:text-slate-400 truncate">JWT Decode → JSON Format</p>
+                                </div>
+                                <div className="p-3 rounded-lg hover:bg-slate-200 dark:hover:bg-border-dark cursor-pointer transition-colors group">
+                                    <div className="flex items-center justify-between mb-1">
+                                        <span className="font-medium text-sm text-slate-700 dark:text-slate-300">Base64 Images</span>
+                                    </div>
+                                    <p className="text-xs text-slate-500 dark:text-slate-500 truncate">Decode → Optimize</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="p-4 mt-auto border-t border-slate-200 dark:border-border-dark">
+                            <button className="flex items-center gap-2 text-xs text-slate-500 hover:text-primary transition-colors group">
+                                <span className="material-symbols-outlined text-sm group-hover:scale-110 transition-transform">history</span>
+                                Recent Activity
+                            </button>
+                        </div>
+                    </section>
+                    <main className="flex-1 flex flex-col bg-white dark:bg-background-dark overflow-hidden">
+                        <header className="h-16 flex items-center px-6 border-b border-slate-200 dark:border-border-dark justify-between bg-white dark:bg-background-dark">
+                            <div className="flex items-center gap-4">
+                                <div className="flex items-center gap-2">
+                                    <span className="material-symbols-outlined text-slate-400">account_tree</span>
+                                    <h1 className="font-bold text-slate-800 dark:text-slate-100">Auth Flow</h1>
+                                </div>
+                                <div className="h-4 w-px bg-slate-200 dark:border-border-dark"></div>
+                                <nav className="flex items-center gap-2 overflow-x-auto no-scrollbar">
+                                    <div className="flex items-center gap-2 px-3 py-1 bg-slate-100 dark:bg-border-dark rounded-full text-xs font-medium text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700/50 shrink-0">
+                                        <span className="material-symbols-outlined text-sm">input</span> Input
+                                    </div>
+                                    <span className="material-symbols-outlined text-slate-300 dark:text-slate-600 text-sm">chevron_right</span>
+                                    <div className="flex items-center gap-2 px-3 py-1 bg-primary/10 dark:bg-primary/20 rounded-full text-xs font-medium text-primary border border-primary/20 shrink-0">
+                                        <span className="material-symbols-outlined text-sm">key</span> JWT Decode
+                                    </div>
+                                    <span className="material-symbols-outlined text-slate-300 dark:text-slate-600 text-sm">chevron_right</span>
+                                    <div className="flex items-center gap-2 px-3 py-1 bg-slate-100 dark:bg-border-dark rounded-full text-xs font-medium text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700/50 shrink-0">
+                                        <span className="material-symbols-outlined text-sm">data_object</span> JSON Format
+                                    </div>
+                                    <span className="material-symbols-outlined text-slate-300 dark:text-slate-600 text-sm">chevron_right</span>
+                                    <div className="flex items-center gap-2 px-3 py-1 border border-dashed border-slate-300 dark:border-slate-700 rounded-full text-xs font-medium text-slate-400 dark:text-slate-500 cursor-pointer hover:border-primary/50 hover:text-primary transition-colors shrink-0">
+                                        <span className="material-symbols-outlined text-sm">add</span> Add Step
+                                    </div>
+                                </nav>
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <button className="flex items-center gap-2 px-4 py-1.5 rounded-lg border border-slate-200 dark:border-border-dark hover:bg-slate-50 dark:hover:bg-border-dark text-sm font-medium transition-colors">
+                                    <span className="material-symbols-outlined text-lg">save</span> Save
+                                </button>
+                                <button className="flex items-center gap-2 px-4 py-1.5 rounded-lg bg-primary text-white text-sm font-bold shadow-md hover:bg-primary/90 transition-colors">
+                                    <span className="material-symbols-outlined text-lg">play_arrow</span> Run
+                                </button>
+                            </div>
+                        </header>
+                        <div className="flex-1 flex overflow-hidden">
+                            <aside className="w-80 border-r border-slate-200 dark:border-border-dark p-6 overflow-y-auto bg-slate-50/50 dark:bg-background-dark">
+                                <div className="mb-8">
+                                    <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-4">Step Configuration</h3>
+                                    <div className="space-y-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Action Name</label>
+                                            <input className="w-full bg-white dark:bg-panel-dark border border-slate-200 dark:border-border-dark rounded-lg px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-primary" type="text" defaultValue="JWT Decode"/>
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Secret/Key Source</label>
+                                            <select className="w-full bg-white dark:bg-panel-dark border border-slate-200 dark:border-border-dark rounded-lg px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-primary">
+                                                <option>Environment Variable</option>
+                                                <option>Manual Input</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-4">Step Output</h3>
+                                    <div className="p-3 bg-slate-100 dark:bg-border-dark rounded-lg text-[10px] font-mono text-slate-500">
+                                        {`{`} <br/>
+                                        &nbsp;&nbsp;"type": "object",<br/>
+                                        &nbsp;&nbsp;"properties": {`{`}<br/>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;"header": {`{ "type": "object" }`},<br/>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;"payload": {`{ "type": "object" }`}<br/>
+                                        &nbsp;&nbsp;{`}`} <br/>
+                                        {`}`}
+                                    </div>
+                                </div>
+                            </aside>
+                            <div className="flex-1 flex flex-col bg-slate-900 overflow-hidden relative">
+                                <div className="flex items-center justify-between px-4 py-2 bg-slate-800 border-b border-slate-700 shrink-0">
+                                    <div className="flex gap-4">
+                                        <span className="text-xs font-medium text-slate-400">Editor</span>
+                                        <span className="text-xs font-medium text-primary">Input.raw</span>
+                                    </div>
+                                    <div className="flex gap-2">
+                                        <span className="material-symbols-outlined text-slate-500 text-sm cursor-pointer hover:text-white">content_copy</span>
+                                        <span className="material-symbols-outlined text-slate-500 text-sm cursor-pointer hover:text-white">fullscreen</span>
+                                    </div>
+                                </div>
+                                <div className="flex-1 p-6 font-mono text-sm overflow-y-auto text-slate-300 leading-relaxed custom-scrollbar">
+                                    <div className="flex gap-4 mb-1">
+                                        <span className="w-6 text-right text-slate-600 select-none">1</span>
+                                        <span className="text-indigo-400">const</span> <span className="text-yellow-200">token</span> = <span className="text-emerald-400">"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."</span>;
+                                    </div>
+                                    <div className="flex gap-4 mb-1">
+                                        <span className="w-6 text-right text-slate-600 select-none">2</span>
+                                        <span className="text-indigo-400">const</span> decoded = <span className="text-blue-300">jwt_decode</span>(token);
+                                    </div>
+                                    <div className="flex gap-4 mb-1">
+                                        <span className="w-6 text-right text-slate-600 select-none">3</span>
+                                        <span className="text-indigo-400">return</span> {`{ status: `}<span className="text-orange-300">200</span>{`, data: decoded };`}
+                                    </div>
+                                    <div className="inline-block w-2 h-5 bg-primary/80 ml-1 translate-y-1"></div>
+                                </div>
+                                <div className="h-8 bg-slate-800 px-4 flex items-center justify-between text-[10px] text-slate-500 font-mono shrink-0">
+                                    <div className="flex gap-4">
+                                        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-emerald-500"></span> Connected to local-node:8080</span>
+                                    </div>
+                                    <span>v1.2.0-stable</span>
+                                </div>
+                            </div>
+                        </div>
+                        <StatusBar />
+                    </main>
+                </div>
+            );
+        }
+
+        // --- App Component ---
+
+        const App = () => {
+            return (
+                <MemoryRouter>
+                    <Routes>
+                        <Route path="/" element={<DashboardPage />} />
+                        <Route path="/library" element={<LibraryPage />} />
+                        <Route path="/chains" element={<ChainsPage />} />
+                    </Routes>
+                </MemoryRouter>
+            );
+        };
+
+        const container = document.getElementById('root');
+        const root = createRoot(container);
+        root.render(<App />);
+    </script>
+</body>
+</html>

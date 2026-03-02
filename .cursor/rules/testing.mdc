@@ -1,0 +1,22 @@
+---
+description: Testing standards for Rust and React
+globs: src/**/*.test.ts, src/**/*.test.tsx, src-core/**/*.rs
+alwaysApply: false
+---
+
+# Testing Rules
+
+## Rust
+- Every function in instrument-core must have at least one unit test
+- Test files sit alongside the code they test
+- Use descriptive names: fn encodes_standard_ascii_string()
+- Never use unwrap() in tests — use expect() with a message
+
+## TypeScript / React
+- Mock src/bridge/index.ts with vi.mock() — never need a running Tauri instance
+- Mock callTool to return a Promise using vi.useFakeTimers()
+  Never resolve synchronously — always simulate processing time
+  Use vi.advanceTimersByTime() to step through async state transitions
+  This ensures isLoading intermediate states are tested correctly
+- Use userEvent from @testing-library/user-event for all interactions
+- Test what the user sees — never test implementation details

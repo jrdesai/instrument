@@ -1,0 +1,7 @@
+export function SettingsPage() {
+  return (
+    <div className="flex flex-1 items-center justify-center bg-background-dark">
+      <p className="text-lg text-slate-400 font-display">Settings coming soon</p>
+    </div>
+  );
+}

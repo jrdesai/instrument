@@ -1,0 +1,22 @@
+---
+description: Design system and UI rules for React components
+globs: src/**/*.tsx, src/**/*.css
+alwaysApply: false
+---
+
+# Design System Rules
+
+- Read docs/design/DESIGN_REFERENCE.md before writing any React component
+- Open docs/design/prototype-v4.html to see the target visual output
+- Use only Tailwind colour tokens from src/index.css @theme — no hardcoded hex
+- Dark mode surface hierarchy:
+    bg-background-dark (#1B1D21) — page background
+    bg-panel-dark      (#23262B) — panel/card surface
+    border-border-dark (#2D3139) — all borders
+- Active state: bg-primary/10 text-primary (tinted, not solid)
+- Primary buttons only: bg-primary text-white
+- font-display for UI text, font-mono for all code content
+- All icons use Material Symbols Outlined
+- Category icons defined in src/constants/library.ts categoryIcons
+- Import sidebarMapping, gridRoleMapping, categorySubtitles from
+  src/constants/library.ts — never redefine them in a component

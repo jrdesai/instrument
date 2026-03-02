@@ -1,0 +1,53 @@
+import { NavLink, Outlet } from "react-router-dom";
+
+const SIDEBAR_WIDTH = 48;
+
+const navItems: { to: string; icon: string; label: string }[] = [
+  { to: "/", icon: "home", label: "Dashboard" },
+  { to: "/library", icon: "grid_view", label: "Library" },
+  { to: "/chains", icon: "device_hub", label: "Chains" },
+  { to: "/history", icon: "history", label: "History" },
+  { to: "/settings", icon: "settings", label: "Settings" },
+];
+
+export function AppShell() {
+  return (
+    <div className="flex h-screen w-full overflow-hidden bg-background-dark text-slate-100 font-display">
+      <aside
+        className="flex flex-col items-center py-4 border-r border-border-dark bg-background-dark shrink-0 z-20"
+        style={{ width: SIDEBAR_WIDTH }}
+        aria-label="Main navigation"
+      >
+        <nav className="flex flex-col gap-1 flex-1 items-center">
+          {navItems.map(({ to, icon, label }) => (
+            <NavLink
+              key={to}
+              to={to}
+              end={to === "/"}
+              className={({ isActive }) =>
+                `flex items-center justify-center size-10 rounded-lg transition-colors ${
+                  isActive ? "bg-primary/10 text-primary" : "text-slate-500 hover:text-slate-300"
+                }`
+              }
+              aria-label={label}
+            >
+              <span className="material-symbols-outlined text-[24px]" aria-hidden>
+                {icon}
+              </span>
+            </NavLink>
+          ))}
+        </nav>
+        <div className="flex flex-col items-center gap-2 pt-2 border-t border-border-dark">
+          <span
+            className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"
+            title="Engine online"
+            aria-hidden
+          />
+        </div>
+      </aside>
+      <main className="flex-1 flex flex-col min-w-0 min-h-0 overflow-hidden">
+        <Outlet />
+      </main>
+    </div>
+  );
+}

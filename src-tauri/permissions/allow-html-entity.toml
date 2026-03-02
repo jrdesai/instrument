@@ -1,0 +1,5 @@
+# Allow the HTML Entity tool command to be invoked from the frontend.
+[[permission]]
+identifier = "allow-html-entity"
+description = "Enables the html_entity_process command for the HTML entity encoder/decoder tool."
+commands.allow = ["html_entity_process"]

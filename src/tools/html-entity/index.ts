@@ -1,0 +1,5 @@
+/**
+ * HTML Entity tool: lazy-loaded component for the registry.
+ */
+
+export { default } from "./HtmlEntityTool";

@@ -1,0 +1,17 @@
+[package]
+name = "instrument-desktop"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+description = "Tauri command bindings for Instrument"
+
+[lib]
+name = "instrument_desktop"
+crate-type = ["rlib"]
+
+[dependencies]
+instrument-core = { path = "../instrument-core" }
+serde = { workspace = true }
+serde_json = { workspace = true }
+tauri = { workspace = true }
+tauri-plugin-clipboard-manager = { workspace = true }

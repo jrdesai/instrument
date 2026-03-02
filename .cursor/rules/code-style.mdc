@@ -1,0 +1,33 @@
+---
+description: TypeScript and Rust code style rules
+globs: src/**/*.ts, src/**/*.tsx, src-core/**/*.rs
+alwaysApply: false
+---
+
+# Code Style — TypeScript
+
+- Use TypeScript strict mode — no implicit any
+- Prefer named exports over default exports (except tool components)
+- Use const for all declarations unless mutation is required
+- File names: PascalCase for components, camelCase for utilities
+- Always add JSDoc comments to exported functions and types
+
+# Code Style — Rust
+
+- All public functions must have doc comments (///) with an example
+- Use thiserror for error types — never panic in library code
+- Return Result<T, E> for all fallible operations
+- Derive Debug, Clone, Serialize, Deserialize on all public structs
+
+# Serialisation
+
+- Use serde for all Rust/TypeScript data exchange
+- All Tauri commands receive and return named structs — not primitives
+- Use serde rename_all = "camelCase" for JSON field names
+
+# When generating code
+
+- Follow the pattern in the nearest similar existing file
+- Add the function to the relevant module export
+- Include the test alongside the implementation
+- Update the registry if adding a new tool

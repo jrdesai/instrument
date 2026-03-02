@@ -1,0 +1,18 @@
+---
+description: Core architecture rules for the Instrument monorepo
+alwaysApply: true
+---
+
+# Architecture Rules
+
+- instrument-core must NEVER import tauri, wasm-bindgen, tokio, or std::fs
+- All Rust logic in instrument-core must be pure functions — no side effects
+- All React components call src/bridge/index.ts only — never invoke() directly
+- Platform detection uses "__TAURI_INTERNALS__" in window (Tauri v2)
+- Every new tool must have an entry in src/registry/index.ts
+- Tool components are always lazy-loaded via React.lazy()
+- src/constants/library.ts is the source of truth for category/role mappings
+- Use pnpm for all package operations — never npm or yarn
+- pnpm add for dependencies, pnpm add -D for dev, pnpm dlx for one-off CLIs
+- Every tool must have a corresponding doc in docs/tools/<tool-name>.md
+- Inline comments explain WHY not WHAT

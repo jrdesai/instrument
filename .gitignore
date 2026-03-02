@@ -1,0 +1,65 @@
+# ── Node ────────────────────────────────────────────
+node_modules/
+dist/
+dist-ssr/
+*.local
+
+# ── Rust build output ────────────────────────────────
+target/
+src-core/target/
+src-tauri/target/
+
+# ── WASM build output ────────────────────────────────
+src/wasm-pkg/
+
+# ── Logs ─────────────────────────────────────────────
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# ── Environment ───────────────────────────────────────
+.env
+.env.local
+.env.*.local
+
+# ── OS ────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ── Editor ───────────────────────────────────────────
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# ── Tauri ─────────────────────────────────────────────
+src-tauri/target/
+src-tauri/WixTools/
+
+# ── pnpm ──────────────────────────────────────────────
+.pnpm-store/
+```
+
+---
+
+## Key Additions
+```
+target/              ← Rust build output (huge, 1-5GB, never commit)
+src-core/target/     ← Rust workspace build output
+src-tauri/target/    ← Tauri shell build output
+src/wasm-pkg/        ← generated WASM bundle (run build:wasm to regenerate)
+src-tauri/WixTools/  ← Windows installer tools downloaded by Tauri
+.pnpm-store/         ← pnpm local cache if configured
+
+
+# ── Cursor ────────────────────────────────────────────
+.cursor/*
+!.cursor/rules/
