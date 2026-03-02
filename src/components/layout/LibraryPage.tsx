@@ -30,6 +30,7 @@ function StatusBar({ toolCount }: { toolCount: number }) {
 export function LibraryPage() {
   const navigate = useNavigate();
   const setActiveTool = useToolStore((s) => s.setActiveTool);
+   const addToRecent = useToolStore((s) => s.addToRecent);
   const [currentRole, setCurrentRole] = useState<(typeof ROLES)[number]>("All");
   const [currentCategory, setCurrentCategory] = useState<string>("Encoding");
 
@@ -57,6 +58,7 @@ export function LibraryPage() {
   const handleToolClick = (tool: Tool) => {
     if (!tool.implemented) return;
     setActiveTool(tool);
+    addToRecent(tool);
     navigate(`/tools/${tool.id}`);
   };
 
