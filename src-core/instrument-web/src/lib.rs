@@ -1,6 +1,9 @@
 //! WASM bindings for Instrument tools. Each export mirrors a Tauri command.
 
 use instrument_core::crypto::md5::{process as md5_process_core, Md5Input, Md5Output};
+use instrument_core::crypto::sha256::{
+    process as sha256_process_core, Sha256Input, Sha256Output,
+};
 use instrument_core::encoding::base64::{process, Base64Input};
 use instrument_core::encoding::hex::{
     process as hex_process_core, HexInput, HexOutput,
@@ -54,5 +57,14 @@ pub fn md5_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
     let input: Md5Input =
         from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
     let output: Md5Output = md5_process_core(input);
+    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
+}
+
+/// SHA-256 hash. Receives Sha256Input (camelCase) and returns Sha256Output (camelCase).
+#[wasm_bindgen(js_name = sha256_process)]
+pub fn sha256_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
+    let input: Sha256Input =
+        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let output: Sha256Output = sha256_process_core(input);
     to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
 }

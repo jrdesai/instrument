@@ -10,6 +10,7 @@
     "allow-url-encoder",
     "allow-html-entity",
     "allow-hex-converter",
-    "allow-md5"
+    "allow-md5",
+    "allow-sha256"
   ]
 }

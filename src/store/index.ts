@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { devtools } from "zustand/middleware";
 import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import type { Role, Tool } from "../registry";
@@ -63,7 +64,8 @@ interface ToolState {
  * never frozen by Immer, which would break lazy resolution.
  */
 export const useToolStore = create<ToolState>()(
-  immer((set) => ({
+  devtools(
+    immer((set) => ({
     activeToolId: null,
     recentToolIds: [],
 
@@ -77,7 +79,9 @@ export const useToolStore = create<ToolState>()(
         const filtered = state.recentToolIds.filter((id) => id !== tool.id);
         state.recentToolIds = [tool.id, ...filtered].slice(0, MAX_RECENT_TOOLS);
       }),
-  }))
+  })),
+    { name: "ToolStore" }
+  )
 );
 
 // ---------------------------------------------------------------------------
@@ -95,7 +99,8 @@ interface HistoryState {
  * Use for "recent runs" or replay within a session.
  */
 export const useHistoryStore = create<HistoryState>()(
-  immer((set, get) => ({
+  devtools(
+    immer((set, get) => ({
     history: {},
 
     addHistoryEntry: (toolId, entry) =>
@@ -107,7 +112,9 @@ export const useHistoryStore = create<HistoryState>()(
     getHistory: (toolId) => {
       return get().history[toolId] ?? [];
     },
-  }))
+  })),
+    { name: "HistoryStore" }
+  )
 );
 
 // ---------------------------------------------------------------------------
@@ -142,7 +149,8 @@ export function areStepsCompatible(_stepA: Tool, _stepB: Tool): boolean {
  * and run a chain. activeChain is the one currently being edited or viewed.
  */
 export const useChainStore = create<ChainState>()(
-  immer((set, get) => ({
+  devtools(
+    immer((set, get) => ({
     chains: [],
     activeChain: null,
 
@@ -186,11 +194,13 @@ export const useChainStore = create<ChainState>()(
       // TODO: iterate steps, call callTool for each, pass previous output into next step
     },
 
-    setActiveChain: (chain) =>
+      setActiveChain: (chain) =>
       set((state) => {
         state.activeChain = chain;
       }),
-  }))
+  })),
+    { name: "ChainStore" }
+  )
 );
 
 // ---------------------------------------------------------------------------
@@ -211,8 +221,9 @@ interface PreferenceState {
  * so they survive reloads. Use for dark/light mode and Library role filter.
  */
 export const usePreferenceStore = create<PreferenceState>()(
-  persist(
-    immer((set) => ({
+  devtools(
+    persist(
+      immer((set) => ({
       theme: "dark",
       activeRole: "general",
 
@@ -221,11 +232,13 @@ export const usePreferenceStore = create<PreferenceState>()(
           state.theme = theme;
         }),
 
-      setRole: (role) =>
+        setRole: (role) =>
         set((state) => {
           state.activeRole = role;
         }),
-    })),
-    { name: "instrument-preferences" }
+      })),
+      { name: "instrument-preferences" }
+    ),
+    { name: "PreferenceStore" }
   )
 );

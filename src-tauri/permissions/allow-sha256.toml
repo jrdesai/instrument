@@ -1,0 +1,5 @@
+# Allow the SHA-256 Hash tool command to be invoked from the frontend.
+[[permission]]
+identifier = "allow-sha256"
+description = "Enables the sha256_process command."
+commands.allow = ["sha256_process"]

@@ -1,9 +1,18 @@
-//! Tauri commands for crypto tools (MD5, etc.).
+//! Tauri commands for crypto tools (MD5, SHA-256, etc.).
 
 use instrument_core::crypto::md5::{process, Md5Input, Md5Output};
+use instrument_core::crypto::sha256::{
+    process as sha256_process_core, Sha256Input, Sha256Output,
+};
 
 /// Runs MD5 hash via instrument-core.
 #[tauri::command]
 pub fn md5_process(input: Md5Input) -> Md5Output {
     process(input)
+}
+
+/// Runs SHA-256 hash via instrument-core.
+#[tauri::command]
+pub fn sha256_process(input: Sha256Input) -> Sha256Output {
+    sha256_process_core(input)
 }

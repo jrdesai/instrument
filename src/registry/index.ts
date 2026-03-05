@@ -142,10 +142,12 @@ export const tools: Tool[] = [
     roles: ["backend", "security", "general"],
     icon: "fingerprint",
     platforms: ["desktop", "web"],
-    rustCommand: "tool_sha256_hash",
+    rustCommand: "sha256_process",
     keywords: ["sha256", "sha", "hash"],
-    component: placeholderComponent,
-    implemented: false,
+    component: React.lazy(() =>
+      import("../tools/sha256-hash").then((m) => ({ default: m.default }))
+    ),
+    implemented: true,
   },
   {
     id: "sha512-hash",
