@@ -1,0 +1,5 @@
+# Allow the String Escaper tool command to be invoked from the frontend.
+[[permission]]
+identifier = "allow-string-escaper"
+description = "Enables the string_escaper_process command."
+commands.allow = ["string_escaper_process"]

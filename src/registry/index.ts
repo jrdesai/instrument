@@ -390,10 +390,12 @@ export const tools: Tool[] = [
     roles: ["frontend", "backend", "general"],
     icon: "keyboard",
     platforms: ["desktop", "web"],
-    rustCommand: "tool_string_escape",
+    rustCommand: "string_escaper_process",
     keywords: ["string", "escape", "unescape", "json"],
-    component: placeholderComponent,
-    implemented: false,
+    component: React.lazy(() =>
+      import("../tools/string-escaper").then((m) => ({ default: m.default }))
+    ),
+    implemented: true,
   },
   {
     id: "find-replace",

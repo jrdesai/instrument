@@ -17,6 +17,7 @@
     "allow-ulid",
     "allow-api-key",
     "allow-text-case",
-    "allow-word-counter"
+    "allow-word-counter",
+    "allow-string-escaper"
   ]
 }

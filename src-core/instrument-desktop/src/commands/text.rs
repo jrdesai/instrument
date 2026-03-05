@@ -1,6 +1,9 @@
-//! Tauri commands for text tools (case converter, word counter, etc.).
+//! Tauri commands for text tools (case converter, word counter, string escaper, etc.).
 
 use instrument_core::text::case::{process as case_process_core, CaseInput, CaseOutput};
+use instrument_core::text::string_escaper::{
+    process as string_escaper_process_core, StringEscaperInput, StringEscaperOutput,
+};
 use instrument_core::text::word_counter::{
     process as word_counter_process_core, WordCounterInput, WordCounterOutput,
 };
@@ -15,5 +18,11 @@ pub fn case_process(input: CaseInput) -> CaseOutput {
 #[tauri::command]
 pub fn word_counter_process(input: WordCounterInput) -> WordCounterOutput {
     word_counter_process_core(input)
+}
+
+/// Runs string escape/unescape via instrument-core.
+#[tauri::command]
+pub fn string_escaper_process(input: StringEscaperInput) -> StringEscaperOutput {
+    string_escaper_process_core(input)
 }
 
