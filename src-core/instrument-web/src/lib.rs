@@ -12,6 +12,9 @@ use instrument_core::crypto::uuid_gen::{
 };
 use instrument_core::crypto::ulid::{process as ulid_process_core, UlidInput, UlidOutput};
 use instrument_core::text::case::{process as case_process_core, CaseInput, CaseOutput};
+use instrument_core::text::word_counter::{
+    process as word_counter_process_core, WordCounterInput, WordCounterOutput,
+};
 use instrument_core::crypto::api_key::{
     process as api_key_process_core, ApiKeyInput, ApiKeyOutput,
 };
@@ -122,5 +125,14 @@ pub fn api_key_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
     let input: ApiKeyInput =
         from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
     let output: ApiKeyOutput = api_key_process_core(input);
+    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
+}
+
+/// Word counter. Receives WordCounterInput (camelCase) and returns WordCounterOutput (camelCase).
+#[wasm_bindgen(js_name = word_counter_process)]
+pub fn word_counter_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
+    let input: WordCounterInput =
+        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let output: WordCounterOutput = word_counter_process_core(input);
     to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
 }

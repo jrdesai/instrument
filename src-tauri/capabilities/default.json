@@ -16,6 +16,7 @@
     "allow-uuid",
     "allow-ulid",
     "allow-api-key",
-    "allow-text-case"
+    "allow-text-case",
+    "allow-word-counter"
   ]
 }

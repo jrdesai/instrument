@@ -375,10 +375,12 @@ export const tools: Tool[] = [
     roles: ["frontend", "general"],
     icon: "sort_by_alpha",
     platforms: ["desktop", "web"],
-    rustCommand: "tool_word_count",
+    rustCommand: "word_counter_process",
     keywords: ["word", "count", "character", "line"],
-    component: placeholderComponent,
-    implemented: false,
+    component: React.lazy(() =>
+      import("../tools/word-counter").then((m) => ({ default: m.default }))
+    ),
+    implemented: true,
   },
   {
     id: "string-escaper",
