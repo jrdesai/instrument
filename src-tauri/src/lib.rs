@@ -12,6 +12,7 @@ pub fn run() {
             greet,
             instrument_desktop::commands::crypto::md5_process,
             instrument_desktop::commands::crypto::sha256_process,
+            instrument_desktop::commands::crypto::sha512_process,
             instrument_desktop::commands::encoding::base64_process,
             instrument_desktop::commands::encoding::url_encode_process,
             instrument_desktop::commands::encoding::html_entity_process,
