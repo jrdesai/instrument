@@ -241,10 +241,12 @@ export const tools: Tool[] = [
     roles: ["backend", "security"],
     icon: "key",
     platforms: ["desktop", "web"],
-    rustCommand: "tool_api_key_generate",
+    rustCommand: "api_key_process",
     keywords: ["api", "key", "generate", "secret"],
-    component: placeholderComponent,
-    implemented: false,
+    component: React.lazy(() =>
+      import("../tools/api-key-generator").then((m) => ({ default: m.default }))
+    ),
+    implemented: true,
   },
   {
     id: "json-formatter",

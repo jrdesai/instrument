@@ -18,3 +18,4 @@ md-5 = { workspace = true }
 uuid = { workspace = true }
 percent-encoding = { workspace = true }
 ulid = "1"
+rand = { version = "0.8", features = ["getrandom"] }

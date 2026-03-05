@@ -15,6 +15,7 @@ pub fn run() {
             instrument_desktop::commands::crypto::sha512_process,
             instrument_desktop::commands::crypto::ulid_process,
             instrument_desktop::commands::crypto::uuid_process,
+            instrument_desktop::commands::crypto::api_key_process,
             instrument_desktop::commands::encoding::base64_process,
             instrument_desktop::commands::encoding::url_encode_process,
             instrument_desktop::commands::encoding::html_entity_process,

@@ -1,4 +1,4 @@
-//! Tauri commands for crypto tools (MD5, SHA-256, SHA-512, UUID, ULID, etc.).
+//! Tauri commands for crypto tools (MD5, SHA-256, SHA-512, UUID, ULID, API keys, etc.).
 
 use instrument_core::crypto::md5::{process, Md5Input, Md5Output};
 use instrument_core::crypto::sha256::{
@@ -11,6 +11,7 @@ use instrument_core::crypto::uuid_gen::{
     process as uuid_process_core, UuidInput, UuidOutput,
 };
 use instrument_core::crypto::ulid::{process as ulid_process_core, UlidInput, UlidOutput};
+use instrument_core::crypto::api_key::{process as api_key_process_core, ApiKeyInput, ApiKeyOutput};
 
 /// Runs MD5 hash via instrument-core.
 #[tauri::command]
@@ -40,4 +41,10 @@ pub fn uuid_process(input: UuidInput) -> UuidOutput {
 #[tauri::command]
 pub fn ulid_process(input: UlidInput) -> UlidOutput {
     ulid_process_core(input)
+}
+
+/// Runs API key generation via instrument-core.
+#[tauri::command]
+pub fn api_key_process(input: ApiKeyInput) -> ApiKeyOutput {
+    api_key_process_core(input)
 }
