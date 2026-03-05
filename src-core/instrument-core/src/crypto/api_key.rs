@@ -4,7 +4,6 @@
 
 use rand::{distributions::Uniform, Rng};
 use serde::{Deserialize, Serialize};
-use std::collections::HashSet;
 
 /// Output string format for an API key.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -136,6 +135,7 @@ pub fn process(input: ApiKeyInput) -> ApiKeyOutput {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::collections::HashSet;
 
     fn is_hex(s: &str) -> bool {
         s.chars()

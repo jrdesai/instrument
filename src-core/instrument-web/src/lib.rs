@@ -11,6 +11,7 @@ use instrument_core::crypto::uuid_gen::{
     process as uuid_process_core, UuidInput, UuidOutput,
 };
 use instrument_core::crypto::ulid::{process as ulid_process_core, UlidInput, UlidOutput};
+use instrument_core::text::case::{process as case_process_core, CaseInput, CaseOutput};
 use instrument_core::crypto::api_key::{
     process as api_key_process_core, ApiKeyInput, ApiKeyOutput,
 };
@@ -103,6 +104,15 @@ pub fn ulid_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
     let input: UlidInput =
         from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
     let output: UlidOutput = ulid_process_core(input);
+    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
+}
+
+/// Text case converter. Receives CaseInput (camelCase) and returns CaseOutput (camelCase).
+#[wasm_bindgen(js_name = case_process)]
+pub fn case_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
+    let input: CaseInput =
+        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let output: CaseOutput = case_process_core(input);
     to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
 }
 

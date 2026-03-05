@@ -360,10 +360,12 @@ export const tools: Tool[] = [
     roles: ["frontend", "backend", "general"],
     icon: "text_fields",
     platforms: ["desktop", "web"],
-    rustCommand: "tool_text_case",
+    rustCommand: "case_process",
     keywords: ["text", "case", "camel", "snake", "lower", "upper"],
-    component: placeholderComponent,
-    implemented: false,
+    component: React.lazy(() =>
+      import("../tools/text-case-converter").then((m) => ({ default: m.default }))
+    ),
+    implemented: true,
   },
   {
     id: "word-counter",

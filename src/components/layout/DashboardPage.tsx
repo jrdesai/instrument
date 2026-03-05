@@ -183,18 +183,15 @@ export function DashboardPage() {
                 Encoding
               </h2>
             </div>
-            <div className="space-y-4">
+            <div className="space-y-6">
               {toolsByCategory.map(([category, categoryTools]) => {
                 const displayName =
                   Object.entries(categoryNameToRegistry).find(
                     ([, registry]) => registry === category
                   )?.[0] ?? category;
                 return (
-                  <div
-                    key={category}
-                    className="flex items-start gap-4"
-                  >
-                    <div className="w-32 flex-shrink-0 flex items-center justify-between">
+                  <div key={category} className="w-full">
+                    <div className="flex items-center justify-between mb-4">
                       <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
                         {displayName}
                       </p>

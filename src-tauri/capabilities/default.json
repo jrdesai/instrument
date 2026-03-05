@@ -15,6 +15,7 @@
     "allow-sha512",
     "allow-uuid",
     "allow-ulid",
-    "allow-api-key"
+    "allow-api-key",
+    "allow-text-case"
   ]
 }
