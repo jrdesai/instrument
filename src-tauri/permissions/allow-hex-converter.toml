@@ -1,0 +1,6 @@
+# Allow the Hex Converter tool command to be invoked from the frontend.
+[[permission]]
+identifier = "allow-hex-converter"
+description = "Enables the hex_process command for the Hex Converter tool."
+commands.allow = ["hex_process"]
+

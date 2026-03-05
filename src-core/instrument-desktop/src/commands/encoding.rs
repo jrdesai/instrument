@@ -1,9 +1,10 @@
-//! Tauri commands for encoding tools (Base64, URL encoder, HTML entity, etc.).
+//! Tauri commands for encoding tools (Base64, URL encoder, HTML entity, Hex, etc.).
 
 use instrument_core::encoding::base64::{process, Base64Input, Base64Output};
 use instrument_core::encoding::html_entity::{
     process as html_entity_process_core, HtmlEntityInput, HtmlEntityOutput,
 };
+use instrument_core::encoding::hex::{process as hex_process_core, HexInput, HexOutput};
 use instrument_core::encoding::url::{process as url_process, UrlEncodeInput, UrlEncodeOutput};
 
 /// Runs Base64 encode or decode via instrument-core.
@@ -22,4 +23,10 @@ pub fn url_encode_process(input: UrlEncodeInput) -> UrlEncodeOutput {
 #[tauri::command]
 pub fn html_entity_process(input: HtmlEntityInput) -> HtmlEntityOutput {
     html_entity_process_core(input)
+}
+
+/// Runs Hex encode or decode via instrument-core.
+#[tauri::command]
+pub fn hex_process(input: HexInput) -> HexOutput {
+    hex_process_core(input)
 }

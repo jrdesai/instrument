@@ -8,6 +8,8 @@
     "opener:default",
     "allow-base64",
     "allow-url-encoder",
-    "allow-html-entity"
+    "allow-html-entity",
+    "allow-hex-converter",
+    "allow-md5"
   ]
 }

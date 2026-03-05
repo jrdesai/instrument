@@ -7,6 +7,7 @@ import { LibraryPage } from "./components/layout/LibraryPage";
 import { ChainsPage } from "./components/layout/ChainsPage";
 import { HistoryPage } from "./components/layout/HistoryPage";
 import { SettingsPage } from "./components/layout/SettingsPage";
+import { ToolHeader } from "./components/layout/ToolHeader";
 import "./App.css";
 
 class ToolErrorBoundary extends Component<
@@ -37,6 +38,7 @@ function ToolPage() {
   const Component = tool.component;
   return (
     <div className="flex-1 flex flex-col min-h-0 w-full bg-background-dark">
+      <ToolHeader tool={tool} />
       <ToolErrorBoundary>
         <Suspense fallback={<div className="p-4 text-slate-500">Loading…</div>}>
           <div className="flex-1 flex flex-col min-h-0">

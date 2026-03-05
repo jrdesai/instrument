@@ -10,9 +10,11 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
             greet,
+            instrument_desktop::commands::crypto::md5_process,
             instrument_desktop::commands::encoding::base64_process,
             instrument_desktop::commands::encoding::url_encode_process,
             instrument_desktop::commands::encoding::html_entity_process,
+            instrument_desktop::commands::encoding::hex_process,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

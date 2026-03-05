@@ -112,10 +112,12 @@ export const tools: Tool[] = [
     roles: ["frontend", "backend", "general"],
     icon: "calculate",
     platforms: ["desktop", "web"],
-    rustCommand: "tool_hex_convert",
+    rustCommand: "hex_process",
     keywords: ["hex", "hexadecimal", "convert"],
-    component: placeholderComponent,
-    implemented: false,
+    component: React.lazy(() =>
+      import("../tools/hex-converter").then((m) => ({ default: m.default }))
+    ),
+    implemented: true,
   },
   {
     id: "md5-hash",
@@ -125,10 +127,12 @@ export const tools: Tool[] = [
     roles: ["backend", "security", "general"],
     icon: "fingerprint",
     platforms: ["desktop", "web"],
-    rustCommand: "tool_md5_hash",
+    rustCommand: "md5_process",
     keywords: ["md5", "hash", "checksum"],
-    component: placeholderComponent,
-    implemented: false,
+    component: React.lazy(() =>
+      import("../tools/md5-hash").then((m) => ({ default: m.default }))
+    ),
+    implemented: true,
   },
   {
     id: "sha256-hash",
