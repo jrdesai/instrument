@@ -7,6 +7,9 @@ use instrument_core::crypto::sha256::{
 use instrument_core::crypto::sha512::{
     process as sha512_process_core, Sha512Input, Sha512Output,
 };
+use instrument_core::crypto::uuid_gen::{
+    process as uuid_process_core, UuidInput, UuidOutput,
+};
 use instrument_core::encoding::base64::{process, Base64Input};
 use instrument_core::encoding::hex::{
     process as hex_process_core, HexInput, HexOutput,
@@ -78,5 +81,14 @@ pub fn sha512_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
     let input: Sha512Input =
         from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
     let output: Sha512Output = sha512_process_core(input);
+    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
+}
+
+/// UUID generation. Receives UuidInput (camelCase) and returns UuidOutput (camelCase).
+#[wasm_bindgen(js_name = uuid_process)]
+pub fn uuid_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
+    let input: UuidInput =
+        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let output: UuidOutput = uuid_process_core(input);
     to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
 }

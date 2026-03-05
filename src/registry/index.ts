@@ -172,10 +172,12 @@ export const tools: Tool[] = [
     roles: ["backend", "general"],
     icon: "tag",
     platforms: ["desktop", "web"],
-    rustCommand: "tool_uuid_generate",
+    rustCommand: "uuid_process",
     keywords: ["uuid", "guid", "generate"],
-    component: placeholderComponent,
-    implemented: false,
+    component: React.lazy(() =>
+      import("../tools/uuid-generator").then((m) => ({ default: m.default }))
+    ),
+    implemented: true,
   },
   {
     id: "ulid-generator",

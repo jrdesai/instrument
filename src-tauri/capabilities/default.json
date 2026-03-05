@@ -12,6 +12,7 @@
     "allow-hex-converter",
     "allow-md5",
     "allow-sha256",
-    "allow-sha512"
+    "allow-sha512",
+    "allow-uuid"
   ]
 }
