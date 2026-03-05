@@ -13,6 +13,7 @@
     "allow-md5",
     "allow-sha256",
     "allow-sha512",
-    "allow-uuid"
+    "allow-uuid",
+    "allow-ulid"
   ]
 }

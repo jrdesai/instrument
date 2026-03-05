@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import type { Tool, ToolCategory } from "../../registry";
 import { tools, getToolById } from "../../registry";
 import { useToolStore } from "../../store";
+import { categoryNameToRegistry } from "../../constants/library";
 
 const MAX_RECENT = 5;
 
@@ -90,6 +91,21 @@ export function DashboardPage() {
   const totalImplemented = implementedTools.length;
   const categoriesWithTools = toolsByCategory.length;
 
+  const handleSeeAllRecent = () => {
+    navigate("/library");
+  };
+
+  const handleSeeAllCategory = (category: ToolCategory) => {
+    const entry = Object.entries(categoryNameToRegistry).find(
+      ([, registry]) => registry === category
+    );
+    if (entry) {
+      navigate("/library", { state: { category: entry[0] } });
+    } else {
+      navigate("/library");
+    }
+  };
+
   const handleOpenTool = (tool: Tool) => {
     setActiveTool(tool);
     addToRecent(tool);
@@ -126,6 +142,13 @@ export function DashboardPage() {
                 </span>
                 Recent
               </h2>
+              <button
+                type="button"
+                onClick={handleSeeAllRecent}
+                className="text-primary text-xs hover:text-primary/80 transition-colors"
+              >
+                See all →
+              </button>
             </div>
             {displayedRecent.length === 0 ? (
               <p className="text-sm text-slate-500">
@@ -161,27 +184,40 @@ export function DashboardPage() {
               </h2>
             </div>
             <div className="space-y-4">
-              {toolsByCategory.map(([category, categoryTools]) => (
-                <div
-                  key={category}
-                  className="flex items-start gap-4"
-                >
-                  <div className="w-32 flex-shrink-0">
-                    <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-                      {category}
-                    </p>
+              {toolsByCategory.map(([category, categoryTools]) => {
+                const displayName =
+                  Object.entries(categoryNameToRegistry).find(
+                    ([, registry]) => registry === category
+                  )?.[0] ?? category;
+                return (
+                  <div
+                    key={category}
+                    className="flex items-start gap-4"
+                  >
+                    <div className="w-32 flex-shrink-0 flex items-center justify-between">
+                      <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+                        {displayName}
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => handleSeeAllCategory(category)}
+                        className="text-primary text-xs hover:text-primary/80 transition-colors"
+                      >
+                        See all →
+                      </button>
+                    </div>
+                    <div className="flex flex-wrap gap-4">
+                      {categoryTools.map((tool) => (
+                        <ToolCard
+                          key={tool.id}
+                          tool={tool}
+                          onClick={() => handleOpenTool(tool)}
+                        />
+                      ))}
+                    </div>
                   </div>
-                  <div className="flex flex-wrap gap-4">
-                    {categoryTools.map((tool) => (
-                      <ToolCard
-                        key={tool.id}
-                        tool={tool}
-                        onClick={() => handleOpenTool(tool)}
-                      />
-                    ))}
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </section>
 

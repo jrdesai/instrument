@@ -187,10 +187,12 @@ export const tools: Tool[] = [
     roles: ["backend", "data", "general"],
     icon: "tag",
     platforms: ["desktop", "web"],
-    rustCommand: "tool_ulid_generate",
+    rustCommand: "ulid_process",
     keywords: ["ulid", "generate", "id"],
-    component: placeholderComponent,
-    implemented: false,
+    component: React.lazy(() =>
+      import("../tools/ulid-generator").then((m) => ({ default: m.default }))
+    ),
+    implemented: true,
   },
   {
     id: "jwt-decoder",

@@ -1,0 +1,6 @@
+# Allow the ULID Generator tool command to be invoked from the frontend.
+[[permission]]
+identifier = "allow-ulid"
+description = "Enables the ulid_process command."
+commands.allow = ["ulid_process"]
+

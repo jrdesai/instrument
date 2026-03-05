@@ -10,6 +10,7 @@ use instrument_core::crypto::sha512::{
 use instrument_core::crypto::uuid_gen::{
     process as uuid_process_core, UuidInput, UuidOutput,
 };
+use instrument_core::crypto::ulid::{process as ulid_process_core, UlidInput, UlidOutput};
 use instrument_core::encoding::base64::{process, Base64Input};
 use instrument_core::encoding::hex::{
     process as hex_process_core, HexInput, HexOutput,
@@ -90,5 +91,14 @@ pub fn uuid_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
     let input: UuidInput =
         from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
     let output: UuidOutput = uuid_process_core(input);
+    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
+}
+
+/// ULID generation. Receives UlidInput (camelCase) and returns UlidOutput (camelCase).
+#[wasm_bindgen(js_name = ulid_process)]
+pub fn ulid_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
+    let input: UlidInput =
+        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let output: UlidOutput = ulid_process_core(input);
     to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
 }

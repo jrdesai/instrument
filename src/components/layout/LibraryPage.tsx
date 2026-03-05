@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   sidebarMapping,
   gridRoleMapping,
@@ -29,10 +29,25 @@ function StatusBar({ toolCount }: { toolCount: number }) {
 
 export function LibraryPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const setActiveTool = useToolStore((s) => s.setActiveTool);
    const addToRecent = useToolStore((s) => s.addToRecent);
   const [currentRole, setCurrentRole] = useState<(typeof ROLES)[number]>("All");
   const [currentCategory, setCurrentCategory] = useState<string>("Encoding");
+
+  useEffect(() => {
+    const incomingCategory =
+      (location.state as { category?: string } | null | undefined)?.category;
+    if (incomingCategory) {
+      setCurrentCategory(incomingCategory);
+      // Clear state so subsequent navigations don't re-apply the filter.
+      window.history.replaceState(
+        {},
+        "",
+        window.location.pathname + window.location.search
+      );
+    }
+  }, [location.state]);
 
   const filteredCategories = useMemo(
     () => sidebarMapping[currentRole] ?? [],
