@@ -18,6 +18,7 @@
     "allow-api-key",
     "allow-text-case",
     "allow-word-counter",
-    "allow-string-escaper"
+    "allow-string-escaper",
+    "allow-find-replace"
   ]
 }

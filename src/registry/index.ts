@@ -405,10 +405,12 @@ export const tools: Tool[] = [
     roles: ["frontend", "backend", "general"],
     icon: "find_replace",
     platforms: ["desktop", "web"],
-    rustCommand: "tool_find_replace",
+    rustCommand: "find_replace_process",
     keywords: ["find", "replace", "regex", "search"],
-    component: placeholderComponent,
-    implemented: false,
+    component: React.lazy(() =>
+      import("../tools/find-replace").then((m) => ({ default: m.default }))
+    ),
+    implemented: true,
   },
   {
     id: "timestamp-converter",

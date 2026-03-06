@@ -1,0 +1,5 @@
+# Allow the Find & Replace tool command to be invoked from the frontend.
+[[permission]]
+identifier = "allow-find-replace"
+description = "Enables the find_replace_process command."
+commands.allow = ["find_replace_process"]

@@ -12,6 +12,9 @@ use instrument_core::crypto::uuid_gen::{
 };
 use instrument_core::crypto::ulid::{process as ulid_process_core, UlidInput, UlidOutput};
 use instrument_core::text::case::{process as case_process_core, CaseInput, CaseOutput};
+use instrument_core::text::find_replace::{
+    process as find_replace_process_core, FindReplaceInput, FindReplaceOutput,
+};
 use instrument_core::text::string_escaper::{
     process as string_escaper_process_core, StringEscaperInput, StringEscaperOutput,
 };
@@ -146,5 +149,14 @@ pub fn string_escaper_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue
     let input: StringEscaperInput =
         from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
     let output: StringEscaperOutput = string_escaper_process_core(input);
+    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
+}
+
+/// Find & replace. Receives FindReplaceInput (camelCase) and returns FindReplaceOutput (camelCase).
+#[wasm_bindgen(js_name = find_replace_process)]
+pub fn find_replace_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
+    let input: FindReplaceInput =
+        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let output: FindReplaceOutput = find_replace_process_core(input);
     to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
 }

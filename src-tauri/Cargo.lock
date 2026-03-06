@@ -1817,6 +1817,7 @@ dependencies = [
  "md-5",
  "percent-encoding",
  "rand 0.8.5",
+ "regex",
  "serde",
  "sha2",
  "thiserror 2.0.18",

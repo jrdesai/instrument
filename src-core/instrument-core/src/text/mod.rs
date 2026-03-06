@@ -1,4 +1,5 @@
 pub mod case;
+pub mod find_replace;
 pub mod string_escaper;
 pub mod word_counter;
 
