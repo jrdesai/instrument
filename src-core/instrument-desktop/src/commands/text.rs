@@ -7,6 +7,9 @@ use instrument_core::text::find_replace::{
 use instrument_core::text::string_escaper::{
     process as string_escaper_process_core, StringEscaperInput, StringEscaperOutput,
 };
+use instrument_core::text::lorem_ipsum::{
+    process as lorem_ipsum_process_core, LoremIpsumInput, LoremIpsumOutput,
+};
 use instrument_core::text::word_counter::{
     process as word_counter_process_core, WordCounterInput, WordCounterOutput,
 };
@@ -33,5 +36,11 @@ pub fn string_escaper_process(input: StringEscaperInput) -> StringEscaperOutput 
 #[tauri::command]
 pub fn find_replace_process(input: FindReplaceInput) -> FindReplaceOutput {
     find_replace_process_core(input)
+}
+
+/// Runs lorem ipsum generation via instrument-core.
+#[tauri::command]
+pub fn lorem_ipsum_process(input: LoremIpsumInput) -> LoremIpsumOutput {
+    lorem_ipsum_process_core(input)
 }
 

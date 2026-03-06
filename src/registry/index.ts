@@ -413,6 +413,21 @@ export const tools: Tool[] = [
     implemented: true,
   },
   {
+    id: "lorem-ipsum",
+    name: "Lorem Ipsum Generator",
+    description: "Generate placeholder text (paragraphs, sentences, or words).",
+    category: "text",
+    roles: ["frontend", "general"],
+    icon: "format_quote",
+    platforms: ["desktop", "web"],
+    rustCommand: "lorem_ipsum_process",
+    keywords: ["lorem", "ipsum", "placeholder", "dummy", "text"],
+    component: React.lazy(() =>
+      import("../tools/lorem-ipsum").then((m) => ({ default: m.default }))
+    ),
+    implemented: true,
+  },
+  {
     id: "timestamp-converter",
     name: "Timestamp Converter",
     description: "Convert Unix timestamps and human-readable dates.",

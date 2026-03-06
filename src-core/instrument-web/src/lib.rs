@@ -15,6 +15,9 @@ use instrument_core::text::case::{process as case_process_core, CaseInput, CaseO
 use instrument_core::text::find_replace::{
     process as find_replace_process_core, FindReplaceInput, FindReplaceOutput,
 };
+use instrument_core::text::lorem_ipsum::{
+    process as lorem_ipsum_process_core, LoremIpsumInput, LoremIpsumOutput,
+};
 use instrument_core::text::string_escaper::{
     process as string_escaper_process_core, StringEscaperInput, StringEscaperOutput,
 };
@@ -158,5 +161,14 @@ pub fn find_replace_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> 
     let input: FindReplaceInput =
         from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
     let output: FindReplaceOutput = find_replace_process_core(input);
+    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
+}
+
+/// Lorem ipsum generator. Receives LoremIpsumInput (camelCase) and returns LoremIpsumOutput (camelCase).
+#[wasm_bindgen(js_name = lorem_ipsum_process)]
+pub fn lorem_ipsum_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
+    let input: LoremIpsumInput =
+        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let output: LoremIpsumOutput = lorem_ipsum_process_core(input);
     to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
 }

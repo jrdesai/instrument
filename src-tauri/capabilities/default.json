@@ -19,6 +19,7 @@
     "allow-text-case",
     "allow-word-counter",
     "allow-string-escaper",
-    "allow-find-replace"
+    "allow-find-replace",
+    "allow-lorem-ipsum"
   ]
 }
