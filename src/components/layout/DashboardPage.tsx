@@ -114,12 +114,14 @@ export function DashboardPage() {
     for (const tool of tools) {
       seen.add(tool.category);
     }
-    return Array.from(seen).map((id) => ({
-      id,
-      name: getCategoryDisplayName(id),
-      icon: getCategoryIcon(id),
-      toolCount: getToolsByCategory(id).length,
-    }));
+    return Array.from(seen)
+      .map((id) => ({
+        id,
+        name: getCategoryDisplayName(id),
+        icon: getCategoryIcon(id),
+        toolCount: getToolsByCategory(id).filter((t) => t.implemented).length,
+      }))
+      .filter((cat) => cat.toolCount > 0);
   }, []);
 
   const totalImplemented = implementedTools.length;
@@ -223,7 +225,10 @@ export function DashboardPage() {
     ? categories.findIndex((c) => c.id === activeCategoryId)
     : -1;
   const rowIndex = activeIndex >= 0 ? Math.floor(activeIndex / itemsPerRow) : 0;
-  const insertIndex = (rowIndex + 1) * itemsPerRow;
+  const insertIndex = Math.min(
+    (rowIndex + 1) * itemsPerRow,
+    categories.length
+  );
 
   const gridItems = useMemo(() => {
     const list: Array<{ type: "tile"; category: (typeof categories)[0] } | { type: "panel" }> = [];
@@ -382,18 +387,14 @@ export function DashboardPage() {
                     >
                       <div className="grid grid-cols-3 md:grid-cols-4 gap-3">
                         {activeCategoryId &&
-                          getToolsByCategory(activeCategoryId as ToolCategory).map(
-                            (tool) => (
+                          getToolsByCategory(activeCategoryId as ToolCategory)
+                            .filter((t) => t.implemented)
+                            .map((tool) => (
                               <button
                                 key={tool.id}
                                 type="button"
-                                onClick={() =>
-                                  tool.implemented
-                                    ? handleOpenTool(tool)
-                                    : undefined
-                                }
-                                disabled={!tool.implemented}
-                                className="flex items-center gap-3 p-3 rounded-lg border border-border-dark bg-panel-dark hover:border-primary/30 hover:bg-white/5 transition-all text-left w-full disabled:opacity-40 disabled:cursor-not-allowed"
+                                onClick={() => handleOpenTool(tool)}
+                                className="flex items-center gap-3 p-3 rounded-lg border border-border-dark bg-panel-dark hover:border-primary/30 hover:bg-white/5 transition-all text-left w-full cursor-pointer"
                               >
                                 <span
                                   className="material-symbols-outlined leading-none flex-shrink-0 text-primary/70"
@@ -411,8 +412,7 @@ export function DashboardPage() {
                                   </span>
                                 </div>
                               </button>
-                            )
-                          )}
+                            ))}
                       </div>
                     </div>
                   </div>
