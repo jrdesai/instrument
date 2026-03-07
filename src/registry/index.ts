@@ -495,10 +495,12 @@ export const tools: Tool[] = [
     roles: ["backend", "general"],
     icon: "memory",
     platforms: ["desktop", "web"],
-    rustCommand: "tool_bitwise",
+    rustCommand: "bitwise_process",
     keywords: ["bitwise", "and", "or", "xor", "shift"],
-    component: placeholderComponent,
-    implemented: false,
+    component: React.lazy(() =>
+      import("../tools/bitwise-calculator").then((m) => ({ default: m.default }))
+    ),
+    implemented: true,
   },
   {
     id: "expression-evaluator",
