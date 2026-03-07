@@ -435,10 +435,12 @@ export const tools: Tool[] = [
     roles: ["backend", "data", "general"],
     icon: "schedule",
     platforms: ["desktop", "web"],
-    rustCommand: "tool_timestamp_convert",
+    rustCommand: "timestamp_process",
     keywords: ["timestamp", "unix", "date", "time"],
-    component: placeholderComponent,
-    implemented: false,
+    component: React.lazy(() =>
+      import("../tools/timestamp-converter").then((m) => ({ default: m.default }))
+    ),
+    implemented: true,
   },
   {
     id: "timezone-converter",

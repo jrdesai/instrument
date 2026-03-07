@@ -1,0 +1,5 @@
+# Allow the Timestamp Converter tool command to be invoked from the frontend.
+[[permission]]
+identifier = "allow-timestamp"
+description = "Enables the timestamp_process command."
+commands.allow = ["timestamp_process"]
