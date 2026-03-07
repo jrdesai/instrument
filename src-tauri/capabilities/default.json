@@ -23,6 +23,7 @@
     "allow-lorem-ipsum",
     "allow-timestamp",
     "allow-timezone",
-    "allow-iso8601"
+    "allow-iso8601",
+    "allow-base-converter"
   ]
 }

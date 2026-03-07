@@ -1,0 +1,357 @@
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import { callTool } from "../../bridge";
+import { useHistoryStore } from "../../store";
+
+/** Rust NumberBase/BitWidth use serde rename_all = "camelCase" so values are lowercase. */
+type NumberBaseKey =
+  | "decimal"
+  | "hexadecimal"
+  | "binary"
+  | "octal"
+  | "base32"
+  | "base36";
+type BitWidthKey = "auto" | "bit8" | "bit16" | "bit32" | "bit64";
+
+/** Matches Rust BaseConverterInput (camelCase). */
+interface BaseConverterInputPayload {
+  value: string;
+  fromBase: NumberBaseKey;
+  bitWidth: BitWidthKey;
+  uppercaseHex: boolean;
+}
+
+/** Matches Rust BaseConverterOutput (camelCase). */
+interface BaseConverterOutputPayload {
+  decimal: string;
+  hexadecimal: string;
+  binary: string;
+  binaryGrouped: string;
+  octal: string;
+  base32: string;
+  base36: string;
+  bitLength: number;
+  isNegative: boolean;
+  error?: string | null;
+}
+
+const RUST_COMMAND = "base_converter_process";
+const TOOL_ID = "number-base-converter";
+const DEBOUNCE_MS = 150;
+const COPIED_DURATION_MS = 1500;
+
+const BASE_PILLS: { id: NumberBaseKey; label: string }[] = [
+  { id: "decimal", label: "Dec" },
+  { id: "hexadecimal", label: "Hex" },
+  { id: "binary", label: "Bin" },
+  { id: "octal", label: "Oct" },
+  { id: "base32", label: "Base32" },
+  { id: "base36", label: "Base36" },
+];
+
+const OUTPUT_CARDS: {
+  id: keyof Omit<
+    BaseConverterOutputPayload,
+    "error" | "isNegative"
+  >;
+  label: string;
+}[] = [
+  { id: "decimal", label: "Decimal" },
+  { id: "hexadecimal", label: "Hexadecimal" },
+  { id: "binary", label: "Binary" },
+  { id: "binaryGrouped", label: "Binary (grouped)" },
+  { id: "octal", label: "Octal" },
+  { id: "base32", label: "Base 32" },
+  { id: "base36", label: "Base 36" },
+  { id: "bitLength", label: "Bit length" },
+];
+
+const PLACEHOLDERS: Record<NumberBaseKey, string> = {
+  decimal: "Enter decimal (e.g. 255)",
+  hexadecimal: "Enter hex (e.g. ff or 0xff)",
+  binary: "Enter binary (e.g. 11111111 or 0b11111111)",
+  octal: "Enter octal (e.g. 377 or 0o377)",
+  base32: "Enter base32 (e.g. 7V)",
+  base36: "Enter base36 (e.g. 73)",
+};
+
+const BIT_WIDTH_OPTIONS: { id: BitWidthKey; label: string }[] = [
+  { id: "auto", label: "Auto" },
+  { id: "bit8", label: "8" },
+  { id: "bit16", label: "16" },
+  { id: "bit32", label: "32" },
+  { id: "bit64", label: "64" },
+];
+
+function NumberBaseConverterTool() {
+  const [value, setValue] = useState("");
+  const [fromBase, setFromBase] = useState<NumberBaseKey>("decimal");
+  const [bitWidth, setBitWidth] = useState<BitWidthKey>("auto");
+  const [uppercaseHex, setUppercaseHex] = useState(false);
+  const [output, setOutput] = useState<BaseConverterOutputPayload | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [copyAllLabel, setCopyAllLabel] = useState("Copy All");
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
+
+  const runProcess = useCallback(
+    async (
+      currentValue: string,
+      currentBase: NumberBaseKey,
+      currentBitWidth: BitWidthKey,
+      currentUppercaseHex: boolean
+    ) => {
+      if (!currentValue.trim()) {
+        setOutput(null);
+        setIsLoading(false);
+        return;
+      }
+      setIsLoading(true);
+      try {
+        const payload: BaseConverterInputPayload = {
+          value: currentValue,
+          fromBase: currentBase,
+          bitWidth: currentBitWidth,
+          uppercaseHex: currentUppercaseHex,
+        };
+        const result = (await callTool(
+          RUST_COMMAND,
+          payload
+        )) as BaseConverterOutputPayload;
+        setOutput(result);
+        if (!result.error) {
+          addHistoryEntry(TOOL_ID, {
+            input: payload,
+            output: result,
+            timestamp: Date.now(),
+          });
+        }
+      } catch (e) {
+        const message =
+          e instanceof Error
+            ? e.message
+            : typeof e === "string"
+              ? e
+              : e && typeof e === "object" && "message" in e
+                ? String((e as { message: unknown }).message)
+                : e != null
+                  ? String(e)
+                  : "Failed to run tool";
+        setOutput({
+          decimal: "",
+          hexadecimal: "",
+          binary: "",
+          binaryGrouped: "",
+          octal: "",
+          base32: "",
+          base36: "",
+          bitLength: 0,
+          isNegative: false,
+          error: message,
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [addHistoryEntry]
+  );
+
+  useEffect(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      runProcess(value, fromBase, bitWidth, uppercaseHex);
+      debounceRef.current = null;
+    }, DEBOUNCE_MS);
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, [value, fromBase, bitWidth, uppercaseHex, runProcess]);
+
+  const handleClear = useCallback(() => {
+    setValue("");
+    setOutput(null);
+  }, []);
+
+  const handleCopyValue = useCallback(async (text: string) => {
+    if (!text) return;
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch {
+      // ignore
+    }
+  }, []);
+
+  const handleCopyAll = useCallback(async () => {
+    if (!output || output.error) return;
+    const lines = OUTPUT_CARDS.map(({ id, label }) => {
+      const v = output[id];
+      const str = typeof v === "number" ? String(v) : String(v ?? "");
+      return `${label}: ${str}`;
+    });
+    try {
+      await navigator.clipboard.writeText(lines.join("\n"));
+      setCopyAllLabel("Copied");
+      setTimeout(() => setCopyAllLabel("Copy All"), COPIED_DURATION_MS);
+    } catch {
+      setCopyAllLabel("Copy failed");
+      setTimeout(() => setCopyAllLabel("Copy All"), COPIED_DURATION_MS);
+    }
+  }, [output]);
+
+  const hasError = Boolean(output?.error);
+  const displayOutput = hasError ? null : output;
+  const inputBaseId = fromBase;
+
+  return (
+    <div className="flex flex-col h-full bg-background-dark text-slate-100 font-display">
+      {/* Input row */}
+      <div className="flex flex-col px-4 py-3 border-b border-border-dark bg-panel-dark">
+        <div className="flex flex-wrap items-center gap-2 mb-2">
+          {BASE_PILLS.map(({ id, label }) => (
+            <button
+              key={id}
+              type="button"
+              aria-label={`Input base: ${label}`}
+              onClick={() => setFromBase(id)}
+              className={`px-3 py-1 text-sm font-medium rounded-lg transition-colors ${
+                fromBase === id
+                  ? "bg-primary text-white"
+                  : "bg-panel-dark text-slate-400 border border-border-dark hover:text-slate-200"
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+        <div className="flex items-center gap-2">
+          <input
+            type="text"
+            aria-label="Number to convert"
+            className="flex-1 min-w-0 px-3 py-2 bg-background-dark text-slate-100 font-mono text-sm outline-none focus:ring-1 focus:ring-primary border border-border-dark rounded-lg"
+            placeholder={PLACEHOLDERS[fromBase]}
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+          />
+        </div>
+        {hasError && (
+          <p className="text-red-400 text-xs font-mono mt-2">
+            {output?.error}
+          </p>
+        )}
+      </div>
+
+      {/* Output cards */}
+      <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar p-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+          {OUTPUT_CARDS.map(({ id, label }) => {
+            const raw = displayOutput?.[id];
+            const valueStr =
+              typeof raw === "number" ? String(raw) : String(raw ?? "");
+            const display = valueStr || "—";
+            const isInputBase =
+              (id === "decimal" && inputBaseId === "decimal") ||
+              (id === "hexadecimal" && inputBaseId === "hexadecimal") ||
+              (id === "binary" && inputBaseId === "binary") ||
+              (id === "octal" && inputBaseId === "octal") ||
+              (id === "base32" && inputBaseId === "base32") ||
+              (id === "base36" && inputBaseId === "base36");
+            return (
+              <div
+                key={id}
+                className={`flex flex-col border rounded-lg p-3 transition-colors ${
+                  isInputBase
+                    ? "border-primary/40 bg-primary/5 hover:border-primary/50"
+                    : "border-border-dark bg-panel-dark hover:border-primary/40"
+                }`}
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-slate-400 text-xs uppercase tracking-wider">
+                    {label}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => handleCopyValue(valueStr)}
+                    disabled={!valueStr || valueStr === "—"}
+                    className="px-2 py-0.5 text-[10px] font-medium bg-background-dark text-slate-300 border border-border-dark rounded-lg hover:text-primary hover:border-primary/60 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    Copy
+                  </button>
+                </div>
+                <pre className="font-mono text-sm text-slate-200 whitespace-pre-wrap break-all">
+                  {display}
+                </pre>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Footer: Options + Actions */}
+      <footer className="flex flex-wrap items-end gap-6 px-4 py-3 border-t border-border-dark bg-panel-dark shrink-0">
+        <div className="flex flex-wrap items-center gap-4">
+          <div className="flex flex-col">
+            <span className="text-slate-400 text-xs mb-1">Bit width</span>
+            <div className="flex items-center gap-1">
+              {BIT_WIDTH_OPTIONS.map(({ id, label }) => (
+                <button
+                  key={id}
+                  type="button"
+                  aria-label={`Bit width ${label}`}
+                  onClick={() => setBitWidth(id)}
+                  className={`px-2 py-1 text-xs font-medium rounded transition-colors ${
+                    bitWidth === id
+                      ? "bg-primary text-white"
+                      : "bg-panel-dark text-slate-400 border border-border-dark hover:text-slate-200"
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="flex flex-col">
+            <span className="text-slate-400 text-xs mb-1">Uppercase hex</span>
+            <button
+              type="button"
+              aria-pressed={uppercaseHex}
+              onClick={() => setUppercaseHex((v) => !v)}
+              className={`px-2 py-1 text-xs font-medium rounded transition-colors ${
+                uppercaseHex
+                  ? "bg-primary text-white"
+                  : "bg-panel-dark text-slate-400 border border-border-dark hover:text-slate-200"
+              }`}
+            >
+              {uppercaseHex ? "On" : "Off"}
+            </button>
+          </div>
+        </div>
+        <div className="flex items-center gap-4 ml-auto">
+          <button
+            type="button"
+            onClick={handleCopyAll}
+            disabled={!displayOutput}
+            className="px-3 py-2 text-xs font-medium bg-panel-dark text-slate-300 border border-border-dark rounded-lg hover:text-primary hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            {copyAllLabel}
+          </button>
+          <button
+            type="button"
+            onClick={handleClear}
+            className="px-4 py-2 text-sm bg-panel-dark text-slate-400 border border-border-dark rounded-lg hover:text-slate-200 hover:border-slate-500 transition-colors"
+          >
+            Clear
+          </button>
+        </div>
+        {isLoading && (
+          <span className="text-xs text-primary">Processing…</span>
+        )}
+      </footer>
+    </div>
+  );
+}
+
+export default NumberBaseConverterTool;

@@ -28,6 +28,7 @@ pub fn run() {
             instrument_desktop::commands::encoding::url_encode_process,
             instrument_desktop::commands::encoding::html_entity_process,
             instrument_desktop::commands::encoding::hex_process,
+            instrument_desktop::commands::numbers::base_converter_process,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

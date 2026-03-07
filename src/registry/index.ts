@@ -480,10 +480,12 @@ export const tools: Tool[] = [
     roles: ["frontend", "backend", "general"],
     icon: "numbers",
     platforms: ["desktop", "web"],
-    rustCommand: "tool_number_base",
+    rustCommand: "base_converter_process",
     keywords: ["number", "base", "hex", "binary", "decimal"],
-    component: placeholderComponent,
-    implemented: false,
+    component: React.lazy(() =>
+      import("../tools/number-base-converter").then((m) => ({ default: m.default }))
+    ),
+    implemented: true,
   },
   {
     id: "bitwise-calculator",

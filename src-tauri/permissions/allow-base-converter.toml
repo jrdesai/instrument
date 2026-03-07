@@ -1,0 +1,4 @@
+[[permission]]
+identifier = "allow-base-converter"
+description = "Enables the base_converter_process command."
+commands.allow = ["base_converter_process"]

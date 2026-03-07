@@ -2,4 +2,5 @@
 pub mod crypto;
 pub mod datetime;
 pub mod encoding;
+pub mod numbers;
 pub mod text;
