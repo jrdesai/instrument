@@ -348,11 +348,14 @@ function FindReplaceTool() {
             <button
               type="button"
               aria-label="Whole word"
-              onClick={() => setWholeWord((v) => !v)}
+              disabled={regexMode}
+              onClick={() => !regexMode && setWholeWord((v) => !v)}
               className={`px-3 py-1 text-sm font-medium rounded-lg transition-colors ${
-                wholeWord
-                  ? "bg-primary text-white"
-                  : "text-slate-400 hover:bg-slate-700"
+                regexMode
+                  ? "opacity-50 cursor-not-allowed text-slate-500"
+                  : wholeWord
+                    ? "bg-primary text-white"
+                    : "text-slate-400 hover:bg-slate-700"
               }`}
             >
               Whole word
