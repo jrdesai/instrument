@@ -21,6 +21,7 @@
     "allow-string-escaper",
     "allow-find-replace",
     "allow-lorem-ipsum",
-    "allow-timestamp"
+    "allow-timestamp",
+    "allow-timezone"
   ]
 }

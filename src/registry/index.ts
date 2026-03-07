@@ -450,10 +450,12 @@ export const tools: Tool[] = [
     roles: ["backend", "general"],
     icon: "public",
     platforms: ["desktop", "web"],
-    rustCommand: "tool_timezone_convert",
+    rustCommand: "timezone_process",
     keywords: ["timezone", "tz", "convert", "utc"],
-    component: placeholderComponent,
-    implemented: false,
+    component: React.lazy(() =>
+      import("../tools/timezone-converter").then((m) => ({ default: m.default }))
+    ),
+    implemented: true,
   },
   {
     id: "iso8601-formatter",

@@ -21,3 +21,4 @@ ulid = "1"
 rand = { version = "0.8", features = ["getrandom"] }
 regex = "1"
 chrono = { version = "0.4", features = ["serde"] }
+chrono-tz = "0.9"

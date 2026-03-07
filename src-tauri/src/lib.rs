@@ -22,6 +22,7 @@ pub fn run() {
             instrument_desktop::commands::text::find_replace_process,
             instrument_desktop::commands::text::lorem_ipsum_process,
             instrument_desktop::commands::datetime::timestamp_process,
+            instrument_desktop::commands::datetime::timezone_process,
             instrument_desktop::commands::encoding::base64_process,
             instrument_desktop::commands::encoding::url_encode_process,
             instrument_desktop::commands::encoding::html_entity_process,
