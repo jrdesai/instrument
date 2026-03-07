@@ -465,10 +465,12 @@ export const tools: Tool[] = [
     roles: ["backend", "data", "general"],
     icon: "event",
     platforms: ["desktop", "web"],
-    rustCommand: "tool_iso8601_format",
+    rustCommand: "iso8601_process",
     keywords: ["iso8601", "iso", "date", "format"],
-    component: placeholderComponent,
-    implemented: false,
+    component: React.lazy(() =>
+      import("../tools/iso8601-formatter").then((m) => ({ default: m.default }))
+    ),
+    implemented: true,
   },
   {
     id: "number-base-converter",

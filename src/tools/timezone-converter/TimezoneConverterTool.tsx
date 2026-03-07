@@ -6,6 +6,7 @@ import {
   useState,
 } from "react";
 import { callTool } from "../../bridge";
+import { FormatHint } from "../../components/ui/FormatHint";
 import { useHistoryStore } from "../../store";
 import {
   formatTimezoneLabel,
@@ -294,14 +295,30 @@ function TimezoneConverterTool() {
           Date/time
         </span>
         <div className="flex items-center gap-2">
-          <input
-            type="text"
-            aria-label="Date/time to convert"
-            className="flex-1 px-3 py-2 bg-background-dark text-slate-100 font-mono text-sm outline-none focus:ring-1 focus:ring-primary border border-border-dark rounded-lg"
-            placeholder="Enter date/time (e.g. 2024-03-04 12:00:00)"
-            value={datetime}
-            onChange={(e) => setDatetime(e.target.value)}
-          />
+          <div className="relative flex items-center gap-1 flex-1 min-w-0">
+            <input
+              type="text"
+              aria-label="Date/time to convert"
+              className="flex-1 min-w-0 px-3 py-2 bg-background-dark text-slate-100 font-mono text-sm outline-none focus:ring-1 focus:ring-primary border border-border-dark rounded-lg"
+              placeholder="Enter date/time (e.g. 2024-03-04 12:00:00)"
+              value={datetime}
+              onChange={(e) => setDatetime(e.target.value)}
+            />
+            <FormatHint
+              formats={[
+                { label: "ISO 8601 UTC", example: "2024-03-04T12:00:00Z" },
+                { label: "ISO 8601 offset", example: "2024-03-04T12:00:00+05:30" },
+                { label: "Space separated", example: "2024-03-04 12:00:00" },
+                { label: "Date only", example: "2024-03-04" },
+                { label: "Time only", example: "12:00:00" },
+                { label: "Month name", example: "March 4 2024" },
+              ]}
+              onSelect={(example) => {
+                setDatetime(example);
+                runProcess(example, fromTz, toTz);
+              }}
+            />
+          </div>
           <button
             type="button"
             aria-label="Use current date and time"

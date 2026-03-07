@@ -5,6 +5,7 @@ import {
   useState,
 } from "react";
 import { callTool } from "../../bridge";
+import { FormatHint } from "../../components/ui/FormatHint";
 import { useHistoryStore } from "../../store";
 
 /** Matches Rust TimestampInput (camelCase). */
@@ -140,6 +141,12 @@ function TimestampConverterTool() {
       clearInterval(nowTickRef.current);
       nowTickRef.current = null;
     }
+    // Don't run when input is empty (toHuman/toUnix) — avoid "Empty timestamp" on load or after clear
+    const trimmed = value.trim();
+    if (trimmed === "") {
+      setOutput(null);
+      return;
+    }
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
       runProcess(value, mode, unit);
@@ -230,14 +237,32 @@ function TimestampConverterTool() {
         ) : (
           <div className="flex flex-wrap items-center gap-2">
             <div className="flex-1 min-w-[200px] flex items-center gap-2">
-              <input
-                type="text"
-                aria-label="Timestamp or date input"
-                className="flex-1 w-full px-3 py-2 bg-background-dark text-slate-100 font-mono text-sm outline-none focus:ring-1 focus:ring-primary border border-border-dark rounded-lg"
-                placeholder={placeholders[mode]}
-                value={value}
-                onChange={(e) => setValue(e.target.value)}
-              />
+              <div className="relative flex items-center gap-1 flex-1">
+                <input
+                  type="text"
+                  aria-label="Timestamp or date input"
+                  className="flex-1 w-full min-w-0 px-3 py-2 bg-background-dark text-slate-100 font-mono text-sm outline-none focus:ring-1 focus:ring-primary border border-border-dark rounded-lg"
+                  placeholder={placeholders[mode]}
+                  value={value}
+                  onChange={(e) => setValue(e.target.value)}
+                />
+                <FormatHint
+                  formats={[
+                    { label: "Unix seconds", example: "1709558400" },
+                    { label: "Unix milliseconds", example: "1709558400000" },
+                    { label: "ISO 8601 UTC", example: "2024-03-04T12:00:00Z" },
+                    { label: "ISO 8601 offset", example: "2024-03-04T12:00:00+05:30" },
+                    { label: "Space separated", example: "2024-03-04 12:00:00" },
+                    { label: "Date only", example: "2024-03-04" },
+                    { label: "Month name", example: "March 4 2024" },
+                    { label: "RFC 2822", example: "Mon, 04 Mar 2024 12:00:00 +0000" },
+                  ]}
+                  onSelect={(example) => {
+                    setValue(example);
+                    runProcess(example, mode, unit);
+                  }}
+                />
+              </div>
               <button
                 type="button"
                 aria-label="Fill with current time"

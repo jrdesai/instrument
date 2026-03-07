@@ -1,5 +1,8 @@
-//! Tauri commands for datetime tools (timestamp converter, timezone converter, etc.).
+//! Tauri commands for datetime tools (timestamp, timezone, ISO 8601, etc.).
 
+use instrument_core::datetime::iso8601::{
+    process as iso8601_process_core, Iso8601Input, Iso8601Output,
+};
 use instrument_core::datetime::timestamp::{
     process as timestamp_process_core, TimestampInput, TimestampOutput,
 };
@@ -17,4 +20,10 @@ pub fn timestamp_process(input: TimestampInput) -> TimestampOutput {
 #[tauri::command]
 pub fn timezone_process(input: TimezoneInput) -> TimezoneOutput {
     timezone_process_core(input)
+}
+
+/// Runs ISO 8601 parse/format via instrument-core.
+#[tauri::command]
+pub fn iso8601_process(input: Iso8601Input) -> Iso8601Output {
+    iso8601_process_core(input)
 }

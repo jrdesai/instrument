@@ -1,0 +1,4 @@
+[[permission]]
+identifier = "allow-iso8601"
+description = "Enables the iso8601_process command."
+commands.allow = ["iso8601_process"]
