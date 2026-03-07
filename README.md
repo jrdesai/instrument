@@ -2,7 +2,7 @@
 
 **Cross-platform developer utility toolkit.**
 
-![Screenshot](docs/screenshot.png)
+> Screenshot coming soon
 
 ## Features
 
@@ -46,6 +46,12 @@ pnpm run build
 
 Output is in `src-tauri/target/release/` (or `debug/` for unoptimized builds).
 
+**Web (WASM):**
+​```bash
+pnpm run build:wasm   # run once before web mode
+pnpm run build:web    # produces /dist for browser deployment
+​```
+
 ## Running tests
 
 **Rust (core library):**
@@ -59,6 +65,8 @@ cargo test --manifest-path src-core/Cargo.toml -p instrument-core
 ```bash
 pnpm run typecheck
 pnpm run test:ts
+pnpm run lint
+pnpm run check:pure
 ```
 
 ## Project structure
