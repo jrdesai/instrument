@@ -59,6 +59,15 @@ pub struct JwtDecodeOutput {
     pub is_expired: Option<bool>,
     pub time_until_expiry: Option<String>,
 
+    /// exp - iat when both present.
+    pub lifetime_seconds: Option<i64>,
+    /// Human-readable lifetime, e.g. "28 days", "2 hours".
+    pub lifetime_human: Option<String>,
+    /// (now - iat) / (exp - iat) * 100, clamped 0.0–100.0.
+    pub consumed_percent: Option<f64>,
+    /// true if current time >= nbf; None if nbf not in token.
+    pub nbf_active: Option<bool>,
+
     /// Full payload claims as pretty JSON.
     pub all_claims: String,
 
@@ -90,6 +99,10 @@ fn default_output() -> JwtDecodeOutput {
         expires_at_human: None,
         is_expired: None,
         time_until_expiry: None,
+        lifetime_seconds: None,
+        lifetime_human: None,
+        consumed_percent: None,
+        nbf_active: None,
         all_claims: String::new(),
         signature_valid: None,
         signature_note: String::new(),
@@ -113,6 +126,23 @@ fn base64url_decode(input: &str) -> Result<Vec<u8>, String> {
 
 fn bytes_to_hex(bytes: &[u8]) -> String {
     bytes.iter().map(|b| format!("{:02x}", b)).collect()
+}
+
+fn lifetime_human_string(secs: i64) -> String {
+    let secs = secs.abs();
+    if secs < 3600 {
+        let m = secs / 60;
+        format!("{} minutes", m)
+    } else if secs < 86400 {
+        let h = secs / 3600;
+        format!("{} hours", h)
+    } else if secs < 2_592_000 {
+        let d = secs / 86400;
+        format!("{} days", d)
+    } else {
+        let mo = secs / 2_592_000;
+        format!("{} months", mo)
+    }
 }
 
 fn relative_time_string(ts: i64, now: DateTime<Utc>) -> String {
@@ -369,6 +399,26 @@ pub fn process(input: JwtDecodeInput) -> JwtDecodeOutput {
     let is_expired = expires_at.map(|exp| exp < now.timestamp());
     let time_until_expiry = expires_at.map(|exp| relative_time_string(exp, now));
 
+    let now_ts = now.timestamp();
+    let lifetime_seconds = match (issued_at, expires_at) {
+        (Some(iat), Some(exp)) => Some(exp - iat),
+        _ => None,
+    };
+    let lifetime_human = lifetime_seconds.map(lifetime_human_string);
+    let consumed_percent = match (issued_at, expires_at) {
+        (Some(iat), Some(exp)) => {
+            let span = exp - iat;
+            if span <= 0 {
+                Some(100.0)
+            } else {
+                let raw = (now_ts - iat) as f64 / span as f64 * 100.0;
+                Some(raw.clamp(0.0, 100.0))
+            }
+        }
+        _ => None,
+    };
+    let nbf_active = nbf.map(|nbf_val| now_ts >= nbf_val);
+
     let all_claims = serde_json::to_string_pretty(&payload_value).unwrap_or_default();
 
     let (signature_valid, signature_note) = if input.secret.trim().is_empty() {
@@ -403,6 +453,10 @@ pub fn process(input: JwtDecodeInput) -> JwtDecodeOutput {
                     expires_at_human: expires_at_human.clone(),
                     is_expired,
                     time_until_expiry: time_until_expiry.clone(),
+                    lifetime_seconds,
+                    lifetime_human: lifetime_human.clone(),
+                    consumed_percent,
+                    nbf_active,
                     all_claims: all_claims.clone(),
                     signature_valid: None,
                     signature_note: e,
@@ -448,6 +502,10 @@ pub fn process(input: JwtDecodeInput) -> JwtDecodeOutput {
         expires_at_human,
         is_expired,
         time_until_expiry,
+        lifetime_seconds,
+        lifetime_human,
+        consumed_percent,
+        nbf_active,
         all_claims,
         signature_valid,
         signature_note,
@@ -595,5 +653,67 @@ mod tests {
             secret_encoding: SecretEncoding::Utf8,
         });
         assert!(out.signature_note.contains("asymmetric"));
+    }
+
+    #[test]
+    fn lifetime_calculation() {
+        use base64::engine::general_purpose::URL_SAFE_NO_PAD;
+        let payload = "{\"sub\":\"1\",\"iat\":0,\"exp\":86400}";
+        let payload_b64 = URL_SAFE_NO_PAD.encode(payload.as_bytes());
+        let token = format!("eyJhbGciOiJIUzI1NiJ9.{}.AAAA", payload_b64);
+        let out = process(JwtDecodeInput {
+            token,
+            secret: String::new(),
+            secret_encoding: SecretEncoding::Utf8,
+        });
+        assert_eq!(out.lifetime_seconds, Some(86400));
+        assert_eq!(out.lifetime_human.as_deref(), Some("1 days"));
+    }
+
+    #[test]
+    fn consumed_50_percent() {
+        use base64::engine::general_purpose::URL_SAFE_NO_PAD;
+        let now = Utc::now().timestamp();
+        let iat = now - 3600;
+        let exp = now + 3600;
+        let payload = format!("{{\"sub\":\"1\",\"iat\":{},\"exp\":{}}}", iat, exp);
+        let payload_b64 = URL_SAFE_NO_PAD.encode(payload.as_bytes());
+        let token = format!("eyJhbGciOiJIUzI1NiJ9.{}.AAAA", payload_b64);
+        let out = process(JwtDecodeInput {
+            token,
+            secret: String::new(),
+            secret_encoding: SecretEncoding::Utf8,
+        });
+        assert!(out.consumed_percent.unwrap() >= 49.0 && out.consumed_percent.unwrap() <= 51.0);
+    }
+
+    #[test]
+    fn nbf_active_true() {
+        use base64::engine::general_purpose::URL_SAFE_NO_PAD;
+        let nbf_past = Utc::now().timestamp() - 60;
+        let payload = format!("{{\"sub\":\"1\",\"nbf\":{}}}", nbf_past);
+        let payload_b64 = URL_SAFE_NO_PAD.encode(payload.as_bytes());
+        let token = format!("eyJhbGciOiJIUzI1NiJ9.{}.AAAA", payload_b64);
+        let out = process(JwtDecodeInput {
+            token,
+            secret: String::new(),
+            secret_encoding: SecretEncoding::Utf8,
+        });
+        assert_eq!(out.nbf_active, Some(true));
+    }
+
+    #[test]
+    fn nbf_active_false() {
+        use base64::engine::general_purpose::URL_SAFE_NO_PAD;
+        let nbf_future = Utc::now().timestamp() + 3600;
+        let payload = format!("{{\"sub\":\"1\",\"nbf\":{}}}", nbf_future);
+        let payload_b64 = URL_SAFE_NO_PAD.encode(payload.as_bytes());
+        let token = format!("eyJhbGciOiJIUzI1NiJ9.{}.AAAA", payload_b64);
+        let out = process(JwtDecodeInput {
+            token,
+            secret: String::new(),
+            secret_encoding: SecretEncoding::Utf8,
+        });
+        assert_eq!(out.nbf_active, Some(false));
     }
 }

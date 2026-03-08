@@ -37,6 +37,10 @@ interface JwtDecodeOutputPayload {
   expiresAtHuman?: string | null;
   isExpired?: boolean | null;
   timeUntilExpiry?: string | null;
+  lifetimeSeconds?: number | null;
+  lifetimeHuman?: string | null;
+  consumedPercent?: number | null;
+  nbfActive?: boolean | null;
   allClaims: string;
   signatureValid?: boolean | null;
   signatureNote: string;
@@ -50,6 +54,30 @@ function truncate(s: string, len: number): string {
   return s.slice(0, len) + "…";
 }
 
+function formatSecondsHuman(secs: number): string {
+  const s = Math.abs(Math.floor(secs));
+  if (s < 3600) return `${Math.floor(s / 60)} minutes`;
+  if (s < 86400) return `${Math.floor(s / 3600)} hours`;
+  if (s < 2592000) return `${Math.floor(s / 86400)} days`;
+  return `${Math.floor(s / 2592000)} months`;
+}
+
+function relativeTimeUntil(nowSec: number, expSec: number): string {
+  const diff = Math.abs(Math.floor(expSec - nowSec));
+  const past = nowSec >= expSec;
+  const [value, unit] =
+    diff < 60
+      ? [diff, "seconds"]
+      : diff < 3600
+        ? [Math.floor(diff / 60), "minutes"]
+        : diff < 86400
+          ? [Math.floor(diff / 3600), "hours"]
+          : [Math.floor(diff / 86400), "days"];
+  const plural = value === 1 ? "" : "s";
+  if (past) return `Expired ${value} ${unit}${plural} ago`;
+  return `Expires in ${value} ${unit}${plural}`;
+}
+
 function JwtDecoderTool() {
   const [token, setToken] = useState("");
   const [secret, setSecret] = useState("");
@@ -61,8 +89,56 @@ function JwtDecoderTool() {
   const [payloadOpen, setPayloadOpen] = useState(true);
   const [signatureOpen, setSignatureOpen] = useState(false);
   const [signatureHexExpanded, setSignatureHexExpanded] = useState(false);
+  const [liveConsumed, setLiveConsumed] = useState<number | null>(null);
+  const [liveIsExpired, setLiveIsExpired] = useState<boolean | null>(null);
+  const [liveTimeUntil, setLiveTimeUntil] = useState<string | null>(null);
+  const [lastRefreshed, setLastRefreshed] = useState<Date | null>(null);
+  const [secondsSinceRefresh, setSecondsSinceRefresh] = useState(0);
   const tokenDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const secretDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const calculateLiveValues = useCallback(() => {
+    if (output?.issuedAt == null || output?.expiresAt == null) return;
+    const now = Date.now() / 1000;
+    const iat = output.issuedAt;
+    const exp = output.expiresAt;
+    const span = exp - iat;
+    const consumed =
+      span <= 0 ? 100 : Math.min(100, Math.max(0, ((now - iat) / span) * 100));
+    setLiveConsumed(consumed);
+    setLiveIsExpired(now >= exp);
+    setLiveTimeUntil(relativeTimeUntil(now, exp));
+  }, [output?.issuedAt, output?.expiresAt]);
+
+  useEffect(() => {
+    if (!output?.issuedAt || output?.expiresAt == null) {
+      setLiveConsumed(null);
+      setLiveIsExpired(null);
+      setLiveTimeUntil(null);
+      setLastRefreshed(null);
+      return;
+    }
+    calculateLiveValues();
+    setLastRefreshed(new Date());
+  }, [output?.issuedAt, output?.expiresAt, output, calculateLiveValues]);
+
+  useEffect(() => {
+    if (!output?.issuedAt || output?.expiresAt == null) return;
+    const interval = setInterval(() => {
+      calculateLiveValues();
+      setLastRefreshed(new Date());
+    }, 30000);
+    return () => clearInterval(interval);
+  }, [output?.issuedAt, output?.expiresAt, output, calculateLiveValues]);
+
+  useEffect(() => {
+    if (lastRefreshed == null) return;
+    setSecondsSinceRefresh(0);
+    const interval = setInterval(() => {
+      setSecondsSinceRefresh((s) => s + 1);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [lastRefreshed]);
 
   useEffect(() => {
     try {
@@ -379,6 +455,124 @@ function JwtDecoderTool() {
                       )}
                     </div>
                   </div>
+
+                  {/* Expiry Timeline — only when exp present */}
+                  {output.expiresAt != null && (
+                    <div className="space-y-3 pt-2 border-t border-border-dark">
+                      <div className="flex items-center justify-between">
+                        <div className="text-slate-400 text-xs font-semibold uppercase tracking-wider">
+                          Expiry Timeline
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            calculateLiveValues();
+                            setLastRefreshed(new Date());
+                          }}
+                          className="flex items-center gap-1 text-slate-500 hover:text-slate-300 transition-colors text-xs cursor-pointer"
+                          title="Refresh expiry status"
+                        >
+                          <span className="material-symbols-outlined text-sm leading-none">
+                            refresh
+                          </span>
+                          Refresh
+                        </button>
+                      </div>
+                      {lastRefreshed != null && (
+                        <div className="text-slate-600 text-xs">
+                          {secondsSinceRefresh === 0
+                            ? "Updated just now"
+                            : `Updated ${secondsSinceRefresh} seconds ago`}
+                        </div>
+                      )}
+                      <div
+                        className={`inline-block px-2 py-1 rounded text-xs font-medium ${
+                          (liveIsExpired ?? output.isExpired) === true
+                            ? "bg-red-500/10 text-red-400"
+                            : "bg-emerald-500/10 text-emerald-400"
+                        }`}
+                      >
+                        {(liveIsExpired ?? output.isExpired) === true
+                          ? `● EXPIRED — ${liveTimeUntil ?? output.timeUntilExpiry ?? ""}`
+                          : `● VALID — ${liveTimeUntil ?? output.timeUntilExpiry ?? ""}`}
+                      </div>
+
+                      {(liveConsumed != null || output.consumedPercent != null) &&
+                        output.lifetimeSeconds != null && (
+                          <>
+                            <div className="w-full h-2 bg-background-dark rounded-full overflow-hidden">
+                              <div
+                                className={`h-full rounded-full transition-all ${
+                                  (liveIsExpired ?? output.isExpired) === true
+                                    ? "bg-red-500 w-full"
+                                    : (liveConsumed ?? output.consumedPercent ?? 0) >= 90
+                                      ? "bg-red-500"
+                                      : (liveConsumed ?? output.consumedPercent ?? 0) >= 75
+                                        ? "bg-amber-500"
+                                        : "bg-emerald-500"
+                                }`}
+                                style={{
+                                  width:
+                                    (liveIsExpired ?? output.isExpired) === true
+                                      ? "100%"
+                                      : `${Math.min(100, liveConsumed ?? output.consumedPercent ?? 0)}%`,
+                                }}
+                              />
+                            </div>
+                            <div className="relative flex justify-between text-xs font-mono text-slate-500">
+                              <span>
+                                Issued{" "}
+                                {output.issuedAtHuman ?? output.issuedAt ?? "—"}
+                              </span>
+                              <span
+                                className="absolute -top-5 left-0 -translate-x-1/2"
+                                style={{
+                                  left: `${liveConsumed ?? output.consumedPercent ?? 0}%`,
+                                }}
+                              >
+                                <span className="text-primary">●</span> Now
+                              </span>
+                              <span>
+                                Expires{" "}
+                                {output.expiresAtHuman ?? output.expiresAt ?? "—"}
+                              </span>
+                            </div>
+                            <div className="text-slate-500 text-xs">
+                              Lifetime: {output.lifetimeHuman ?? "—"} · Consumed:{" "}
+                              {(liveConsumed ?? output.consumedPercent) != null
+                                ? `${(liveConsumed ?? output.consumedPercent ?? 0).toFixed(1)}%`
+                                : "—"}{" "}
+                              · Used:{" "}
+                              {output.lifetimeSeconds != null &&
+                              (liveConsumed ?? output.consumedPercent) != null
+                                ? formatSecondsHuman(
+                                    ((liveConsumed ?? output.consumedPercent ?? 0) / 100) *
+                                      output.lifetimeSeconds
+                                  )
+                                : "—"}
+                            </div>
+                          </>
+                        )}
+
+                      {output.nbfActive != null && (
+                        <div className="flex items-center gap-2 text-xs">
+                          <span className="text-slate-500">
+                            Not Before: {output.notBefore ?? "—"}
+                          </span>
+                          <span
+                            className={`px-2 py-0.5 rounded font-medium ${
+                              output.nbfActive
+                                ? "bg-emerald-500/10 text-emerald-400"
+                                : "bg-amber-500/10 text-amber-400"
+                            }`}
+                          >
+                            {output.nbfActive ? "Active" : "Not yet active"}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
                   <pre className="bg-background-dark rounded p-3 font-mono text-xs text-slate-300 overflow-x-auto border border-border-dark">
                     {output.allClaims}
                   </pre>

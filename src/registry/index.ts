@@ -197,7 +197,7 @@ export const tools: Tool[] = [
   {
     id: "jwt-decoder",
     name: "JWT Decoder",
-    description: "Decode and inspect JWT payloads.",
+    description: "Decode and inspect JWT tokens including expiry status and lifetime.",
     category: "auth",
     roles: ["backend", "security", "general"],
     icon: "token",
@@ -223,19 +223,6 @@ export const tools: Tool[] = [
       import("../tools/jwt-builder").then((m) => ({ default: m.default }))
     ),
     implemented: true,
-  },
-  {
-    id: "jwt-expiry-checker",
-    name: "JWT Expiry Checker",
-    description: "Check JWT expiration and claims.",
-    category: "auth",
-    roles: ["backend", "security"],
-    icon: "schedule",
-    platforms: ["desktop", "web"],
-    rustCommand: "tool_jwt_expiry_check",
-    keywords: ["jwt", "expiry", "exp", "token"],
-    component: placeholderComponent,
-    implemented: false,
   },
   {
     id: "api-key-generator",
