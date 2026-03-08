@@ -8,7 +8,8 @@ use instrument_core::crypto::sha512::{
     process as sha512_process_core, Sha512Input, Sha512Output,
 };
 use instrument_core::crypto::uuid_gen::{
-    process as uuid_process_core, UuidInput, UuidOutput,
+    inspect as uuid_inspect_core, process as uuid_process_core,
+    UuidInspectInput, UuidInspectOutput, UuidInput, UuidOutput,
 };
 use instrument_core::crypto::ulid::{process as ulid_process_core, UlidInput, UlidOutput};
 use instrument_core::crypto::api_key::{process as api_key_process_core, ApiKeyInput, ApiKeyOutput};
@@ -35,6 +36,12 @@ pub fn sha512_process(input: Sha512Input) -> Sha512Output {
 #[tauri::command]
 pub fn uuid_process(input: UuidInput) -> UuidOutput {
     uuid_process_core(input)
+}
+
+/// Runs UUID inspection via instrument-core.
+#[tauri::command]
+pub fn uuid_inspect(input: UuidInspectInput) -> UuidInspectOutput {
+    uuid_inspect_core(input)
 }
 
 /// Runs ULID generation via instrument-core.

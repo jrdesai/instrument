@@ -8,7 +8,8 @@ use instrument_core::crypto::sha512::{
     process as sha512_process_core, Sha512Input, Sha512Output,
 };
 use instrument_core::crypto::uuid_gen::{
-    process as uuid_process_core, UuidInput, UuidOutput,
+    inspect as uuid_inspect_core, process as uuid_process_core,
+    UuidInspectInput, UuidInspectOutput, UuidInput, UuidOutput,
 };
 use instrument_core::crypto::ulid::{process as ulid_process_core, UlidInput, UlidOutput};
 use instrument_core::text::case::{process as case_process_core, CaseInput, CaseOutput};
@@ -107,6 +108,15 @@ pub fn uuid_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
     let input: UuidInput =
         from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
     let output: UuidOutput = uuid_process_core(input);
+    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
+}
+
+/// UUID inspection. Receives UuidInspectInput (camelCase) and returns UuidInspectOutput (camelCase).
+#[wasm_bindgen(js_name = uuid_inspect)]
+pub fn uuid_inspect_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
+    let input: UuidInspectInput =
+        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let output: UuidInspectOutput = uuid_inspect_core(input);
     to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
 }
 

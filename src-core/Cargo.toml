@@ -20,7 +20,7 @@ base64 = "0.22"
 sha2 = "0.10"
 hmac = "0.12"
 md-5 = "0.10"
-uuid = { version = "1", features = ["v4", "v7", "js"] }
+uuid = { version = "1", features = ["v1", "v4", "v7", "js"] }
 percent-encoding = "2"
 
 # Shared (instrument-core JWT) and desktop/web
