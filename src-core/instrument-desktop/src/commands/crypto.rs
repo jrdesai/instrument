@@ -11,7 +11,10 @@ use instrument_core::crypto::uuid_gen::{
     inspect as uuid_inspect_core, process as uuid_process_core,
     UuidInspectInput, UuidInspectOutput, UuidInput, UuidOutput,
 };
-use instrument_core::crypto::ulid::{process as ulid_process_core, UlidInput, UlidOutput};
+use instrument_core::crypto::ulid::{
+    inspect as ulid_inspect_core, process as ulid_process_core,
+    UlidInspectInput, UlidInspectOutput, UlidInput, UlidOutput,
+};
 use instrument_core::crypto::api_key::{process as api_key_process_core, ApiKeyInput, ApiKeyOutput};
 
 /// Runs MD5 hash via instrument-core.
@@ -48,6 +51,12 @@ pub fn uuid_inspect(input: UuidInspectInput) -> UuidInspectOutput {
 #[tauri::command]
 pub fn ulid_process(input: UlidInput) -> UlidOutput {
     ulid_process_core(input)
+}
+
+/// Runs ULID inspection via instrument-core.
+#[tauri::command]
+pub fn ulid_inspect(input: UlidInspectInput) -> UlidInspectOutput {
+    ulid_inspect_core(input)
 }
 
 /// Runs API key generation via instrument-core.

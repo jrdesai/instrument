@@ -11,7 +11,10 @@ use instrument_core::crypto::uuid_gen::{
     inspect as uuid_inspect_core, process as uuid_process_core,
     UuidInspectInput, UuidInspectOutput, UuidInput, UuidOutput,
 };
-use instrument_core::crypto::ulid::{process as ulid_process_core, UlidInput, UlidOutput};
+use instrument_core::crypto::ulid::{
+    inspect as ulid_inspect_core, process as ulid_process_core,
+    UlidInspectInput, UlidInspectOutput, UlidInput, UlidOutput,
+};
 use instrument_core::text::case::{process as case_process_core, CaseInput, CaseOutput};
 use instrument_core::text::find_replace::{
     process as find_replace_process_core, FindReplaceInput, FindReplaceOutput,
@@ -126,6 +129,15 @@ pub fn ulid_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
     let input: UlidInput =
         from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
     let output: UlidOutput = ulid_process_core(input);
+    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
+}
+
+/// ULID inspection. Receives UlidInspectInput (camelCase) and returns UlidInspectOutput (camelCase).
+#[wasm_bindgen(js_name = ulid_inspect)]
+pub fn ulid_inspect_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
+    let input: UlidInspectInput =
+        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let output: UlidInspectOutput = ulid_inspect_core(input);
     to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
 }
 

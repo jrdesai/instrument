@@ -1,4 +1,4 @@
-//! ULID generation using the `ulid` crate.
+//! ULID generation and inspection using the `ulid` crate.
 //!
 //! ULIDs are 26-character, Crockford Base32 identifiers that are
 //! time-sortable, URL-safe, and monotonically increasing within the same
@@ -6,6 +6,28 @@
 
 use serde::{Deserialize, Serialize};
 use ulid::{Generator, Ulid};
+
+/// Input for ULID inspection.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct UlidInspectInput {
+    /// Raw ULID string (26 chars, Crockford Base32).
+    pub value: String,
+}
+
+/// Output from ULID inspection.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct UlidInspectOutput {
+    pub is_valid: bool,
+    pub timestamp_ms: Option<i64>,
+    pub timestamp_human: Option<String>,
+    pub timestamp_iso: Option<String>,
+    pub randomness: Option<String>,
+    pub as_uppercase: Option<String>,
+    pub as_lowercase: Option<String>,
+    pub error: Option<String>,
+}
 
 /// Input for the ULID Generator tool.
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -66,6 +88,76 @@ pub fn process(input: UlidInput) -> UlidOutput {
     }
 
     UlidOutput { ulids, error: None }
+}
+
+/// Inspect a ULID string: validity, timestamp, randomness, and format variants.
+///
+/// ULID is 26 characters, Crockford Base32 (0-9, A-Z excluding I, L, O, U).
+/// Case-insensitive parsing. First 10 chars = 48-bit timestamp (ms); last 16 = 80-bit random.
+pub fn inspect(input: UlidInspectInput) -> UlidInspectOutput {
+    let trimmed = input.value.trim();
+    if trimmed.is_empty() {
+        return UlidInspectOutput {
+            is_valid: false,
+            timestamp_ms: None,
+            timestamp_human: None,
+            timestamp_iso: None,
+            randomness: None,
+            as_uppercase: None,
+            as_lowercase: None,
+            error: None,
+        };
+    }
+
+    let parsed = Ulid::from_string(trimmed);
+    let ulid = match parsed {
+        Ok(u) => u,
+        Err(e) => {
+            return UlidInspectOutput {
+                is_valid: false,
+                timestamp_ms: None,
+                timestamp_human: None,
+                timestamp_iso: None,
+                randomness: None,
+                as_uppercase: None,
+                as_lowercase: None,
+                error: Some(e.to_string()),
+            };
+        }
+    };
+
+    let ts_ms = ulid.timestamp_ms() as i64;
+    let secs = ts_ms / 1000;
+    let nsecs = ((ts_ms % 1000) * 1_000_000) as u32;
+    let dt = chrono::DateTime::from_timestamp(secs, nsecs);
+    let timestamp_human = dt.map(|d| {
+        format!(
+            "{}.{:03} UTC",
+            d.format("%Y-%m-%d %H:%M:%S"),
+            d.timestamp_subsec_millis()
+        )
+    });
+    let timestamp_iso = dt.map(|d| {
+        format!(
+            "{}.{:03}Z",
+            d.format("%Y-%m-%dT%H:%M:%S"),
+            d.timestamp_subsec_millis()
+        )
+    });
+
+    let s = ulid.to_string();
+    let randomness = s.get(10..26).map(|r| r.to_string());
+
+    UlidInspectOutput {
+        is_valid: true,
+        timestamp_ms: Some(ts_ms),
+        timestamp_human,
+        timestamp_iso,
+        randomness,
+        as_uppercase: Some(s.clone()),
+        as_lowercase: Some(s.to_lowercase()),
+        error: None,
+    }
 }
 
 #[cfg(test)]
@@ -162,6 +254,77 @@ mod tests {
         });
         assert!(out.error.is_some());
         assert!(out.ulids.is_empty());
+    }
+
+    #[test]
+    fn inspect_valid() {
+        let ulid_str = Ulid::new().to_string();
+        let out = inspect(UlidInspectInput {
+            value: ulid_str.clone(),
+        });
+        assert!(out.is_valid);
+        assert!(out.timestamp_ms.is_some());
+        assert_eq!(out.randomness.as_ref().map(|s| s.len()), Some(16));
+        let upper = out.as_uppercase.as_ref().unwrap();
+        let lower = out.as_lowercase.as_ref().unwrap();
+        assert_eq!(upper, &upper.to_uppercase());
+        assert_eq!(lower, &lower.to_lowercase());
+    }
+
+    #[test]
+    fn inspect_timestamp() {
+        let out = inspect(UlidInspectInput {
+            value: "01ARZ3NDEKTSV4RRFFQ69G5FAV".to_string(),
+        });
+        assert!(out.is_valid);
+        let ms = out.timestamp_ms.expect("timestamp_ms");
+        assert!(ms > 0);
+        let human = out.timestamp_human.as_ref().unwrap();
+        assert!(human.contains('-') && human.contains("UTC"));
+    }
+
+    #[test]
+    fn inspect_invalid_chars() {
+        // I and O are invalid in Crockford Base32
+        let out = inspect(UlidInspectInput {
+            value: "01ARZ3NDEKTSV4RRFFQ69G5FAI".to_string(),
+        });
+        assert!(!out.is_valid);
+        assert!(out.error.is_some());
+    }
+
+    #[test]
+    fn inspect_wrong_length() {
+        let out25 = inspect(UlidInspectInput {
+            value: "01ARZ3NDEKTSV4RRFFQ69G5FA".to_string(),
+        });
+        assert!(!out25.is_valid);
+        assert!(out25.error.is_some());
+
+        let out27 = inspect(UlidInspectInput {
+            value: "01ARZ3NDEKTSV4RRFFQ69G5FAVV".to_string(),
+        });
+        assert!(!out27.is_valid);
+        assert!(out27.error.is_some());
+    }
+
+    #[test]
+    fn inspect_empty() {
+        let out = inspect(UlidInspectInput {
+            value: "".to_string(),
+        });
+        assert!(!out.is_valid);
+        assert!(out.timestamp_ms.is_none());
+        assert!(out.error.is_none());
+    }
+
+    #[test]
+    fn inspect_lowercase_input() {
+        let out = inspect(UlidInspectInput {
+            value: "01arz3ndektsv4rrffq69g5fav".to_string(),
+        });
+        assert!(out.is_valid);
+        assert!(out.timestamp_ms.is_some());
     }
 }
 
