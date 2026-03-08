@@ -204,8 +204,10 @@ export const tools: Tool[] = [
     platforms: ["desktop", "web"],
     rustCommand: "tool_jwt_decode",
     keywords: ["jwt", "decode", "token", "auth"],
-    component: placeholderComponent,
-    implemented: false,
+    component: React.lazy(() =>
+      import("../tools/jwt-decoder").then((m) => ({ default: m.default }))
+    ),
+    implemented: true,
   },
   {
     id: "jwt-builder",

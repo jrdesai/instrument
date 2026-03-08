@@ -1,0 +1,5 @@
+# Allow the JWT Decoder tool command to be invoked from the frontend.
+[[permission]]
+identifier = "allow-jwt-decode"
+description = "Enables the tool_jwt_decode command."
+commands.allow = ["tool_jwt_decode"]

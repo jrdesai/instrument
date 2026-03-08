@@ -25,6 +25,7 @@
     "allow-timezone",
     "allow-iso8601",
     "allow-base-converter",
-    "allow-bitwise"
+    "allow-bitwise",
+    "allow-jwt-decode"
   ]
 }
