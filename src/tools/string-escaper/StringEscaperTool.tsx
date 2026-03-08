@@ -241,17 +241,13 @@ function StringEscaperTool() {
       </div>
 
       {/* Footer */}
-      <footer className="flex items-stretch gap-3 px-4 py-2 border-t border-border-dark bg-panel-dark shrink-0">
-        {/* Mode group */}
-        <div
-          className="flex flex-col"
-          role="group"
-          aria-label="Escape or unescape mode"
-        >
-          <span className="text-slate-500 text-xs uppercase tracking-wider mb-1">
+      <footer className="flex items-end gap-2 px-4 py-3 border-t border-border-dark bg-panel-dark shrink-0">
+        {/* Mode */}
+        <div className="flex flex-col gap-1" role="group" aria-label="Mode">
+          <span className="text-slate-600 text-xs uppercase tracking-wider">
             Mode
           </span>
-          <div className="flex items-center gap-1">
+          <div className="flex gap-1">
             <button
               type="button"
               aria-label="Escape mode"
@@ -279,15 +275,11 @@ function StringEscaperTool() {
           </div>
         </div>
 
-        <div className="w-px bg-border-dark self-stretch" />
+        <div className="w-px h-6 bg-border-dark self-center mx-3" />
 
-        {/* Target group */}
-        <div
-          className="flex flex-col"
-          role="group"
-          aria-label="Target format"
-        >
-          <span className="text-slate-500 text-xs uppercase tracking-wider mb-1">
+        {/* Target */}
+        <div className="flex flex-col gap-1" role="group" aria-label="Target">
+          <span className="text-slate-600 text-xs uppercase tracking-wider">
             Target
           </span>
           <div className="flex items-center gap-1 flex-wrap">
@@ -309,35 +301,41 @@ function StringEscaperTool() {
           </div>
         </div>
 
-        <div className="w-px bg-border-dark self-stretch" />
+        <div className="w-px h-6 bg-border-dark self-center mx-3" />
 
         {/* Actions */}
-        <div className="flex gap-2 items-stretch ml-auto">
-          <button
-            type="button"
-            aria-label="Swap input and output"
-            onClick={handleSwap}
-            className="h-full px-3 py-1 text-sm text-slate-300 hover:text-primary hover:bg-slate-700 rounded-lg transition-colors"
-          >
-            Swap
-          </button>
-          <button
-            type="button"
-            aria-label="Clear input and output"
-            onClick={handleClear}
-            className="h-full px-3 py-1 text-sm text-slate-300 hover:text-primary hover:bg-slate-700 rounded-lg transition-colors"
-          >
-            Clear
-          </button>
-          <button
-            type="button"
-            aria-label="Copy output to clipboard"
-            onClick={handleCopy}
-            disabled={!resultText}
-            className="h-full px-3 py-1 text-sm font-medium bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          >
-            {copyLabel}
-          </button>
+        <div
+          className="flex flex-col gap-1 ml-auto"
+          role="group"
+          aria-label="Actions"
+        >
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              aria-label="Swap input and output"
+              onClick={handleSwap}
+              className="px-3 py-1 text-sm text-slate-300 hover:text-primary hover:bg-slate-700 rounded-lg transition-colors"
+            >
+              Swap
+            </button>
+            <button
+              type="button"
+              aria-label="Clear input and output"
+              onClick={handleClear}
+              className="px-3 py-1 text-sm text-slate-300 hover:text-primary hover:bg-slate-700 rounded-lg transition-colors"
+            >
+              Clear
+            </button>
+            <button
+              type="button"
+              aria-label="Copy output to clipboard"
+              onClick={handleCopy}
+              disabled={!resultText}
+              className="px-3 py-1 text-sm font-medium bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              {copyLabel}
+            </button>
+          </div>
         </div>
       </footer>
     </div>

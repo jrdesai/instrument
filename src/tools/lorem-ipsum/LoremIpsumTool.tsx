@@ -148,67 +148,81 @@ function LoremIpsumTool() {
         </div>
       </div>
 
-      {/* Footer: Options | Actions */}
-      <footer className="flex items-stretch gap-3 px-4 py-2 border-t border-border-dark bg-panel-dark shrink-0">
-        <div
-          className="flex flex-col"
-          role="group"
-          aria-label="Output type"
-        >
-          <span className="text-slate-500 text-xs uppercase tracking-wider mb-1">
+      {/* Footer: Type | Count | Options | Actions */}
+      <footer className="flex items-end gap-2 px-4 py-3 border-t border-border-dark bg-panel-dark shrink-0">
+        {/* Type */}
+        <div className="flex flex-col gap-1" role="group" aria-label="Type">
+          <span className="text-slate-600 text-xs uppercase tracking-wider">
+            Type
+          </span>
+          <div className="flex gap-1">
+            {(
+              [
+                { value: "paragraphs" as const, label: "Paragraphs" },
+                { value: "sentences" as const, label: "Sentences" },
+                { value: "words" as const, label: "Words" },
+              ] as const
+            ).map(({ value, label }) => (
+              <button
+                key={value}
+                type="button"
+                aria-label={`Type: ${label}`}
+                onClick={() => setOutputType(value)}
+                className={`px-3 py-1 text-sm font-medium rounded-lg transition-colors ${
+                  outputType === value
+                    ? "bg-primary text-white"
+                    : "text-slate-400 hover:bg-slate-700"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="w-px h-6 bg-border-dark self-center mx-3" />
+
+        {/* Count */}
+        <div className="flex flex-col gap-1" role="group" aria-label="Count">
+          <span className="text-slate-600 text-xs uppercase tracking-wider">
+            Count
+          </span>
+          <div className="flex items-center gap-1">
+            <button
+              type="button"
+              aria-label="Decrease count"
+              onClick={() => handleCountChange(count - 1)}
+              className="px-2 py-1 text-xs rounded-lg bg-background-dark text-slate-300 hover:text-primary hover:bg-slate-700 transition-colors"
+            >
+              −
+            </button>
+            <input
+              type="number"
+              min={1}
+              max={50}
+              value={count}
+              onChange={(e) => handleCountChange(Number(e.target.value))}
+              className="w-14 px-2 py-1 text-xs bg-background-dark border border-border-dark rounded-lg text-center text-slate-100 focus:outline-none focus:ring-1 focus:ring-primary"
+            />
+            <button
+              type="button"
+              aria-label="Increase count"
+              onClick={() => handleCountChange(count + 1)}
+              className="px-2 py-1 text-xs rounded-lg bg-background-dark text-slate-300 hover:text-primary hover:bg-slate-700 transition-colors"
+            >
+              +
+            </button>
+          </div>
+        </div>
+
+        <div className="w-px h-6 bg-border-dark self-center mx-3" />
+
+        {/* Options */}
+        <div className="flex flex-col gap-1" role="group" aria-label="Options">
+          <span className="text-slate-600 text-xs uppercase tracking-wider">
             Options
           </span>
-          <div className="flex items-center gap-2 flex-wrap">
-            <div className="flex items-center gap-1">
-              {(
-                [
-                  { value: "paragraphs" as const, label: "Paragraphs" },
-                  { value: "sentences" as const, label: "Sentences" },
-                  { value: "words" as const, label: "Words" },
-                ] as const
-              ).map(({ value, label }) => (
-                <button
-                  key={value}
-                  type="button"
-                  aria-label={`Type: ${label}`}
-                  onClick={() => setOutputType(value)}
-                  className={`px-3 py-1 text-sm font-medium rounded-lg transition-colors ${
-                    outputType === value
-                      ? "bg-primary text-white"
-                      : "text-slate-400 hover:bg-slate-700"
-                  }`}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
-            <div className="flex items-center gap-1">
-              <span className="text-xs text-slate-400">Count</span>
-              <button
-                type="button"
-                aria-label="Decrease count"
-                onClick={() => handleCountChange(count - 1)}
-                className="px-2 py-1 text-xs rounded-lg bg-background-dark text-slate-300 hover:text-primary hover:bg-slate-700 transition-colors"
-              >
-                −
-              </button>
-              <input
-                type="number"
-                min={1}
-                max={50}
-                value={count}
-                onChange={(e) => handleCountChange(Number(e.target.value))}
-                className="w-14 px-2 py-1 text-xs bg-background-dark border border-border-dark rounded-lg text-center text-slate-100 focus:outline-none focus:ring-1 focus:ring-primary"
-              />
-              <button
-                type="button"
-                aria-label="Increase count"
-                onClick={() => handleCountChange(count + 1)}
-                className="px-2 py-1 text-xs rounded-lg bg-background-dark text-slate-300 hover:text-primary hover:bg-slate-700 transition-colors"
-              >
-                +
-              </button>
-            </div>
+          <div className="flex gap-1">
             <label className="flex items-center gap-2 cursor-pointer">
               <input
                 type="checkbox"
@@ -224,41 +238,48 @@ function LoremIpsumTool() {
           </div>
         </div>
 
-        <div className="w-px bg-border-dark self-stretch" />
+        <div className="w-px h-6 bg-border-dark self-center mx-3" />
 
-        <div className="flex gap-2 items-stretch ml-auto">
-          <button
-            type="button"
-            onClick={handleGenerate}
-            disabled={isLoading}
-            className="h-full px-6 py-2 text-sm font-medium bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
-          >
-            {isLoading && (
-              <span
-                className="w-3 h-3 rounded-full border-2 border-border-dark border-t-white animate-spin"
-                aria-hidden
-              />
+        {/* Actions */}
+        <div
+          className="flex flex-col gap-1 ml-auto"
+          role="group"
+          aria-label="Actions"
+        >
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={handleGenerate}
+              disabled={isLoading}
+              className="px-6 py-2 text-sm font-medium bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+            >
+              {isLoading && (
+                <span
+                  className="w-3 h-3 rounded-full border-2 border-border-dark border-t-white animate-spin"
+                  aria-hidden
+                />
+              )}
+              {isLoading ? "Generating…" : "Generate"}
+            </button>
+            {hasContent && (
+              <>
+                <button
+                  type="button"
+                  onClick={handleCopy}
+                  className="px-3 py-1 text-sm font-medium bg-panel-dark text-slate-300 border border-border-dark rounded-lg hover:text-primary hover:bg-slate-700 transition-colors"
+                >
+                  {copyLabel}
+                </button>
+                <button
+                  type="button"
+                  onClick={handleClear}
+                  className="px-4 py-2 text-sm bg-panel-dark text-slate-400 border border-border-dark rounded-lg hover:text-slate-200 hover:border-slate-500 transition-colors"
+                >
+                  Clear
+                </button>
+              </>
             )}
-            {isLoading ? "Generating…" : "Generate"}
-          </button>
-          {hasContent && (
-            <>
-              <button
-                type="button"
-                onClick={handleCopy}
-                className="h-full px-3 py-1 text-sm font-medium bg-panel-dark text-slate-300 border border-border-dark rounded-lg hover:text-primary hover:bg-slate-700 transition-colors"
-              >
-                {copyLabel}
-              </button>
-              <button
-                type="button"
-                onClick={handleClear}
-                className="h-full px-4 py-2 text-sm bg-panel-dark text-slate-400 border border-border-dark rounded-lg hover:text-slate-200 hover:border-slate-500 transition-colors"
-              >
-                Clear
-              </button>
-            </>
-          )}
+          </div>
         </div>
       </footer>
     </div>

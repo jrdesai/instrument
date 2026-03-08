@@ -213,124 +213,147 @@ function HexConverterTool() {
       </div>
 
       {/* Footer */}
-      <footer className="flex items-center gap-4 px-4 py-2 border-t border-border-dark bg-panel-dark shrink-0">
-        <div className="flex items-center gap-1" role="group" aria-label="Conversion mode">
-          <button
-            type="button"
-            aria-label="Text to Hex mode"
-            onClick={() => setMode("textToHex")}
-            className={`px-3 py-1 text-sm font-medium rounded-lg transition-colors ${
-              mode === "textToHex"
-                ? "bg-primary text-white"
-                : "text-slate-400 hover:bg-slate-700"
-            }`}
-          >
-            Text → Hex
-          </button>
-          <button
-            type="button"
-            aria-label="Hex to Text mode"
-            onClick={() => setMode("hexToText")}
-            className={`px-3 py-1 text-sm font-medium rounded-lg transition-colors ${
-              mode === "hexToText"
-                ? "bg-primary text-white"
-                : "text-slate-400 hover:bg-slate-700"
-            }`}
-          >
-            Hex → Text
-          </button>
+      <footer className="flex items-end gap-2 px-4 py-3 border-t border-border-dark bg-panel-dark shrink-0">
+        {/* Mode */}
+        <div className="flex flex-col gap-1" role="group" aria-label="Mode">
+          <span className="text-slate-600 text-xs uppercase tracking-wider">
+            Mode
+          </span>
+          <div className="flex gap-1">
+            <button
+              type="button"
+              aria-label="Text to Hex mode"
+              onClick={() => setMode("textToHex")}
+              className={`px-3 py-1 text-sm font-medium rounded-lg transition-colors ${
+                mode === "textToHex"
+                  ? "bg-primary text-white"
+                  : "text-slate-400 hover:bg-slate-700"
+              }`}
+            >
+              Text → Hex
+            </button>
+            <button
+              type="button"
+              aria-label="Hex to Text mode"
+              onClick={() => setMode("hexToText")}
+              className={`px-3 py-1 text-sm font-medium rounded-lg transition-colors ${
+                mode === "hexToText"
+                  ? "bg-primary text-white"
+                  : "text-slate-400 hover:bg-slate-700"
+              }`}
+            >
+              Hex → Text
+            </button>
+          </div>
         </div>
 
-        <div className="flex items-center gap-1" role="group" aria-label="Hex separator">
-          <button
-            type="button"
-            aria-label="No separator"
-            onClick={() => setSeparator("none")}
-            disabled={separatorDisabled}
-            className={`px-3 py-1 text-sm font-medium rounded-lg transition-colors ${
-              separator === "none"
-                ? "bg-primary text-white"
-                : "text-slate-400 hover:bg-slate-700"
-            } ${
-              separatorDisabled ? "opacity-50 cursor-not-allowed" : ""
-            }`}
-          >
-            None
-          </button>
-          <button
-            type="button"
-            aria-label="Space separator"
-            onClick={() => setSeparator("space")}
-            disabled={separatorDisabled}
-            className={`px-3 py-1 text-sm font-medium rounded-lg transition-colors ${
-              separator === "space"
-                ? "bg-primary text-white"
-                : "text-slate-400 hover:bg-slate-700"
-            } ${
-              separatorDisabled ? "opacity-50 cursor-not-allowed" : ""
-            }`}
-          >
-            Space
-          </button>
-          <button
-            type="button"
-            aria-label="Colon separator"
-            onClick={() => setSeparator("colon")}
-            disabled={separatorDisabled}
-            className={`px-3 py-1 text-sm font-medium rounded-lg transition-colors ${
-              separator === "colon"
-                ? "bg-primary text-white"
-                : "text-slate-400 hover:bg-slate-700"
-            } ${
-              separatorDisabled ? "opacity-50 cursor-not-allowed" : ""
-            }`}
-          >
-            Colon
-          </button>
-          <button
-            type="button"
-            aria-label="Dash separator"
-            onClick={() => setSeparator("dash")}
-            disabled={separatorDisabled}
-            className={`px-3 py-1 text-sm font-medium rounded-lg transition-colors ${
-              separator === "dash"
-                ? "bg-primary text-white"
-                : "text-slate-400 hover:bg-slate-700"
-            } ${
-              separatorDisabled ? "opacity-50 cursor-not-allowed" : ""
-            }`}
-          >
-            Dash
-          </button>
+        <div className="w-px h-6 bg-border-dark self-center mx-3" />
+
+        {/* Separator */}
+        <div className="flex flex-col gap-1" role="group" aria-label="Separator">
+          <span className="text-slate-600 text-xs uppercase tracking-wider">
+            Separator
+          </span>
+          <div className="flex gap-1">
+            <button
+              type="button"
+              aria-label="No separator"
+              onClick={() => setSeparator("none")}
+              disabled={separatorDisabled}
+              className={`px-3 py-1 text-sm font-medium rounded-lg transition-colors ${
+                separator === "none"
+                  ? "bg-primary text-white"
+                  : "text-slate-400 hover:bg-slate-700"
+              } ${
+                separatorDisabled ? "opacity-50 cursor-not-allowed" : ""
+              }`}
+            >
+              None
+            </button>
+            <button
+              type="button"
+              aria-label="Space separator"
+              onClick={() => setSeparator("space")}
+              disabled={separatorDisabled}
+              className={`px-3 py-1 text-sm font-medium rounded-lg transition-colors ${
+                separator === "space"
+                  ? "bg-primary text-white"
+                  : "text-slate-400 hover:bg-slate-700"
+              } ${
+                separatorDisabled ? "opacity-50 cursor-not-allowed" : ""
+              }`}
+            >
+              Space
+            </button>
+            <button
+              type="button"
+              aria-label="Colon separator"
+              onClick={() => setSeparator("colon")}
+              disabled={separatorDisabled}
+              className={`px-3 py-1 text-sm font-medium rounded-lg transition-colors ${
+                separator === "colon"
+                  ? "bg-primary text-white"
+                  : "text-slate-400 hover:bg-slate-700"
+              } ${
+                separatorDisabled ? "opacity-50 cursor-not-allowed" : ""
+              }`}
+            >
+              Colon
+            </button>
+            <button
+              type="button"
+              aria-label="Dash separator"
+              onClick={() => setSeparator("dash")}
+              disabled={separatorDisabled}
+              className={`px-3 py-1 text-sm font-medium rounded-lg transition-colors ${
+                separator === "dash"
+                  ? "bg-primary text-white"
+                  : "text-slate-400 hover:bg-slate-700"
+              } ${
+                separatorDisabled ? "opacity-50 cursor-not-allowed" : ""
+              }`}
+            >
+              Dash
+            </button>
+          </div>
         </div>
 
-        <button
-          type="button"
-          aria-label="Swap input and output"
-          onClick={handleSwap}
-          className="px-3 py-1 text-sm text-slate-300 hover:text-primary hover:bg-slate-700 rounded-lg transition-colors"
-        >
-          Swap
-        </button>
+        <div className="w-px h-6 bg-border-dark self-center mx-3" />
 
-        <button
-          type="button"
-          aria-label="Clear input and output"
-          onClick={handleClear}
-          className="px-3 py-1 text-sm text-slate-300 hover:text-primary hover:bg-slate-700 rounded-lg transition-colors"
+        {/* Actions */}
+        <div
+          className="flex flex-col gap-1 ml-auto"
+          role="group"
+          aria-label="Actions"
         >
-          Clear
-        </button>
-
-        <button
-          type="button"
-          aria-label="Copy output to clipboard"
-          onClick={handleCopy}
-          disabled={!output}
-          className="ml-auto px-3 py-1 text-sm font-medium bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-        >
-          {copyLabel}
-        </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              aria-label="Swap input and output"
+              onClick={handleSwap}
+              className="px-3 py-1 text-sm text-slate-300 hover:text-primary hover:bg-slate-700 rounded-lg transition-colors"
+            >
+              Swap
+            </button>
+            <button
+              type="button"
+              aria-label="Copy output to clipboard"
+              onClick={handleCopy}
+              disabled={!output}
+              className="px-3 py-1 text-sm font-medium bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              {copyLabel}
+            </button>
+            <button
+              type="button"
+              aria-label="Clear input and output"
+              onClick={handleClear}
+              className="px-3 py-1 text-sm text-slate-300 hover:text-primary hover:bg-slate-700 rounded-lg transition-colors"
+            >
+              Clear
+            </button>
+          </div>
+        </div>
       </footer>
     </div>
   );

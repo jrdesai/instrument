@@ -323,13 +323,14 @@ function FindReplaceTool() {
       </div>
 
       {/* Footer: Options | Actions */}
-      <footer className="flex items-stretch gap-3 px-4 py-2 border-t border-border-dark bg-panel-dark shrink-0">
+      <footer className="flex items-end gap-2 px-4 py-3 border-t border-border-dark bg-panel-dark shrink-0">
+        {/* Options */}
         <div
-          className="flex flex-col"
+          className="flex flex-col gap-1"
           role="group"
-          aria-label="Find options"
+          aria-label="Options"
         >
-          <span className="text-slate-500 text-xs uppercase tracking-wider mb-1">
+          <span className="text-slate-600 text-xs uppercase tracking-wider">
             Options
           </span>
           <div className="flex items-center gap-1 flex-wrap">
@@ -387,17 +388,24 @@ function FindReplaceTool() {
           </div>
         </div>
 
-        <div className="w-px bg-border-dark self-stretch" />
+        <div className="w-px h-6 bg-border-dark self-center mx-3" />
 
-        <div className="flex gap-2 items-stretch ml-auto">
-          <button
-            type="button"
-            aria-label="Clear all"
-            onClick={handleClear}
-            className="h-full px-3 py-1 text-sm text-slate-300 hover:text-primary hover:bg-slate-700 rounded-lg transition-colors"
-          >
-            Clear
-          </button>
+        {/* Actions */}
+        <div
+          className="flex flex-col gap-1 ml-auto"
+          role="group"
+          aria-label="Actions"
+        >
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              aria-label="Clear all"
+              onClick={handleClear}
+              className="px-3 py-1 text-sm text-slate-300 hover:text-primary hover:bg-slate-700 rounded-lg transition-colors"
+            >
+              Clear
+            </button>
+          </div>
         </div>
       </footer>
     </div>

@@ -302,9 +302,6 @@ function JsonFormatterTool() {
           role="group"
           aria-label="Actions"
         >
-          <span className="text-slate-600 text-xs uppercase tracking-wider">
-            Actions
-          </span>
           <div className="flex items-center gap-2">
             {output?.isValid && output.result && (
               <button
