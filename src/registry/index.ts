@@ -249,8 +249,10 @@ export const tools: Tool[] = [
     platforms: ["desktop", "web"],
     rustCommand: "tool_json_format",
     keywords: ["json", "format", "prettify", "minify"],
-    component: placeholderComponent,
-    implemented: false,
+    component: React.lazy(() =>
+      import("../tools/json-formatter").then((m) => ({ default: m.default }))
+    ),
+    implemented: true,
   },
   {
     id: "json-validator",

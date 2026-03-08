@@ -27,6 +27,7 @@
     "allow-base-converter",
     "allow-bitwise",
     "allow-jwt-decode",
-    "allow-jwt-build"
+    "allow-jwt-build",
+    "allow-json-formatter"
   ]
 }

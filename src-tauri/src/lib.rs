@@ -32,6 +32,7 @@ pub fn run() {
             instrument_desktop::commands::encoding::url_encode_process,
             instrument_desktop::commands::encoding::html_entity_process,
             instrument_desktop::commands::encoding::hex_process,
+            instrument_desktop::commands::json::tool_json_format,
             instrument_desktop::commands::numbers::base_converter_process,
             instrument_desktop::commands::numbers::bitwise_process,
         ])

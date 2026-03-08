@@ -1,0 +1,5 @@
+# Allow the JSON Formatter tool command to be invoked from the frontend.
+[[permission]]
+identifier = "allow-json-formatter"
+description = "Enables the tool_json_format command."
+commands.allow = ["tool_json_format"]

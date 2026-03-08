@@ -3,5 +3,6 @@ pub mod auth;
 pub mod crypto;
 pub mod datetime;
 pub mod encoding;
+pub mod json;
 pub mod numbers;
 pub mod text;

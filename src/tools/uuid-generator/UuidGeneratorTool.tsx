@@ -80,6 +80,7 @@ function UuidGeneratorTool() {
   const [version, setVersion] = useState<UuidVersion>("v4");
   const [count, setCount] = useState<number>(1);
   const [uppercase, setUppercase] = useState(false);
+  const [includeHyphens, setIncludeHyphens] = useState(true);
   const [uuids, setUuids] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -185,29 +186,36 @@ function UuidGeneratorTool() {
     runProcess(version, count, uppercase);
   }, [version, count, uppercase, runProcess]);
 
-  const handleCopyLine = useCallback(async (index: number) => {
-    const value = uuids[index];
-    if (!value) return;
-    try {
-      await navigator.clipboard.writeText(value);
-      setCopiedIndex(index);
-      setTimeout(() => setCopiedIndex(null), COPIED_DURATION_MS);
-    } catch {
-      // ignore copy errors
-    }
-  }, [uuids]);
+  const displayUuids = uuids.map((u) =>
+    includeHyphens ? u : u.replace(/-/g, "")
+  );
+
+  const handleCopyLine = useCallback(
+    async (index: number) => {
+      const value = displayUuids[index];
+      if (!value) return;
+      try {
+        await navigator.clipboard.writeText(value);
+        setCopiedIndex(index);
+        setTimeout(() => setCopiedIndex(null), COPIED_DURATION_MS);
+      } catch {
+        // ignore copy errors
+      }
+    },
+    [displayUuids]
+  );
 
   const handleCopyAll = useCallback(async () => {
-    if (!uuids.length) return;
+    if (!displayUuids.length) return;
     try {
-      await navigator.clipboard.writeText(uuids.join("\n"));
+      await navigator.clipboard.writeText(displayUuids.join("\n"));
       setCopyAllLabel("Copied");
       setTimeout(() => setCopyAllLabel("Copy all"), COPIED_DURATION_MS);
     } catch {
       setCopyAllLabel("Copy failed");
       setTimeout(() => setCopyAllLabel("Copy all"), COPIED_DURATION_MS);
     }
-  }, [uuids]);
+  }, [displayUuids]);
 
   const handleCountChange = useCallback((value: number) => {
     if (Number.isNaN(value)) return;
@@ -279,7 +287,7 @@ function UuidGeneratorTool() {
               </p>
             ) : (
               <ul className="space-y-2">
-                {uuids.map((id, index) => (
+                {displayUuids.map((id, index) => (
                   <li
                     key={index}
                     className="flex items-center justify-between gap-3 px-3 py-2 border border-border-dark rounded-lg bg-panel-dark"
@@ -392,6 +400,18 @@ function UuidGeneratorTool() {
                 className="rounded border-border-dark bg-background-dark text-primary focus:ring-primary"
               />
               <span className="text-xs text-slate-300">Uppercase</span>
+            </label>
+
+            {/* Include hyphens toggle */}
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                aria-label="Include hyphens"
+                checked={includeHyphens}
+                onChange={(e) => setIncludeHyphens(e.target.checked)}
+                className="rounded border-border-dark bg-background-dark text-primary focus:ring-primary"
+              />
+              <span className="text-xs text-slate-300">Include hyphens</span>
             </label>
 
             {/* Generate button */}
