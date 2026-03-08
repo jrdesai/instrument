@@ -219,8 +219,10 @@ export const tools: Tool[] = [
     platforms: ["desktop", "web"],
     rustCommand: "tool_jwt_build",
     keywords: ["jwt", "build", "sign", "token"],
-    component: placeholderComponent,
-    implemented: false,
+    component: React.lazy(() =>
+      import("../tools/jwt-builder").then((m) => ({ default: m.default }))
+    ),
+    implemented: true,
   },
   {
     id: "jwt-expiry-checker",

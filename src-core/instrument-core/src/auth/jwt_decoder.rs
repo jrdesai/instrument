@@ -148,7 +148,7 @@ fn relative_time_string(ts: i64, now: DateTime<Utc>) -> String {
     }
 }
 
-fn decode_secret(secret: &str, enc: SecretEncoding) -> Result<Vec<u8>, String> {
+pub(crate) fn decode_secret(secret: &str, enc: SecretEncoding) -> Result<Vec<u8>, String> {
     let s = secret.trim();
     if s.is_empty() {
         return Ok(Vec::new());

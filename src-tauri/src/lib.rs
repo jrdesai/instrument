@@ -11,6 +11,7 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             greet,
             instrument_desktop::commands::auth::tool_jwt_decode,
+            instrument_desktop::commands::auth::tool_jwt_build,
             instrument_desktop::commands::crypto::md5_process,
             instrument_desktop::commands::crypto::sha256_process,
             instrument_desktop::commands::crypto::sha512_process,

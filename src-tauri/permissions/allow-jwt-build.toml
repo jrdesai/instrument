@@ -1,0 +1,5 @@
+# Allow the JWT Builder tool command to be invoked from the frontend.
+[[permission]]
+identifier = "allow-jwt-build"
+description = "Enables the tool_jwt_build command."
+commands.allow = ["tool_jwt_build"]

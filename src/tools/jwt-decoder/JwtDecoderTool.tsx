@@ -64,6 +64,18 @@ function JwtDecoderTool() {
   const tokenDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const secretDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  useEffect(() => {
+    try {
+      const pending = sessionStorage.getItem("instrument:jwt:pendingDecode");
+      if (pending != null && typeof pending === "string") {
+        sessionStorage.removeItem("instrument:jwt:pendingDecode");
+        setToken(pending);
+      }
+    } catch {
+      // ignore
+    }
+  }, []);
+
   const runProcess = useCallback(
     async (
       currentToken: string,

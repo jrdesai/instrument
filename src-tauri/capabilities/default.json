@@ -26,6 +26,7 @@
     "allow-iso8601",
     "allow-base-converter",
     "allow-bitwise",
-    "allow-jwt-decode"
+    "allow-jwt-decode",
+    "allow-jwt-build"
   ]
 }
