@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Class-based dark mode: add .dark to html to enable dark: variants */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --color-primary:           #306ee8;
   --color-background-light:  #f6f6f8;

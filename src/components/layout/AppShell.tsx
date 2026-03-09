@@ -12,9 +12,9 @@ const navItems: { to: string; icon: string; label: string }[] = [
 
 export function AppShell() {
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-background-dark text-slate-100 font-display">
+    <div className="flex h-screen w-full overflow-hidden bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
       <aside
-        className="flex flex-col items-center py-4 border-r border-border-dark bg-background-dark shrink-0 z-20"
+        className="flex flex-col items-center py-4 border-r border-slate-200 dark:border-border-dark bg-background-light dark:bg-background-dark shrink-0 z-20"
         style={{ width: SIDEBAR_WIDTH }}
         aria-label="Main navigation"
       >
@@ -26,7 +26,7 @@ export function AppShell() {
               end={to === "/"}
               className={({ isActive }) =>
                 `flex items-center justify-center size-10 rounded-lg transition-colors ${
-                  isActive ? "bg-primary/10 text-primary" : "text-slate-500 hover:text-slate-300"
+                  isActive ? "bg-primary/10 text-primary" : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"
                 }`
               }
               aria-label={label}
@@ -37,7 +37,7 @@ export function AppShell() {
             </NavLink>
           ))}
         </nav>
-        <div className="flex flex-col items-center gap-2 pt-2 border-t border-border-dark">
+        <div className="flex flex-col items-center gap-2 pt-2 border-t border-slate-200 dark:border-border-dark">
           <span
             className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"
             title="Engine online"

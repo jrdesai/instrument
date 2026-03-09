@@ -47,18 +47,18 @@ function ToolCard({
       type="button"
       onClick={disabled ? undefined : onClick}
       disabled={disabled}
-      className={`group flex flex-col p-4 rounded-lg border border-border-dark bg-panel-dark text-left transition-colors min-w-[180px] ${
+      className={`group flex flex-col p-4 rounded-lg border border-slate-200 dark:border-border-dark bg-white dark:bg-panel-dark text-left transition-colors min-w-[180px] ${
         disabled
           ? "opacity-60 cursor-not-allowed"
           : "hover:border-primary/40 cursor-pointer"
       }`}
     >
-      <div className="size-10 rounded bg-slate-800 flex items-center justify-center mb-3 text-slate-400 group-hover:bg-primary/20 group-hover:text-primary transition-colors">
+      <div className="size-10 rounded bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-3 text-slate-500 dark:text-slate-400 group-hover:bg-primary/20 group-hover:text-primary transition-colors">
         <span className="material-symbols-outlined text-[24px]" aria-hidden>
           {tool.icon}
         </span>
       </div>
-      <h3 className="text-sm font-semibold text-slate-100 mb-1 line-clamp-1">
+      <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-1 line-clamp-1">
         {tool.name}
       </h3>
       <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-semibold uppercase tracking-wider mt-1 w-fit">
@@ -73,17 +73,17 @@ function ExplorePlaceholderCard({ onClick }: { onClick: () => void }) {
     <button
       type="button"
       onClick={onClick}
-      className="group flex flex-col items-start justify-center p-4 rounded-lg border border-dashed border-border-dark bg-background-dark/40 text-left hover:border-primary/40 transition-colors cursor-pointer min-w-[180px]"
+      className="group flex flex-col items-start justify-center p-4 rounded-lg border border-dashed border-slate-300 dark:border-border-dark bg-slate-50 dark:bg-background-dark/40 text-left hover:border-primary/40 transition-colors cursor-pointer min-w-[180px]"
     >
-      <div className="size-10 rounded bg-slate-800 flex items-center justify-center mb-3 text-slate-400 group-hover:bg-primary/20 group-hover:text-primary transition-colors">
+      <div className="size-10 rounded bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-3 text-slate-500 dark:text-slate-400 group-hover:bg-primary/20 group-hover:text-primary transition-colors">
         <span className="material-symbols-outlined text-[24px]" aria-hidden>
           add
         </span>
       </div>
-      <h3 className="text-sm font-semibold text-slate-100 mb-1">
+      <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-1">
         Explore Library
       </h3>
-      <p className="text-xs text-slate-500">
+      <p className="text-xs text-slate-500 dark:text-slate-400">
         Browse all tools and start a new session.
       </p>
     </button>
@@ -249,15 +249,15 @@ export function DashboardPage() {
   }, []);
 
   return (
-    <div className="flex flex-col h-full w-full overflow-hidden bg-background-dark">
+    <div className="flex flex-col h-full w-full overflow-hidden bg-background-light dark:bg-background-dark">
       {/* Fixed: Dashboard title + Recent */}
-      <header className="shrink-0 px-8 pt-6 pb-4 bg-background-dark">
-        <h1 className="text-sm font-medium text-slate-400 uppercase tracking-wider mb-6">
+      <header className="shrink-0 px-8 pt-6 pb-4 bg-background-light dark:bg-background-dark">
+        <h1 className="text-sm font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-6">
           Dashboard
         </h1>
         <section>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-300 flex items-center gap-2">
+            <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-2">
               <span
                 className="material-symbols-outlined text-[18px]"
                 aria-hidden
@@ -275,7 +275,7 @@ export function DashboardPage() {
             </button>
           </div>
           {displayedRecent.length === 0 ? (
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-slate-500 dark:text-slate-400">
               No recent tools yet. Open a tool from the Library.
             </p>
           ) : (
@@ -299,7 +299,7 @@ export function DashboardPage() {
       <div className="relative flex-1 min-h-0 flex flex-col">
         <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar px-8 py-6 pb-6">
           <section>
-            <h2 className="text-slate-400 text-xs font-semibold uppercase tracking-widest flex items-center gap-2 mb-4">
+            <h2 className="text-slate-500 dark:text-slate-400 text-xs font-semibold uppercase tracking-widest flex items-center gap-2 mb-4">
               <span
                 className="material-symbols-outlined text-[18px]"
                 aria-hidden
@@ -327,7 +327,7 @@ export function DashboardPage() {
                     className={`flex flex-col items-center p-4 w-full border rounded-xl transition-all duration-200 cursor-pointer ${
                       activeCategoryId === item.category.id
                         ? "bg-primary/10 border-primary/40"
-                        : "bg-panel-dark border-border-dark hover:border-primary/20 hover:bg-white/5"
+                        : "bg-white dark:bg-panel-dark border-slate-200 dark:border-border-dark hover:border-primary/20 hover:bg-slate-50 dark:hover:bg-white/5"
                     }`}
                   >
                     <span
@@ -345,12 +345,12 @@ export function DashboardPage() {
                       className={`text-xs font-medium uppercase tracking-wider ${
                         activeCategoryId === item.category.id
                           ? "text-primary"
-                          : "text-slate-500"
+                          : "text-slate-500 dark:text-slate-400"
                       }`}
                     >
                       {item.category.name}
                     </span>
-                    <span className="text-slate-600 text-xs mt-0.5">
+                    <span className="text-slate-600 dark:text-slate-400 text-xs mt-0.5">
                       {item.category.toolCount}{" "}
                       {item.category.toolCount === 1 ? "tool" : "tools"}
                     </span>
@@ -359,7 +359,7 @@ export function DashboardPage() {
                   <div
                     key="panel"
                     ref={panelRef}
-                    className="col-span-full relative border border-border-dark border-t-2 border-t-primary/20 rounded-xl bg-panel-dark p-4 mt-0 overflow-visible transition-[max-height,opacity] duration-300 ease-out"
+                    className="col-span-full relative border border-slate-200 dark:border-border-dark border-t-2 border-t-primary/20 rounded-xl bg-white dark:bg-panel-dark p-4 mt-0 overflow-visible transition-[max-height,opacity] duration-300 ease-out"
                     style={{
                       maxHeight: 600,
                       opacity: 1,
@@ -394,7 +394,7 @@ export function DashboardPage() {
                                 key={tool.id}
                                 type="button"
                                 onClick={() => handleOpenTool(tool)}
-                                className="flex items-center gap-3 p-3 rounded-lg border border-border-dark bg-panel-dark hover:border-primary/30 hover:bg-white/5 transition-all text-left w-full cursor-pointer"
+                                className="flex items-center gap-3 p-3 rounded-lg border border-slate-200 dark:border-border-dark bg-slate-50 dark:bg-panel-dark hover:border-primary/30 hover:bg-slate-100 dark:hover:bg-white/5 transition-all text-left w-full cursor-pointer"
                               >
                                 <span
                                   className="material-symbols-outlined leading-none flex-shrink-0 text-primary/70"
@@ -404,10 +404,10 @@ export function DashboardPage() {
                                   {tool.icon}
                                 </span>
                                 <div className="min-w-0 flex flex-col gap-0.5">
-                                  <span className="text-sm text-slate-200 font-medium truncate leading-tight">
+                                  <span className="text-sm text-slate-900 dark:text-slate-200 font-medium truncate leading-tight">
                                     {tool.name}
                                   </span>
-                                  <span className="text-xs text-slate-500 truncate leading-tight">
+                                  <span className="text-xs text-slate-500 dark:text-slate-400 truncate leading-tight">
                                     {tool.description}
                                   </span>
                                 </div>
@@ -424,8 +424,8 @@ export function DashboardPage() {
       </div>
 
       {/* Footer: fixed at bottom */}
-      <footer className="shrink-0 px-8 py-3 border-t border-border-dark bg-background-dark">
-        <div className="w-full px-4 py-3 rounded-lg border border-border-dark bg-panel-dark flex items-center gap-6 text-xs text-slate-400">
+      <footer className="shrink-0 px-8 py-3 border-t border-slate-200 dark:border-border-dark bg-background-light dark:bg-background-dark">
+        <div className="w-full px-4 py-3 rounded-lg border border-slate-200 dark:border-border-dark bg-white dark:bg-panel-dark flex items-center gap-6 text-xs text-slate-500 dark:text-slate-400">
           <span className="font-mono">
             {totalImplemented}{" "}
             {totalImplemented === 1 ? "Tool" : "Tools"} available

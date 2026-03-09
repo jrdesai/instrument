@@ -1,4 +1,4 @@
-import { Suspense } from "react";
+import { Suspense, useEffect } from "react";
 import { BrowserRouter, Routes, Route, useParams } from "react-router-dom";
 import { getToolById } from "./registry";
 import { AppShell } from "./components/layout/AppShell";
@@ -10,15 +10,16 @@ import { SettingsPage } from "./components/layout/SettingsPage";
 import { ToolHeader } from "./components/layout/ToolHeader";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { LoadingSpinner } from "./components/ui/LoadingSpinner";
+import { usePreferenceStore } from "./store";
 import "./App.css";
 
 function ToolPage() {
   const { toolId } = useParams<{ toolId: string }>();
   const tool = toolId ? getToolById(toolId) : null;
-  if (!tool) return <div className="p-4 text-slate-500">Tool not found.</div>;
+  if (!tool) return <div className="p-4 text-slate-500 dark:text-slate-400">Tool not found.</div>;
   const Component = tool.component;
   return (
-    <div className="flex-1 flex flex-col min-h-0 w-full bg-background-dark">
+    <div className="flex-1 flex flex-col min-h-0 w-full bg-background-light dark:bg-background-dark">
       <ToolHeader tool={tool} />
       <ErrorBoundary toolName={tool?.name}>
         <Suspense fallback={<LoadingSpinner label="Loading tool..." />}>
@@ -32,8 +33,19 @@ function ToolPage() {
 }
 
 function App() {
+  const theme = usePreferenceStore((s) => s.theme);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    if (theme === "dark") {
+      root.classList.add("dark");
+    } else {
+      root.classList.remove("dark");
+    }
+  }, [theme]);
+
   return (
-    <div className="min-h-screen bg-background-dark text-slate-100 font-display">
+    <div className="min-h-screen bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
       <BrowserRouter>
         <Routes>
           <Route element={<AppShell />}>
