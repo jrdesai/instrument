@@ -198,63 +198,13 @@ function ApiKeyGeneratorTool() {
       </div>
 
       {/* Footer controls */}
-      <footer className="flex items-center gap-4 px-4 py-3 border-t border-border-dark bg-panel-dark shrink-0">
-        {/* Prefix */}
-        <div className="flex flex-col gap-1">
-          <span className="text-xs text-slate-400">Prefix</span>
-          {showPrefixInput ? (
-            <input
-              type="text"
-              maxLength={32}
-              value={prefix}
-              placeholder="sk_live_"
-              onChange={(e) => setPrefix(e.target.value)}
-              className="w-[140px] px-2 py-1 text-xs bg-background-dark border border-border-dark rounded-lg text-slate-100 focus:outline-none focus:ring-1 focus:ring-primary"
-            />
-          ) : (
-            <div className="w-[140px] h-[30px] border border-transparent" />
-          )}
-        </div>
-
-        {/* Length input */}
-        <div className="flex flex-col gap-1">
-          <span className="text-xs text-slate-400">Length</span>
+      <footer className="flex items-end gap-2 px-4 py-3 border-t border-border-dark bg-panel-dark shrink-0">
+        {/* Format */}
+        <div className="flex flex-col gap-1" role="group" aria-label="Format">
+          <span className="text-slate-600 text-xs uppercase tracking-wider">
+            Format
+          </span>
           <div className="flex items-center gap-1">
-            <button
-              type="button"
-              aria-label="Decrease length"
-              onClick={() => handleLengthChange(length - 1)}
-              className="px-2 py-1 text-xs rounded-lg bg-background-dark text-slate-300 hover:text-primary hover:bg-slate-700 transition-colors"
-            >
-              -
-            </button>
-            <input
-              type="number"
-              min={8}
-              max={256}
-              value={length}
-              onChange={(e) => handleLengthChange(Number(e.target.value))}
-              className="w-16 px-2 py-1 text-xs bg-background-dark border border-border-dark rounded-lg text-center text-slate-100 focus:outline-none focus:ring-1 focus:ring-primary"
-            />
-            <button
-              type="button"
-              aria-label="Increase length"
-              onClick={() => handleLengthChange(length + 1)}
-              className="px-2 py-1 text-xs rounded-lg bg-background-dark text-slate-300 hover:text-primary hover:bg-slate-700 transition-colors"
-            >
-              +
-            </button>
-          </div>
-        </div>
-
-        {/* Format selector */}
-        <div className="flex flex-col gap-1">
-          <span className="text-xs text-slate-400">Format</span>
-          <div
-            className="flex items-center gap-1"
-            role="group"
-            aria-label="API key format"
-          >
             <button
               type="button"
               onClick={() => setFormat("raw")}
@@ -296,14 +246,49 @@ function ApiKeyGeneratorTool() {
           )}
         </div>
 
-        {/* Charset selector */}
-        <div className="flex flex-col gap-1">
-          <span className="text-xs text-slate-400">Charset</span>
-          <div
-            className="flex items-center gap-1"
-            role="group"
-            aria-label="API key charset"
-          >
+        <div className="w-px h-6 bg-border-dark self-center mx-3" />
+
+        {/* Length */}
+        <div className="flex flex-col gap-1" role="group" aria-label="Length">
+          <span className="text-slate-600 text-xs uppercase tracking-wider">
+            Length
+          </span>
+          <div className="flex items-center gap-1">
+            <button
+              type="button"
+              aria-label="Decrease length"
+              onClick={() => handleLengthChange(length - 1)}
+              className="px-2 py-1 text-xs rounded-lg bg-background-dark text-slate-300 hover:text-primary hover:bg-slate-700 transition-colors"
+            >
+              -
+            </button>
+            <input
+              type="number"
+              min={8}
+              max={256}
+              value={length}
+              onChange={(e) => handleLengthChange(Number(e.target.value))}
+              className="w-16 px-2 py-1 text-xs bg-background-dark border border-border-dark rounded-lg text-center text-slate-100 focus:outline-none focus:ring-1 focus:ring-primary"
+            />
+            <button
+              type="button"
+              aria-label="Increase length"
+              onClick={() => handleLengthChange(length + 1)}
+              className="px-2 py-1 text-xs rounded-lg bg-background-dark text-slate-300 hover:text-primary hover:bg-slate-700 transition-colors"
+            >
+              +
+            </button>
+          </div>
+        </div>
+
+        <div className="w-px h-6 bg-border-dark self-center mx-3" />
+
+        {/* Charset */}
+        <div className="flex flex-col gap-1" role="group" aria-label="Charset">
+          <span className="text-slate-600 text-xs uppercase tracking-wider">
+            Charset
+          </span>
+          <div className="flex items-center gap-1">
             <button
               type="button"
               onClick={() => setCharset("alphanumeric")}
@@ -351,9 +336,13 @@ function ApiKeyGeneratorTool() {
           </div>
         </div>
 
-        {/* Count input */}
-        <div className="flex flex-col gap-1">
-          <span className="text-xs text-slate-400">Count</span>
+        <div className="w-px h-6 bg-border-dark self-center mx-3" />
+
+        {/* Count */}
+        <div className="flex flex-col gap-1" role="group" aria-label="Count">
+          <span className="text-slate-600 text-xs uppercase tracking-wider">
+            Count
+          </span>
           <div className="flex items-center gap-1">
             <button
               type="button"
@@ -382,42 +371,68 @@ function ApiKeyGeneratorTool() {
           </div>
         </div>
 
-        {/* Generate button */}
-        <button
-          type="button"
-          onClick={handleGenerate}
-          className="ml-auto px-4 py-2 text-sm font-medium bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
-          disabled={isLoading}
-        >
-          {isLoading && (
-            <span
-              className="w-3 h-3 rounded-full border-2 border-border-dark border-t-white animate-spin"
-              aria-hidden
-            />
-          )}
-          {isLoading ? "Generating..." : "Generate"}
-        </button>
-
-        {/* Copy all button */}
-        <button
-          type="button"
-          onClick={handleCopyAll}
-          disabled={!keys.length}
-          className="px-3 py-2 text-xs font-medium bg-panel-dark text-slate-300 border border-border-dark rounded-lg hover:text-primary hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-        >
-          {copyAllLabel}
-        </button>
-
-        {/* Clear button */}
-        {keys.length > 0 && (
-          <button
-            type="button"
-            onClick={handleClear}
-            className="px-4 py-2 text-sm bg-panel-dark text-slate-400 border border-border-dark rounded-lg hover:text-slate-200 hover:border-slate-500 transition-colors"
-          >
-            Clear
-          </button>
+        {showPrefixInput && (
+          <>
+            <div className="w-px h-6 bg-border-dark self-center mx-3" />
+            {/* Prefix */}
+            <div className="flex flex-col gap-1" role="group" aria-label="Prefix">
+              <span className="text-slate-600 text-xs uppercase tracking-wider">
+                Prefix
+              </span>
+              <input
+                type="text"
+                maxLength={32}
+                value={prefix}
+                placeholder="sk_live_"
+                onChange={(e) => setPrefix(e.target.value)}
+                className="w-[140px] px-2 py-1 text-xs bg-background-dark border border-border-dark rounded-lg text-slate-100 focus:outline-none focus:ring-1 focus:ring-primary"
+              />
+            </div>
+          </>
         )}
+
+        <div className="w-px h-6 bg-border-dark self-center mx-3" />
+
+        {/* Actions (no label) */}
+        <div
+          className="flex flex-col gap-1 ml-auto"
+          role="group"
+          aria-label="Actions"
+        >
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={handleGenerate}
+              className="px-4 py-2 text-sm font-medium bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+              disabled={isLoading}
+            >
+              {isLoading && (
+                <span
+                  className="w-3 h-3 rounded-full border-2 border-border-dark border-t-white animate-spin"
+                  aria-hidden
+                />
+              )}
+              {isLoading ? "Generating..." : "Generate"}
+            </button>
+            <button
+              type="button"
+              onClick={handleCopyAll}
+              disabled={!keys.length}
+              className="px-3 py-2 text-xs font-medium bg-panel-dark text-slate-300 border border-border-dark rounded-lg hover:text-primary hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              {copyAllLabel}
+            </button>
+            {keys.length > 0 && (
+              <button
+                type="button"
+                onClick={handleClear}
+                className="px-4 py-2 text-sm bg-panel-dark text-slate-400 border border-border-dark rounded-lg hover:text-slate-200 hover:border-slate-500 transition-colors"
+              >
+                Clear
+              </button>
+            )}
+          </div>
+        </div>
       </footer>
     </div>
   );

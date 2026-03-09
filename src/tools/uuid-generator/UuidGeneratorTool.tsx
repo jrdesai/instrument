@@ -310,13 +310,16 @@ function UuidGeneratorTool() {
           </div>
 
           {/* Footer controls */}
-          <footer className="flex items-center gap-4 px-4 py-3 border-t border-border-dark bg-panel-dark shrink-0">
-            {/* Version selector */}
+          <footer className="flex items-end gap-2 px-4 py-3 border-t border-border-dark bg-panel-dark shrink-0">
+            {/* Version */}
             <div
-              className="flex flex-col gap-0.5"
+              className="flex flex-col gap-1"
               role="group"
               aria-label="UUID version"
             >
+              <span className="text-slate-600 text-xs uppercase tracking-wider">
+                Version
+              </span>
               <div className="flex items-center gap-1">
                 <button
                   type="button"
@@ -359,9 +362,13 @@ function UuidGeneratorTool() {
               )}
             </div>
 
-            {/* Count input */}
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-slate-400">Count</span>
+            <div className="w-px h-6 bg-border-dark self-center mx-3" />
+
+            {/* Count */}
+            <div className="flex flex-col gap-1" role="group" aria-label="Count">
+              <span className="text-slate-600 text-xs uppercase tracking-wider">
+                Count
+              </span>
               <div className="flex items-center gap-1">
                 <button
                   type="button"
@@ -390,69 +397,82 @@ function UuidGeneratorTool() {
               </div>
             </div>
 
-            {/* Uppercase toggle */}
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                aria-label="Uppercase UUIDs (A–F)"
-                checked={uppercase}
-                onChange={(e) => setUppercase(e.target.checked)}
-                className="rounded border-border-dark bg-background-dark text-primary focus:ring-primary"
-              />
-              <span className="text-xs text-slate-300">Uppercase</span>
-            </label>
+            <div className="w-px h-6 bg-border-dark self-center mx-3" />
 
-            {/* Include hyphens toggle */}
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                aria-label="Include hyphens"
-                checked={includeHyphens}
-                onChange={(e) => setIncludeHyphens(e.target.checked)}
-                className="rounded border-border-dark bg-background-dark text-primary focus:ring-primary"
-              />
-              <span className="text-xs text-slate-300">Include hyphens</span>
-            </label>
+            {/* Options */}
+            <div className="flex flex-col gap-1" role="group" aria-label="Options">
+              <span className="text-slate-600 text-xs uppercase tracking-wider">
+                Options
+              </span>
+              <div className="flex items-center gap-2">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    aria-label="Uppercase UUIDs (A–F)"
+                    checked={uppercase}
+                    onChange={(e) => setUppercase(e.target.checked)}
+                    className="rounded border-border-dark bg-background-dark text-primary focus:ring-primary"
+                  />
+                  <span className="text-xs text-slate-300">Uppercase</span>
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    aria-label="Include hyphens"
+                    checked={includeHyphens}
+                    onChange={(e) => setIncludeHyphens(e.target.checked)}
+                    className="rounded border-border-dark bg-background-dark text-primary focus:ring-primary"
+                  />
+                  <span className="text-xs text-slate-300">Include hyphens</span>
+                </label>
+              </div>
+            </div>
 
-            {/* Generate button */}
-            <button
-              type="button"
-              onClick={handleGenerate}
-              className="ml-auto px-4 py-2 text-sm font-medium bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
-              disabled={isLoading}
+            <div className="w-px h-6 bg-border-dark self-center mx-3" />
+
+            {/* Actions (no label) */}
+            <div
+              className="flex flex-col gap-1 ml-auto"
+              role="group"
+              aria-label="Actions"
             >
-              {isLoading && (
-                <span
-                  className="w-3 h-3 rounded-full border-2 border-border-dark border-t-white animate-spin"
-                  aria-hidden
-                />
-              )}
-              {isLoading ? "Generating..." : "Generate"}
-            </button>
-
-            {/* Copy all button */}
-            <button
-              type="button"
-              onClick={handleCopyAll}
-              disabled={!uuids.length}
-              className="px-3 py-2 text-xs font-medium bg-panel-dark text-slate-300 border border-border-dark rounded-lg hover:text-primary hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              {copyAllLabel}
-            </button>
-
-            {/* Clear button (output only) */}
-            {uuids.length > 0 && (
-              <button
-                type="button"
-                onClick={() => {
-                  setUuids([]);
-                  setError(null);
-                }}
-                className="px-4 py-2 text-sm bg-panel-dark text-slate-400 border border-border-dark rounded-lg hover:text-slate-200 hover:border-slate-500 transition-colors"
-              >
-                Clear
-              </button>
-            )}
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleGenerate}
+                  className="px-4 py-2 text-sm font-medium bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+                  disabled={isLoading}
+                >
+                  {isLoading && (
+                    <span
+                      className="w-3 h-3 rounded-full border-2 border-border-dark border-t-white animate-spin"
+                      aria-hidden
+                    />
+                  )}
+                  {isLoading ? "Generating..." : "Generate"}
+                </button>
+                <button
+                  type="button"
+                  onClick={handleCopyAll}
+                  disabled={!uuids.length}
+                  className="px-3 py-2 text-xs font-medium bg-panel-dark text-slate-300 border border-border-dark rounded-lg hover:text-primary hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  {copyAllLabel}
+                </button>
+                {uuids.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setUuids([]);
+                      setError(null);
+                    }}
+                    className="px-4 py-2 text-sm bg-panel-dark text-slate-400 border border-border-dark rounded-lg hover:text-slate-200 hover:border-slate-500 transition-colors"
+                  >
+                    Clear
+                  </button>
+                )}
+              </div>
+            </div>
           </footer>
         </>
       )}

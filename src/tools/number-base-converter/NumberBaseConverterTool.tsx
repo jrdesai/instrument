@@ -290,65 +290,82 @@ function NumberBaseConverterTool() {
         </div>
       </div>
 
-      {/* Footer: Options + Actions */}
-      <footer className="flex flex-wrap items-end gap-6 px-4 py-3 border-t border-border-dark bg-panel-dark shrink-0">
-        <div className="flex flex-wrap items-center gap-4">
-          <div className="flex flex-col">
-            <span className="text-slate-400 text-xs mb-1">Bit width</span>
-            <div className="flex items-center gap-1">
-              {BIT_WIDTH_OPTIONS.map(({ id, label }) => (
-                <button
-                  key={id}
-                  type="button"
-                  aria-label={`Bit width ${label}`}
-                  onClick={() => setBitWidth(id)}
-                  className={`px-2 py-1 text-xs font-medium rounded transition-colors ${
-                    bitWidth === id
-                      ? "bg-primary text-white"
-                      : "bg-panel-dark text-slate-400 border border-border-dark hover:text-slate-200"
-                  }`}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
+      {/* Footer: Bit Width | Options | Actions */}
+      <footer className="flex items-end gap-2 px-4 py-3 border-t border-border-dark bg-panel-dark shrink-0">
+        {/* Bit Width */}
+        <div className="flex flex-col gap-1" role="group" aria-label="Bit width">
+          <span className="text-slate-600 text-xs uppercase tracking-wider">
+            Bit Width
+          </span>
+          <div className="flex items-center gap-1">
+            {BIT_WIDTH_OPTIONS.map(({ id, label }) => (
+              <button
+                key={id}
+                type="button"
+                aria-label={`Bit width ${label}`}
+                onClick={() => setBitWidth(id)}
+                className={`px-2 py-1 text-xs font-medium rounded transition-colors ${
+                  bitWidth === id
+                    ? "bg-primary text-white"
+                    : "bg-panel-dark text-slate-400 border border-border-dark hover:text-slate-200"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
           </div>
-          <div className="flex flex-col">
-            <span className="text-slate-400 text-xs mb-1">Uppercase hex</span>
+        </div>
+
+        <div className="w-px h-6 bg-border-dark self-center mx-3" />
+
+        {/* Options */}
+        <div className="flex flex-col gap-1" role="group" aria-label="Options">
+          <span className="text-slate-600 text-xs uppercase tracking-wider">
+            Options
+          </span>
+          <button
+            type="button"
+            aria-pressed={uppercaseHex}
+            onClick={() => setUppercaseHex((v) => !v)}
+            className={`px-2 py-1 text-xs font-medium rounded transition-colors ${
+              uppercaseHex
+                ? "bg-primary text-white"
+                : "bg-panel-dark text-slate-400 border border-border-dark hover:text-slate-200"
+            }`}
+          >
+            {uppercaseHex ? "On" : "Off"}
+          </button>
+        </div>
+
+        <div className="w-px h-6 bg-border-dark self-center mx-3" />
+
+        {/* Actions (no label) */}
+        <div
+          className="flex flex-col gap-1 ml-auto"
+          role="group"
+          aria-label="Actions"
+        >
+          <div className="flex items-center gap-2">
             <button
               type="button"
-              aria-pressed={uppercaseHex}
-              onClick={() => setUppercaseHex((v) => !v)}
-              className={`px-2 py-1 text-xs font-medium rounded transition-colors ${
-                uppercaseHex
-                  ? "bg-primary text-white"
-                  : "bg-panel-dark text-slate-400 border border-border-dark hover:text-slate-200"
-              }`}
+              onClick={handleCopyAll}
+              disabled={!displayOutput}
+              className="px-3 py-2 text-xs font-medium bg-panel-dark text-slate-300 border border-border-dark rounded-lg hover:text-primary hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              {uppercaseHex ? "On" : "Off"}
+              {copyAllLabel}
             </button>
+            <button
+              type="button"
+              onClick={handleClear}
+              className="px-4 py-2 text-sm bg-panel-dark text-slate-400 border border-border-dark rounded-lg hover:text-slate-200 hover:border-slate-500 transition-colors"
+            >
+              Clear
+            </button>
+            {isLoading && (
+              <span className="text-xs text-primary">Processing…</span>
+            )}
           </div>
         </div>
-        <div className="flex items-center gap-4 ml-auto">
-          <button
-            type="button"
-            onClick={handleCopyAll}
-            disabled={!displayOutput}
-            className="px-3 py-2 text-xs font-medium bg-panel-dark text-slate-300 border border-border-dark rounded-lg hover:text-primary hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          >
-            {copyAllLabel}
-          </button>
-          <button
-            type="button"
-            onClick={handleClear}
-            className="px-4 py-2 text-sm bg-panel-dark text-slate-400 border border-border-dark rounded-lg hover:text-slate-200 hover:border-slate-500 transition-colors"
-          >
-            Clear
-          </button>
-        </div>
-        {isLoading && (
-          <span className="text-xs text-primary">Processing…</span>
-        )}
       </footer>
     </div>
   );
