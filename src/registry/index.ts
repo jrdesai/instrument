@@ -264,8 +264,10 @@ export const tools: Tool[] = [
     platforms: ["desktop", "web"],
     rustCommand: "tool_json_validate",
     keywords: ["json", "validate", "schema"],
-    component: placeholderComponent,
-    implemented: false,
+    component: React.lazy(() =>
+      import("../tools/json-validator").then((m) => ({ default: m.default }))
+    ),
+    implemented: true,
   },
   {
     id: "json-diff",
@@ -277,8 +279,10 @@ export const tools: Tool[] = [
     platforms: ["desktop", "web"],
     rustCommand: "tool_json_diff",
     keywords: ["json", "diff", "compare"],
-    component: placeholderComponent,
-    implemented: false,
+    component: React.lazy(() =>
+      import("../tools/json-diff").then((m) => ({ default: m.default }))
+    ),
+    implemented: true,
   },
   {
     id: "json-path",

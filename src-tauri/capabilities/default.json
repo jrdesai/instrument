@@ -28,6 +28,8 @@
     "allow-bitwise",
     "allow-jwt-decode",
     "allow-jwt-build",
-    "allow-json-formatter"
+    "allow-json-formatter",
+    "allow-json-validator",
+    "allow-json-diff"
   ]
 }

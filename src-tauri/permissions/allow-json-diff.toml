@@ -1,0 +1,5 @@
+# Allow the JSON Diff tool command to be invoked from the frontend.
+[[permission]]
+identifier = "allow-json-diff"
+description = "Enables the tool_json_diff command."
+commands.allow = ["tool_json_diff"]

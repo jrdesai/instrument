@@ -1,0 +1,5 @@
+# Allow the JSON Validator tool command to be invoked from the frontend.
+[[permission]]
+identifier = "allow-json-validator"
+description = "Enables the tool_json_validate command."
+commands.allow = ["tool_json_validate"]
