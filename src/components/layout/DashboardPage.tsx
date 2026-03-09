@@ -252,6 +252,17 @@ export function DashboardPage() {
     <div className="flex flex-col h-full w-full overflow-hidden bg-background-light dark:bg-background-dark">
       {/* Fixed: Dashboard title + Recent */}
       <header className="shrink-0 px-8 pt-6 pb-4 bg-background-light dark:bg-background-dark">
+        <div className="flex items-center gap-2 mb-6">
+          <div
+            className="w-6 h-6 rounded bg-primary/20 flex items-center justify-center shrink-0"
+            aria-hidden
+          >
+            <span className="text-primary text-xs font-bold">⟨/⟩</span>
+          </div>
+          <span className="text-slate-500 dark:text-slate-400 text-xs font-medium tracking-wider">
+            INSTRUMENT
+          </span>
+        </div>
         <h1 className="text-sm font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-6">
           Dashboard
         </h1>

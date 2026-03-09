@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "instrument",
+  "productName": "Instrument",
   "version": "0.1.0",
   "identifier": "com.jigardesai.instrument",
   "build": {
@@ -10,7 +10,7 @@
     "frontendDist": "../dist"
   },
   "app": {
-    "windows": [{ "title": "instrument", "width": 800, "height": 600 }],
+    "windows": [{ "title": "Instrument", "width": 800, "height": 600 }],
     "security": { "csp": null }
   },
   "bundle": {

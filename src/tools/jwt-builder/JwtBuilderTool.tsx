@@ -251,6 +251,14 @@ function JwtBuilderTool() {
 
   return (
     <div className="flex flex-col h-full bg-background-dark text-slate-100 font-display">
+      <div className="flex items-center gap-2 px-4 py-2 bg-amber-500/5 border-b border-amber-500/20 text-amber-500/70 text-xs">
+        <span className="material-symbols-outlined text-sm leading-none flex-shrink-0">
+          warning
+        </span>
+        <span>
+          For testing only. Never use real secrets or sign tokens with production keys here.
+        </span>
+      </div>
       <div className="flex flex-1 min-h-0">
         {/* Left panel — configuration */}
         <div className="w-[40%] min-w-0 flex flex-col border-r border-border-dark bg-panel-dark overflow-y-auto">

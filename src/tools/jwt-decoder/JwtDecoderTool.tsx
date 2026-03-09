@@ -259,6 +259,15 @@ function JwtDecoderTool() {
 
   return (
     <div className="flex flex-col h-full bg-background-dark text-slate-100 font-display">
+      <div className="flex items-center gap-2 px-4 py-2 bg-amber-500/5 border-b border-amber-500/20 text-amber-500/70 text-xs">
+        <span className="material-symbols-outlined text-sm leading-none flex-shrink-0">
+          warning
+        </span>
+        <span>
+          For testing and inspection only. Never paste production secrets or sensitive tokens
+          into third-party tools.
+        </span>
+      </div>
       {/* Token input */}
       <div className="flex flex-col px-4 py-3 border-b border-border-dark bg-panel-dark shrink-0">
         <textarea

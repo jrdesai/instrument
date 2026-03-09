@@ -14,11 +14,23 @@ export function AppShell() {
   return (
     <div className="flex h-screen w-full overflow-hidden bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
       <aside
-        className="flex flex-col items-center py-4 border-r border-slate-200 dark:border-border-dark bg-background-light dark:bg-background-dark shrink-0 z-20"
+        className="flex flex-col items-center border-r border-slate-200 dark:border-border-dark bg-background-light dark:bg-background-dark shrink-0 z-20"
         style={{ width: SIDEBAR_WIDTH }}
         aria-label="Main navigation"
       >
-        <nav className="flex flex-col gap-1 flex-1 items-center">
+        {/* Logo mark + tooltip (icon-only sidebar) */}
+        <div
+          className="py-3 flex items-center justify-center border-b border-slate-200 dark:border-border-dark w-full"
+          title="Instrument"
+        >
+          <div
+            className="w-8 h-8 rounded-lg bg-primary text-white font-bold text-sm flex items-center justify-center shrink-0"
+            aria-hidden
+          >
+            ⟨/⟩
+          </div>
+        </div>
+        <nav className="flex flex-col gap-1 flex-1 items-center py-4">
           {navItems.map(({ to, icon, label }) => (
             <NavLink
               key={to}
