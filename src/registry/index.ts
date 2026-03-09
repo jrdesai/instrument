@@ -294,8 +294,10 @@ export const tools: Tool[] = [
     platforms: ["desktop", "web"],
     rustCommand: "tool_json_path",
     keywords: ["json", "path", "query", "jq"],
-    component: placeholderComponent,
-    implemented: false,
+    component: React.lazy(() =>
+      import("../tools/json-path").then((m) => ({ default: m.default }))
+    ),
+    implemented: true,
   },
   {
     id: "json-to-typescript",

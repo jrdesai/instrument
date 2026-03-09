@@ -1,10 +1,13 @@
-//! Tauri commands for JSON tools (formatter, validator, diff, etc.).
+//! Tauri commands for JSON tools (formatter, validator, diff, path, etc.).
 
 use instrument_core::json::diff::{
     process as json_diff_process_core, JsonDiffInput, JsonDiffOutput,
 };
 use instrument_core::json::formatter::{
     process as json_format_process_core, JsonFormatInput, JsonFormatOutput,
+};
+use instrument_core::json::path::{
+    process as json_path_process_core, JsonPathInput, JsonPathOutput,
 };
 use instrument_core::json::validator::{
     process as json_validate_process_core, JsonValidateInput, JsonValidateOutput,
@@ -26,4 +29,10 @@ pub fn tool_json_validate(input: JsonValidateInput) -> JsonValidateOutput {
 #[tauri::command]
 pub fn tool_json_diff(input: JsonDiffInput) -> JsonDiffOutput {
     json_diff_process_core(input)
+}
+
+/// Runs JSONPath query against a JSON document via instrument-core.
+#[tauri::command]
+pub fn tool_json_path(input: JsonPathInput) -> JsonPathOutput {
+    json_path_process_core(input)
 }

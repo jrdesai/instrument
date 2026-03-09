@@ -24,3 +24,4 @@ regex = "1"
 chrono = { version = "0.4", features = ["serde"] }
 chrono-tz = "0.9"
 serde_json = { workspace = true }
+jsonpath-rust = "0.7"

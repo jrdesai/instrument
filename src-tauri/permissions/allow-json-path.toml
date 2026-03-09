@@ -1,0 +1,5 @@
+# Allow the JSON Path tool command to be invoked from the frontend.
+[[permission]]
+identifier = "allow-json-path"
+description = "Enables the tool_json_path command."
+commands.allow = ["tool_json_path"]

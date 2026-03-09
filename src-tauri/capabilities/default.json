@@ -30,6 +30,7 @@
     "allow-jwt-build",
     "allow-json-formatter",
     "allow-json-validator",
-    "allow-json-diff"
+    "allow-json-diff",
+    "allow-json-path"
   ]
 }
