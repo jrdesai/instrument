@@ -1,4 +1,4 @@
-//! Tauri commands for JSON tools (formatter, validator, diff, path, etc.).
+//! Tauri commands for JSON tools (formatter, validator, diff, path, converter, etc.).
 
 use instrument_core::json::diff::{
     process as json_diff_process_core, JsonDiffInput, JsonDiffOutput,
@@ -8,6 +8,9 @@ use instrument_core::json::formatter::{
 };
 use instrument_core::json::path::{
     process as json_path_process_core, JsonPathInput, JsonPathOutput,
+};
+use instrument_core::json::converter::{
+    process as json_convert_process_core, JsonConvertInput, JsonConvertOutput,
 };
 use instrument_core::json::validator::{
     process as json_validate_process_core, JsonValidateInput, JsonValidateOutput,
@@ -35,4 +38,10 @@ pub fn tool_json_diff(input: JsonDiffInput) -> JsonDiffOutput {
 #[tauri::command]
 pub fn tool_json_path(input: JsonPathInput) -> JsonPathOutput {
     json_path_process_core(input)
+}
+
+/// Runs JSON conversion (YAML, TypeScript, CSV, XML) via instrument-core.
+#[tauri::command]
+pub fn tool_json_convert(input: JsonConvertInput) -> JsonConvertOutput {
+    json_convert_process_core(input)
 }

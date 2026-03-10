@@ -1,0 +1,5 @@
+# Allow the JSON Converter tool command to be invoked from the frontend.
+[[permission]]
+identifier = "allow-json-converter"
+description = "Enables the tool_json_convert command."
+commands.allow = ["tool_json_convert"]

@@ -300,17 +300,19 @@ export const tools: Tool[] = [
     implemented: true,
   },
   {
-    id: "json-to-typescript",
-    name: "JSON to TypeScript",
-    description: "Generate TypeScript types from JSON.",
+    id: "json-converter",
+    name: "JSON Converter",
+    description: "Convert JSON to YAML, TypeScript, CSV, or XML.",
     category: "json",
-    roles: ["frontend", "backend", "general"],
-    icon: "code",
+    roles: ["frontend", "backend", "data", "general"],
+    icon: "compare_arrows",
     platforms: ["desktop", "web"],
-    rustCommand: "tool_json_to_ts",
-    keywords: ["json", "typescript", "types", "generate"],
-    component: placeholderComponent,
-    implemented: false,
+    rustCommand: "tool_json_convert",
+    keywords: ["json", "yaml", "typescript", "csv", "xml", "convert", "transform"],
+    component: React.lazy(() =>
+      import("../tools/json-converter").then((m) => ({ default: m.default }))
+    ),
+    implemented: true,
   },
   {
     id: "yaml-to-json",

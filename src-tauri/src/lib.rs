@@ -36,6 +36,7 @@ pub fn run() {
             instrument_desktop::commands::json::tool_json_validate,
             instrument_desktop::commands::json::tool_json_diff,
             instrument_desktop::commands::json::tool_json_path,
+            instrument_desktop::commands::json::tool_json_convert,
             instrument_desktop::commands::numbers::base_converter_process,
             instrument_desktop::commands::numbers::bitwise_process,
         ])
