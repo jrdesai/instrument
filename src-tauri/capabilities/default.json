@@ -32,6 +32,7 @@
     "allow-json-validator",
     "allow-json-diff",
     "allow-json-path",
-    "allow-json-converter"
+    "allow-json-converter",
+    "allow-yaml-to-json"
   ]
 }

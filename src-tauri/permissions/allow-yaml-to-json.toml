@@ -1,0 +1,5 @@
+[[permission]]
+identifier = "allow-yaml-to-json"
+description = "Enables the tool_yaml_to_json command."
+commands.allow = ["tool_yaml_to_json"]
+

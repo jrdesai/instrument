@@ -12,6 +12,9 @@ use instrument_core::json::path::{
 use instrument_core::json::converter::{
     process as json_convert_process_core, JsonConvertInput, JsonConvertOutput,
 };
+use instrument_core::json::yaml_to_json::{
+    process as yaml_to_json_process_core, YamlToJsonInput, YamlToJsonOutput,
+};
 use instrument_core::json::validator::{
     process as json_validate_process_core, JsonValidateInput, JsonValidateOutput,
 };
@@ -44,4 +47,10 @@ pub fn tool_json_path(input: JsonPathInput) -> JsonPathOutput {
 #[tauri::command]
 pub fn tool_json_convert(input: JsonConvertInput) -> JsonConvertOutput {
     json_convert_process_core(input)
+}
+
+/// Converts YAML input into formatted JSON via instrument-core.
+#[tauri::command]
+pub fn tool_yaml_to_json(input: YamlToJsonInput) -> YamlToJsonOutput {
+    yaml_to_json_process_core(input)
 }

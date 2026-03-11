@@ -112,7 +112,7 @@ fn parse_error_line_column(err: &serde_json::Error) -> (Option<usize>, Option<us
     (line, column)
 }
 
-fn sort_value(v: Value) -> Value {
+pub fn sort_value(v: Value) -> Value {
     match v {
         Value::Object(map) => {
             let mut sorted: Vec<(String, Value)> = map

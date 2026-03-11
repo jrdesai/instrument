@@ -324,8 +324,13 @@ export const tools: Tool[] = [
     platforms: ["desktop", "web"],
     rustCommand: "tool_yaml_to_json",
     keywords: ["yaml", "json", "convert"],
-    component: placeholderComponent,
-    implemented: false,
+    component: React.lazy(
+      () =>
+        import("../tools/yaml-to-json") as Promise<{
+          default: React.ComponentType<unknown>;
+        }>
+    ),
+    implemented: true,
   },
   {
     id: "csv-to-json",
