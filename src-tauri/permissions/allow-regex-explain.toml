@@ -1,0 +1,4 @@
+[[permission]]
+identifier = "allow-regex-explain"
+description = "Enables the tool_regex_explain command."
+commands.allow = ["tool_regex_explain"]

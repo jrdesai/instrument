@@ -43,7 +43,10 @@ export async function callTool(
       result = await callToolDesktop(toolId, input);
     } else {
       const { callToolWeb } = await import("./web");
-      result = await callToolWeb(toolId, input);
+      // WASM export names differ from Tauri command names for regex tools.
+      const webToolId =
+        toolId === "tool_regex_explain" ? "regex_explain" : toolId;
+      result = await callToolWeb(webToolId, input);
     }
     const duration = performance.now() - start;
     if (import.meta.env.DEV) {

@@ -6,3 +6,4 @@ pub mod encoding;
 pub mod json;
 pub mod numbers;
 pub mod text;
+pub mod regex;

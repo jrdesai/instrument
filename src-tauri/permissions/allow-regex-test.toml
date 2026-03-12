@@ -1,0 +1,4 @@
+[[permission]]
+identifier = "allow-regex-test"
+description = "Enables the tool_regex_test command."
+commands.allow = ["tool_regex_test"]

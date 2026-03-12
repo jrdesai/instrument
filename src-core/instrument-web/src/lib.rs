@@ -1,4 +1,4 @@
-//! WASM bindings for Instrument tools. Each export mirrors a Tauri command.
+//! WASM bindings for Instrument tools. Each export mirrors a Tauri command or shared core API.
 
 use instrument_core::crypto::md5::{process as md5_process_core, Md5Input, Md5Output};
 use instrument_core::crypto::sha256::{
@@ -39,6 +39,10 @@ use instrument_core::encoding::html_entity::{
     process as html_entity_process_core, HtmlEntityInput, HtmlEntityOutput,
 };
 use instrument_core::encoding::url::{process as url_process, UrlEncodeInput, UrlEncodeOutput};
+use regex_core::router as regex_router;
+use regex_core::types::{
+    ExplainRequest, ExplainToken as RegexExplainToken, MatchResult as RegexMatchResult, RegexRequest,
+};
 use serde_wasm_bindgen::{from_value, to_value};
 use wasm_bindgen::prelude::*;
 
@@ -192,5 +196,25 @@ pub fn lorem_ipsum_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
     let input: LoremIpsumInput =
         from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
     let output: LoremIpsumOutput = lorem_ipsum_process_core(input);
+    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
+}
+
+/// Regex matcher. Receives RegexRequest (camelCase) and returns Vec<MatchResult> (camelCase).
+#[wasm_bindgen(js_name = regex_match)]
+pub fn regex_match_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
+    let input: RegexRequest =
+        from_value(js_input).map_err(|e| JsValue::from_str(&format!("Invalid request: {}", e)))?;
+    let output: Vec<RegexMatchResult> =
+        regex_router::run(&input).map_err(|e| JsValue::from_str(&e))?;
+    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
+}
+
+/// Regex pattern explanation (HIR tokens). Receives ExplainRequest and returns Vec<ExplainToken>.
+#[wasm_bindgen(js_name = regex_explain)]
+pub fn regex_explain_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
+    let req: ExplainRequest =
+        from_value(js_input).map_err(|e| JsValue::from_str(&format!("Invalid request: {}", e)))?;
+    let output: Vec<RegexExplainToken> =
+        regex_core::explain::run(&req).map_err(|e| JsValue::from_str(&e))?;
     to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
 }

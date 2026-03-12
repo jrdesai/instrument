@@ -1,37 +1,16 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import type { Tool, ToolCategory } from "../../registry";
-import { tools, getToolById, getToolsByCategory } from "../../registry";
-import { useToolStore } from "../../store";
+import type { Tool } from "../../registry";
 import {
-  categoryNameToRegistry,
-  categoryIcons,
-} from "../../constants/library";
+  tools,
+  getToolById,
+  getDisplayCategories,
+  getToolsByDisplayCategory,
+} from "../../registry";
+import { useToolStore } from "../../store";
 
 const STORAGE_KEY = "instrument:dashboard:activeCategory";
 const MAX_RECENT = 5;
-
-/** Display name for a registry category (for tiles and headings). */
-function getCategoryDisplayName(category: ToolCategory): string {
-  const entry = Object.entries(categoryNameToRegistry).find(
-    ([, reg]) => reg === category
-  );
-  if (entry) return entry[0];
-  const fallback: Record<string, string> = {
-    auth: "Auth",
-    datetime: "Date & Time",
-    numbers: "Numbers",
-    data: "Data",
-    design: "Design",
-  };
-  return fallback[category] ?? category;
-}
-
-/** Icon name (Material Symbol) for a registry category. */
-function getCategoryIcon(category: ToolCategory): string {
-  const displayName = getCategoryDisplayName(category);
-  return categoryIcons[displayName] ?? tools.find((t) => t.category === category)?.icon ?? "folder";
-}
 
 function ToolCard({
   tool,
@@ -62,7 +41,7 @@ function ToolCard({
         {tool.name}
       </h3>
       <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-semibold uppercase tracking-wider mt-1 w-fit">
-        {tool.category}
+        {tool.displayCategory}
       </span>
     </button>
   );
@@ -109,20 +88,7 @@ export function DashboardPage() {
     []
   );
 
-  const categories = useMemo(() => {
-    const seen = new Set<ToolCategory>();
-    for (const tool of tools) {
-      seen.add(tool.category);
-    }
-    return Array.from(seen)
-      .map((id) => ({
-        id,
-        name: getCategoryDisplayName(id),
-        icon: getCategoryIcon(id),
-        toolCount: getToolsByCategory(id).filter((t) => t.implemented).length,
-      }))
-      .filter((cat) => cat.toolCount > 0);
-  }, []);
+  const categories = useMemo(() => getDisplayCategories(), []);
 
   const totalImplemented = implementedTools.length;
   const categoriesWithTools = categories.length;
@@ -155,7 +121,10 @@ export function DashboardPage() {
   });
 
   useEffect(() => {
-    if (activeCategoryId !== null && !categories.some((c) => c.id === activeCategoryId)) {
+    if (
+      activeCategoryId !== null &&
+      !categories.some((c) => c.name === activeCategoryId)
+    ) {
       setActiveCategoryId(null);
     }
   }, [activeCategoryId, categories]);
@@ -222,7 +191,7 @@ export function DashboardPage() {
   }, [activeCategoryId, updatePointer]);
 
   const activeIndex = activeCategoryId
-    ? categories.findIndex((c) => c.id === activeCategoryId)
+    ? categories.findIndex((c) => c.name === activeCategoryId)
     : -1;
   const rowIndex = activeIndex >= 0 ? Math.floor(activeIndex / itemsPerRow) : 0;
   const insertIndex = Math.min(
@@ -244,8 +213,8 @@ export function DashboardPage() {
     return list;
   }, [categories, activeCategoryId, insertIndex]);
 
-  const handleTileClick = useCallback((id: string) => {
-    setActiveCategoryId((prev) => (prev === id ? null : id));
+  const handleTileClick = useCallback((name: string) => {
+    setActiveCategoryId((prev) => (prev === name ? null : name));
   }, []);
 
   return (
@@ -329,21 +298,21 @@ export function DashboardPage() {
               {gridItems.map((item) =>
                 item.type === "tile" ? (
                   <button
-                    key={item.category.id}
+                    key={item.category.name}
                     ref={(el) => {
-                      tileRefs.current[item.category.id] = el;
+                      tileRefs.current[item.category.name] = el;
                     }}
                     type="button"
-                    onClick={() => handleTileClick(item.category.id)}
+                    onClick={() => handleTileClick(item.category.name)}
                     className={`flex flex-col items-center p-4 w-full border rounded-xl transition-all duration-200 cursor-pointer ${
-                      activeCategoryId === item.category.id
+                      activeCategoryId === item.category.name
                         ? "bg-primary/10 border-primary/40"
                         : "bg-white dark:bg-panel-dark border-slate-200 dark:border-border-dark hover:border-primary/20 hover:bg-slate-50 dark:hover:bg-white/5"
                     }`}
                   >
                     <span
                       className={`material-symbols-outlined text-2xl mb-2 ${
-                        activeCategoryId === item.category.id
+                        activeCategoryId === item.category.name
                           ? "text-primary"
                           : "text-slate-400"
                       }`}
@@ -354,7 +323,7 @@ export function DashboardPage() {
                     </span>
                     <span
                       className={`text-xs font-medium uppercase tracking-wider ${
-                        activeCategoryId === item.category.id
+                        activeCategoryId === item.category.name
                           ? "text-primary"
                           : "text-slate-500 dark:text-slate-400"
                       }`}
@@ -397,10 +366,9 @@ export function DashboardPage() {
                       }}
                     >
                       <div className="grid grid-cols-3 md:grid-cols-4 gap-3">
-                        {activeCategoryId &&
-                          getToolsByCategory(activeCategoryId as ToolCategory)
-                            .filter((t) => t.implemented)
-                            .map((tool) => (
+                        {getToolsByDisplayCategory(
+                          activeCategoryId ?? ""
+                        ).map((tool) => (
                               <button
                                 key={tool.id}
                                 type="button"

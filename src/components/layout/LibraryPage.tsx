@@ -1,13 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { categorySubtitles } from "../../constants/library";
 import {
-  sidebarMapping,
-  gridRoleMapping,
-  categorySubtitles,
-  categoryIcons,
-  categoryNameToRegistry,
-} from "../../constants/library";
-import { tools, getToolsByRole } from "../../registry";
+  tools,
+  getRoleCategoryMapping,
+  getToolsByDisplayCategory,
+  getDisplayCategories,
+} from "../../registry";
 import type { Role, Tool } from "../../registry";
 import { useToolStore } from "../../store";
 
@@ -49,24 +48,29 @@ export function LibraryPage() {
     }
   }, [location.state]);
 
+  const roleCategoryMapping = useMemo(() => getRoleCategoryMapping(), []);
   const filteredCategories = useMemo(
-    () => sidebarMapping[currentRole] ?? [],
-    [currentRole]
+    () => roleCategoryMapping[currentRole] ?? [],
+    [currentRole, roleCategoryMapping]
   );
 
   const filteredTools = useMemo(() => {
-    const roleFiltered =
-      gridRoleMapping[currentRole] === "all"
-        ? tools
-        : getToolsByRole(currentRole.toLowerCase() as Role);
-    const registryCategory = categoryNameToRegistry[currentCategory];
-    if (!registryCategory) return roleFiltered.filter(() => false);
-    return roleFiltered.filter((t) => t.category === registryCategory);
+    const byCategory = getToolsByDisplayCategory(currentCategory);
+    if (currentRole === "All") return byCategory;
+    return byCategory.filter((t) =>
+      t.roles.includes(currentRole.toLowerCase() as Role)
+    );
   }, [currentRole, currentCategory]);
+
+  const categoryIconMap = useMemo(() => {
+    return Object.fromEntries(
+      getDisplayCategories().map((c) => [c.name, c.icon])
+    );
+  }, []);
 
   const handleRoleClick = (role: (typeof ROLES)[number]) => {
     setCurrentRole(role);
-    const cats = sidebarMapping[role];
+    const cats = roleCategoryMapping[role];
     if (cats?.length) setCurrentCategory(cats[0]);
   };
 
@@ -132,7 +136,7 @@ export function LibraryPage() {
               }`}
             >
               <span className="material-symbols-outlined text-[20px]" aria-hidden>
-                {categoryIcons[cat] ?? "folder"}
+                {categoryIconMap[cat] ?? "folder"}
               </span>
               <span className="text-sm">{cat}</span>
             </button>
@@ -179,7 +183,7 @@ export function LibraryPage() {
                 </p>
                 <div className="flex flex-wrap items-center gap-2 text-[10px]">
                   <span className="uppercase tracking-wider font-semibold text-slate-400">
-                    {tool.category}
+                    {tool.displayCategory}
                   </span>
                   {tool.roles.map((r) => (
                     <span

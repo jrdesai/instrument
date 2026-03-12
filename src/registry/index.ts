@@ -32,6 +32,8 @@ export interface Tool {
   name: string;
   description: string;
   category: ToolCategory;
+  displayCategory: string;
+  displayCategoryIcon: string;
   roles: Role[];
   icon: string;
   shortcut?: string;
@@ -64,6 +66,8 @@ export const tools: Tool[] = [
     name: "Base64 Encoder",
     description: "Encode and decode text or binary using Base64.",
     category: "encoding",
+    displayCategory: "Encoding",
+    displayCategoryIcon: "data_array",
     roles: ["frontend", "backend", "general"],
     icon: "data_array",
     platforms: ["desktop", "web"],
@@ -75,10 +79,32 @@ export const tools: Tool[] = [
     implemented: true,
   },
   {
+    id: "regex-tester",
+    name: "Regex Tester",
+    description: "Test regular expressions across engines without freezing the UI.",
+    category: "code",
+    displayCategory: "Code",
+    displayCategoryIcon: "code",
+    roles: ["frontend", "backend", "general"],
+    icon: "find_in_page",
+    platforms: ["desktop", "web"],
+    rustCommand: "tool_regex_test",
+    keywords: ["regex", "regular expression", "match", "pattern"],
+    component: React.lazy(
+      () =>
+        import("../tools/regex-tester") as Promise<{
+          default: React.ComponentType<unknown>;
+        }>
+    ),
+    implemented: true,
+  },
+  {
     id: "url-encoder",
     name: "URL Encoder",
     description: "Encode or decode URL-safe percent-encoding.",
     category: "encoding",
+    displayCategory: "Encoding",
+    displayCategoryIcon: "data_array",
     roles: ["frontend", "backend", "general"],
     icon: "link",
     platforms: ["desktop", "web"],
@@ -94,6 +120,8 @@ export const tools: Tool[] = [
     name: "HTML Entity",
     description: "Encode or decode HTML entities.",
     category: "encoding",
+    displayCategory: "Encoding",
+    displayCategoryIcon: "data_array",
     roles: ["frontend", "general"],
     icon: "html",
     platforms: ["desktop", "web"],
@@ -109,6 +137,8 @@ export const tools: Tool[] = [
     name: "Hex Converter",
     description: "Convert between hex, bytes, and text.",
     category: "encoding",
+    displayCategory: "Encoding",
+    displayCategoryIcon: "data_array",
     roles: ["frontend", "backend", "general"],
     icon: "calculate",
     platforms: ["desktop", "web"],
@@ -124,6 +154,8 @@ export const tools: Tool[] = [
     name: "MD5 Hash",
     description: "Compute MD5 checksums.",
     category: "crypto",
+    displayCategory: "Security",
+    displayCategoryIcon: "verified_user",
     roles: ["backend", "security", "general"],
     icon: "fingerprint",
     platforms: ["desktop", "web"],
@@ -139,6 +171,8 @@ export const tools: Tool[] = [
     name: "SHA-256 Hash",
     description: "Compute SHA-256 hashes.",
     category: "crypto",
+    displayCategory: "Security",
+    displayCategoryIcon: "verified_user",
     roles: ["backend", "security", "general"],
     icon: "fingerprint",
     platforms: ["desktop", "web"],
@@ -154,6 +188,8 @@ export const tools: Tool[] = [
     name: "SHA-512 Hash",
     description: "Compute SHA-512 hashes.",
     category: "crypto",
+    displayCategory: "Security",
+    displayCategoryIcon: "verified_user",
     roles: ["backend", "security", "general"],
     icon: "fingerprint",
     platforms: ["desktop", "web"],
@@ -169,6 +205,8 @@ export const tools: Tool[] = [
     name: "UUID Generator",
     description: "Generate UUIDs (v4, v7).",
     category: "crypto",
+    displayCategory: "Security",
+    displayCategoryIcon: "verified_user",
     roles: ["backend", "general"],
     icon: "tag",
     platforms: ["desktop", "web"],
@@ -184,6 +222,8 @@ export const tools: Tool[] = [
     name: "ULID Generator",
     description: "Generate ULIDs.",
     category: "crypto",
+    displayCategory: "Security",
+    displayCategoryIcon: "verified_user",
     roles: ["backend", "data", "general"],
     icon: "tag",
     platforms: ["desktop", "web"],
@@ -199,6 +239,8 @@ export const tools: Tool[] = [
     name: "JWT Decoder",
     description: "Decode and inspect JWT tokens including expiry status and lifetime.",
     category: "auth",
+    displayCategory: "Auth",
+    displayCategoryIcon: "token",
     roles: ["backend", "security", "general"],
     icon: "token",
     platforms: ["desktop", "web"],
@@ -214,6 +256,8 @@ export const tools: Tool[] = [
     name: "JWT Builder",
     description: "Build and sign JWTs.",
     category: "auth",
+    displayCategory: "Auth",
+    displayCategoryIcon: "token",
     roles: ["backend", "security"],
     icon: "token",
     platforms: ["desktop", "web"],
@@ -229,6 +273,8 @@ export const tools: Tool[] = [
     name: "API Key Generator",
     description: "Generate secure API keys.",
     category: "crypto",
+    displayCategory: "Security",
+    displayCategoryIcon: "verified_user",
     roles: ["backend", "security"],
     icon: "key",
     platforms: ["desktop", "web"],
@@ -244,6 +290,8 @@ export const tools: Tool[] = [
     name: "JSON Formatter",
     description: "Format and minify JSON.",
     category: "json",
+    displayCategory: "JSON Tools",
+    displayCategoryIcon: "data_object",
     roles: ["frontend", "backend", "data", "general"],
     icon: "data_object",
     platforms: ["desktop", "web"],
@@ -259,6 +307,8 @@ export const tools: Tool[] = [
     name: "JSON Validator",
     description: "Validate JSON and report errors.",
     category: "json",
+    displayCategory: "JSON Tools",
+    displayCategoryIcon: "data_object",
     roles: ["frontend", "backend", "data", "general"],
     icon: "check_circle",
     platforms: ["desktop", "web"],
@@ -274,6 +324,8 @@ export const tools: Tool[] = [
     name: "JSON Diff",
     description: "Diff two JSON values.",
     category: "json",
+    displayCategory: "JSON Tools",
+    displayCategoryIcon: "data_object",
     roles: ["backend", "data", "general"],
     icon: "difference",
     platforms: ["desktop", "web"],
@@ -289,6 +341,8 @@ export const tools: Tool[] = [
     name: "JSON Path",
     description: "Query JSON with path expressions.",
     category: "json",
+    displayCategory: "JSON Tools",
+    displayCategoryIcon: "data_object",
     roles: ["backend", "data"],
     icon: "route",
     platforms: ["desktop", "web"],
@@ -304,6 +358,8 @@ export const tools: Tool[] = [
     name: "JSON Converter",
     description: "Convert JSON to YAML, TypeScript, CSV, or XML.",
     category: "json",
+    displayCategory: "JSON Tools",
+    displayCategoryIcon: "data_object",
     roles: ["frontend", "backend", "data", "general"],
     icon: "compare_arrows",
     platforms: ["desktop", "web"],
@@ -319,6 +375,8 @@ export const tools: Tool[] = [
     name: "YAML to JSON",
     description: "Convert YAML to JSON.",
     category: "json",
+    displayCategory: "JSON Tools",
+    displayCategoryIcon: "data_object",
     roles: ["backend", "data", "general"],
     icon: "code",
     platforms: ["desktop", "web"],
@@ -337,6 +395,8 @@ export const tools: Tool[] = [
     name: "CSV to JSON",
     description: "Convert CSV to JSON.",
     category: "data",
+    displayCategory: "Data",
+    displayCategoryIcon: "table_chart",
     roles: ["backend", "data", "general"],
     icon: "table_chart",
     platforms: ["desktop", "web"],
@@ -350,6 +410,8 @@ export const tools: Tool[] = [
     name: "URL Parser",
     description: "Parse and inspect URLs.",
     category: "network",
+    displayCategory: "Network",
+    displayCategoryIcon: "router",
     roles: ["frontend", "backend", "general"],
     icon: "link",
     platforms: ["desktop", "web"],
@@ -363,6 +425,8 @@ export const tools: Tool[] = [
     name: "Text Case Converter",
     description: "Convert between lower, upper, camel, snake, etc.",
     category: "text",
+    displayCategory: "Formatting",
+    displayCategoryIcon: "format_indent_increase",
     roles: ["frontend", "backend", "general"],
     icon: "text_fields",
     platforms: ["desktop", "web"],
@@ -378,6 +442,8 @@ export const tools: Tool[] = [
     name: "Word Counter",
     description: "Count words, characters, and lines.",
     category: "text",
+    displayCategory: "Formatting",
+    displayCategoryIcon: "format_indent_increase",
     roles: ["frontend", "general"],
     icon: "sort_by_alpha",
     platforms: ["desktop", "web"],
@@ -393,6 +459,8 @@ export const tools: Tool[] = [
     name: "String Escaper",
     description: "Escape and unescape strings (JSON, CSV, etc.).",
     category: "text",
+    displayCategory: "Formatting",
+    displayCategoryIcon: "format_indent_increase",
     roles: ["frontend", "backend", "general"],
     icon: "keyboard",
     platforms: ["desktop", "web"],
@@ -408,6 +476,8 @@ export const tools: Tool[] = [
     name: "Find & Replace",
     description: "Find and replace text with optional regex.",
     category: "text",
+    displayCategory: "Formatting",
+    displayCategoryIcon: "format_indent_increase",
     roles: ["frontend", "backend", "general"],
     icon: "find_replace",
     platforms: ["desktop", "web"],
@@ -423,6 +493,8 @@ export const tools: Tool[] = [
     name: "Lorem Ipsum Generator",
     description: "Generate placeholder text (paragraphs, sentences, or words).",
     category: "text",
+    displayCategory: "Formatting",
+    displayCategoryIcon: "format_indent_increase",
     roles: ["frontend", "general"],
     icon: "format_quote",
     platforms: ["desktop", "web"],
@@ -438,6 +510,8 @@ export const tools: Tool[] = [
     name: "Timestamp Converter",
     description: "Convert Unix timestamps and human-readable dates.",
     category: "datetime",
+    displayCategory: "Date & Time",
+    displayCategoryIcon: "schedule",
     roles: ["backend", "data", "general"],
     icon: "schedule",
     platforms: ["desktop", "web"],
@@ -453,6 +527,8 @@ export const tools: Tool[] = [
     name: "Timezone Converter",
     description: "Convert times between timezones.",
     category: "datetime",
+    displayCategory: "Date & Time",
+    displayCategoryIcon: "schedule",
     roles: ["backend", "general"],
     icon: "public",
     platforms: ["desktop", "web"],
@@ -468,6 +544,8 @@ export const tools: Tool[] = [
     name: "ISO 8601 Formatter",
     description: "Format and parse ISO 8601 dates.",
     category: "datetime",
+    displayCategory: "Date & Time",
+    displayCategoryIcon: "schedule",
     roles: ["backend", "data", "general"],
     icon: "event",
     platforms: ["desktop", "web"],
@@ -483,6 +561,8 @@ export const tools: Tool[] = [
     name: "Number Base Converter",
     description: "Convert between decimal, hex, binary, octal.",
     category: "numbers",
+    displayCategory: "Numbers",
+    displayCategoryIcon: "numbers",
     roles: ["frontend", "backend", "general"],
     icon: "numbers",
     platforms: ["desktop", "web"],
@@ -498,6 +578,8 @@ export const tools: Tool[] = [
     name: "Bitwise Calculator",
     description: "AND, OR, XOR, NOT, shift operations.",
     category: "numbers",
+    displayCategory: "Numbers",
+    displayCategoryIcon: "numbers",
     roles: ["backend", "general"],
     icon: "memory",
     platforms: ["desktop", "web"],
@@ -513,6 +595,8 @@ export const tools: Tool[] = [
     name: "Expression Evaluator",
     description: "Safely evaluate numeric or logical expressions.",
     category: "numbers",
+    displayCategory: "Numbers",
+    displayCategoryIcon: "numbers",
     roles: ["backend", "general"],
     icon: "calculate",
     platforms: ["desktop", "web"],
@@ -526,6 +610,8 @@ export const tools: Tool[] = [
     name: "Code Formatter",
     description: "Format code (JSON, HTML, etc.).",
     category: "code",
+    displayCategory: "Code",
+    displayCategoryIcon: "code",
     roles: ["frontend", "backend", "general"],
     icon: "format_indent_increase",
     platforms: ["desktop", "web"],
@@ -535,23 +621,12 @@ export const tools: Tool[] = [
     implemented: false,
   },
   {
-    id: "regex-tester",
-    name: "Regex Tester",
-    description: "Test regular expressions with live matches.",
-    category: "code",
-    roles: ["frontend", "backend", "general"],
-    icon: "regular_expression",
-    platforms: ["desktop", "web"],
-    rustCommand: "tool_regex_test",
-    keywords: ["regex", "regular expression", "test", "match"],
-    component: placeholderComponent,
-    implemented: false,
-  },
-  {
     id: "sql-formatter",
     name: "SQL Formatter",
     description: "Format and beautify SQL.",
     category: "code",
+    displayCategory: "Code",
+    displayCategoryIcon: "code",
     roles: ["backend", "data", "general"],
     icon: "storage",
     platforms: ["desktop", "web"],
@@ -584,4 +659,61 @@ export function getToolsByCategory(cat: ToolCategory): Tool[] {
  */
 export function getToolsByRole(role: Role): Tool[] {
   return tools.filter((t) => t.roles.includes(role));
+}
+
+/** Returns all unique display categories derived from the tool registry. */
+export function getDisplayCategories(): {
+  name: string;
+  icon: string;
+  toolCount: number;
+}[] {
+  const map = new Map<string, { icon: string; toolCount: number }>();
+  for (const tool of tools) {
+    if (!tool.implemented) continue;
+    const existing = map.get(tool.displayCategory);
+    if (existing) {
+      existing.toolCount += 1;
+    } else {
+      map.set(tool.displayCategory, {
+        icon: tool.displayCategoryIcon,
+        toolCount: 1,
+      });
+    }
+  }
+  return Array.from(map.entries()).map(([name, data]) => ({
+    name,
+    ...data,
+  }));
+}
+
+/** Returns all implemented tools in the given display category. */
+export function getToolsByDisplayCategory(displayCategory: string): Tool[] {
+  return tools.filter(
+    (t) => t.displayCategory === displayCategory && t.implemented
+  );
+}
+
+/**
+ * Returns a map of role → display category names that contain
+ * at least one implemented tool with that role.
+ * Replaces the hardcoded sidebarMapping in library.ts.
+ */
+export function getRoleCategoryMapping(): Record<string, string[]> {
+  const result: Record<string, string[]> = { All: [] };
+  const allCategories = new Set<string>();
+
+  for (const tool of tools) {
+    if (!tool.implemented) continue;
+    allCategories.add(tool.displayCategory);
+    for (const role of tool.roles) {
+      const key = role.charAt(0).toUpperCase() + role.slice(1);
+      if (!result[key]) result[key] = [];
+      if (!result[key].includes(tool.displayCategory)) {
+        result[key].push(tool.displayCategory);
+      }
+    }
+  }
+
+  result["All"] = Array.from(allCategories);
+  return result;
 }

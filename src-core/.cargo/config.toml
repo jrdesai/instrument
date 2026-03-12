@@ -1,0 +1,3 @@
+# Required for wasm32 builds: getrandom (used by rand, chrono-tz, etc.) needs a backend.
+[target.wasm32-unknown-unknown]
+rustflags = ["--cfg", "getrandom_backend=\"wasm_js\""]

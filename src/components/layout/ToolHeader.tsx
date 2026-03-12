@@ -20,7 +20,7 @@ export function ToolHeader({ tool }: { tool: Tool }) {
       </div>
       <div className="flex items-center gap-2 flex-wrap justify-end">
         <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-semibold uppercase tracking-wider">
-          {tool.category}
+          {tool.displayCategory}
         </span>
         {tool.roles.map((role) => (
           <span
