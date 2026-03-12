@@ -8,6 +8,7 @@ import {
   getToolsByDisplayCategory,
 } from "../../registry";
 import { useToolStore } from "../../store";
+import { APP_VERSION } from "../../version";
 
 const STORAGE_KEY = "instrument:dashboard:activeCategory";
 const MAX_RECENT = 5;
@@ -413,15 +414,7 @@ export function DashboardPage() {
             {categoriesWithTools}{" "}
             {categoriesWithTools === 1 ? "Category" : "Categories"}
           </span>
-          <div className="flex items-center gap-2 ml-auto">
-            <span
-              className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"
-              aria-hidden
-            />
-            <span className="font-mono text-emerald-500">
-              Engine Online
-            </span>
-          </div>
+          <span className="font-mono ml-auto">v{APP_VERSION}</span>
         </div>
       </footer>
     </div>

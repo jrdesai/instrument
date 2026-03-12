@@ -30,6 +30,12 @@ export default defineConfig(async () => ({
       ignored: ["**/src-tauri/**", "**/src-core/**", "**/target/**"],
     },
   },
+  define: {
+    "import.meta.env.VITE_APP_VERSION": JSON.stringify(
+      // @ts-expect-error process is a nodejs global
+      process.env.npm_package_version ?? "0.0.0"
+    ),
+  },
   test: {
     environment: "jsdom",
     setupFiles: ["src/vitest.setup.ts"],

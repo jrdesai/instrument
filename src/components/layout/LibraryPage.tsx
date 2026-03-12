@@ -9,19 +9,17 @@ import {
 } from "../../registry";
 import type { Role, Tool } from "../../registry";
 import { useToolStore } from "../../store";
+import { APP_VERSION } from "../../version";
 
 const ROLES = ["All", "Frontend", "Backend", "DevOps", "Security", "Data"] as const;
-const VERSION = "v1.0.0";
 
 function StatusBar({ toolCount }: { toolCount: number }) {
   return (
     <footer className="h-8 flex items-center px-6 border-t border-border-dark bg-background-dark text-[10px] text-slate-500 gap-6 shrink-0">
-      <div className="flex items-center gap-2">
-        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" aria-hidden />
-        <span className="font-mono text-emerald-500">Engine Online</span>
-      </div>
-      <span className="font-mono">{toolCount} {toolCount === 1 ? "Tool" : "Tools"}</span>
-      <span className="font-mono ml-auto">{VERSION}</span>
+      <span className="font-mono">
+        {toolCount} {toolCount === 1 ? "Tool" : "Tools"}
+      </span>
+      <span className="font-mono ml-auto">v{APP_VERSION}</span>
     </footer>
   );
 }
