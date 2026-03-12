@@ -7,3 +7,4 @@ pub mod json;
 pub mod numbers;
 pub mod text;
 pub mod regex;
+pub mod sql;

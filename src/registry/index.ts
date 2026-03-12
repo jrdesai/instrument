@@ -629,11 +629,16 @@ export const tools: Tool[] = [
     displayCategoryIcon: "code",
     roles: ["backend", "data", "general"],
     icon: "storage",
-    platforms: ["desktop", "web"],
+    // For now, only desktop is supported; add web once sqlformat is confirmed WASM-safe.
+    platforms: ["desktop"],
     rustCommand: "tool_sql_format",
     keywords: ["sql", "format", "beautify", "query"],
-    component: placeholderComponent,
-    implemented: false,
+    component: React.lazy(() =>
+      import("../tools/sql-formatter/SqlFormatterTool").then((m) => ({
+        default: m.default,
+      }))
+    ),
+    implemented: true,
   },
 ];
 

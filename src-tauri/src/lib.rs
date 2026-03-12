@@ -42,6 +42,7 @@ pub fn run() {
             instrument_desktop::commands::numbers::bitwise_process,
             instrument_desktop::commands::regex::tool_regex_test,
             instrument_desktop::commands::regex::tool_regex_explain,
+            instrument_desktop::commands::sql::tool_sql_format,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

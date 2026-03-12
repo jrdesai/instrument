@@ -1,0 +1,6 @@
+# Allow the SQL Formatter tool command to be invoked from the frontend.
+[[permission]]
+identifier = "allow-sql-formatter"
+description = "Enables the tool_sql_format command."
+commands.allow = ["tool_sql_format"]
+
