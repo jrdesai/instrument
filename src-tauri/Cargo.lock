@@ -1901,6 +1901,7 @@ dependencies = [
  "sqlformat",
  "thiserror 2.0.18",
  "ulid",
+ "url",
  "uuid",
 ]
 

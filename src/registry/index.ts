@@ -408,7 +408,7 @@ export const tools: Tool[] = [
   {
     id: "url-parser",
     name: "URL Parser",
-    description: "Parse and inspect URLs.",
+    description: "Parse and inspect URL components.",
     category: "network",
     displayCategory: "Network",
     displayCategoryIcon: "router",
@@ -416,9 +416,13 @@ export const tools: Tool[] = [
     icon: "link",
     platforms: ["desktop", "web"],
     rustCommand: "tool_url_parse",
-    keywords: ["url", "parse", "query", "host"],
-    component: placeholderComponent,
-    implemented: false,
+    keywords: ["url", "parse", "query", "host", "path", "fragment"],
+    component: React.lazy(() =>
+      import("../tools/url-parser/UrlParserTool").then((m) => ({
+        default: m.default,
+      }))
+    ),
+    implemented: true,
   },
   {
     id: "text-case-converter",

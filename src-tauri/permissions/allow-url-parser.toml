@@ -1,0 +1,5 @@
+# Allow the URL Parser tool command to be invoked from the frontend.
+[[permission]]
+identifier = "allow-url-parser"
+description = "Enables the tool_url_parse command."
+commands.allow = ["tool_url_parse"]

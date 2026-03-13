@@ -36,6 +36,7 @@
     "allow-yaml-to-json",
     "allow-regex-test",
     "allow-regex-explain",
-    "allow-sql-formatter"
+    "allow-sql-formatter",
+    "allow-url-parser"
   ]
 }

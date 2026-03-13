@@ -39,6 +39,9 @@ use instrument_core::encoding::html_entity::{
     process as html_entity_process_core, HtmlEntityInput, HtmlEntityOutput,
 };
 use instrument_core::encoding::url::{process as url_process, UrlEncodeInput, UrlEncodeOutput};
+use instrument_core::network::{
+    process as url_parse_process, UrlParseInput, UrlParseOutput,
+};
 use regex_core::router as regex_router;
 use regex_core::types::{
     ExplainRequest, ExplainToken as RegexExplainToken, MatchResult as RegexMatchResult, RegexRequest,
@@ -61,6 +64,15 @@ pub fn url_encode_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
     let input: UrlEncodeInput =
         from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
     let output: UrlEncodeOutput = url_process(input);
+    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
+}
+
+/// URL parser. Receives UrlParseInput (camelCase) and returns UrlParseOutput (camelCase).
+#[wasm_bindgen(js_name = tool_url_parse)]
+pub fn tool_url_parse_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
+    let input: UrlParseInput =
+        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let output: UrlParseOutput = url_parse_process(input);
     to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
 }
 

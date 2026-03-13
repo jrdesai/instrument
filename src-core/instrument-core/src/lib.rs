@@ -1,4 +1,5 @@
 pub mod encoding;
+pub mod network;
 pub mod crypto;
 pub mod auth;
 pub mod jwt;

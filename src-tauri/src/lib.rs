@@ -38,6 +38,7 @@ pub fn run() {
             instrument_desktop::commands::json::tool_json_path,
             instrument_desktop::commands::json::tool_json_convert,
             instrument_desktop::commands::json::tool_yaml_to_json,
+            instrument_desktop::commands::network::tool_url_parse,
             instrument_desktop::commands::numbers::base_converter_process,
             instrument_desktop::commands::numbers::bitwise_process,
             instrument_desktop::commands::regex::tool_regex_test,
