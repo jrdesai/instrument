@@ -30,3 +30,4 @@ quick-xml = { version = "0.36", features = ["serialize"] }
 sqlformat = "0.2"
 url = "2"
 csv = "1"
+meval = "0.2"

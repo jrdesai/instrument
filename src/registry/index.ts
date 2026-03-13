@@ -44,18 +44,7 @@ export interface Tool {
   implemented: boolean;
 }
 
-/** Placeholder lazy component until real tool components exist. Replace with lazy( () => import('../tools/...') ) when adding the tool UI. */
-const placeholderComponent = React.lazy(
-  () =>
-    Promise.resolve({
-      default: () =>
-        React.createElement(
-          "div",
-          { className: "p-4 text-slate-500" },
-          "Tool not implemented yet."
-        ),
-    }) as Promise<{ default: React.ComponentType<unknown> }>
-);
+/** Placeholder lazy component for future tools (currently unused). */
 
 /**
  * All registered tools (v1.0). Components are lazy-loaded; paths are placeholders until tools exist.
@@ -610,8 +599,12 @@ export const tools: Tool[] = [
     platforms: ["desktop", "web"],
     rustCommand: "tool_expression_eval",
     keywords: ["expression", "eval", "calculator"],
-    component: placeholderComponent,
-    implemented: false,
+    component: React.lazy(() =>
+      import("../tools/expression-evaluator").then((m) => ({
+        default: m.default,
+      }))
+    ),
+    implemented: true,
   },
   {
     id: "code-formatter",

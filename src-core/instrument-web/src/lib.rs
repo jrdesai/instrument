@@ -45,6 +45,9 @@ use instrument_core::network::{
 use instrument_core::csv::{
     process as csv_to_json_process_core, CsvToJsonInput, CsvToJsonOutput,
 };
+use instrument_core::expression::{
+    process as expression_eval_process_core, ExprEvalInput, ExprEvalOutput,
+};
 use regex_core::router as regex_router;
 use regex_core::types::{
     ExplainRequest, ExplainToken as RegexExplainToken, MatchResult as RegexMatchResult, RegexRequest,
@@ -85,6 +88,15 @@ pub fn tool_csv_to_json_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
     let input: CsvToJsonInput =
         from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
     let output: CsvToJsonOutput = csv_to_json_process_core(input);
+    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
+}
+
+/// Expression evaluator. Receives ExprEvalInput (camelCase) and returns ExprEvalOutput (camelCase).
+#[wasm_bindgen(js_name = tool_expression_eval)]
+pub fn tool_expression_eval_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
+    let input: ExprEvalInput =
+        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let output: ExprEvalOutput = expression_eval_process_core(input);
     to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
 }
 

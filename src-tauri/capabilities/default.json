@@ -38,6 +38,7 @@
     "allow-regex-explain",
     "allow-sql-formatter",
     "allow-url-parser",
-    "allow-csv-to-json"
+    "allow-csv-to-json",
+    "allow-expression-eval"
   ]
 }

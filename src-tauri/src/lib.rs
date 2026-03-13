@@ -45,6 +45,7 @@ pub fn run() {
             instrument_desktop::commands::regex::tool_regex_explain,
             instrument_desktop::commands::sql::tool_sql_format,
             instrument_desktop::commands::csv::tool_csv_to_json,
+            instrument_desktop::commands::expression::tool_expression_eval,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

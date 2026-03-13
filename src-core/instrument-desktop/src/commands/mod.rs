@@ -7,6 +7,7 @@ pub mod json;
 pub mod network;
 pub mod numbers;
 pub mod csv;
+pub mod expression;
 pub mod text;
 pub mod regex;
 pub mod sql;

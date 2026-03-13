@@ -1,0 +1,6 @@
+# Allow the Expression Evaluator tool command to be invoked from the frontend.
+[[permission]]
+identifier = "allow-expression-eval"
+description = "Enables the tool_expression_eval command."
+commands.allow = ["tool_expression_eval"]
+
