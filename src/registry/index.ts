@@ -402,8 +402,12 @@ export const tools: Tool[] = [
     platforms: ["desktop", "web"],
     rustCommand: "tool_csv_to_json",
     keywords: ["csv", "json", "convert", "table"],
-    component: placeholderComponent,
-    implemented: false,
+    component: React.lazy(() =>
+      import("../tools/csv-to-json/CsvToJsonTool").then((m) => ({
+        default: m.default,
+      }))
+    ),
+    implemented: true,
   },
   {
     id: "url-parser",

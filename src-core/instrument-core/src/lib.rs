@@ -8,3 +8,4 @@ pub mod text;
 pub mod datetime;
 pub mod numbers;
 pub mod sql;
+pub mod csv;

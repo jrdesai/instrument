@@ -1,0 +1,161 @@
+## Task
+Implement the "CSV to JSON" tool for the Instrument app. This tool converts CSV text into JSON. Follow the exact patterns established by the SQL Formatter tool across all layers.
+
+## Architecture Overview
+
+The app has 4 layers for each tool:
+1. **Core logic** (pure Rust, no framework deps): `src-core/instrument-core/src/<module>/mod.rs`
+2. **Desktop command** (thin Tauri wrapper): `src-core/instrument-desktop/src/commands/<module>.rs`
+3. **WASM binding** (wasm-bindgen wrapper): `src-core/instrument-web/src/lib.rs`
+4. **React UI**: `src/tools/<tool-name>/CsvToJsonTool.tsx`
+5. **Registry + wiring**: registry entry, Tauri handler registration, module declarations
+
+## Layer 1: Core Logic
+
+Create `src-core/instrument-core/src/csv/mod.rs`:
+
+- Add `pub mod csv;` to `src-core/instrument-core/src/lib.rs` (after the `sql` line)
+- Add `csv = "1"` to `src-core/instrument-core/Cargo.toml` under `[dependencies]`
+- Use the `csv` crate (https://crates.io/crates/csv)
+- Define types with `#[serde(rename_all = "camelCase")]`:
+
+```rust
+pub struct CsvToJsonInput {
+    pub value: String,           // raw CSV text
+    pub has_headers: bool,       // first row = header names (default true)
+    pub delimiter: String,       // single char: "," or "\t" or "|" etc.
+    pub output_format: CsvOutputFormat,  // array-of-objects vs array-of-arrays
+}
+
+pub enum CsvOutputFormat {
+    ArrayOfObjects,  // [{"col1": "val", "col2": "val"}, ...]
+    ArrayOfArrays,   // [["val","val"], ["val","val"], ...]
+}
+
+pub struct CsvToJsonOutput {
+    pub result: String,          // pretty-printed JSON string
+    pub row_count: usize,        // number of data rows (excluding header if has_headers)
+    pub column_count: usize,     // number of columns detected
+    pub error: Option<String>,
+}
+```
+
+- Implement `pub fn process(input: CsvToJsonInput) -> CsvToJsonOutput`
+- Use `csv::ReaderBuilder` with `.delimiter(byte)` and `.has_headers(input.has_headers)`
+- For `ArrayOfObjects`: use headers as keys, produce `Vec<serde_json::Map<String, Value>>`
+- For `ArrayOfArrays`: produce `Vec<Vec<String>>`
+- Serialize result with `serde_json::to_string_pretty`
+- Handle empty input by returning empty result with no error
+- Handle parse errors by returning them in the `error` field
+- Include unit tests in `#[cfg(test)] mod tests` (empty input, basic CSV, tab delimiter, no headers, array-of-arrays mode, error on malformed input)
+
+## Layer 2: Desktop Command
+
+Create `src-core/instrument-desktop/src/commands/csv.rs`:
+
+```rust
+use instrument_core::csv::{process, CsvToJsonInput, CsvToJsonOutput};
+
+#[tauri::command]
+pub fn tool_csv_to_json(input: CsvToJsonInput) -> CsvToJsonOutput {
+    process(input)
+}
+```
+
+- Add `pub mod csv;` to `src-core/instrument-desktop/src/commands/mod.rs`
+- Add `instrument_desktop::commands::csv::tool_csv_to_json,` to the `generate_handler!` macro in `src-tauri/src/lib.rs` (after the `tool_sql_format` line)
+
+## Layer 3: WASM Binding
+
+Add to the bottom of `src-core/instrument-web/src/lib.rs`:
+
+```rust
+use instrument_core::csv::{process as csv_to_json_process_core, CsvToJsonInput, CsvToJsonOutput};
+
+#[wasm_bindgen(js_name = tool_csv_to_json)]
+pub fn tool_csv_to_json_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
+    let input: CsvToJsonInput =
+        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let output: CsvToJsonOutput = csv_to_json_process_core(input);
+    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
+}
+```
+
+Also add `csv = "1"` to `src-core/instrument-web/Cargo.toml` if instrument-web re-exports instrument-core (it should get it transitively, but check).
+
+## Layer 4: React UI
+
+Create `src/tools/csv-to-json/CsvToJsonTool.tsx`:
+
+Follow the SqlFormatterTool.tsx pattern exactly:
+- Import `callTool` from `../../bridge`
+- Import `CodeBlock` from `../../components/ui/CodeBlock`
+- Use `RUST_COMMAND = "tool_csv_to_json"` and `DEBOUNCE_MS = 300`
+- State: `inputValue` (string), `hasHeaders` (boolean, default true), `delimiter` (string, default ","), `outputFormat` ("arrayOfObjects" | "arrayOfArrays", default "arrayOfObjects"), `output` (result object | null), `copyLabel`
+- Split-pane layout: left = textarea for CSV input, right = CodeBlock with `language="json"` for output
+- Footer with options:
+  - **Headers** toggle: checkbox for "First row is header"
+  - **Delimiter** radio group: Comma, Tab, Pipe, Semicolon
+  - **Format** radio group: Array of Objects, Array of Arrays
+  - Action buttons: Convert, Copy, Clear (same pattern as SQL Formatter)
+- Debounced auto-conversion on input/option change via useEffect (same pattern as SqlFormatterTool)
+- Placeholder text in the input textarea:
+  ```
+  name,email,age
+  Alice,alice@example.com,30
+  Bob,bob@example.com,25
+  ```
+- Output panel shows "Enter CSV on the left to see JSON output here." when empty
+- Error bar at bottom of output panel (same red styling as SQL Formatter)
+- Char count in input header, row/column count in output header
+
+## Layer 5: Registry Wiring
+
+In `src/registry/index.ts`, update the existing `csv-to-json` entry (around line 393):
+
+```typescript
+{
+    id: "csv-to-json",
+    name: "CSV to JSON",
+    description: "Convert CSV to JSON.",
+    category: "data",
+    displayCategory: "Data",
+    displayCategoryIcon: "table_chart",
+    roles: ["backend", "data", "general"],
+    icon: "table_chart",
+    platforms: ["desktop", "web"],  // supports both since csv crate is WASM-safe
+    rustCommand: "tool_csv_to_json",
+    keywords: ["csv", "json", "convert", "table"],
+    component: React.lazy(() =>
+      import("../tools/csv-to-json/CsvToJsonTool").then((m) => ({
+        default: m.default,
+      }))
+    ),
+    implemented: true,  // CHANGE from false to true
+}
+```
+
+## Important Conventions
+- All Rust structs use `#[serde(rename_all = "camelCase")]` for JSON serialization
+- The Tauri command function name matches the `rustCommand` in the registry (e.g. `tool_csv_to_json`)
+- The WASM binding uses `js_name = tool_csv_to_json` to match the same name
+- The desktop bridge passes `{ input }` as the payload argument name
+- React components use the dark theme classes: `bg-background-dark`, `text-slate-100`, `border-border-dark`, `bg-panel-dark`, etc.
+- Radio inputs use `className="h-3 w-3 accent-primary"`
+- Buttons follow the exact same styling as SqlFormatterTool (primary for main action, bordered for secondary)
+- The CodeBlock component handles syntax highlighting; pass `language="json"` and `code={output.result}`
+
+## Reference Files
+Study these files for exact patterns before implementing:
+- `src-core/instrument-core/src/sql/mod.rs` — core logic pattern (Input/Output structs, process fn, tests)
+- `src-core/instrument-desktop/src/commands/sql.rs` — Tauri command wrapper pattern
+- `src-core/instrument-web/src/lib.rs` — WASM binding pattern
+- `src/tools/sql-formatter/SqlFormatterTool.tsx` — React UI pattern (split pane, debounce, footer options)
+- `src/registry/index.ts` — registry entry pattern
+- `src-tauri/src/lib.rs` — command registration in generate_handler!
+
+## Build & Test
+- Run `cargo test -p instrument-core` to verify Rust tests pass
+- Run `cargo build -p instrument-desktop` to verify Tauri compilation
+- Run `npm run dev` to verify the React UI loads without errors
+- The tool should appear in the Library under the "Data" category

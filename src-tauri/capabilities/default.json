@@ -37,6 +37,7 @@
     "allow-regex-test",
     "allow-regex-explain",
     "allow-sql-formatter",
-    "allow-url-parser"
+    "allow-url-parser",
+    "allow-csv-to-json"
   ]
 }
