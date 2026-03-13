@@ -63,3 +63,5 @@ src-tauri/WixTools/  ← Windows installer tools downloaded by Tauri
 # ── Cursor ────────────────────────────────────────────
 .cursor/*
 !.cursor/rules/
+# Local temp specs
+temp/
