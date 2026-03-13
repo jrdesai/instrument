@@ -10,6 +10,8 @@ import "prismjs/components/prism-yaml";
 import "prismjs/components/prism-sql";
 import "prismjs/components/prism-markup";
 import "prismjs/components/prism-bash";
+import "prismjs/components/prism-css";
+import "prismjs/components/prism-markdown";
 import { useEffect, useRef, useState } from "react";
 
 const PRISM_STYLES = `
@@ -41,7 +43,7 @@ function injectPrismTheme() {
 
 export interface CodeBlockProps {
   code: string;
-  language: "json" | "typescript" | "yaml" | "sql" | "markup" | "bash";
+  language: "json" | "typescript" | "yaml" | "sql" | "markup" | "bash" | "css" | "markdown";
   maxHeight?: string;
   showCopyButton?: boolean;
   showLineNumbers?: boolean;

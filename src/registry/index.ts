@@ -38,7 +38,7 @@ export interface Tool {
   icon: string;
   shortcut?: string;
   platforms: Platform[];
-  rustCommand: string;
+  rustCommand?: string;
   keywords: string[];
   component: React.LazyExoticComponent<React.ComponentType<unknown>>;
   implemented: boolean;
@@ -608,17 +608,29 @@ export const tools: Tool[] = [
   {
     id: "code-formatter",
     name: "Code Formatter",
-    description: "Format code (JSON, HTML, etc.).",
+    description: "Format JavaScript, TypeScript, HTML, CSS, and Markdown.",
     category: "code",
     displayCategory: "Code",
     displayCategoryIcon: "code",
     roles: ["frontend", "backend", "general"],
     icon: "format_indent_increase",
     platforms: ["desktop", "web"],
-    rustCommand: "tool_code_format",
-    keywords: ["code", "format", "prettify"],
-    component: placeholderComponent,
-    implemented: false,
+    keywords: [
+      "code",
+      "format",
+      "prettier",
+      "javascript",
+      "typescript",
+      "html",
+      "css",
+      "markdown",
+    ],
+    component: React.lazy(() =>
+      import("../tools/code-formatter/CodeFormatterTool").then((m) => ({
+        default: m.default,
+      }))
+    ),
+    implemented: true,
   },
   {
     id: "sql-formatter",
