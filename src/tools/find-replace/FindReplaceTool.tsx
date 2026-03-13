@@ -209,9 +209,9 @@ function FindReplaceTool() {
   const showMatchCount = find.trim() !== "";
 
   return (
-    <div className="flex flex-col h-full bg-background-dark text-slate-100 font-display">
+    <div className="flex flex-col h-full bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
       {/* Top: Find and Replace inputs side by side */}
-      <div className="flex gap-3 px-4 py-3 border-b border-border-dark bg-panel-dark shrink-0">
+      <div className="flex gap-3 px-4 py-3 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0">
         <div className="flex-1 flex flex-col min-w-0">
           <span className="text-slate-500 text-xs uppercase tracking-wider mb-1">
             Find
@@ -219,7 +219,7 @@ function FindReplaceTool() {
           <input
             type="text"
             aria-label="Find"
-            className="w-full px-3 py-2 bg-background-dark text-slate-100 font-mono text-sm outline-none focus:ring-1 focus:ring-primary border border-border-dark rounded-lg"
+            className="w-full px-3 py-2 bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-mono text-sm outline-none focus:ring-1 focus:ring-primary border border-border-light dark:border-border-dark rounded-lg"
             placeholder="Find..."
             value={find}
             onChange={(e) => setFind(e.target.value)}
@@ -233,7 +233,7 @@ function FindReplaceTool() {
           <input
             type="text"
             aria-label="Replace with"
-            className="w-full px-3 py-2 bg-background-dark text-slate-100 font-mono text-sm outline-none focus:ring-1 focus:ring-primary border border-border-dark rounded-lg"
+            className="w-full px-3 py-2 bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-mono text-sm outline-none focus:ring-1 focus:ring-primary border border-border-light dark:border-border-dark rounded-lg"
             placeholder="Replace with..."
             value={replace}
             onChange={(e) => setReplace(e.target.value)}
@@ -243,8 +243,8 @@ function FindReplaceTool() {
       </div>
 
       {/* Middle: main text area (~50%) with match highlighting */}
-      <div className="flex flex-col flex-1 min-h-0 border-b border-border-dark">
-        <div className="flex items-center justify-between px-3 py-2 border-b border-border-dark bg-panel-dark text-xs shrink-0">
+      <div className="flex flex-col flex-1 min-h-0 border-b border-border-light dark:border-border-dark">
+        <div className="flex items-center justify-between px-3 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark text-xs shrink-0">
           <span className="text-slate-500">Input</span>
           {showMatchCount && (
             <span
@@ -258,7 +258,7 @@ function FindReplaceTool() {
             </span>
           )}
         </div>
-        <div className="relative flex-1 min-h-[120px] overflow-hidden rounded-lg border border-border-dark focus-within:border-primary/40">
+        <div className="relative flex-1 min-h-[120px] overflow-hidden rounded-lg border border-border-light dark:border-border-dark focus-within:border-primary/40">
           {/* Layer 1 — Highlight div (behind textarea) */}
           <div
             ref={highlightRef}
@@ -270,7 +270,7 @@ function FindReplaceTool() {
           {/* Layer 2 — Textarea (on top, transparent background) */}
           <textarea
             aria-label="Text to search in"
-            className="absolute inset-0 w-full h-full p-3 font-mono text-sm leading-relaxed whitespace-pre-wrap bg-transparent text-slate-300 resize-none focus:outline-none overflow-y-auto"
+            className="absolute inset-0 w-full h-full p-3 font-mono text-sm leading-relaxed whitespace-pre-wrap bg-transparent text-slate-700 dark:text-slate-300 resize-none focus:outline-none overflow-y-auto"
             placeholder="Paste text here..."
             value={text}
             onChange={(e) => setText(e.target.value)}
@@ -288,11 +288,11 @@ function FindReplaceTool() {
 
       {/* Bottom: output panel (~30%) */}
       <div className="flex flex-col h-[30%] min-h-[140px] shrink-0">
-        <div className="flex items-center justify-between px-3 py-2 border-b border-border-dark bg-panel-dark text-xs shrink-0">
+        <div className="flex items-center justify-between px-3 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark text-xs shrink-0">
           <span className="text-slate-500">Output</span>
           <div className="flex items-center gap-2">
             {resultText !== "" && (
-              <span className="text-slate-400">
+              <span className="text-slate-500 dark:text-slate-400">
                 {replacedCount === 0
                   ? "No replacements"
                   : `${replacedCount} replacement${replacedCount === 1 ? "" : "s"} made`}
@@ -313,7 +313,7 @@ function FindReplaceTool() {
           aria-live="polite"
           aria-label="Find replace output"
           className={`flex-1 p-4 overflow-auto font-mono text-sm whitespace-pre-wrap break-all ${
-            hasError ? "text-red-400" : "text-slate-300"
+            hasError ? "text-red-400" : "text-slate-700 dark:text-slate-300"
           }`}
         >
           {hasError
@@ -323,7 +323,7 @@ function FindReplaceTool() {
       </div>
 
       {/* Footer: Options | Actions */}
-      <footer className="flex items-end gap-2 px-4 py-3 border-t border-border-dark bg-panel-dark shrink-0">
+      <footer className="flex items-end gap-2 px-4 py-3 border-t border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0">
         {/* Options */}
         <div
           className="flex flex-col gap-1"
@@ -341,7 +341,7 @@ function FindReplaceTool() {
               className={`px-3 py-1 text-sm font-medium rounded-lg transition-colors ${
                 caseSensitive
                   ? "bg-primary text-white"
-                  : "text-slate-400 hover:bg-slate-700"
+                  : "text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
               }`}
             >
               Case sensitive
@@ -356,7 +356,7 @@ function FindReplaceTool() {
                   ? "opacity-50 cursor-not-allowed text-slate-500"
                   : wholeWord
                     ? "bg-primary text-white"
-                    : "text-slate-400 hover:bg-slate-700"
+                    : "text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
               }`}
             >
               Whole word
@@ -368,7 +368,7 @@ function FindReplaceTool() {
               className={`px-3 py-1 text-sm font-medium rounded-lg transition-colors ${
                 regexMode
                   ? "bg-primary text-white"
-                  : "text-slate-400 hover:bg-slate-700"
+                  : "text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
               }`}
             >
               Regex
@@ -380,7 +380,7 @@ function FindReplaceTool() {
               className={`px-3 py-1 text-sm font-medium rounded-lg transition-colors ${
                 replaceAll
                   ? "bg-primary text-white"
-                  : "text-slate-400 hover:bg-slate-700"
+                  : "text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
               }`}
             >
               Replace all
@@ -388,7 +388,7 @@ function FindReplaceTool() {
           </div>
         </div>
 
-        <div className="w-px h-6 bg-border-dark self-center mx-3" />
+        <div className="w-px h-6 bg-border-light dark:bg-border-dark self-center mx-3" />
 
         {/* Actions */}
         <div
@@ -401,7 +401,7 @@ function FindReplaceTool() {
               type="button"
               aria-label="Clear all"
               onClick={handleClear}
-              className="px-3 py-1 text-sm text-slate-300 hover:text-primary hover:bg-slate-700 rounded-lg transition-colors"
+              className="px-3 py-1 text-sm text-slate-700 dark:text-slate-300 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
             >
               Clear
             </button>

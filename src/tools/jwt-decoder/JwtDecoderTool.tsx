@@ -258,7 +258,7 @@ function JwtDecoderTool() {
   const displayOutput = output && !output.error && output.isWellFormed;
 
   return (
-    <div className="flex flex-col h-full bg-background-dark text-slate-100 font-display">
+    <div className="flex flex-col h-full bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
       <div className="flex items-center gap-2 px-4 py-2 bg-amber-500/5 border-b border-amber-500/20 text-amber-500/70 text-xs">
         <span className="material-symbols-outlined text-sm leading-none flex-shrink-0">
           warning
@@ -269,10 +269,10 @@ function JwtDecoderTool() {
         </span>
       </div>
       {/* Token input */}
-      <div className="flex flex-col px-4 py-3 border-b border-border-dark bg-panel-dark shrink-0">
+      <div className="flex flex-col px-4 py-3 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0">
         <textarea
           aria-label="JWT token"
-          className="w-full min-h-[120px] px-3 py-2 bg-background-dark text-slate-100 font-mono text-xs border border-border-dark rounded-lg resize-y outline-none focus:ring-1 focus:ring-primary placeholder:text-slate-500"
+          className="w-full min-h-[120px] px-3 py-2 bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-mono text-xs border border-border-light dark:border-border-dark rounded-lg resize-y outline-none focus:ring-1 focus:ring-primary placeholder:text-slate-400 dark:placeholder:text-slate-500"
           placeholder="Paste JWT token here..."
           rows={6}
           value={token}
@@ -312,13 +312,13 @@ function JwtDecoderTool() {
         {displayOutput && (
           <div className="space-y-3">
             {/* Section 1 — Header */}
-            <section className="border border-border-dark rounded-lg bg-panel-dark overflow-hidden">
+            <section className="border border-border-light dark:border-border-dark rounded-lg bg-panel-light dark:bg-panel-dark overflow-hidden">
               <button
                 type="button"
                 onClick={() => setHeaderOpen((o) => !o)}
                 className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-white/5 transition-colors"
               >
-                <span className="text-sm font-semibold uppercase tracking-wider text-slate-300">
+                <span className="text-sm font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300">
                   Header
                 </span>
                 <span
@@ -331,34 +331,34 @@ function JwtDecoderTool() {
               {headerOpen && (
                 <div className="px-4 pb-4 space-y-3">
                   <div className="flex flex-wrap gap-3">
-                    <div className="flex flex-col border border-border-dark bg-background-dark rounded-lg p-3 min-w-[100px]">
+                    <div className="flex flex-col border border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark rounded-lg p-3 min-w-[100px]">
                       <span className="text-slate-500 text-xs uppercase tracking-wider">
                         Algorithm
                       </span>
-                      <span className="font-mono text-sm text-slate-200 mt-0.5">
+                      <span className="font-mono text-sm text-slate-800 dark:text-slate-200 mt-0.5">
                         {output.algorithm || "—"}
                       </span>
                     </div>
-                    <div className="flex flex-col border border-border-dark bg-background-dark rounded-lg p-3 min-w-[100px]">
+                    <div className="flex flex-col border border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark rounded-lg p-3 min-w-[100px]">
                       <span className="text-slate-500 text-xs uppercase tracking-wider">
                         Type
                       </span>
-                      <span className="font-mono text-sm text-slate-200 mt-0.5">
+                      <span className="font-mono text-sm text-slate-800 dark:text-slate-200 mt-0.5">
                         {output.tokenType || "—"}
                       </span>
                     </div>
                     {output.keyId != null && output.keyId !== "" && (
-                      <div className="flex flex-col border border-border-dark bg-background-dark rounded-lg p-3 min-w-[100px]">
+                      <div className="flex flex-col border border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark rounded-lg p-3 min-w-[100px]">
                         <span className="text-slate-500 text-xs uppercase tracking-wider">
                           Key ID
                         </span>
-                        <span className="font-mono text-sm text-slate-200 mt-0.5">
+                        <span className="font-mono text-sm text-slate-800 dark:text-slate-200 mt-0.5">
                           {output.keyId}
                         </span>
                       </div>
                     )}
                   </div>
-                  <pre className="bg-background-dark rounded p-3 font-mono text-xs text-slate-300 overflow-x-auto border border-border-dark">
+                  <pre className="bg-background-light dark:bg-background-dark rounded p-3 font-mono text-xs text-slate-700 dark:text-slate-300 overflow-x-auto border border-border-light dark:border-border-dark">
                     {output.headerRaw}
                   </pre>
                 </div>
@@ -366,13 +366,13 @@ function JwtDecoderTool() {
             </section>
 
             {/* Section 2 — Payload */}
-            <section className="border border-border-dark rounded-lg bg-panel-dark overflow-hidden">
+            <section className="border border-border-light dark:border-border-dark rounded-lg bg-panel-light dark:bg-panel-dark overflow-hidden">
               <button
                 type="button"
                 onClick={() => setPayloadOpen((o) => !o)}
                 className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-white/5 transition-colors"
               >
-                <span className="text-sm font-semibold uppercase tracking-wider text-slate-300">
+                <span className="text-sm font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300">
                   Payload
                 </span>
                 <span
@@ -385,46 +385,46 @@ function JwtDecoderTool() {
               {payloadOpen && (
                 <div className="px-4 pb-4 space-y-3">
                   <div className="flex flex-wrap gap-3">
-                    <div className="flex flex-col border border-border-dark bg-background-dark rounded-lg p-3 min-w-[100px]">
+                    <div className="flex flex-col border border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark rounded-lg p-3 min-w-[100px]">
                       <span className="text-slate-500 text-xs uppercase tracking-wider">
                         Subject
                       </span>
-                      <span className="font-mono text-sm text-slate-200 mt-0.5">
+                      <span className="font-mono text-sm text-slate-800 dark:text-slate-200 mt-0.5">
                         {output.subject ?? "—"}
                       </span>
                     </div>
-                    <div className="flex flex-col border border-border-dark bg-background-dark rounded-lg p-3 min-w-[100px]">
+                    <div className="flex flex-col border border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark rounded-lg p-3 min-w-[100px]">
                       <span className="text-slate-500 text-xs uppercase tracking-wider">
                         Issuer
                       </span>
-                      <span className="font-mono text-sm text-slate-200 mt-0.5">
+                      <span className="font-mono text-sm text-slate-800 dark:text-slate-200 mt-0.5">
                         {output.issuer ?? "—"}
                       </span>
                     </div>
-                    <div className="flex flex-col border border-border-dark bg-background-dark rounded-lg p-3 min-w-[100px]">
+                    <div className="flex flex-col border border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark rounded-lg p-3 min-w-[100px]">
                       <span className="text-slate-500 text-xs uppercase tracking-wider">
                         Audience
                       </span>
-                      <span className="font-mono text-sm text-slate-200 mt-0.5">
+                      <span className="font-mono text-sm text-slate-800 dark:text-slate-200 mt-0.5">
                         {output.audience ?? "—"}
                       </span>
                     </div>
-                    <div className="flex flex-col border border-border-dark bg-background-dark rounded-lg p-3 min-w-[100px]">
+                    <div className="flex flex-col border border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark rounded-lg p-3 min-w-[100px]">
                       <span className="text-slate-500 text-xs uppercase tracking-wider">
                         JWT ID
                       </span>
-                      <span className="font-mono text-sm text-slate-200 mt-0.5">
+                      <span className="font-mono text-sm text-slate-800 dark:text-slate-200 mt-0.5">
                         {output.jwtId ?? "—"}
                       </span>
                     </div>
                   </div>
                   {/* Time claims */}
                   <div className="flex flex-wrap gap-3">
-                    <div className="flex flex-col border border-border-dark bg-background-dark rounded-lg p-3 min-w-[140px]">
+                    <div className="flex flex-col border border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark rounded-lg p-3 min-w-[140px]">
                       <span className="text-slate-500 text-xs uppercase tracking-wider">
                         Issued At
                       </span>
-                      <span className="font-mono text-sm text-slate-200 mt-0.5">
+                      <span className="font-mono text-sm text-slate-800 dark:text-slate-200 mt-0.5">
                         {output.issuedAt != null ? output.issuedAt : "—"}
                       </span>
                       {output.issuedAtHuman && (
@@ -433,11 +433,11 @@ function JwtDecoderTool() {
                         </span>
                       )}
                     </div>
-                    <div className="flex flex-col border border-border-dark bg-background-dark rounded-lg p-3 min-w-[140px]">
+                    <div className="flex flex-col border border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark rounded-lg p-3 min-w-[140px]">
                       <span className="text-slate-500 text-xs uppercase tracking-wider">
                         Expires At
                       </span>
-                      <span className="font-mono text-sm text-slate-200 mt-0.5">
+                      <span className="font-mono text-sm text-slate-800 dark:text-slate-200 mt-0.5">
                         {output.expiresAt != null ? output.expiresAt : "—"}
                       </span>
                       {output.expiresAtHuman && (
@@ -467,9 +467,9 @@ function JwtDecoderTool() {
 
                   {/* Expiry Timeline — only when exp present */}
                   {output.expiresAt != null && (
-                    <div className="space-y-3 pt-2 border-t border-border-dark">
+                    <div className="space-y-3 pt-2 border-t border-border-light dark:border-border-dark">
                       <div className="flex items-center justify-between">
-                        <div className="text-slate-400 text-xs font-semibold uppercase tracking-wider">
+                        <div className="text-slate-500 dark:text-slate-400 text-xs font-semibold uppercase tracking-wider">
                           Expiry Timeline
                         </div>
                         <button
@@ -509,7 +509,7 @@ function JwtDecoderTool() {
                       {(liveConsumed != null || output.consumedPercent != null) &&
                         output.lifetimeSeconds != null && (
                           <>
-                            <div className="w-full h-2 bg-background-dark rounded-full overflow-hidden">
+                            <div className="w-full h-2 bg-background-light dark:bg-background-dark rounded-full overflow-hidden">
                               <div
                                 className={`h-full rounded-full transition-all ${
                                   (liveIsExpired ?? output.isExpired) === true
@@ -582,7 +582,7 @@ function JwtDecoderTool() {
                     </div>
                   )}
 
-                  <pre className="bg-background-dark rounded p-3 font-mono text-xs text-slate-300 overflow-x-auto border border-border-dark">
+                  <pre className="bg-background-light dark:bg-background-dark rounded p-3 font-mono text-xs text-slate-700 dark:text-slate-300 overflow-x-auto border border-border-light dark:border-border-dark">
                     {output.allClaims}
                   </pre>
                 </div>
@@ -590,13 +590,13 @@ function JwtDecoderTool() {
             </section>
 
             {/* Section 3 — Signature */}
-            <section className="border border-border-dark rounded-lg bg-panel-dark overflow-hidden">
+            <section className="border border-border-light dark:border-border-dark rounded-lg bg-panel-light dark:bg-panel-dark overflow-hidden">
               <button
                 type="button"
                 onClick={() => setSignatureOpen((o) => !o)}
                 className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-white/5 transition-colors"
               >
-                <span className="text-sm font-semibold uppercase tracking-wider text-slate-300">
+                <span className="text-sm font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300">
                   Signature
                 </span>
                 <span
@@ -608,7 +608,7 @@ function JwtDecoderTool() {
               </button>
               {signatureOpen && (
                 <div className="px-4 pb-4 space-y-3">
-                  <div className="font-mono text-xs text-slate-300 break-all">
+                  <div className="font-mono text-xs text-slate-700 dark:text-slate-300 break-all">
                     {signatureHexExpanded
                       ? output.signatureRaw
                       : output.signatureRaw.length > 64
@@ -654,7 +654,7 @@ function JwtDecoderTool() {
                         <input
                           type={showSecret ? "text" : "password"}
                           aria-label="Secret for signature verification"
-                          className="w-full px-3 py-2 bg-background-dark text-slate-100 font-mono text-sm border border-border-dark rounded-lg outline-none focus:ring-1 focus:ring-primary placeholder:text-slate-500"
+                          className="w-full px-3 py-2 bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-mono text-sm border border-border-light dark:border-border-dark rounded-lg outline-none focus:ring-1 focus:ring-primary placeholder:text-slate-500"
                           placeholder="Enter secret to verify signature..."
                           value={secret}
                           onChange={(e) => setSecret(e.target.value)}
@@ -679,7 +679,7 @@ function JwtDecoderTool() {
                             className={`px-3 py-1 text-xs font-medium rounded-lg transition-colors ${
                               secretEncoding === enc
                                 ? "bg-primary text-white"
-                                : "text-slate-400 hover:bg-slate-700"
+                                : "text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
                             }`}
                           >
                             {enc === "utf8" ? "UTF-8" : enc === "base64" ? "Base64" : "Hex"}
@@ -696,12 +696,12 @@ function JwtDecoderTool() {
       </div>
 
       {/* Footer */}
-      <footer className="flex items-center gap-4 px-4 py-3 border-t border-border-dark bg-panel-dark shrink-0">
+      <footer className="flex items-center gap-4 px-4 py-3 border-t border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0">
         <button
           type="button"
           onClick={handleCopyToken}
           disabled={!trimmedToken}
-          className="px-3 py-2 text-xs font-medium bg-panel-dark text-slate-300 border border-border-dark rounded-lg hover:text-primary hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="px-3 py-2 text-xs font-medium bg-panel-light dark:bg-panel-dark text-slate-700 dark:text-slate-300 border border-border-light dark:border-border-dark rounded-lg hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           Copy Token
         </button>
@@ -709,14 +709,14 @@ function JwtDecoderTool() {
           type="button"
           onClick={handleCopyPayload}
           disabled={!output?.allClaims}
-          className="px-3 py-2 text-xs font-medium bg-panel-dark text-slate-300 border border-border-dark rounded-lg hover:text-primary hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="px-3 py-2 text-xs font-medium bg-panel-light dark:bg-panel-dark text-slate-700 dark:text-slate-300 border border-border-light dark:border-border-dark rounded-lg hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           Copy Payload
         </button>
         <button
           type="button"
           onClick={handleClear}
-          className="px-4 py-2 text-sm bg-panel-dark text-slate-400 border border-border-dark rounded-lg hover:text-slate-200 hover:border-slate-500 transition-colors"
+          className="px-4 py-2 text-sm bg-panel-light dark:bg-panel-dark text-slate-500 dark:text-slate-400 border border-border-light dark:border-border-dark rounded-lg hover:text-slate-800 dark:hover:text-slate-200 hover:border-slate-400 dark:hover:border-slate-500 transition-colors"
         >
           Clear
         </button>

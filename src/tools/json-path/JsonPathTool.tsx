@@ -148,7 +148,7 @@ function JsonPathTool() {
       );
     }
     return (
-      <div className="mt-1 font-mono text-xs text-slate-200 break-all">
+      <div className="mt-1 font-mono text-xs text-slate-800 dark:text-slate-200 break-all">
         {m.value}
       </div>
     );
@@ -163,15 +163,15 @@ function JsonPathTool() {
   };
 
   return (
-    <div className="flex flex-col h-full bg-background-dark text-slate-100 font-display">
+    <div className="flex flex-col h-full bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
       {/* Row 1 — Query input */}
-      <div className="flex items-stretch border-b border-border-dark bg-panel-dark shrink-0 h-14">
-        <div className="flex items-center px-3 py-2 border-r border-border-dark rounded-tl-lg bg-panel-dark">
+      <div className="flex items-stretch border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0 h-14">
+        <div className="flex items-center px-3 py-2 border-r border-border-light dark:border-border-dark rounded-tl-lg bg-panel-light dark:bg-panel-dark">
           <span className="text-primary font-mono text-sm font-bold">$</span>
         </div>
         <input
           aria-label="JSONPath query"
-          className="flex-1 bg-transparent px-3 py-2 font-mono text-xs text-slate-200 placeholder:text-slate-500 focus:outline-none"
+          className="flex-1 bg-transparent px-3 py-2 font-mono text-xs text-slate-800 dark:text-slate-200 placeholder:text-slate-500 focus:outline-none"
           placeholder=".store.book[*].title"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
@@ -188,9 +188,9 @@ function JsonPathTool() {
       {/* Row 2 — JSON input + Results */}
       <div className="flex flex-1 min-h-0">
         {/* Left — JSON document input */}
-        <div className="flex flex-col flex-1 min-w-0 border-r border-border-dark">
-          <div className="flex items-center justify-between px-4 py-2 border-b border-border-dark bg-panel-dark shrink-0">
-            <span className="text-slate-400 text-xs uppercase tracking-wider">
+        <div className="flex flex-col flex-1 min-w-0 border-r border-border-light dark:border-border-dark">
+          <div className="flex items-center justify-between px-4 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0">
+            <span className="text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider">
               JSON DOCUMENT
             </span>
             {jsonInput && (
@@ -201,7 +201,7 @@ function JsonPathTool() {
           </div>
           <textarea
             aria-label="JSON document"
-            className="flex-1 w-full min-h-0 p-4 font-mono text-xs text-slate-300 bg-transparent resize-none border-none focus:outline-none leading-relaxed placeholder:text-slate-500"
+            className="flex-1 w-full min-h-0 p-4 font-mono text-xs text-slate-700 dark:text-slate-300 bg-transparent resize-none border-none focus:outline-none leading-relaxed placeholder:text-slate-500"
             placeholder="Paste JSON document..."
             value={jsonInput}
             onChange={(e) => setJsonInput(e.target.value)}
@@ -210,8 +210,8 @@ function JsonPathTool() {
 
         {/* Right — Results */}
         <div className="flex flex-col flex-1 min-w-0">
-          <div className="flex items-center justify-between px-4 py-2 border-b border-border-dark bg-panel-dark shrink-0">
-            <span className="text-slate-400 text-xs uppercase tracking-wider">
+          <div className="flex items-center justify-between px-4 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0">
+            <span className="text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider">
               RESULTS
             </span>
           </div>
@@ -226,37 +226,37 @@ function JsonPathTool() {
                 <div className="text-slate-700 text-xs space-y-1">
                   <p className="font-semibold">Common patterns:</p>
                   <p>
-                    <span className="font-mono text-slate-300">
+                    <span className="font-mono text-slate-700 dark:text-slate-300">
                       $.store.book[*].author
                     </span>{" "}
                     — All authors
                   </p>
                   <p>
-                    <span className="font-mono text-slate-300">
+                    <span className="font-mono text-slate-700 dark:text-slate-300">
                       $..author
                     </span>{" "}
                     — All authors (recursive)
                   </p>
                   <p>
-                    <span className="font-mono text-slate-300">
+                    <span className="font-mono text-slate-700 dark:text-slate-300">
                       $.store.book[0]
                     </span>{" "}
                     — First book
                   </p>
                   <p>
-                    <span className="font-mono text-slate-300">
+                    <span className="font-mono text-slate-700 dark:text-slate-300">
                       $.store.book[-1]
                     </span>{" "}
                     — Last book
                   </p>
                   <p>
-                    <span className="font-mono text-slate-300">
+                    <span className="font-mono text-slate-700 dark:text-slate-300">
                       $.store.book[?(@.price &lt; 10)]
                     </span>{" "}
                     — Books under $10
                   </p>
                   <p>
-                    <span className="font-mono text-slate-300">
+                    <span className="font-mono text-slate-700 dark:text-slate-300">
                       $..book[?(@.isbn)]
                     </span>{" "}
                     — Books with ISBN
@@ -288,20 +288,20 @@ function JsonPathTool() {
             {/* Matches */}
             {!isEmpty && !showError && hasMatches && (
               <div className="space-y-3">
-                <p className="text-slate-300 text-sm font-semibold">
+                <p className="text-slate-700 dark:text-slate-300 text-sm font-semibold">
                   {matchCount} {matchCount === 1 ? "match" : "matches"}
                 </p>
                 <div className="space-y-2">
                   {matches.map((m) => (
                     <div
                       key={m.index}
-                      className="relative bg-panel-dark border border-border-dark rounded-lg p-3"
+                      className="relative bg-panel-light dark:bg-panel-dark border border-border-light dark:border-border-dark rounded-lg p-3"
                     >
                       <div className="flex items-center gap-2 mb-1">
                         <span className="bg-primary/10 text-primary text-xs font-mono px-1.5 rounded">
                           #{m.index + 1}
                         </span>
-                        <span className="font-mono text-slate-400 text-xs truncate">
+                        <span className="font-mono text-slate-500 dark:text-slate-400 text-xs truncate">
                           {m.path}
                         </span>
                         <span
@@ -315,7 +315,7 @@ function JsonPathTool() {
                       <button
                         type="button"
                         onClick={() => handleCopyMatch(m.value)}
-                        className="absolute top-2 right-2 text-slate-500 hover:text-slate-300 text-[10px] border border-border-dark rounded px-1 py-0.5 bg-background-dark"
+                        className="absolute top-2 right-2 text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 text-[10px] border border-border-light dark:border-border-dark rounded px-1 py-0.5 bg-background-light dark:bg-background-dark"
                       >
                         Copy
                       </button>
@@ -331,11 +331,11 @@ function JsonPathTool() {
 
       {/* Row 3 — Full Document collapsible */}
       {hasMatches && output?.annotatedDocument && (
-        <div className="border-t border-border-dark bg-panel-dark shrink-0">
+        <div className="border-t border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0">
           <button
             type="button"
             onClick={() => setFullDocOpen((o) => !o)}
-            className="flex items-center justify-between w-full px-4 py-2 text-left text-slate-400 hover:text-slate-200 text-xs"
+            className="flex items-center justify-between w-full px-4 py-2 text-left text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 text-xs"
           >
             <span className="flex items-center gap-2">
               <span className="material-symbols-outlined text-sm" aria-hidden>
@@ -361,12 +361,12 @@ function JsonPathTool() {
       )}
 
       {/* Footer */}
-      <footer className="flex items-center gap-2 px-4 py-3 border-t border-border-dark bg-panel-dark shrink-0">
+      <footer className="flex items-center gap-2 px-4 py-3 border-t border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0">
         {hasMatches && (
           <button
             type="button"
             onClick={handleCopyAll}
-            className="px-3 py-2 text-xs font-medium bg-panel-dark text-slate-300 border border-border-dark rounded-lg hover:text-primary hover:bg-slate-700 transition-colors"
+            className="px-3 py-2 text-xs font-medium bg-panel-light dark:bg-panel-dark text-slate-700 dark:text-slate-300 border border-border-light dark:border-border-dark rounded-lg hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
           >
             Copy All
           </button>
@@ -374,7 +374,7 @@ function JsonPathTool() {
         <button
           type="button"
           onClick={handleClear}
-          className="ml-auto px-4 py-2 text-sm bg-panel-dark text-slate-400 border border-border-dark rounded-lg hover:text-slate-200 hover:border-slate-500 transition-colors"
+          className="ml-auto px-4 py-2 text-sm bg-panel-light dark:bg-panel-dark text-slate-500 dark:text-slate-400 border border-border-light dark:border-border-dark rounded-lg hover:text-slate-800 dark:hover:text-slate-200 hover:border-slate-400 dark:hover:border-slate-500 transition-colors"
         >
           Clear
         </button>

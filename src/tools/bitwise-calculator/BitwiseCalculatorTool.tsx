@@ -83,20 +83,20 @@ function ResultCard({
 }) {
   if (!result) return null;
   return (
-    <div className="flex flex-col border border-border-dark bg-panel-dark rounded-lg p-3 hover:border-primary/40 transition-colors">
+    <div className="flex flex-col border border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark rounded-lg p-3 hover:border-primary/40 transition-colors">
       <div className="flex items-center justify-between mb-2">
-        <span className="text-slate-400 text-xs uppercase tracking-wider">
+        <span className="text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider">
           {label}
         </span>
         <button
           type="button"
           onClick={() => onCopy(result.decimal)}
-          className="px-2 py-0.5 text-[10px] font-medium bg-background-dark text-slate-300 border border-border-dark rounded-lg hover:text-primary hover:border-primary/60 transition-colors"
+          className="px-2 py-0.5 text-[10px] font-medium bg-background-light dark:bg-background-dark text-slate-700 dark:text-slate-300 border border-border-light dark:border-border-dark rounded-lg hover:text-primary hover:border-primary/60 transition-colors"
         >
           Copy
         </button>
       </div>
-      <div className="font-mono text-lg text-slate-200">{result.decimal}</div>
+      <div className="font-mono text-lg text-slate-800 dark:text-slate-200">{result.decimal}</div>
       <div className="font-mono text-xs text-slate-500 mt-1">
         {result.binaryGrouped}
       </div>
@@ -205,18 +205,18 @@ function BitwiseCalculatorTool() {
   const showAnalysis = hasA && !hasError && output?.bitCountA != null;
 
   return (
-    <div className="flex flex-col h-full bg-background-dark text-slate-100 font-display">
+    <div className="flex flex-col h-full bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
       {/* Input section */}
-      <div className="flex flex-col px-4 py-3 border-b border-border-dark bg-panel-dark">
+      <div className="flex flex-col px-4 py-3 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
           <div>
-            <label className="block text-slate-400 text-xs uppercase tracking-wider mb-1">
+            <label className="block text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider mb-1">
               Value A
             </label>
             <input
               type="text"
               aria-label="Value A"
-              className="w-full px-3 py-2 bg-background-dark text-slate-100 font-mono text-sm outline-none focus:ring-1 focus:ring-primary border border-border-dark rounded-lg"
+              className="w-full px-3 py-2 bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-mono text-sm outline-none focus:ring-1 focus:ring-primary border border-border-light dark:border-border-dark rounded-lg"
               placeholder="e.g. 60"
               value={valueA}
               onChange={(e) => setValueA(e.target.value)}
@@ -226,13 +226,13 @@ function BitwiseCalculatorTool() {
             )}
           </div>
           <div>
-            <label className="block text-slate-400 text-xs uppercase tracking-wider mb-1">
+            <label className="block text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider mb-1">
               Value B
             </label>
             <input
               type="text"
               aria-label="Value B"
-              className="w-full px-3 py-2 bg-background-dark text-slate-100 font-mono text-sm outline-none focus:ring-1 focus:ring-primary border border-border-dark rounded-lg"
+              className="w-full px-3 py-2 bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-mono text-sm outline-none focus:ring-1 focus:ring-primary border border-border-light dark:border-border-dark rounded-lg"
               placeholder="e.g. 13"
               value={valueB}
               onChange={(e) => setValueB(e.target.value)}
@@ -251,7 +251,7 @@ function BitwiseCalculatorTool() {
               className={`px-3 py-1 text-sm font-medium rounded-lg transition-colors ${
                 fromBase === id
                   ? "bg-primary text-white"
-                  : "bg-panel-dark text-slate-400 border border-border-dark hover:text-slate-200"
+                  : "bg-panel-light dark:bg-panel-dark text-slate-500 dark:text-slate-400 border border-border-light dark:border-border-dark hover:text-slate-800 dark:hover:text-slate-200"
               }`}
             >
               {label}
@@ -268,7 +268,7 @@ function BitwiseCalculatorTool() {
           <>
             {showTwoOp && (
               <section className="mb-6">
-                <h2 className="text-slate-400 text-xs uppercase tracking-wider mb-3">
+                <h2 className="text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider mb-3">
                   A op B
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -286,7 +286,7 @@ function BitwiseCalculatorTool() {
 
             {showSingleOp && (
               <section className="mb-6">
-                <h2 className="text-slate-400 text-xs uppercase tracking-wider mb-3">
+                <h2 className="text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider mb-3">
                   Operations on A
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -321,43 +321,43 @@ function BitwiseCalculatorTool() {
 
             {showAnalysis && (
               <section>
-                <h2 className="text-slate-400 text-xs uppercase tracking-wider mb-3">
+                <h2 className="text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider mb-3">
                   Bit analysis
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-                  <div className="flex flex-col border border-border-dark bg-panel-dark rounded-lg p-3">
-                    <span className="text-slate-400 text-xs uppercase tracking-wider mb-1">
+                  <div className="flex flex-col border border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark rounded-lg p-3">
+                    <span className="text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider mb-1">
                       1 bits (popcount)
                     </span>
-                    <span className="font-mono text-sm text-slate-200">
+                    <span className="font-mono text-sm text-slate-800 dark:text-slate-200">
                       {output?.bitCountA ?? "—"}
                     </span>
                   </div>
-                  <div className="flex flex-col border border-border-dark bg-panel-dark rounded-lg p-3">
-                    <span className="text-slate-400 text-xs uppercase tracking-wider mb-1">
+                  <div className="flex flex-col border border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark rounded-lg p-3">
+                    <span className="text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider mb-1">
                       Leading zeros
                     </span>
-                    <span className="font-mono text-sm text-slate-200">
+                    <span className="font-mono text-sm text-slate-800 dark:text-slate-200">
                       {output?.leadingZerosA ?? "—"}
                     </span>
                   </div>
-                  <div className="flex flex-col border border-border-dark bg-panel-dark rounded-lg p-3">
-                    <span className="text-slate-400 text-xs uppercase tracking-wider mb-1">
+                  <div className="flex flex-col border border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark rounded-lg p-3">
+                    <span className="text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider mb-1">
                       Trailing zeros
                     </span>
-                    <span className="font-mono text-sm text-slate-200">
+                    <span className="font-mono text-sm text-slate-800 dark:text-slate-200">
                       {output?.trailingZerosA ?? "—"}
                     </span>
                   </div>
-                  <div className="flex flex-col border border-border-dark bg-panel-dark rounded-lg p-3">
-                    <span className="text-slate-400 text-xs uppercase tracking-wider mb-1">
+                  <div className="flex flex-col border border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark rounded-lg p-3">
+                    <span className="text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider mb-1">
                       Power of two
                     </span>
                     <span
                       className={`inline-block px-2 py-0.5 rounded text-xs font-medium w-fit ${
                         output?.isPowerOfTwoA
                           ? "bg-emerald-500/20 text-emerald-400"
-                          : "bg-slate-700 text-slate-400"
+                          : "bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-400"
                       }`}
                     >
                       {output?.isPowerOfTwoA ? "Yes" : "No"}
@@ -371,7 +371,7 @@ function BitwiseCalculatorTool() {
       </div>
 
       {/* Footer: Bit Width | Shift | Actions */}
-      <footer className="flex items-end gap-2 px-4 py-3 border-t border-border-dark bg-panel-dark shrink-0">
+      <footer className="flex items-end gap-2 px-4 py-3 border-t border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0">
         {/* Bit Width */}
         <div className="flex flex-col gap-1" role="group" aria-label="Bit width">
           <span className="text-slate-600 text-xs uppercase tracking-wider">
@@ -386,7 +386,7 @@ function BitwiseCalculatorTool() {
                 className={`px-2 py-1 text-xs font-medium rounded transition-colors ${
                   bitWidth === id
                     ? "bg-primary text-white"
-                    : "bg-panel-dark text-slate-400 border border-border-dark hover:text-slate-200"
+                    : "bg-panel-light dark:bg-panel-dark text-slate-500 dark:text-slate-400 border border-border-light dark:border-border-dark hover:text-slate-800 dark:hover:text-slate-200"
                 }`}
               >
                 {label}
@@ -395,7 +395,7 @@ function BitwiseCalculatorTool() {
           </div>
         </div>
 
-        <div className="w-px h-6 bg-border-dark self-center mx-3" />
+        <div className="w-px h-6 bg-border-light dark:bg-border-dark self-center mx-3" />
 
         {/* Shift */}
         <div className="flex flex-col gap-1" role="group" aria-label="Shift">
@@ -409,11 +409,11 @@ function BitwiseCalculatorTool() {
             aria-label="Shift amount"
             value={shiftAmount}
             onChange={(e) => setShiftAmount(parseInt(e.target.value, 10) || 0)}
-            className="w-20 px-2 py-1 bg-background-dark text-slate-100 font-mono text-sm border border-border-dark rounded focus:ring-1 focus:ring-primary"
+            className="w-20 px-2 py-1 bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-mono text-sm border border-border-light dark:border-border-dark rounded focus:ring-1 focus:ring-primary"
           />
         </div>
 
-        <div className="w-px h-6 bg-border-dark self-center mx-3" />
+        <div className="w-px h-6 bg-border-light dark:bg-border-dark self-center mx-3" />
 
         {/* Actions (no label) */}
         <div
@@ -425,7 +425,7 @@ function BitwiseCalculatorTool() {
             <button
               type="button"
               onClick={handleClear}
-              className="px-4 py-2 text-sm bg-panel-dark text-slate-400 border border-border-dark rounded-lg hover:text-slate-200 hover:border-slate-500 transition-colors"
+              className="px-4 py-2 text-sm bg-panel-light dark:bg-panel-dark text-slate-500 dark:text-slate-400 border border-border-light dark:border-border-dark rounded-lg hover:text-slate-800 dark:hover:text-slate-200 hover:border-slate-400 dark:hover:border-slate-500 transition-colors"
             >
               Clear
             </button>

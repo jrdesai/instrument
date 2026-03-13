@@ -113,16 +113,16 @@ const YamlToJsonTool: React.FC = () => {
       "px-2 py-0.5 rounded-full text-xs cursor-pointer transition-colors",
       indent === value
         ? "bg-primary/10 text-primary border border-primary/30"
-        : "bg-panel-dark text-slate-400 border border-border-dark hover:bg-panel-light/40",
+        : "bg-panel-light dark:bg-panel-dark text-slate-500 dark:text-slate-400 border border-border-light dark:border-border-dark hover:bg-slate-200 dark:hover:bg-panel-light/40",
     ].join(" ");
 
   return (
     <div className="flex flex-col h-full w-full bg-background-light dark:bg-background-dark">
-      <div className="flex-1 flex flex-row min-h-0 border border-border-dark rounded-lg overflow-hidden bg-panel-dark/60">
+      <div className="flex-1 flex flex-row min-h-0 border border-border-light dark:border-border-dark rounded-lg overflow-hidden bg-panel-light/60 dark:bg-panel-dark/60">
         {/* Left: YAML input */}
-        <div className="flex flex-col w-1/2 border-r border-border-dark bg-panel-dark/60">
-          <div className="flex items-center justify-between px-4 py-2 border-b border-border-dark bg-panel-dark/80">
-            <span className="text-slate-400 text-xs font-semibold tracking-[0.16em]">
+        <div className="flex flex-col w-1/2 border-r border-border-light dark:border-border-dark bg-panel-light/60 dark:bg-panel-dark/60">
+          <div className="flex items-center justify-between px-4 py-2 border-b border-border-light dark:border-border-dark bg-panel-light/80 dark:bg-panel-dark/80">
+            <span className="text-slate-500 dark:text-slate-400 text-xs font-semibold tracking-[0.16em]">
               YAML INPUT
             </span>
             <span className="text-slate-600 text-xs tabular-nums">
@@ -130,7 +130,7 @@ const YamlToJsonTool: React.FC = () => {
             </span>
           </div>
           <textarea
-            className="flex-1 w-full resize-none border-none outline-none bg-transparent font-mono text-xs text-slate-300 p-4 leading-relaxed"
+            className="flex-1 w-full resize-none border-none outline-none bg-transparent font-mono text-xs text-slate-700 dark:text-slate-300 p-4 leading-relaxed"
             placeholder="Paste YAML here..."
             spellCheck={false}
             value={input}
@@ -139,8 +139,8 @@ const YamlToJsonTool: React.FC = () => {
         </div>
 
         {/* Right: JSON output */}
-        <div className="flex flex-col w-1/2 bg-panel-dark/40">
-          <div className="flex items-center justify-between px-4 py-2 border-b border-border-dark bg-panel-dark/80">
+        <div className="flex flex-col w-1/2 bg-panel-light/40 dark:bg-panel-dark/40">
+          <div className="flex items-center justify-between px-4 py-2 border-b border-border-light dark:border-border-dark bg-panel-light/80 dark:bg-panel-dark/80">
             <div className="flex items-center gap-2">
               {hasInput && effectiveOutput && (
                 <span
@@ -205,11 +205,11 @@ const YamlToJsonTool: React.FC = () => {
           </div>
 
           {/* YAML Quick Reference (simple always-visible collapsed text to keep it minimal) */}
-          <div className="border-t border-border-dark bg-panel-dark/70 px-4 py-2 text-[11px] text-slate-500">
+          <div className="border-t border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark/70 px-4 py-2 text-[11px] text-slate-500">
             <span className="font-semibold tracking-wide uppercase text-[10px]">
               YAML Quick Reference
             </span>
-            <pre className="mt-1 whitespace-pre-wrap font-mono text-[10px] text-slate-600 leading-relaxed">
+            <pre className="mt-1 whitespace-pre-wrap font-mono text-[10px] text-slate-500 dark:text-slate-600 leading-relaxed">
               {`Strings:
 name: John
 title: "Hello"
@@ -268,7 +268,7 @@ item:
               "px-2 py-0.5 rounded-full text-xs border transition-colors",
               sortKeys
                 ? "bg-primary/10 text-primary border-primary/30"
-                : "bg-panel-dark text-slate-400 border-border-dark hover:bg-panel-light/40",
+                : "bg-panel-light dark:bg-panel-dark text-slate-500 dark:text-slate-400 border-border-light dark:border-border-dark hover:bg-slate-200 dark:hover:bg-panel-light/40",
             ].join(" ")}
           >
             {sortKeys ? "Sort keys: on" : "Sort keys: off"}
@@ -288,7 +288,7 @@ item:
           <button
             type="button"
             onClick={handleClear}
-            className="px-3 py-1 rounded-md bg-panel-dark text-slate-300 border border-border-dark text-xs hover:bg-panel-light/60 transition-colors"
+            className="px-3 py-1 rounded-md bg-panel-light dark:bg-panel-dark text-slate-700 dark:text-slate-300 border border-border-light dark:border-border-dark text-xs hover:bg-slate-200 dark:hover:bg-panel-light/60 transition-colors"
           >
             Clear
           </button>

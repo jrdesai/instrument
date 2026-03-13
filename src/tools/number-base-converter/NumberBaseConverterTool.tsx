@@ -207,9 +207,9 @@ function NumberBaseConverterTool() {
   const inputBaseId = fromBase;
 
   return (
-    <div className="flex flex-col h-full bg-background-dark text-slate-100 font-display">
+    <div className="flex flex-col h-full bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
       {/* Input row */}
-      <div className="flex flex-col px-4 py-3 border-b border-border-dark bg-panel-dark">
+      <div className="flex flex-col px-4 py-3 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark">
         <div className="flex flex-wrap items-center gap-2 mb-2">
           {BASE_PILLS.map(({ id, label }) => (
             <button
@@ -220,7 +220,7 @@ function NumberBaseConverterTool() {
               className={`px-3 py-1 text-sm font-medium rounded-lg transition-colors ${
                 fromBase === id
                   ? "bg-primary text-white"
-                  : "bg-panel-dark text-slate-400 border border-border-dark hover:text-slate-200"
+                  : "bg-panel-light dark:bg-panel-dark text-slate-500 dark:text-slate-400 border border-border-light dark:border-border-dark hover:text-slate-700 dark:hover:text-slate-200"
               }`}
             >
               {label}
@@ -231,7 +231,7 @@ function NumberBaseConverterTool() {
           <input
             type="text"
             aria-label="Number to convert"
-            className="flex-1 min-w-0 px-3 py-2 bg-background-dark text-slate-100 font-mono text-sm outline-none focus:ring-1 focus:ring-primary border border-border-dark rounded-lg"
+            className="flex-1 min-w-0 px-3 py-2 bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-mono text-sm outline-none focus:ring-1 focus:ring-primary border border-border-light dark:border-border-dark rounded-lg"
             placeholder={PLACEHOLDERS[fromBase]}
             value={value}
             onChange={(e) => setValue(e.target.value)}
@@ -265,7 +265,7 @@ function NumberBaseConverterTool() {
                 className={`flex flex-col border rounded-lg p-3 transition-colors ${
                   isInputBase
                     ? "border-primary/40 bg-primary/5 hover:border-primary/50"
-                    : "border-border-dark bg-panel-dark hover:border-primary/40"
+                    : "border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark hover:border-primary/40"
                 }`}
               >
                 <div className="flex items-center justify-between mb-2">
@@ -276,12 +276,12 @@ function NumberBaseConverterTool() {
                     type="button"
                     onClick={() => handleCopyValue(valueStr)}
                     disabled={!valueStr || valueStr === "—"}
-                    className="px-2 py-0.5 text-[10px] font-medium bg-background-dark text-slate-300 border border-border-dark rounded-lg hover:text-primary hover:border-primary/60 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="px-2 py-0.5 text-[10px] font-medium bg-background-light dark:bg-background-dark text-slate-700 dark:text-slate-300 border border-border-light dark:border-border-dark rounded-lg hover:text-primary hover:border-primary/60 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
                     Copy
                   </button>
                 </div>
-                <pre className="font-mono text-sm text-slate-200 whitespace-pre-wrap break-all">
+                <pre className="font-mono text-sm text-slate-800 dark:text-slate-200 whitespace-pre-wrap break-all">
                   {display}
                 </pre>
               </div>
@@ -291,7 +291,7 @@ function NumberBaseConverterTool() {
       </div>
 
       {/* Footer: Bit Width | Options | Actions */}
-      <footer className="flex items-end gap-2 px-4 py-3 border-t border-border-dark bg-panel-dark shrink-0">
+      <footer className="flex items-end gap-2 px-4 py-3 border-t border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0">
         {/* Bit Width */}
         <div className="flex flex-col gap-1" role="group" aria-label="Bit width">
           <span className="text-slate-600 text-xs uppercase tracking-wider">
@@ -307,7 +307,7 @@ function NumberBaseConverterTool() {
                 className={`px-2 py-1 text-xs font-medium rounded transition-colors ${
                   bitWidth === id
                     ? "bg-primary text-white"
-                    : "bg-panel-dark text-slate-400 border border-border-dark hover:text-slate-200"
+                    : "bg-panel-light dark:bg-panel-dark text-slate-500 dark:text-slate-400 border border-border-light dark:border-border-dark hover:text-slate-700 dark:hover:text-slate-200"
                 }`}
               >
                 {label}
@@ -316,7 +316,7 @@ function NumberBaseConverterTool() {
           </div>
         </div>
 
-        <div className="w-px h-6 bg-border-dark self-center mx-3" />
+        <div className="w-px h-6 bg-border-light dark:bg-border-dark self-center mx-3" />
 
         {/* Options */}
         <div className="flex flex-col gap-1" role="group" aria-label="Options">
@@ -330,14 +330,14 @@ function NumberBaseConverterTool() {
             className={`px-2 py-1 text-xs font-medium rounded transition-colors ${
               uppercaseHex
                 ? "bg-primary text-white"
-                : "bg-panel-dark text-slate-400 border border-border-dark hover:text-slate-200"
+                : "bg-panel-light dark:bg-panel-dark text-slate-500 dark:text-slate-400 border border-border-light dark:border-border-dark hover:text-slate-700 dark:hover:text-slate-200"
             }`}
           >
             {uppercaseHex ? "On" : "Off"}
           </button>
         </div>
 
-        <div className="w-px h-6 bg-border-dark self-center mx-3" />
+        <div className="w-px h-6 bg-border-light dark:bg-border-dark self-center mx-3" />
 
         {/* Actions (no label) */}
         <div
@@ -350,14 +350,14 @@ function NumberBaseConverterTool() {
               type="button"
               onClick={handleCopyAll}
               disabled={!displayOutput}
-              className="px-3 py-2 text-xs font-medium bg-panel-dark text-slate-300 border border-border-dark rounded-lg hover:text-primary hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="px-3 py-2 text-xs font-medium bg-panel-light dark:bg-panel-dark text-slate-700 dark:text-slate-300 border border-border-light dark:border-border-dark rounded-lg hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               {copyAllLabel}
             </button>
             <button
               type="button"
               onClick={handleClear}
-              className="px-4 py-2 text-sm bg-panel-dark text-slate-400 border border-border-dark rounded-lg hover:text-slate-200 hover:border-slate-500 transition-colors"
+              className="px-4 py-2 text-sm bg-panel-light dark:bg-panel-dark text-slate-500 dark:text-slate-400 border border-border-light dark:border-border-dark rounded-lg hover:text-slate-700 dark:hover:text-slate-200 hover:border-slate-400 dark:hover:border-slate-500 transition-colors"
             >
               Clear
             </button>

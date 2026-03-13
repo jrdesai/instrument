@@ -250,7 +250,7 @@ function JwtBuilderTool() {
   const hasThreeParts = parts.length === 3;
 
   return (
-    <div className="flex flex-col h-full bg-background-dark text-slate-100 font-display">
+    <div className="flex flex-col h-full bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
       <div className="flex items-center gap-2 px-4 py-2 bg-amber-500/5 border-b border-amber-500/20 text-amber-500/70 text-xs">
         <span className="material-symbols-outlined text-sm leading-none flex-shrink-0">
           warning
@@ -261,11 +261,11 @@ function JwtBuilderTool() {
       </div>
       <div className="flex flex-1 min-h-0">
         {/* Left panel — configuration */}
-        <div className="w-[40%] min-w-0 flex flex-col border-r border-border-dark bg-panel-dark overflow-y-auto">
+        <div className="w-[40%] min-w-0 flex flex-col border-r border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark overflow-y-auto">
           <div className="p-4 space-y-6">
             {/* Section 1 — Algorithm and Secret */}
             <section>
-              <h2 className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">
+              <h2 className="text-slate-500 dark:text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">
                 Algorithm
               </h2>
               <div className="flex flex-wrap gap-2">
@@ -277,7 +277,7 @@ function JwtBuilderTool() {
                     className={`px-3 py-1.5 text-xs font-medium rounded-full transition-colors ${
                       algorithm === alg
                         ? "bg-primary text-white"
-                        : "text-slate-400 hover:bg-white/5 border border-border-dark"
+                        : "text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-white/5 border border-border-light dark:border-border-dark"
                     }`}
                   >
                     {alg}
@@ -294,7 +294,7 @@ function JwtBuilderTool() {
                       <input
                         type={showSecret ? "text" : "password"}
                         aria-label="Signing secret"
-                        className="w-full px-3 py-2 bg-background-dark text-slate-100 font-mono text-sm border border-border-dark rounded-lg outline-none focus:ring-1 focus:ring-primary placeholder:text-slate-500"
+                        className="w-full px-3 py-2 bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-mono text-sm border border-border-light dark:border-border-dark rounded-lg outline-none focus:ring-1 focus:ring-primary placeholder:text-slate-500"
                         placeholder="Enter signing secret..."
                         value={secret}
                         onChange={(e) => setSecret(e.target.value)}
@@ -303,7 +303,7 @@ function JwtBuilderTool() {
                         type="button"
                         aria-label={showSecret ? "Hide secret" : "Show secret"}
                         onClick={() => setShowSecret((s) => !s)}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200"
+                        className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"
                       >
                         <span className="material-symbols-outlined text-[18px]">
                           {showSecret ? "visibility_off" : "visibility"}
@@ -319,7 +319,7 @@ function JwtBuilderTool() {
                           className={`px-2 py-1 text-xs font-medium rounded-lg transition-colors ${
                             secretEncoding === enc
                               ? "bg-primary text-white"
-                              : "text-slate-400 hover:bg-slate-700"
+                              : "text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
                           }`}
                         >
                           {enc === "utf8" ? "UTF-8" : enc === "base64" ? "Base64" : "Hex"}
@@ -334,71 +334,71 @@ function JwtBuilderTool() {
             {/* Section 2 — Payload */}
             <section>
               <div className="flex items-center justify-between mb-2">
-                <h2 className="text-slate-400 text-xs font-semibold uppercase tracking-wider">
+                <h2 className="text-slate-500 dark:text-slate-400 text-xs font-semibold uppercase tracking-wider">
                   Payload
                 </h2>
               </div>
               <div className="space-y-2">
-                <label className="flex items-center gap-2 text-sm text-slate-300">
+                <label className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300">
                   <input
                     type="checkbox"
                     checked={subEnabled}
                     onChange={(e) => setSubEnabled(e.target.checked)}
-                    className="rounded border-border-dark bg-background-dark text-primary focus:ring-primary"
+                    className="rounded border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark text-primary focus:ring-primary"
                   />
                   Subject (sub)
                 </label>
                 {subEnabled && (
                   <input
                     type="text"
-                    className="w-full px-3 py-2 bg-background-dark text-slate-100 text-sm border border-border-dark rounded-lg"
+                    className="w-full px-3 py-2 bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 text-sm border border-border-light dark:border-border-dark rounded-lg"
                     placeholder="sub value"
                     value={subValue}
                     onChange={(e) => setSubValue(e.target.value)}
                   />
                 )}
-                <label className="flex items-center gap-2 text-sm text-slate-300">
+                <label className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300">
                   <input
                     type="checkbox"
                     checked={issEnabled}
                     onChange={(e) => setIssEnabled(e.target.checked)}
-                    className="rounded border-border-dark bg-background-dark text-primary focus:ring-primary"
+                    className="rounded border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark text-primary focus:ring-primary"
                   />
                   Issuer (iss)
                 </label>
                 {issEnabled && (
                   <input
                     type="text"
-                    className="w-full px-3 py-2 bg-background-dark text-slate-100 text-sm border border-border-dark rounded-lg"
+                    className="w-full px-3 py-2 bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 text-sm border border-border-light dark:border-border-dark rounded-lg"
                     placeholder="iss value"
                     value={issValue}
                     onChange={(e) => setIssValue(e.target.value)}
                   />
                 )}
-                <label className="flex items-center gap-2 text-sm text-slate-300">
+                <label className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300">
                   <input
                     type="checkbox"
                     checked={audEnabled}
                     onChange={(e) => setAudEnabled(e.target.checked)}
-                    className="rounded border-border-dark bg-background-dark text-primary focus:ring-primary"
+                    className="rounded border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark text-primary focus:ring-primary"
                   />
                   Audience (aud)
                 </label>
                 {audEnabled && (
                   <input
                     type="text"
-                    className="w-full px-3 py-2 bg-background-dark text-slate-100 text-sm border border-border-dark rounded-lg"
+                    className="w-full px-3 py-2 bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 text-sm border border-border-light dark:border-border-dark rounded-lg"
                     placeholder="aud value"
                     value={audValue}
                     onChange={(e) => setAudValue(e.target.value)}
                   />
                 )}
-                <label className="flex items-center gap-2 text-sm text-slate-300">
+                <label className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300">
                   <input
                     type="checkbox"
                     checked={jtiEnabled}
                     onChange={(e) => setJtiEnabled(e.target.checked)}
-                    className="rounded border-border-dark bg-background-dark text-primary focus:ring-primary"
+                    className="rounded border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark text-primary focus:ring-primary"
                   />
                   JWT ID (jti)
                 </label>
@@ -406,7 +406,7 @@ function JwtBuilderTool() {
                   <div className="flex gap-2">
                     <input
                       type="text"
-                      className="flex-1 min-w-0 px-3 py-2 bg-background-dark text-slate-100 font-mono text-sm border border-border-dark rounded-lg"
+                      className="flex-1 min-w-0 px-3 py-2 bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-mono text-sm border border-border-light dark:border-border-dark rounded-lg"
                       placeholder="jti value"
                       value={jtiValue}
                       onChange={(e) => setJtiValue(e.target.value)}
@@ -414,30 +414,30 @@ function JwtBuilderTool() {
                     <button
                       type="button"
                       onClick={generateJti}
-                      className="px-3 py-2 text-xs font-medium bg-background-dark text-slate-300 border border-border-dark rounded-lg hover:text-primary hover:border-primary/60"
+                      className="px-3 py-2 text-xs font-medium bg-background-light dark:bg-background-dark text-slate-700 dark:text-slate-300 border border-border-light dark:border-border-dark rounded-lg hover:text-primary hover:border-primary/60"
                     >
                       Generate
                     </button>
                   </div>
                 )}
-                <label className="flex items-center gap-2 text-sm text-slate-300">
+                <label className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300">
                   <input
                     type="checkbox"
                     checked={iatEnabled}
                     onChange={(e) => setIatEnabled(e.target.checked)}
-                    className="rounded border-border-dark bg-background-dark text-primary focus:ring-primary"
+                    className="rounded border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark text-primary focus:ring-primary"
                   />
                   Issued At (iat)
                 </label>
                 {iatEnabled && (
                   <p className="text-xs text-slate-500">Current time (auto)</p>
                 )}
-                <label className="flex items-center gap-2 text-sm text-slate-300">
+                <label className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300">
                   <input
                     type="checkbox"
                     checked={expEnabled}
                     onChange={(e) => setExpEnabled(e.target.checked)}
-                    className="rounded border-border-dark bg-background-dark text-primary focus:ring-primary"
+                    className="rounded border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark text-primary focus:ring-primary"
                   />
                   Expires In (exp)
                 </label>
@@ -446,7 +446,7 @@ function JwtBuilderTool() {
                     <input
                       type="number"
                       min={1}
-                      className="w-20 px-3 py-2 bg-background-dark text-slate-100 text-sm border border-border-dark rounded-lg"
+                      className="w-20 px-3 py-2 bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 text-sm border border-border-light dark:border-border-dark rounded-lg"
                       value={expValue}
                       onChange={(e) =>
                         setExpValue(Math.max(1, parseInt(e.target.value, 10) || 1))
@@ -461,7 +461,7 @@ function JwtBuilderTool() {
                           className={`px-2 py-1 text-xs font-medium rounded-lg capitalize ${
                             expUnit === u
                               ? "bg-primary text-white"
-                              : "text-slate-400 hover:bg-slate-700"
+                              : "text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
                           }`}
                         >
                           {u}
@@ -475,7 +475,7 @@ function JwtBuilderTool() {
                 Custom claims (JSON)
               </label>
               <textarea
-                className="w-full min-h-[80px] px-3 py-2 bg-background-dark text-slate-100 font-mono text-xs border border-border-dark rounded-lg resize-y placeholder:text-slate-500"
+                className="w-full min-h-[80px] px-3 py-2 bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-mono text-xs border border-border-light dark:border-border-dark rounded-lg resize-y placeholder:text-slate-500"
                 placeholder={'{\n  "name": "John Doe"\n}'}
                 value={customPayload}
                 onChange={(e) => setCustomPayload(e.target.value)}
@@ -490,7 +490,7 @@ function JwtBuilderTool() {
                 onClick={() => setExtraHeadersOpen((o) => !o)}
                 className="flex items-center justify-between w-full text-left"
               >
-                <h2 className="text-slate-400 text-xs font-semibold uppercase tracking-wider">
+                <h2 className="text-slate-500 dark:text-slate-400 text-xs font-semibold uppercase tracking-wider">
                   Extra Headers
                 </h2>
                 <span className="material-symbols-outlined text-slate-400 text-[18px]">
@@ -499,7 +499,7 @@ function JwtBuilderTool() {
               </button>
               {extraHeadersOpen && (
                 <textarea
-                  className="w-full min-h-[60px] mt-2 px-3 py-2 bg-background-dark text-slate-100 font-mono text-xs border border-border-dark rounded-lg resize-y placeholder:text-slate-500"
+                  className="w-full min-h-[60px] mt-2 px-3 py-2 bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-mono text-xs border border-border-light dark:border-border-dark rounded-lg resize-y placeholder:text-slate-500"
                   placeholder={'{\n  "kid": "my-key-id"\n}'}
                   value={extraHeaders}
                   onChange={(e) => setExtraHeaders(e.target.value)}
@@ -548,7 +548,7 @@ function JwtBuilderTool() {
                 </label>
                 <textarea
                   readOnly
-                  className="w-full min-h-[100px] px-3 py-2 bg-background-dark text-slate-100 font-mono text-xs border border-border-dark rounded-lg resize-y"
+                  className="w-full min-h-[100px] px-3 py-2 bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-mono text-xs border border-border-light dark:border-border-dark rounded-lg resize-y"
                   value={output.token}
                 />
                 {hasThreeParts && (
@@ -568,13 +568,13 @@ function JwtBuilderTool() {
                 )}
               </div>
 
-              <section className="border border-border-dark rounded-lg bg-panel-dark overflow-hidden">
+              <section className="border border-border-light dark:border-border-dark rounded-lg bg-panel-light dark:bg-panel-dark overflow-hidden">
                 <button
                   type="button"
                   onClick={() => setHeaderPreviewOpen((o) => !o)}
-                  className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-white/5"
+                  className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-slate-100 dark:hover:bg-white/5"
                 >
-                  <span className="text-sm font-semibold uppercase tracking-wider text-slate-300">
+                  <span className="text-sm font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300">
                     Header JSON
                   </span>
                   <span className="material-symbols-outlined text-slate-400">
@@ -582,19 +582,19 @@ function JwtBuilderTool() {
                   </span>
                 </button>
                 {headerPreviewOpen && (
-                  <pre className="px-4 pb-4 font-mono text-xs text-slate-300 overflow-x-auto">
+                  <pre className="px-4 pb-4 font-mono text-xs text-slate-700 dark:text-slate-300 overflow-x-auto">
                     {output.headerJson}
                   </pre>
                 )}
               </section>
 
-              <section className="border border-border-dark rounded-lg bg-panel-dark overflow-hidden">
+              <section className="border border-border-light dark:border-border-dark rounded-lg bg-panel-light dark:bg-panel-dark overflow-hidden">
                 <button
                   type="button"
                   onClick={() => setPayloadPreviewOpen((o) => !o)}
-                  className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-white/5"
+                  className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-slate-100 dark:hover:bg-white/5"
                 >
-                  <span className="text-sm font-semibold uppercase tracking-wider text-slate-300">
+                  <span className="text-sm font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300">
                     Payload JSON
                   </span>
                   <span className="material-symbols-outlined text-slate-400">
@@ -613,7 +613,7 @@ function JwtBuilderTool() {
                         exp → {output.expiresAt}
                       </p>
                     )}
-                    <pre className="font-mono text-xs text-slate-300 overflow-x-auto">
+                    <pre className="font-mono text-xs text-slate-700 dark:text-slate-300 overflow-x-auto">
                       {output.payloadJson}
                     </pre>
                   </div>
@@ -630,12 +630,12 @@ function JwtBuilderTool() {
         </div>
       </div>
 
-      <footer className="flex items-center gap-4 px-4 py-3 border-t border-border-dark bg-panel-dark shrink-0">
+      <footer className="flex items-center gap-4 px-4 py-3 border-t border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0">
         <button
           type="button"
           onClick={handleCopyToken}
           disabled={!hasToken}
-          className="px-3 py-2 text-xs font-medium bg-panel-dark text-slate-300 border border-border-dark rounded-lg hover:text-primary hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="px-3 py-2 text-xs font-medium bg-panel-light dark:bg-panel-dark text-slate-700 dark:text-slate-300 border border-border-light dark:border-border-dark rounded-lg hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           Copy Token
         </button>
@@ -643,14 +643,14 @@ function JwtBuilderTool() {
           type="button"
           onClick={handleOpenInDecoder}
           disabled={!hasToken}
-          className="px-3 py-2 text-xs font-medium bg-panel-dark text-slate-300 border border-border-dark rounded-lg hover:text-primary hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="px-3 py-2 text-xs font-medium bg-panel-light dark:bg-panel-dark text-slate-700 dark:text-slate-300 border border-border-light dark:border-border-dark rounded-lg hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           Open in Decoder
         </button>
         <button
           type="button"
           onClick={handleClear}
-          className="px-4 py-2 text-sm bg-panel-dark text-slate-400 border border-border-dark rounded-lg hover:text-slate-200 hover:border-slate-500 transition-colors"
+          className="px-4 py-2 text-sm bg-panel-light dark:bg-panel-dark text-slate-500 dark:text-slate-400 border border-border-light dark:border-border-dark rounded-lg hover:text-slate-800 dark:hover:text-slate-200 hover:border-slate-400 dark:hover:border-slate-500 transition-colors"
         >
           Clear
         </button>

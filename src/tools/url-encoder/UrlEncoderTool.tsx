@@ -150,20 +150,20 @@ function UrlEncoderTool() {
   }, []);
 
   return (
-    <div className="flex flex-col h-full bg-background-dark text-slate-100 font-display">
+    <div className="flex flex-col h-full bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
       <div className="flex flex-1 min-h-0">
         {/* Input panel */}
         <div
-          className="flex flex-col border-r border-border-dark shrink-0"
+          className="flex flex-col border-r border-border-light dark:border-border-dark shrink-0"
           style={{ width: `${leftPanelPercent}%` }}
         >
-          <div className="flex items-center justify-between px-3 py-2 border-b border-border-dark bg-panel-dark text-xs text-slate-400 shrink-0">
+          <div className="flex items-center justify-between px-3 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark text-xs text-slate-500 dark:text-slate-400 shrink-0">
             <span>Lines: {lines}</span>
             <span>Chars: {charCount}</span>
           </div>
           <textarea
             aria-label="URL encoder input text"
-            className="flex-1 w-full p-4 bg-background-dark text-slate-100 font-mono text-sm resize-none outline-none focus:ring-0 border-0"
+            className="flex-1 w-full p-4 bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-mono text-sm resize-none outline-none focus:ring-0 border-0"
             placeholder={
               mode === "encode"
                 ? "Enter text to percent-encode…"
@@ -179,13 +179,13 @@ function UrlEncoderTool() {
         <button
           type="button"
           aria-label="Resize panels"
-          className="w-1 shrink-0 bg-border-dark hover:bg-primary/50 transition-colors cursor-col-resize"
+          className="w-1 shrink-0 bg-border-light dark:bg-border-dark hover:bg-primary/50 transition-colors cursor-col-resize"
           onMouseDown={handleDividerMouseDown}
         />
 
         {/* Output panel */}
         <div className="flex flex-col flex-1 min-w-0">
-          <div className="flex items-center justify-between px-3 py-2 border-b border-border-dark bg-panel-dark text-xs text-slate-400 shrink-0">
+          <div className="flex items-center justify-between px-3 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark text-xs text-slate-500 dark:text-slate-400 shrink-0">
             <span>Output</span>
             {isLoading && <span className="text-primary">Processing…</span>}
           </div>
@@ -193,7 +193,7 @@ function UrlEncoderTool() {
             aria-live="polite"
             aria-label="URL encoder output"
             className={`flex-1 p-4 overflow-auto font-mono text-sm whitespace-pre-wrap break-all ${
-              error ? "text-red-400" : "text-slate-300"
+              error ? "text-red-400" : "text-slate-700 dark:text-slate-300"
             }`}
           >
             {error ? error : output || (isLoading ? "…" : "")}
@@ -202,7 +202,7 @@ function UrlEncoderTool() {
       </div>
 
       {/* Footer */}
-      <footer className="flex items-center gap-4 px-4 py-2 border-t border-border-dark bg-panel-dark shrink-0">
+      <footer className="flex items-center gap-4 px-4 py-2 border-t border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0">
         <div className="flex items-center gap-1" role="group" aria-label="Encode or decode mode">
           <button
             type="button"
@@ -211,7 +211,7 @@ function UrlEncoderTool() {
             className={`px-3 py-1 text-sm font-medium rounded-lg transition-colors ${
               mode === "encode"
                 ? "bg-primary text-white"
-                : "text-slate-400 hover:bg-slate-700"
+                : "text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
             }`}
           >
             Encode
@@ -223,7 +223,7 @@ function UrlEncoderTool() {
             className={`px-3 py-1 text-sm font-medium rounded-lg transition-colors ${
               mode === "decode"
                 ? "bg-primary text-white"
-                : "text-slate-400 hover:bg-slate-700"
+                : "text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
             }`}
           >
             Decode
@@ -238,7 +238,7 @@ function UrlEncoderTool() {
             className={`px-3 py-1 text-sm font-medium rounded-lg transition-colors ${
               encodeType === "full"
                 ? "bg-primary text-white"
-                : "text-slate-400 hover:bg-slate-700"
+                : "text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
             }`}
           >
             Full
@@ -250,7 +250,7 @@ function UrlEncoderTool() {
             className={`px-3 py-1 text-sm font-medium rounded-lg transition-colors ${
               encodeType === "component"
                 ? "bg-primary text-white"
-                : "text-slate-400 hover:bg-slate-700"
+                : "text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
             }`}
           >
             Component
@@ -261,7 +261,7 @@ function UrlEncoderTool() {
           type="button"
           aria-label="Swap input and output"
           onClick={handleSwap}
-          className="px-3 py-1 text-sm text-slate-300 hover:text-primary hover:bg-slate-700 rounded-lg transition-colors"
+          className="px-3 py-1 text-sm text-slate-700 dark:text-slate-300 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
         >
           Swap
         </button>
@@ -270,7 +270,7 @@ function UrlEncoderTool() {
           type="button"
           aria-label="Clear input and output"
           onClick={handleClear}
-          className="px-3 py-1 text-sm text-slate-300 hover:text-primary hover:bg-slate-700 rounded-lg transition-colors"
+          className="px-3 py-1 text-sm text-slate-700 dark:text-slate-300 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
         >
           Clear
         </button>

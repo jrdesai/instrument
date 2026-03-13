@@ -197,15 +197,15 @@ function Iso8601FormatterTool() {
   const showConversions = isValid && output && !isDuration;
 
   return (
-    <div className="flex flex-col h-full bg-background-dark text-slate-100 font-display">
+    <div className="flex flex-col h-full bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
       {/* Input */}
-      <div className="flex flex-col px-4 py-3 border-b border-border-dark bg-panel-dark">
+      <div className="flex flex-col px-4 py-3 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark">
         <div className="flex flex-wrap items-center gap-2">
           <div className="relative flex items-center gap-1 flex-1 min-w-[200px]">
             <input
               type="text"
               aria-label="ISO 8601 input"
-              className="flex-1 min-w-0 px-3 py-2 bg-background-dark text-slate-100 font-mono text-sm outline-none focus:ring-1 focus:ring-primary border border-border-dark rounded-lg"
+              className="flex-1 min-w-0 px-3 py-2 bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-mono text-sm outline-none focus:ring-1 focus:ring-primary border border-border-light dark:border-border-dark rounded-lg"
               placeholder="Enter ISO 8601 string (e.g. 2024-03-04T12:00:00Z)"
               value={value}
               onChange={(e) => setValue(e.target.value)}
@@ -269,7 +269,7 @@ function Iso8601FormatterTool() {
                 return (
                   <div
                     key={id}
-                    className="flex flex-col border border-border-dark bg-panel-dark rounded-lg p-3 hover:border-primary/40 transition-colors"
+                    className="flex flex-col border border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark rounded-lg p-3 hover:border-primary/40 transition-colors"
                   >
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-slate-400 text-xs uppercase tracking-wider">
@@ -279,13 +279,13 @@ function Iso8601FormatterTool() {
                         <button
                           type="button"
                           onClick={() => handleCopyValue(display)}
-                          className="px-2 py-0.5 text-[10px] font-medium bg-background-dark text-slate-300 border border-border-dark rounded-lg hover:text-primary hover:border-primary/60 transition-colors"
+                          className="px-2 py-0.5 text-[10px] font-medium bg-background-light dark:bg-background-dark text-slate-700 dark:text-slate-300 border border-border-light dark:border-border-dark rounded-lg hover:text-primary hover:border-primary/60 transition-colors"
                         >
                           Copy
                         </button>
                       )}
                     </div>
-                    <pre className="font-mono text-sm text-slate-200 whitespace-pre-wrap break-all">
+                    <pre className="font-mono text-sm text-slate-800 dark:text-slate-200 whitespace-pre-wrap break-all">
                       {display}
                     </pre>
                   </div>
@@ -321,13 +321,13 @@ function Iso8601FormatterTool() {
                         <button
                           type="button"
                           onClick={() => handleCopyValue(valueStr)}
-                          className="px-2 py-0.5 text-[10px] font-medium bg-background-dark text-slate-300 border border-border-dark rounded-lg hover:text-primary hover:border-primary/60 transition-colors"
+                          className="px-2 py-0.5 text-[10px] font-medium bg-background-light dark:bg-background-dark text-slate-700 dark:text-slate-300 border border-border-light dark:border-border-dark rounded-lg hover:text-primary hover:border-primary/60 transition-colors"
                         >
                           Copy
                         </button>
                       )}
                     </div>
-                    <pre className="font-mono text-sm text-slate-200 whitespace-pre-wrap break-all">
+                    <pre className="font-mono text-sm text-slate-800 dark:text-slate-200 whitespace-pre-wrap break-all">
                       {display}
                     </pre>
                   </div>
@@ -338,11 +338,11 @@ function Iso8601FormatterTool() {
         )}
 
         {/* Quick reference */}
-        <section className="border border-border-dark bg-panel-dark rounded-lg overflow-hidden">
+        <section className="border border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark rounded-lg overflow-hidden">
           <button
             type="button"
             onClick={() => setQuickRefOpen((o) => !o)}
-            className="w-full flex items-center justify-between px-4 py-3 text-left text-slate-400 hover:text-slate-200 transition-colors"
+            className="w-full flex items-center justify-between px-4 py-3 text-left text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors"
           >
             <span className="text-xs font-semibold uppercase tracking-wider">
               ISO 8601 Quick Reference
@@ -352,7 +352,7 @@ function Iso8601FormatterTool() {
             </span>
           </button>
           {quickRefOpen && (
-            <div className="px-4 pb-4 pt-0 border-t border-border-dark">
+            <div className="px-4 pb-4 pt-0 border-t border-border-light dark:border-border-dark">
               <div className="flex flex-col gap-2 text-xs font-mono text-slate-500">
                 {QUICK_REF_EXAMPLES.map(({ label, value: ex }) => (
                   <button
@@ -372,19 +372,19 @@ function Iso8601FormatterTool() {
       </div>
 
       {/* Footer */}
-      <footer className="flex items-center gap-4 px-4 py-3 border-t border-border-dark bg-panel-dark shrink-0">
+      <footer className="flex items-center gap-4 px-4 py-3 border-t border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0">
         <button
           type="button"
           onClick={handleCopyAll}
           disabled={!output?.isValid || !!output?.error}
-          className="px-3 py-2 text-xs font-medium bg-panel-dark text-slate-300 border border-border-dark rounded-lg hover:text-primary hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="px-3 py-2 text-xs font-medium bg-panel-light dark:bg-panel-dark text-slate-700 dark:text-slate-300 border border-border-light dark:border-border-dark rounded-lg hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           {copyAllLabel}
         </button>
         <button
           type="button"
           onClick={handleClear}
-          className="px-4 py-2 text-sm bg-panel-dark text-slate-400 border border-border-dark rounded-lg hover:text-slate-200 hover:border-slate-500 transition-colors"
+          className="px-4 py-2 text-sm bg-panel-light dark:bg-panel-dark text-slate-500 dark:text-slate-400 border border-border-light dark:border-border-dark rounded-lg hover:text-slate-700 dark:hover:text-slate-200 hover:border-slate-400 dark:hover:border-slate-500 transition-colors"
         >
           Clear
         </button>

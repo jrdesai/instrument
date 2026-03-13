@@ -121,12 +121,12 @@ function CsvToJsonTool() {
   const isEmpty = inputValue.trim() === "";
 
   return (
-    <div className="flex flex-col h-full bg-background-dark text-slate-100 font-display">
+    <div className="flex flex-col h-full bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
       <div className="flex flex-1 min-h-0 w-full">
         {/* Left panel — CSV input */}
-        <div className="flex flex-col flex-1 min-w-0 border-r border-border-dark">
-          <div className="flex items-center justify-between px-4 py-2 border-b border-border-dark bg-panel-dark shrink-0">
-            <span className="text-slate-400 text-xs uppercase tracking-wider">
+        <div className="flex flex-col flex-1 min-w-0 border-r border-border-light dark:border-border-dark">
+          <div className="flex items-center justify-between px-4 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0">
+            <span className="text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider">
               INPUT (CSV)
             </span>
             {!isEmpty && (
@@ -137,7 +137,7 @@ function CsvToJsonTool() {
           </div>
           <textarea
             aria-label="CSV input"
-            className="flex-1 w-full min-h-0 p-4 font-mono text-xs text-slate-300 bg-transparent resize-none border-none focus:outline-none leading-relaxed placeholder:text-slate-500"
+            className="flex-1 w-full min-h-0 p-4 font-mono text-xs text-slate-700 dark:text-slate-300 bg-transparent resize-none border-none focus:outline-none leading-relaxed placeholder:text-slate-500"
             placeholder={["name,email,age", "Alice,alice@example.com,30", "Bob,bob@example.com,25"].join(
               "\n"
             )}
@@ -148,8 +148,8 @@ function CsvToJsonTool() {
 
         {/* Right panel — JSON output */}
         <div className="flex flex-col flex-1 min-w-0">
-          <div className="flex items-center justify-between gap-2 px-4 py-2 border-b border-border-dark bg-panel-dark shrink-0">
-            <span className="text-slate-400 text-xs uppercase tracking-wider">
+          <div className="flex items-center justify-between gap-2 px-4 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0">
+            <span className="text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider">
               OUTPUT (JSON)
             </span>
             {!isEmpty && (
@@ -160,7 +160,7 @@ function CsvToJsonTool() {
               </span>
             )}
           </div>
-          <div className="flex-1 min-h-0 overflow-auto custom-scrollbar bg-background-dark">
+          <div className="flex-1 min-h-0 overflow-auto custom-scrollbar bg-background-light dark:bg-background-dark">
             {output?.result ? (
               <CodeBlock
                 language="json"
@@ -184,8 +184,8 @@ function CsvToJsonTool() {
       </div>
 
       {/* Footer — options + actions */}
-      <footer className="shrink-0 border-t border-border-dark bg-panel-dark px-4 py-3">
-        <div className="flex items-start gap-6 text-xs text-slate-400">
+      <footer className="shrink-0 border-t border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark px-4 py-3">
+        <div className="flex items-start gap-6 text-xs text-slate-500 dark:text-slate-400">
           {/* Headers toggle */}
           <div className="flex flex-col gap-1">
             <span className="text-slate-500 text-[10px] uppercase tracking-wider">
@@ -203,7 +203,7 @@ function CsvToJsonTool() {
           </div>
 
           {/* Divider */}
-          <div className="w-px h-6 bg-border-dark self-center mx-1" />
+          <div className="w-px h-6 bg-border-light dark:bg-border-dark self-center mx-1" />
 
           {/* Delimiter group */}
           <div className="flex flex-col gap-1">
@@ -255,7 +255,7 @@ function CsvToJsonTool() {
           </div>
 
           {/* Divider */}
-          <div className="w-px h-6 bg-border-dark self-center mx-1" />
+          <div className="w-px h-6 bg-border-light dark:bg-border-dark self-center mx-1" />
 
           {/* Format group */}
           <div className="flex flex-col gap-1">
@@ -300,7 +300,7 @@ function CsvToJsonTool() {
               type="button"
               onClick={handleCopy}
               disabled={!output?.result}
-              className="px-3 py-1.5 rounded-md border border-border-dark bg-panel-dark text-[11px] font-semibold uppercase tracking-wider disabled:opacity-40 disabled:cursor-not-allowed hover:bg-white/5 transition-colors"
+              className="px-3 py-1.5 rounded-md border border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark text-[11px] font-semibold uppercase tracking-wider disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-100 dark:hover:bg-white/5 transition-colors"
             >
               {copyLabel}
             </button>
@@ -308,7 +308,7 @@ function CsvToJsonTool() {
               type="button"
               onClick={handleClear}
               disabled={isEmpty && !output}
-              className="px-3 py-1.5 rounded-md border border-border-dark bg-panel-dark text-[11px] font-semibold uppercase tracking-wider disabled:opacity-40 disabled:cursor-not-allowed hover:bg-white/5 transition-colors"
+              className="px-3 py-1.5 rounded-md border border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark text-[11px] font-semibold uppercase tracking-wider disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-100 dark:hover:bg-white/5 transition-colors"
             >
               Clear
             </button>

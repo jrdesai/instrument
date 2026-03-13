@@ -7,7 +7,9 @@
   --color-primary:           #306ee8;
   --color-background-light:  #f6f6f8;
   --color-background-dark:   #1B1D21;
+  --color-panel-light:       #ffffff;
   --color-panel-dark:        #23262B;
+  --color-border-light:      #e2e4e9;
   --color-border-dark:       #2D3139;
 
   --font-display: 'Inter', sans-serif;
@@ -51,6 +53,9 @@ span.material-symbols-outlined,
 .custom-scrollbar::-webkit-scrollbar-thumb {
   background: var(--color-border-dark);
   border-radius: 10px;
+}
+:root:not(.dark) .custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--color-border-light);
 }
 .no-scrollbar::-webkit-scrollbar {
   display: none;

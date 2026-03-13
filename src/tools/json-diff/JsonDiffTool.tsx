@@ -172,15 +172,15 @@ function JsonDiffTool() {
   const changeCount = output?.changes?.length ?? 0;
 
   return (
-    <div className="flex flex-col h-full bg-background-dark text-slate-100 font-display">
+    <div className="flex flex-col h-full bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
       {/* Section 1 — Input panels (35% height) */}
       <div
-        className="flex shrink-0 border-b border-border-dark"
+        className="flex shrink-0 border-b border-border-light dark:border-border-dark"
         style={{ height: "35%" }}
       >
-        <div className="flex flex-col flex-1 min-w-0 border-r border-border-dark">
-          <div className="flex items-center justify-between px-4 py-2 border-b border-border-dark bg-panel-dark shrink-0">
-            <span className="text-slate-400 text-xs uppercase tracking-wider">
+        <div className="flex flex-col flex-1 min-w-0 border-r border-border-light dark:border-border-dark">
+          <div className="flex items-center justify-between px-4 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0">
+            <span className="text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider">
               LEFT
             </span>
             <span className="text-slate-600 text-xs">
@@ -189,15 +189,15 @@ function JsonDiffTool() {
           </div>
           <textarea
             aria-label="Left JSON"
-            className="flex-1 w-full min-h-0 p-4 font-mono text-xs text-slate-300 bg-transparent resize-none border-none focus:outline-none leading-relaxed placeholder:text-slate-500"
+            className="flex-1 w-full min-h-0 p-4 font-mono text-xs text-slate-700 dark:text-slate-300 bg-transparent resize-none border-none focus:outline-none leading-relaxed placeholder:text-slate-500"
             placeholder="Paste first JSON..."
             value={leftInput}
             onChange={(e) => setLeftInput(e.target.value)}
           />
         </div>
         <div className="flex flex-col flex-1 min-w-0">
-          <div className="flex items-center justify-between px-4 py-2 border-b border-border-dark bg-panel-dark shrink-0">
-            <span className="text-slate-400 text-xs uppercase tracking-wider">
+          <div className="flex items-center justify-between px-4 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0">
+            <span className="text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider">
               RIGHT
             </span>
             <span className="text-slate-600 text-xs">
@@ -206,7 +206,7 @@ function JsonDiffTool() {
           </div>
           <textarea
             aria-label="Right JSON"
-            className="flex-1 w-full min-h-0 p-4 font-mono text-xs text-slate-300 bg-transparent resize-none border-none focus:outline-none leading-relaxed placeholder:text-slate-500"
+            className="flex-1 w-full min-h-0 p-4 font-mono text-xs text-slate-700 dark:text-slate-300 bg-transparent resize-none border-none focus:outline-none leading-relaxed placeholder:text-slate-500"
             placeholder="Paste second JSON..."
             value={rightInput}
             onChange={(e) => setRightInput(e.target.value)}
@@ -216,7 +216,7 @@ function JsonDiffTool() {
 
       {/* Section 2 — Summary bar (only when both have content) */}
       {bothHaveContent && hasResult && (
-        <div className="flex items-center gap-3 px-4 py-2 border-t border-b border-border-dark bg-panel-dark shrink-0 min-h-[40px]">
+        <div className="flex items-center gap-3 px-4 py-2 border-t border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0 min-h-[40px]">
           {!output?.leftValid && (
             <span className="text-red-400 text-xs">Left: invalid JSON</span>
           )}
@@ -275,7 +275,7 @@ function JsonDiffTool() {
               <div
                 ref={leftRef}
                 onScroll={handleLeftScroll}
-                className="flex-1 min-w-0 overflow-y-auto h-full font-mono text-xs leading-relaxed custom-scrollbar border-r border-border-dark"
+                className="flex-1 min-w-0 overflow-y-auto h-full font-mono text-xs leading-relaxed custom-scrollbar border-r border-border-light dark:border-border-dark"
               >
                 <div className="p-4">
                   {toAnnotatedLines(output?.leftAnnotated).length === 0 && (
@@ -325,11 +325,11 @@ function JsonDiffTool() {
             </div>
 
             {changeCount > 0 && (
-              <div className="border-t border-border-dark bg-panel-dark shrink-0">
+              <div className="border-t border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0">
                 <button
                   type="button"
                   onClick={() => setChangesOpen((o) => !o)}
-                  className="flex items-center gap-2 w-full px-4 py-2 text-left text-slate-400 hover:text-slate-200 text-sm"
+                  className="flex items-center gap-2 w-full px-4 py-2 text-left text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 text-sm"
                 >
                   <span className="text-xs uppercase tracking-wider">
                     Changes ({changeCount})
@@ -364,7 +364,7 @@ function JsonDiffTool() {
                                 ? "~"
                                 : "T"}
                         </span>
-                        <span className="font-mono text-slate-300">
+                        <span className="font-mono text-slate-700 dark:text-slate-300">
                           {c.path}
                         </span>
                         {(c.changeType === "changed" ||
@@ -396,32 +396,32 @@ function JsonDiffTool() {
       </div>
 
       {/* Footer — actions right */}
-      <footer className="flex items-center justify-end gap-2 px-4 py-3 border-t border-border-dark bg-panel-dark shrink-0">
+      <footer className="flex items-center justify-end gap-2 px-4 py-3 border-t border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0">
         <button
           type="button"
           onClick={copyLeft}
-          className="px-3 py-2 text-xs font-medium bg-panel-dark text-slate-300 border border-border-dark rounded-lg hover:text-primary hover:bg-slate-700 transition-colors"
+          className="px-3 py-2 text-xs font-medium bg-panel-light dark:bg-panel-dark text-slate-700 dark:text-slate-300 border border-border-light dark:border-border-dark rounded-lg hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
         >
           Copy Left
         </button>
         <button
           type="button"
           onClick={copyRight}
-          className="px-3 py-2 text-xs font-medium bg-panel-dark text-slate-300 border border-border-dark rounded-lg hover:text-primary hover:bg-slate-700 transition-colors"
+          className="px-3 py-2 text-xs font-medium bg-panel-light dark:bg-panel-dark text-slate-700 dark:text-slate-300 border border-border-light dark:border-border-dark rounded-lg hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
         >
           Copy Right
         </button>
         <button
           type="button"
           onClick={handleSwap}
-          className="px-3 py-2 text-xs font-medium bg-panel-dark text-slate-300 border border-border-dark rounded-lg hover:text-primary hover:bg-slate-700 transition-colors"
+          className="px-3 py-2 text-xs font-medium bg-panel-light dark:bg-panel-dark text-slate-700 dark:text-slate-300 border border-border-light dark:border-border-dark rounded-lg hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
         >
           Swap
         </button>
         <button
           type="button"
           onClick={handleClear}
-          className="px-4 py-2 text-sm bg-panel-dark text-slate-400 border border-border-dark rounded-lg hover:text-slate-200 hover:border-slate-500 transition-colors"
+          className="px-4 py-2 text-sm bg-panel-light dark:bg-panel-dark text-slate-500 dark:text-slate-400 border border-border-light dark:border-border-dark rounded-lg hover:text-slate-800 dark:hover:text-slate-200 hover:border-slate-400 dark:hover:border-slate-500 transition-colors"
         >
           Clear
         </button>

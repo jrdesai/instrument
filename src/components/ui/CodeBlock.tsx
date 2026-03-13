@@ -15,20 +15,37 @@ import "prismjs/components/prism-markdown";
 import { useEffect, useRef, useState } from "react";
 
 const PRISM_STYLES = `
-  .token.string        { color: #86efac; }
-  .token.number        { color: #fcd34d; }
-  .token.boolean       { color: #c084fc; }
-  .token.null          { color: #94a3b8; }
-  .token.property      { color: #93c5fd; }
-  .token.punctuation   { color: #475569; }
-  .token.operator      { color: #94a3b8; }
-  .token.keyword       { color: #f472b6; }
-  .token.comment       { color: #475569; font-style: italic; }
-  .token.function      { color: #67e8f9; }
-  .token.class-name    { color: #fcd34d; }
-  .token.tag           { color: #93c5fd; }
-  .token.attr-name     { color: #86efac; }
-  .token.attr-value    { color: #fcd34d; }
+  /* ——— Light mode (default) ——— */
+  .token.string        { color: #16a34a; }
+  .token.number        { color: #b45309; }
+  .token.boolean       { color: #7c3aed; }
+  .token.null          { color: #64748b; }
+  .token.property      { color: #2563eb; }
+  .token.punctuation   { color: #94a3b8; }
+  .token.operator      { color: #64748b; }
+  .token.keyword       { color: #db2777; }
+  .token.comment       { color: #94a3b8; font-style: italic; }
+  .token.function      { color: #0891b2; }
+  .token.class-name    { color: #b45309; }
+  .token.tag           { color: #2563eb; }
+  .token.attr-name     { color: #16a34a; }
+  .token.attr-value    { color: #b45309; }
+
+  /* ——— Dark mode ——— */
+  .dark .token.string        { color: #86efac; }
+  .dark .token.number        { color: #fcd34d; }
+  .dark .token.boolean       { color: #c084fc; }
+  .dark .token.null          { color: #94a3b8; }
+  .dark .token.property      { color: #93c5fd; }
+  .dark .token.punctuation   { color: #475569; }
+  .dark .token.operator      { color: #94a3b8; }
+  .dark .token.keyword       { color: #f472b6; }
+  .dark .token.comment       { color: #475569; font-style: italic; }
+  .dark .token.function      { color: #67e8f9; }
+  .dark .token.class-name    { color: #fcd34d; }
+  .dark .token.tag           { color: #93c5fd; }
+  .dark .token.attr-name     { color: #86efac; }
+  .dark .token.attr-value    { color: #fcd34d; }
 `;
 
 function injectPrismTheme() {
@@ -81,13 +98,13 @@ export function CodeBlock({
 
   return (
     <div
-      className={`relative group rounded-lg border border-border-dark bg-background-dark overflow-hidden ${className ?? ""}`}
+      className={`relative group rounded-lg border border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark overflow-hidden ${className ?? ""}`}
     >
       {showCopyButton && (
         <button
           type="button"
           onClick={handleCopy}
-          className="absolute top-2 right-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity text-slate-500 hover:text-slate-300 bg-background-dark border border-border-dark rounded px-2 py-1 text-xs"
+          className="absolute top-2 right-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 bg-background-light dark:bg-background-dark border border-border-light dark:border-border-dark rounded px-2 py-1 text-xs"
         >
           {copied ? "Copied" : "Copy"}
         </button>

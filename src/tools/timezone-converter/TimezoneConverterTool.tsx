@@ -116,12 +116,12 @@ function TimezoneSelect({
               setSearch("");
             }
           }}
-          className="w-full px-3 py-2 bg-background-dark text-slate-100 font-mono text-sm outline-none focus:ring-1 focus:ring-primary border border-border-dark rounded-lg"
+          className="w-full px-3 py-2 bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-mono text-sm outline-none focus:ring-1 focus:ring-primary border border-border-light dark:border-border-dark rounded-lg"
         />
         {showSearch && (
           <ul
             role="listbox"
-            className="absolute z-10 mt-1 w-full max-h-56 overflow-y-auto custom-scrollbar py-1 bg-panel-dark border border-border-dark rounded-lg shadow-lg"
+            className="absolute z-10 mt-1 w-full max-h-56 overflow-y-auto custom-scrollbar py-1 bg-panel-light dark:bg-panel-dark border border-border-light dark:border-border-dark rounded-lg shadow-lg"
           >
             {filtered.slice(0, 100).map((tz) => (
               <li
@@ -136,7 +136,7 @@ function TimezoneSelect({
                 className={`px-3 py-2 text-sm font-mono cursor-pointer transition-colors ${
                   value === tz
                     ? "bg-primary/20 text-primary"
-                    : "text-slate-200 hover:bg-slate-700"
+                    : "text-slate-800 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700"
                 }`}
               >
                 {formatTimezoneLabel(tz)}
@@ -288,9 +288,9 @@ function TimezoneConverterTool() {
   const displayOutput = hasError ? null : output;
 
   return (
-    <div className="flex flex-col h-full bg-background-dark text-slate-100 font-display">
+    <div className="flex flex-col h-full bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
       {/* Top: datetime input */}
-      <div className="flex flex-col px-4 py-3 border-b border-border-dark bg-panel-dark">
+      <div className="flex flex-col px-4 py-3 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark">
         <span className="text-slate-500 text-xs uppercase tracking-wider mb-1 block">
           Date/time
         </span>
@@ -299,7 +299,7 @@ function TimezoneConverterTool() {
             <input
               type="text"
               aria-label="Date/time to convert"
-              className="flex-1 min-w-0 px-3 py-2 bg-background-dark text-slate-100 font-mono text-sm outline-none focus:ring-1 focus:ring-primary border border-border-dark rounded-lg"
+              className="flex-1 min-w-0 px-3 py-2 bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-mono text-sm outline-none focus:ring-1 focus:ring-primary border border-border-light dark:border-border-dark rounded-lg"
               placeholder="Enter date/time (e.g. 2024-03-04 12:00:00)"
               value={datetime}
               onChange={(e) => setDatetime(e.target.value)}
@@ -323,7 +323,7 @@ function TimezoneConverterTool() {
             type="button"
             aria-label="Use current date and time"
             onClick={fillNow}
-            className="px-3 py-2 text-sm font-medium bg-background-dark text-slate-400 border border-border-dark rounded-lg hover:text-primary hover:border-primary/60 transition-colors shrink-0"
+            className="px-3 py-2 text-sm font-medium bg-background-light dark:bg-background-dark text-slate-500 dark:text-slate-400 border border-border-light dark:border-border-dark rounded-lg hover:text-primary hover:border-primary/60 transition-colors shrink-0"
           >
             Use now
           </button>
@@ -331,7 +331,7 @@ function TimezoneConverterTool() {
       </div>
 
       {/* Middle: timezone selectors + swap */}
-      <div className="flex items-end gap-2 px-4 py-3 border-b border-border-dark bg-panel-dark">
+      <div className="flex items-end gap-2 px-4 py-3 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark">
         <TimezoneSelect
           id="from-tz"
           label="From timezone"
@@ -343,7 +343,7 @@ function TimezoneConverterTool() {
           type="button"
           aria-label="Swap from and to timezone"
           onClick={handleSwap}
-          className="shrink-0 p-2 text-slate-400 hover:text-primary hover:bg-slate-700 rounded-lg transition-colors mb-0.5"
+          className="shrink-0 p-2 text-slate-500 dark:text-slate-400 hover:text-primary hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors mb-0.5"
           title="Swap"
         >
           <span className="font-mono text-lg" aria-hidden>
@@ -376,17 +376,17 @@ function TimezoneConverterTool() {
               return (
                 <div
                   key={id}
-                  className="flex flex-col border border-border-dark bg-panel-dark rounded-lg p-3 hover:border-primary/40 transition-colors"
+                  className="flex flex-col border border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark rounded-lg p-3 hover:border-primary/40 transition-colors"
                 >
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-slate-400 text-xs uppercase tracking-wider">
+                    <span className="text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider">
                       {label}
                     </span>
                     <button
                       type="button"
                       onClick={() => handleCopyValue(copyVal)}
                       disabled={!copyVal || copyVal === "—"}
-                      className="px-2 py-0.5 text-[10px] font-medium bg-background-dark text-slate-300 border border-border-dark rounded-lg hover:text-primary hover:border-primary/60 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      className="px-2 py-0.5 text-[10px] font-medium bg-background-light dark:bg-background-dark text-slate-700 dark:text-slate-300 border border-border-light dark:border-border-dark rounded-lg hover:text-primary hover:border-primary/60 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
                       Copy
                     </button>
@@ -396,13 +396,13 @@ function TimezoneConverterTool() {
                       className={`inline-block px-2 py-0.5 rounded text-xs font-medium ${
                         raw
                           ? "bg-emerald-500/20 text-emerald-400"
-                          : "bg-slate-700 text-slate-400"
+                          : "bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-400"
                       }`}
                     >
                       {raw ? "Active" : "Inactive"}
                     </span>
                   ) : (
-                    <pre className="font-mono text-sm text-slate-200 whitespace-pre-wrap break-all">
+                    <pre className="font-mono text-sm text-slate-800 dark:text-slate-200 whitespace-pre-wrap break-all">
                       {typeof raw === "boolean" ? (raw ? "Active" : "Inactive") : String(raw ?? "") || "—"}
                     </pre>
                   )}
@@ -414,19 +414,19 @@ function TimezoneConverterTool() {
       </div>
 
       {/* Footer */}
-      <footer className="flex items-center gap-4 px-4 py-3 border-t border-border-dark bg-panel-dark shrink-0">
+      <footer className="flex items-center gap-4 px-4 py-3 border-t border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0">
         <button
           type="button"
           onClick={handleCopyAll}
           disabled={!displayOutput}
-          className="px-3 py-2 text-xs font-medium bg-panel-dark text-slate-300 border border-border-dark rounded-lg hover:text-primary hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="px-3 py-2 text-xs font-medium bg-panel-light dark:bg-panel-dark text-slate-700 dark:text-slate-300 border border-border-light dark:border-border-dark rounded-lg hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           {copyAllLabel}
         </button>
         <button
           type="button"
           onClick={handleClear}
-          className="px-4 py-2 text-sm bg-panel-dark text-slate-400 border border-border-dark rounded-lg hover:text-slate-200 hover:border-slate-500 transition-colors"
+          className="px-4 py-2 text-sm bg-panel-light dark:bg-panel-dark text-slate-500 dark:text-slate-400 border border-border-light dark:border-border-dark rounded-lg hover:text-slate-800 dark:hover:text-slate-200 hover:border-slate-400 dark:hover:border-slate-500 transition-colors"
         >
           Clear
         </button>

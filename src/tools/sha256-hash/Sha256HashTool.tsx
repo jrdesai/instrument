@@ -121,18 +121,18 @@ function Sha256HashTool() {
   const charCount = input.length;
 
   return (
-    <div className="flex flex-col h-full bg-background-dark text-slate-100 font-display">
+    <div className="flex flex-col h-full bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
       <div className="flex flex-1 min-h-0">
         {/* Input panel — left-weighted */}
-        <div className="flex flex-col border-r border-border-dark shrink-0 w-[45%] min-w-[200px]">
-          <div className="flex items-center justify-between px-3 py-2 border-b border-border-dark bg-panel-dark text-xs text-slate-400 shrink-0">
+        <div className="flex flex-col border-r border-border-light dark:border-border-dark shrink-0 w-[45%] min-w-[200px]">
+          <div className="flex items-center justify-between px-3 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark text-xs text-slate-500 dark:text-slate-400 shrink-0">
             <span>Input</span>
             <span>Lines: {lines}</span>
             <span>Chars: {charCount}</span>
           </div>
           <textarea
             aria-label="Text to hash with SHA-256"
-            className="flex-1 w-full p-4 bg-background-dark text-slate-100 font-mono text-sm resize-none outline-none focus:ring-0 border-0"
+            className="flex-1 w-full p-4 bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-mono text-sm resize-none outline-none focus:ring-0 border-0"
             placeholder="Enter text to hash…"
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -142,7 +142,7 @@ function Sha256HashTool() {
 
         {/* Output panel */}
         <div className="flex flex-col flex-1 min-w-0">
-          <div className="flex items-center justify-between px-3 py-2 border-b border-border-dark bg-panel-dark text-xs text-slate-400 shrink-0">
+          <div className="flex items-center justify-between px-3 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark text-xs text-slate-500 dark:text-slate-400 shrink-0">
             <span className="flex items-center gap-2">
               SHA-256 — 256-bit / 64 hex characters
               {hashEmpty && !input.trim() && output && (
@@ -157,7 +157,7 @@ function Sha256HashTool() {
             <pre
               aria-live="polite"
               aria-label="SHA-256 hash output"
-              className="flex-1 p-4 overflow-auto font-mono text-sm whitespace-pre-wrap break-all text-slate-300"
+              className="flex-1 p-4 overflow-auto font-mono text-sm whitespace-pre-wrap break-all text-slate-700 dark:text-slate-300"
             >
               {output}
             </pre>
@@ -178,16 +178,16 @@ function Sha256HashTool() {
       </div>
 
       {/* Footer */}
-      <footer className="flex items-center gap-4 px-4 py-2 border-t border-border-dark bg-panel-dark shrink-0">
+      <footer className="flex items-center gap-4 px-4 py-2 border-t border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0">
         <label className="flex items-center gap-2 cursor-pointer">
           <input
             type="checkbox"
             aria-label="Uppercase hash (A–F)"
             checked={uppercase}
             onChange={(e) => setUppercase(e.target.checked)}
-            className="rounded border-border-dark bg-background-dark text-primary focus:ring-primary"
+            className="rounded border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark text-primary focus:ring-primary"
           />
-          <span className="text-sm text-slate-300">Uppercase</span>
+          <span className="text-sm text-slate-700 dark:text-slate-300">Uppercase</span>
         </label>
 
         <label className="flex items-center gap-2 cursor-pointer">
@@ -196,16 +196,16 @@ function Sha256HashTool() {
             aria-label="Hash empty string"
             checked={hashEmpty}
             onChange={(e) => setHashEmpty(e.target.checked)}
-            className="rounded border-border-dark bg-background-dark text-primary focus:ring-primary"
+            className="rounded border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark text-primary focus:ring-primary"
           />
-          <span className="text-sm text-slate-300">Hash empty string</span>
+          <span className="text-sm text-slate-700 dark:text-slate-300">Hash empty string</span>
         </label>
 
         <button
           type="button"
           aria-label="Clear input and output"
           onClick={handleClear}
-          className="px-3 py-1 text-sm text-slate-300 hover:text-primary hover:bg-slate-700 rounded-lg transition-colors"
+          className="px-3 py-1 text-sm text-slate-700 dark:text-slate-300 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
         >
           Clear
         </button>

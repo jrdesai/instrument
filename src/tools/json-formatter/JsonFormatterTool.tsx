@@ -130,12 +130,12 @@ function JsonFormatterTool() {
   const isValid = output?.isValid === true;
 
   return (
-    <div className="flex flex-col h-full bg-background-dark text-slate-100 font-display">
+    <div className="flex flex-col h-full bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
       <div className="flex flex-1 min-h-0 w-full">
         {/* Left panel — input */}
-        <div className="flex flex-col flex-1 min-w-0 border-r border-border-dark">
-          <div className="flex items-center justify-between px-4 py-2 border-b border-border-dark bg-panel-dark shrink-0">
-            <span className="text-slate-400 text-xs uppercase tracking-wider">
+        <div className="flex flex-col flex-1 min-w-0 border-r border-border-light dark:border-border-dark">
+          <div className="flex items-center justify-between px-4 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0">
+            <span className="text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider">
               INPUT
             </span>
             {!isEmpty && (
@@ -146,7 +146,7 @@ function JsonFormatterTool() {
           </div>
           <textarea
             aria-label="JSON input"
-            className="flex-1 w-full min-h-0 p-4 font-mono text-xs text-slate-300 bg-transparent resize-none border-none focus:outline-none leading-relaxed placeholder:text-slate-500"
+            className="flex-1 w-full min-h-0 p-4 font-mono text-xs text-slate-700 dark:text-slate-300 bg-transparent resize-none border-none focus:outline-none leading-relaxed placeholder:text-slate-500"
             placeholder="Paste JSON here..."
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
@@ -155,9 +155,9 @@ function JsonFormatterTool() {
 
         {/* Right panel — output */}
         <div className="flex flex-col flex-1 min-w-0">
-          <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-2 border-b border-border-dark bg-panel-dark shrink-0">
+          <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0">
             <div className="flex items-center gap-2">
-              <span className="text-slate-400 text-xs uppercase tracking-wider">
+              <span className="text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider">
                 OUTPUT
               </span>
               {showValidBadge && (
@@ -215,7 +215,7 @@ function JsonFormatterTool() {
       </div>
 
       {/* Footer */}
-      <footer className="flex items-center gap-0 px-4 py-3 border-t border-border-dark bg-panel-dark shrink-0">
+      <footer className="flex items-center gap-0 px-4 py-3 border-t border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0">
         {/* Group 1 — Mode */}
         <div className="flex flex-col gap-1" role="group" aria-label="Mode">
           <span className="text-slate-600 text-xs uppercase tracking-wider">
@@ -230,7 +230,7 @@ function JsonFormatterTool() {
                 className={`px-3 py-1 text-xs font-medium rounded-full transition-colors capitalize ${
                   mode === m
                     ? "bg-primary text-white"
-                    : "text-slate-400 hover:bg-slate-700"
+                    : "text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
                 }`}
               >
                 {m}
@@ -239,7 +239,7 @@ function JsonFormatterTool() {
           </div>
         </div>
 
-        <div className="w-px h-6 bg-border-dark self-center mx-2" />
+        <div className="w-px h-6 bg-border-light dark:bg-border-dark self-center mx-2" />
 
         {/* Group 2 — Indent (Pretty only) */}
         {mode === "pretty" && (
@@ -263,7 +263,7 @@ function JsonFormatterTool() {
                     className={`px-3 py-1 text-xs font-medium rounded-full transition-colors ${
                       indent === value
                         ? "bg-primary text-white"
-                        : "text-slate-400 hover:bg-slate-700"
+                        : "text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
                     }`}
                   >
                     {label}
@@ -271,7 +271,7 @@ function JsonFormatterTool() {
                 ))}
               </div>
             </div>
-            <div className="w-px h-6 bg-border-dark self-center mx-2" />
+            <div className="w-px h-6 bg-border-light dark:bg-border-dark self-center mx-2" />
           </>
         )}
 
@@ -287,14 +287,14 @@ function JsonFormatterTool() {
                 aria-label="Sort keys"
                 checked={sortKeys}
                 onChange={(e) => setSortKeys(e.target.checked)}
-                className="rounded border-border-dark bg-background-dark text-primary focus:ring-primary"
+                className="rounded border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark text-primary focus:ring-primary"
               />
-              <span className="text-xs text-slate-300">Sort keys</span>
+              <span className="text-xs text-slate-700 dark:text-slate-300">Sort keys</span>
             </label>
           </div>
         </div>
 
-        <div className="w-px h-6 bg-border-dark self-center mx-2" />
+        <div className="w-px h-6 bg-border-light dark:bg-border-dark self-center mx-2" />
 
         {/* Group 4 — Actions (pushed right) */}
         <div
@@ -307,7 +307,7 @@ function JsonFormatterTool() {
               <button
                 type="button"
                 onClick={handleCopy}
-                className="px-3 py-2 text-xs font-medium bg-panel-dark text-slate-300 border border-border-dark rounded-lg hover:text-primary hover:bg-slate-700 transition-colors"
+                className="px-3 py-2 text-xs font-medium bg-panel-light dark:bg-panel-dark text-slate-700 dark:text-slate-300 border border-border-light dark:border-border-dark rounded-lg hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
               >
                 {copyLabel}
               </button>
@@ -315,7 +315,7 @@ function JsonFormatterTool() {
             <button
               type="button"
               onClick={handleClear}
-              className="px-4 py-2 text-sm bg-panel-dark text-slate-400 border border-border-dark rounded-lg hover:text-slate-200 hover:border-slate-500 transition-colors"
+              className="px-4 py-2 text-sm bg-panel-light dark:bg-panel-dark text-slate-500 dark:text-slate-400 border border-border-light dark:border-border-dark rounded-lg hover:text-slate-800 dark:hover:text-slate-200 hover:border-slate-400 dark:hover:border-slate-500 transition-colors"
             >
               Clear
             </button>
