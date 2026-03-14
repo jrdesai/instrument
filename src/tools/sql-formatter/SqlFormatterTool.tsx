@@ -109,12 +109,12 @@ function SqlFormatterTool() {
   const isEmpty = inputValue.trim() === "";
 
   return (
-    <div className="flex flex-col h-full bg-background-dark text-slate-100 font-display">
+    <div className="flex flex-col h-full bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
       <div className="flex flex-1 min-h-0 w-full">
         {/* Left panel — input */}
-        <div className="flex flex-col flex-1 min-w-0 border-r border-border-dark">
-          <div className="flex items-center justify-between px-4 py-2 border-b border-border-dark bg-panel-dark shrink-0">
-            <span className="text-slate-400 text-xs uppercase tracking-wider">
+        <div className="flex flex-col flex-1 min-w-0 border-r border-border-light dark:border-border-dark">
+          <div className="flex items-center justify-between px-4 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0">
+            <span className="text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider">
               INPUT
             </span>
             {!isEmpty && (
@@ -125,7 +125,7 @@ function SqlFormatterTool() {
           </div>
           <textarea
             aria-label="SQL input"
-            className="flex-1 w-full min-h-0 p-4 font-mono text-xs text-slate-300 bg-transparent resize-none border-none focus:outline-none leading-relaxed placeholder:text-slate-500"
+            className="flex-1 w-full min-h-0 p-4 font-mono text-xs text-slate-700 dark:text-slate-300 bg-transparent resize-none border-none focus:outline-none leading-relaxed placeholder:text-slate-500"
             placeholder={`SELECT *\nFROM users\nWHERE id = 1;`}
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
@@ -134,8 +134,8 @@ function SqlFormatterTool() {
 
         {/* Right panel — output */}
         <div className="flex flex-col flex-1 min-w-0">
-          <div className="flex items-center justify-between gap-2 px-4 py-2 border-b border-border-dark bg-panel-dark shrink-0">
-            <span className="text-slate-400 text-xs uppercase tracking-wider">
+          <div className="flex items-center justify-between gap-2 px-4 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0">
+            <span className="text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider">
               OUTPUT
             </span>
             {!isEmpty && (
@@ -146,7 +146,7 @@ function SqlFormatterTool() {
               </span>
             )}
           </div>
-          <div className="flex-1 min-h-0 overflow-auto custom-scrollbar bg-background-dark">
+          <div className="flex-1 min-h-0 overflow-auto custom-scrollbar bg-background-light dark:bg-background-dark">
             {output?.result ? (
               <CodeBlock
                 language="sql"
@@ -162,7 +162,7 @@ function SqlFormatterTool() {
             )}
           </div>
           {output?.error && (
-            <div className="px-4 py-2 text-xs text-red-400 bg-red-950/40 border-t border-red-900">
+            <div className="px-4 py-2 text-xs text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-950/40 border-t border-red-200 dark:border-red-900">
               {output.error}
             </div>
           )}
@@ -170,8 +170,8 @@ function SqlFormatterTool() {
       </div>
 
       {/* Footer — options + actions */}
-      <footer className="shrink-0 border-t border-border-dark bg-panel-dark px-4 py-3">
-        <div className="flex items-start gap-6 text-xs text-slate-400">
+      <footer className="shrink-0 border-t border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark px-4 py-3">
+        <div className="flex items-start gap-6 text-xs text-slate-500 dark:text-slate-400">
           {/* Indent group */}
           <div className="flex flex-col gap-1">
             <span className="text-slate-500 text-[10px] uppercase tracking-wider">
@@ -212,7 +212,7 @@ function SqlFormatterTool() {
           </div>
 
           {/* Divider */}
-          <div className="w-px h-6 bg-border-dark self-center mx-1" />
+          <div className="w-px h-6 bg-border-light dark:bg-border-dark self-center mx-1" />
 
           {/* Keyword case group */}
           <div className="flex flex-col gap-1">
@@ -267,7 +267,7 @@ function SqlFormatterTool() {
               type="button"
               onClick={handleCopy}
               disabled={!output?.result}
-              className="px-3 py-1.5 rounded-md border border-border-dark bg-panel-dark text-[11px] font-semibold uppercase tracking-wider disabled:opacity-40 disabled:cursor-not-allowed hover:bg-white/5 transition-colors"
+              className="px-3 py-1.5 rounded-md border border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark text-[11px] font-semibold uppercase tracking-wider disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-100 dark:hover:bg-white/5 transition-colors"
             >
               {copyLabel}
             </button>
@@ -275,7 +275,7 @@ function SqlFormatterTool() {
               type="button"
               onClick={handleClear}
               disabled={isEmpty && !output}
-              className="px-3 py-1.5 rounded-md border border-border-dark bg-panel-dark text-[11px] font-semibold uppercase tracking-wider disabled:opacity-40 disabled:cursor-not-allowed hover:bg-white/5 transition-colors"
+              className="px-3 py-1.5 rounded-md border border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark text-[11px] font-semibold uppercase tracking-wider disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-100 dark:hover:bg-white/5 transition-colors"
             >
               Clear
             </button>

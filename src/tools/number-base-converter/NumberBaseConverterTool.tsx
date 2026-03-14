@@ -238,7 +238,7 @@ function NumberBaseConverterTool() {
           />
         </div>
         {hasError && (
-          <p className="text-red-400 text-xs font-mono mt-2">
+          <p className="text-red-600 dark:text-red-400 text-xs font-mono mt-2">
             {output?.error}
           </p>
         )}

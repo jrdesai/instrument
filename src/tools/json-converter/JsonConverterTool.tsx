@@ -197,7 +197,7 @@ function JsonConverterTool() {
             )}
 
             {!isEmpty && output?.error && (
-              <div className="text-red-400 text-sm font-mono p-2">
+              <div className="text-red-600 dark:text-red-400 text-sm font-mono p-2">
                 {output.error}
               </div>
             )}

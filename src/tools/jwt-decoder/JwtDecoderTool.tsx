@@ -304,7 +304,7 @@ function JwtDecoderTool() {
         )}
 
         {showError && (
-          <div className="text-red-400 text-sm font-mono whitespace-pre-wrap mb-4">
+          <div className="text-red-600 dark:text-red-400 text-sm font-mono whitespace-pre-wrap mb-4">
             {output?.error}
           </div>
         )}

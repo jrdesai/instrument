@@ -247,7 +247,7 @@ function Iso8601FormatterTool() {
       {/* Output */}
       <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar p-4">
         {hasError && (
-          <div className="text-red-400 text-sm font-mono whitespace-pre-wrap mb-4">
+          <div className="text-red-600 dark:text-red-400 text-sm font-mono whitespace-pre-wrap mb-4">
             {output?.error}
           </div>
         )}
@@ -309,12 +309,12 @@ function Iso8601FormatterTool() {
                 return (
                   <div
                     key={id}
-                    className={`flex flex-col border border-border-dark bg-panel-dark rounded-lg p-3 hover:border-primary/40 transition-colors ${
+                    className={`flex flex-col border border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark rounded-lg p-3 hover:border-primary/40 transition-colors ${
                       grayed ? "opacity-60" : ""
                     }`}
                   >
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-slate-400 text-xs uppercase tracking-wider">
+                      <span className="text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider">
                         {label}
                       </span>
                       {!grayed && (

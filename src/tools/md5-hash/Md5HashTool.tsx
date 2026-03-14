@@ -158,7 +158,7 @@ function Md5HashTool() {
             <pre
               aria-live="polite"
               aria-label="MD5 hash error"
-              className="flex-1 p-4 overflow-auto font-mono text-sm whitespace-pre-wrap break-all text-red-400"
+              className="flex-1 p-4 overflow-auto font-mono text-sm whitespace-pre-wrap break-all text-red-600 dark:text-red-400"
             >
               {error}
             </pre>

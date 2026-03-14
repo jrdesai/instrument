@@ -93,7 +93,7 @@ function JwtBuilderTool() {
 
   const buildPayloadJson = useCallback(() => {
     const custom = customPayload.trim();
-    let payload: Record<string, unknown> = custom
+    const payload: Record<string, unknown> = custom
       ? (() => {
           try {
             const parsed = JSON.parse(custom);
@@ -536,7 +536,7 @@ function JwtBuilderTool() {
             </p>
           )}
           {output?.error && (
-            <div className="text-red-400 text-sm font-mono whitespace-pre-wrap mb-4">
+            <div className="text-red-600 dark:text-red-400 text-sm font-mono whitespace-pre-wrap mb-4">
               {output.error}
             </div>
           )}

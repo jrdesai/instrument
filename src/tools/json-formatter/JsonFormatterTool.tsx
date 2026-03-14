@@ -190,7 +190,7 @@ function JsonFormatterTool() {
               </p>
             )}
             {!isEmpty && output && !output.isValid && (
-              <div className="text-red-400 text-xs font-mono">
+              <div className="text-red-600 dark:text-red-400 text-xs font-mono">
                 {output.errorLine != null && output.errorColumn != null && (
                   <span className="text-slate-500">
                     Line {output.errorLine}, Column {output.errorColumn}:{" "}

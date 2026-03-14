@@ -267,7 +267,7 @@ function JsonPathTool() {
 
             {/* Error */}
             {!isEmpty && showError && (
-              <div className="text-red-400 text-sm font-mono whitespace-pre-wrap mb-3">
+              <div className="text-red-600 dark:text-red-400 text-sm font-mono whitespace-pre-wrap mb-3">
                 {output?.error}
               </div>
             )}

@@ -33,16 +33,16 @@ export function QuickReference({ onInsert }: QuickReferenceProps) {
     <div className="flex flex-col flex-1 min-h-0 gap-2">
       <input
         type="text"
-        className="w-full px-3 py-1.5 rounded-md bg-panel-dark text-slate-200 text-xs border border-border-dark focus:outline-none focus:border-primary font-mono placeholder:text-slate-600"
+        className="w-full px-3 py-1.5 rounded-md bg-panel-light dark:bg-panel-dark text-slate-800 dark:text-slate-200 text-xs border border-border-light dark:border-border-dark focus:outline-none focus:border-primary font-mono placeholder:text-slate-500"
         placeholder="Filter tokens…"
         value={filter}
         onChange={(e) => setFilter(e.target.value)}
         autoFocus
       />
 
-      <div className="flex flex-1 min-h-0 border border-border-dark rounded-md overflow-hidden">
+      <div className="flex flex-1 min-h-0 border border-border-light dark:border-border-dark rounded-md overflow-hidden">
         {!flatFiltered && (
-          <div className="w-36 shrink-0 border-r border-border-dark overflow-y-auto bg-panel-dark/50">
+          <div className="w-36 shrink-0 border-r border-border-light dark:border-border-dark overflow-y-auto bg-panel-light/50 dark:bg-panel-dark/50">
             {REFERENCE_SECTIONS.map((section) => (
               <button
                 key={section.id}
@@ -50,8 +50,8 @@ export function QuickReference({ onInsert }: QuickReferenceProps) {
                 onClick={() => setActiveSection(section.id)}
                 className={`w-full text-left px-3 py-2 text-[11px] transition-colors border-l-2 ${
                   activeSection === section.id
-                    ? "border-primary text-slate-200 bg-primary/10"
-                    : "border-transparent text-slate-500 hover:text-slate-300 hover:bg-white/5"
+                    ? "border-primary text-slate-800 dark:text-slate-200 bg-primary/10"
+                    : "border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5"
                 }`}
               >
                 {section.title}
@@ -69,12 +69,12 @@ export function QuickReference({ onInsert }: QuickReferenceProps) {
               key={t.token}
               type="button"
               onClick={() => onInsert(t.token)}
-              className="w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-white/5 transition-colors group border-b border-border-dark/50 last:border-0"
+              className="w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-slate-100 dark:hover:bg-white/5 transition-colors group border-b border-border-light/50 dark:border-border-dark/50 last:border-0"
             >
               <span className="font-mono text-primary text-[11px] min-w-[80px] shrink-0 truncate">
                 {t.token}
               </span>
-              <span className="text-slate-500 text-[11px] flex-1 truncate group-hover:text-slate-300 transition-colors">
+              <span className="text-slate-500 text-[11px] flex-1 truncate group-hover:text-slate-700 dark:group-hover:text-slate-300 transition-colors">
                 {t.description}
               </span>
               <span className="text-slate-700 text-[10px] shrink-0 group-hover:text-primary transition-colors">

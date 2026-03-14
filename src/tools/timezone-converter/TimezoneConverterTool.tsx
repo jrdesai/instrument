@@ -362,7 +362,7 @@ function TimezoneConverterTool() {
       {/* Bottom: output cards (2 columns) */}
       <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar p-4">
         {hasError ? (
-          <div className="text-red-400 text-sm font-mono whitespace-pre-wrap">
+          <div className="text-red-600 dark:text-red-400 text-sm font-mono whitespace-pre-wrap">
             {output?.error}
           </div>
         ) : (

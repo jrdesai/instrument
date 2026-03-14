@@ -49,7 +49,6 @@ self.onmessage = async (e: MessageEvent<RegexWorkerRequest>) => {
       result: normalised,
     };
 
-    // eslint-disable-next-line no-restricted-globals
     (self as unknown as Worker).postMessage(response);
   } catch (err) {
     const response: RegexWorkerResponse = {
@@ -58,7 +57,6 @@ self.onmessage = async (e: MessageEvent<RegexWorkerRequest>) => {
       error: err instanceof Error ? err.message : "Unknown error",
     };
 
-    // eslint-disable-next-line no-restricted-globals
     (self as unknown as Worker).postMessage(response);
   }
 };

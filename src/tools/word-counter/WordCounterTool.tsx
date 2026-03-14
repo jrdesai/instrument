@@ -59,11 +59,11 @@ function StatCard({
 }) {
   const display = value === "—" || value === "" ? "—" : String(value);
   return (
-    <div className="flex flex-col border border-border-dark bg-panel-dark rounded-lg p-3 hover:border-primary/40 transition-colors">
+    <div className="flex flex-col border border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark rounded-lg p-3 hover:border-primary/40 transition-colors">
       <span className="font-mono text-2xl font-bold text-primary">
         {display}
       </span>
-      <span className="text-xs uppercase tracking-wider text-slate-400 mt-1">
+      <span className="text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400 mt-1">
         {label}
       </span>
     </div>
@@ -154,17 +154,17 @@ function WordCounterTool() {
   }
 
   return (
-    <div className="flex flex-col h-full bg-background-dark text-slate-100 font-display">
+    <div className="flex flex-col h-full bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
       <div className="flex-1 flex min-h-0">
         {/* Left panel: input textarea (~60% height via flex) */}
-        <div className="flex flex-col w-[55%] min-w-0 border-r border-border-dark bg-panel-dark">
-          <div className="px-4 py-3 border-b border-border-dark">
-            <span className="text-xs text-slate-400">Input</span>
+        <div className="flex flex-col w-[55%] min-w-0 border-r border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark">
+          <div className="px-4 py-3 border-b border-border-light dark:border-border-dark">
+            <span className="text-xs text-slate-500 dark:text-slate-400">Input</span>
           </div>
           <div className="flex-1 min-h-0 p-4">
             <textarea
               aria-label="Text to analyse"
-              className="w-full h-full min-h-[200px] p-3 bg-background-dark text-slate-100 font-mono text-sm resize-none outline-none focus:ring-1 focus:ring-primary border border-border-dark rounded-lg"
+              className="w-full h-full min-h-[200px] p-3 bg-background-light dark:bg-background-dark text-slate-700 dark:text-slate-300 font-mono text-sm resize-none outline-none focus:ring-1 focus:ring-primary border border-border-light dark:border-border-dark rounded-lg"
               placeholder="Paste or type text to analyse..."
               value={input}
               onChange={(e) => setInput(e.target.value)}
@@ -175,7 +175,7 @@ function WordCounterTool() {
         {/* Right panel: stats grid */}
         <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar p-4">
           {error ? (
-            <div className="text-red-400 text-sm font-mono whitespace-pre-wrap">
+            <div className="text-red-600 dark:text-red-400 text-sm font-mono whitespace-pre-wrap">
               {error}
             </div>
           ) : (
@@ -193,11 +193,11 @@ function WordCounterTool() {
       </div>
 
       {/* Footer */}
-      <footer className="flex items-center gap-4 px-4 py-3 border-t border-border-dark bg-panel-dark shrink-0">
+      <footer className="flex items-center gap-4 px-4 py-3 border-t border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0">
         <button
           type="button"
           onClick={handleClear}
-          className="px-4 py-2 text-sm bg-panel-dark text-slate-400 border border-border-dark rounded-lg hover:text-slate-200 hover:border-slate-500 transition-colors"
+          className="px-4 py-2 text-sm bg-panel-light dark:bg-panel-dark text-slate-500 dark:text-slate-400 border border-border-light dark:border-border-dark rounded-lg hover:text-slate-800 dark:hover:text-slate-200 hover:border-slate-400 dark:hover:border-slate-500 transition-colors"
         >
           Clear
         </button>

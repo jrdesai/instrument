@@ -614,7 +614,7 @@ const RegexTesterTool: React.FC = () => {
     <div className="flex flex-col h-full w-full bg-background-light dark:bg-background-dark">
       <div className="flex flex-1 min-h-0">
         {/* Left panel */}
-        <div className="w-[55%] shrink-0 flex flex-col border-r border-border-dark overflow-hidden p-4 gap-4">
+        <div className="w-[55%] shrink-0 flex flex-col border-r border-border-light dark:border-border-dark overflow-hidden p-4 gap-4">
           {/* Mode tabs */}
           <div className="flex gap-1 mb-1">
             {(["match", "replace"] as Mode[]).map((m) => (
@@ -625,7 +625,7 @@ const RegexTesterTool: React.FC = () => {
                 className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${
                   mode === m
                     ? "bg-primary text-white"
-                    : "text-slate-400 hover:text-slate-200 hover:bg-white/5"
+                    : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/5"
                 }`}
               >
                 {m === "match" ? "Match" : "Replace"}
@@ -687,7 +687,7 @@ const RegexTesterTool: React.FC = () => {
             <div className="flex items-center gap-2">
               <input
                 type="text"
-                className="flex-1 px-3 py-2 rounded-md bg-panel-dark text-slate-100 text-sm border border-border-dark focus:outline-none focus:border-primary font-mono"
+                className="flex-1 px-3 py-2 rounded-md bg-panel-light dark:bg-panel-dark text-slate-900 dark:text-slate-100 text-sm border border-border-light dark:border-border-dark focus:outline-none focus:border-primary font-mono"
                 placeholder="e.g. (\\w+)"
                 value={pattern}
                 onChange={handlePatternChange}
@@ -697,7 +697,7 @@ const RegexTesterTool: React.FC = () => {
               <span className="text-slate-500 font-mono text-sm shrink-0">/</span>
               <div className="flex flex-col items-end">
                 <input
-                  className="w-14 px-2 py-2 rounded-md bg-panel-dark text-slate-100 text-sm border border-border-dark focus:outline-none focus:border-primary font-mono text-center self-start mt-0"
+                  className="w-14 px-2 py-2 rounded-md bg-panel-light dark:bg-panel-dark text-slate-900 dark:text-slate-100 text-sm border border-border-light dark:border-border-dark focus:outline-none focus:border-primary font-mono text-center self-start mt-0"
                   placeholder="gim"
                   value={flags}
                   onChange={handleFlagsChange}
@@ -732,7 +732,7 @@ const RegexTesterTool: React.FC = () => {
                 </div>
                 <input
                   type="text"
-                  className="w-full px-3 py-2 rounded-md bg-panel-dark text-slate-100 text-sm border border-border-dark focus:outline-none focus:border-primary font-mono"
+                  className="w-full px-3 py-2 rounded-md bg-panel-light dark:bg-panel-dark text-slate-900 dark:text-slate-100 text-sm border border-border-light dark:border-border-dark focus:outline-none focus:border-primary font-mono"
                   placeholder="e.g. $1_suffix or replacement text"
                   value={replacement}
                   onChange={(e) => {
@@ -768,7 +768,7 @@ const RegexTesterTool: React.FC = () => {
                       className={`px-3 py-1 rounded-md text-xs font-medium border transition-colors ${
                         engine === id
                           ? "bg-primary text-white border-primary"
-                          : "bg-panel-dark text-slate-400 border-border-dark hover:text-slate-200"
+                          : "bg-panel-light dark:bg-panel-dark text-slate-500 dark:text-slate-400 border border-border-light dark:border-border-dark hover:text-slate-700 dark:hover:text-slate-200"
                       }`}
                     >
                       {label}
@@ -785,7 +785,7 @@ const RegexTesterTool: React.FC = () => {
                     Test text
                   </div>
                   <textarea
-                    className="w-full min-h-[160px] px-3 py-2 rounded-md bg-panel-dark text-slate-100 text-xs border border-border-dark focus:outline-none focus:border-primary font-mono resize-none leading-relaxed"
+                    className="w-full min-h-[160px] px-3 py-2 rounded-md bg-panel-light dark:bg-panel-dark text-slate-900 dark:text-slate-100 text-xs border border-border-light dark:border-border-dark focus:outline-none focus:border-primary font-mono resize-none leading-relaxed"
                     placeholder="Paste or type text to test against…"
                     value={text}
                     onChange={handleTextChange}
@@ -797,7 +797,7 @@ const RegexTesterTool: React.FC = () => {
                     <div className="text-xs uppercase tracking-wider text-slate-500 mb-2">
                       Highlighted
                     </div>
-                    <div className="w-full min-h-[60px] px-3 py-2 rounded-md bg-panel-dark/60 border border-border-dark text-xs font-mono leading-relaxed whitespace-pre-wrap break-all text-slate-200">
+                    <div className="w-full min-h-[60px] px-3 py-2 rounded-md bg-panel-light/60 dark:bg-panel-dark/60 border border-border-light dark:border-border-dark text-xs font-mono leading-relaxed whitespace-pre-wrap break-all text-slate-800 dark:text-slate-200">
                       {buildHighlightedText(text, matches)}
                     </div>
                   </div>
@@ -825,7 +825,7 @@ const RegexTesterTool: React.FC = () => {
                   className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${
                     rightTab === id
                       ? "bg-primary text-white"
-                      : "text-slate-400 hover:text-slate-200 hover:bg-white/5"
+                      : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/5"
                   }`}
                 >
                   {label}
@@ -863,10 +863,10 @@ const RegexTesterTool: React.FC = () => {
                 {matches.map((m, idx) => (
                   <div
                     key={`${m.start}-${m.end}-${idx}`}
-                    className="rounded-md bg-panel-dark border border-border-dark px-3 py-2 text-xs text-slate-200"
+                    className="rounded-md bg-panel-light dark:bg-panel-dark border border-border-light dark:border-border-dark px-3 py-2 text-xs text-slate-800 dark:text-slate-200"
                   >
                     <div className="flex items-center justify-between mb-1">
-                      <span className="font-mono text-slate-400">
+                      <span className="font-mono text-slate-500 dark:text-slate-400">
                         #{idx + 1} [{m.start}..{m.end})
                       </span>
                       <span className="font-mono bg-primary/10 text-primary px-2 py-0.5 rounded-full">
@@ -917,7 +917,7 @@ const RegexTesterTool: React.FC = () => {
                   {explanation.map((token, idx) => (
                     <div
                       key={idx}
-                      className="flex items-baseline gap-3 px-2 py-1 rounded hover:bg-white/5 transition-colors"
+                      className="flex items-baseline gap-3 px-2 py-1 rounded hover:bg-slate-100 dark:hover:bg-white/5 transition-colors"
                       style={{ paddingLeft: `${8 + token.depth * 16}px` }}
                     >
                       <span
@@ -962,7 +962,7 @@ const RegexTesterTool: React.FC = () => {
                             className={`px-2.5 py-1 rounded-md text-xs transition-colors ${
                               codeLanguage === lang
                                 ? "bg-primary text-white"
-                                : "bg-panel-dark text-slate-400 border border-border-dark hover:text-slate-200"
+                                : "bg-panel-light dark:bg-panel-dark text-slate-500 dark:text-slate-400 border border-border-light dark:border-border-dark hover:text-slate-700 dark:hover:text-slate-200"
                             }`}
                           >
                             {LANGUAGE_LABELS[lang]}
@@ -993,7 +993,7 @@ const RegexTesterTool: React.FC = () => {
       </div>
 
       {/* Footer actions */}
-      <div className="border-t border-border-dark px-4 py-2 flex items-center gap-4">
+      <div className="border-t border-border-light dark:border-border-dark px-4 py-2 flex items-center gap-4">
         <button
           type="button"
           onClick={async () => {
@@ -1007,7 +1007,7 @@ const RegexTesterTool: React.FC = () => {
             }
           }}
           disabled={matches.length === 0}
-          className="text-xs text-slate-400 hover:text-slate-200 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+          className="text-xs text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
         >
           Copy matches
         </button>
@@ -1022,14 +1022,14 @@ const RegexTesterTool: React.FC = () => {
             }
           }}
           disabled={!pattern}
-          className="text-xs text-slate-400 hover:text-slate-200 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+          className="text-xs text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
         >
           Copy pattern
         </button>
         <button
           type="button"
           onClick={clearAll}
-          className="ml-auto text-xs text-slate-400 hover:text-slate-200 transition-colors"
+          className="ml-auto text-xs text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors"
         >
           Clear
         </button>

@@ -173,7 +173,7 @@ function TextCaseConverterTool() {
       {/* Output cards */}
       <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar p-4">
         {error ? (
-          <div className="text-red-400 text-sm font-mono whitespace-pre-wrap">
+          <div className="text-red-600 dark:text-red-400 text-sm font-mono whitespace-pre-wrap">
             {error}
           </div>
         ) : (

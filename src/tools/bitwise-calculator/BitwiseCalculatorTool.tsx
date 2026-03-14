@@ -222,7 +222,7 @@ function BitwiseCalculatorTool() {
               onChange={(e) => setValueA(e.target.value)}
             />
             {hasError && (
-              <p className="text-red-400 text-xs font-mono mt-1">{output?.error}</p>
+              <p className="text-red-600 dark:text-red-400 text-xs font-mono mt-1">{output?.error}</p>
             )}
           </div>
           <div>

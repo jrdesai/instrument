@@ -132,12 +132,12 @@ function JsonValidatorTool() {
   const isValid = output?.isValid === true;
 
   return (
-    <div className="flex flex-col h-full bg-background-dark text-slate-100 font-display">
+    <div className="flex flex-col h-full bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
       <div className="flex flex-1 min-h-0 w-full">
         {/* Left panel — input */}
-        <div className="flex flex-col flex-1 min-w-0 border-r border-border-dark">
-          <div className="flex items-center justify-between px-4 py-2 border-b border-border-dark bg-panel-dark shrink-0">
-            <span className="text-slate-400 text-xs uppercase tracking-wider">
+        <div className="flex flex-col flex-1 min-w-0 border-r border-border-light dark:border-border-dark">
+          <div className="flex items-center justify-between px-4 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0">
+            <span className="text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider">
               INPUT
             </span>
             {!isEmpty && (
@@ -148,7 +148,7 @@ function JsonValidatorTool() {
           </div>
           <textarea
             aria-label="JSON input"
-            className="flex-1 w-full min-h-0 p-4 font-mono text-xs text-slate-300 bg-transparent resize-none border-none focus:outline-none leading-relaxed placeholder:text-slate-500"
+            className="flex-1 w-full min-h-0 p-4 font-mono text-xs text-slate-700 dark:text-slate-300 bg-transparent resize-none border-none focus:outline-none leading-relaxed placeholder:text-slate-500"
             placeholder="Paste JSON to validate..."
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
@@ -157,8 +157,8 @@ function JsonValidatorTool() {
 
         {/* Right panel — result */}
         <div className="flex flex-col flex-1 min-w-0 overflow-y-auto">
-          <div className="flex items-center justify-between px-4 py-2 border-b border-border-dark bg-panel-dark shrink-0">
-            <span className="text-slate-400 text-xs uppercase tracking-wider">
+          <div className="flex items-center justify-between px-4 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0">
+            <span className="text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider">
               RESULT
             </span>
           </div>
@@ -199,92 +199,92 @@ function JsonValidatorTool() {
                 {/* Structure summary grid */}
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4">
                   {output.depth != null && output.depth > 0 && (
-                    <div className="bg-panel-dark border border-border-dark rounded-lg p-3">
+                    <div className="bg-panel-light dark:bg-panel-dark border border-border-light dark:border-border-dark rounded-lg p-3">
                       <div className="text-slate-500 text-xs uppercase tracking-wider mb-0.5">
                         Depth
                       </div>
-                      <div className="text-slate-200 text-lg font-mono">
+                      <div className="text-slate-800 dark:text-slate-200 text-lg font-mono">
                         {output.depth} level{output.depth !== 1 ? "s" : ""}
                       </div>
                     </div>
                   )}
                   {output.keyCount != null && output.keyCount > 0 && (
-                    <div className="bg-panel-dark border border-border-dark rounded-lg p-3">
+                    <div className="bg-panel-light dark:bg-panel-dark border border-border-light dark:border-border-dark rounded-lg p-3">
                       <div className="text-slate-500 text-xs uppercase tracking-wider mb-0.5">
                         Keys
                       </div>
-                      <div className="text-slate-200 text-lg font-mono">
+                      <div className="text-slate-800 dark:text-slate-200 text-lg font-mono">
                         {output.keyCount} total
                       </div>
                     </div>
                   )}
                   {output.objectCount != null && output.objectCount > 0 && (
-                    <div className="bg-panel-dark border border-border-dark rounded-lg p-3">
+                    <div className="bg-panel-light dark:bg-panel-dark border border-border-light dark:border-border-dark rounded-lg p-3">
                       <div className="text-slate-500 text-xs uppercase tracking-wider mb-0.5">
                         Objects
                       </div>
-                      <div className="text-slate-200 text-lg font-mono">
+                      <div className="text-slate-800 dark:text-slate-200 text-lg font-mono">
                         {output.objectCount}
                       </div>
                     </div>
                   )}
                   {output.arrayCount != null && output.arrayCount > 0 && (
-                    <div className="bg-panel-dark border border-border-dark rounded-lg p-3">
+                    <div className="bg-panel-light dark:bg-panel-dark border border-border-light dark:border-border-dark rounded-lg p-3">
                       <div className="text-slate-500 text-xs uppercase tracking-wider mb-0.5">
                         Arrays
                       </div>
-                      <div className="text-slate-200 text-lg font-mono">
+                      <div className="text-slate-800 dark:text-slate-200 text-lg font-mono">
                         {output.arrayCount}
                       </div>
                     </div>
                   )}
                   {output.stringCount != null && output.stringCount > 0 && (
-                    <div className="bg-panel-dark border border-border-dark rounded-lg p-3">
+                    <div className="bg-panel-light dark:bg-panel-dark border border-border-light dark:border-border-dark rounded-lg p-3">
                       <div className="text-slate-500 text-xs uppercase tracking-wider mb-0.5">
                         Strings
                       </div>
-                      <div className="text-slate-200 text-lg font-mono">
+                      <div className="text-slate-800 dark:text-slate-200 text-lg font-mono">
                         {output.stringCount}
                       </div>
                     </div>
                   )}
                   {output.numberCount != null && output.numberCount > 0 && (
-                    <div className="bg-panel-dark border border-border-dark rounded-lg p-3">
+                    <div className="bg-panel-light dark:bg-panel-dark border border-border-light dark:border-border-dark rounded-lg p-3">
                       <div className="text-slate-500 text-xs uppercase tracking-wider mb-0.5">
                         Numbers
                       </div>
-                      <div className="text-slate-200 text-lg font-mono">
+                      <div className="text-slate-800 dark:text-slate-200 text-lg font-mono">
                         {output.numberCount}
                       </div>
                     </div>
                   )}
                   {output.booleanCount != null && output.booleanCount > 0 && (
-                    <div className="bg-panel-dark border border-border-dark rounded-lg p-3">
+                    <div className="bg-panel-light dark:bg-panel-dark border border-border-light dark:border-border-dark rounded-lg p-3">
                       <div className="text-slate-500 text-xs uppercase tracking-wider mb-0.5">
                         Booleans
                       </div>
-                      <div className="text-slate-200 text-lg font-mono">
+                      <div className="text-slate-800 dark:text-slate-200 text-lg font-mono">
                         {output.booleanCount}
                       </div>
                     </div>
                   )}
                   {output.nullCount != null && output.nullCount > 0 && (
-                    <div className="bg-panel-dark border border-border-dark rounded-lg p-3">
+                    <div className="bg-panel-light dark:bg-panel-dark border border-border-light dark:border-border-dark rounded-lg p-3">
                       <div className="text-slate-500 text-xs uppercase tracking-wider mb-0.5">
                         Nulls
                       </div>
-                      <div className="text-slate-200 text-lg font-mono">
+                      <div className="text-slate-800 dark:text-slate-200 text-lg font-mono">
                         {output.nullCount}
                       </div>
                     </div>
                   )}
                   {output.maxArrayLength != null &&
                     output.maxArrayLength > 0 && (
-                      <div className="bg-panel-dark border border-border-dark rounded-lg p-3">
+                      <div className="bg-panel-light dark:bg-panel-dark border border-border-light dark:border-border-dark rounded-lg p-3">
                         <div className="text-slate-500 text-xs uppercase tracking-wider mb-0.5">
                           Longest array
                         </div>
-                        <div className="text-slate-200 text-lg font-mono">
+                        <div className="text-slate-800 dark:text-slate-200 text-lg font-mono">
                           {output.maxArrayLength} items
                         </div>
                       </div>
@@ -305,7 +305,7 @@ function JsonValidatorTool() {
                       onClick={() =>
                         setShowFormattedPreview((v) => !v)
                       }
-                      className="flex items-center gap-2 text-slate-400 hover:text-slate-200 text-sm font-medium mb-2"
+                      className="flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 text-sm font-medium mb-2"
                     >
                       <span
                         className="material-symbols-outlined text-lg"
@@ -334,12 +334,12 @@ function JsonValidatorTool() {
             {!isEmpty && output != null && !output.isValid && (
               <>
                 <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 mb-4">
-                  <p className="text-red-400 text-lg font-medium">
+                  <p className="text-red-600 dark:text-red-400 text-lg font-medium">
                     ✗ Invalid JSON
                   </p>
                 </div>
 
-                <div className="bg-panel-dark border border-red-500/20 rounded-lg p-4 mb-4">
+                <div className="bg-panel-light dark:bg-panel-dark border border-red-500/20 rounded-lg p-4 mb-4">
                   {output.error && (
                     <p className="text-red-300 text-sm font-mono mb-2">
                       {output.error}
@@ -351,7 +351,7 @@ function JsonValidatorTool() {
                     </p>
                   )}
                   {output.errorContext && (
-                    <div className="bg-background-dark rounded p-3 font-mono text-xs text-slate-400 mb-2 break-all">
+                    <div className="bg-background-light dark:bg-background-dark rounded p-3 font-mono text-xs text-slate-500 dark:text-slate-400 mb-2 break-all">
                       {output.errorContext}
                     </div>
                   )}
@@ -375,7 +375,7 @@ function JsonValidatorTool() {
                   <button
                     type="button"
                     onClick={() => setShowMistakes((v) => !v)}
-                    className="flex items-center gap-2 text-slate-500 hover:text-slate-300 text-xs font-medium mb-2"
+                    className="flex items-center gap-2 text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 text-xs font-medium mb-2"
                   >
                     <span
                       className="material-symbols-outlined text-base"
@@ -400,7 +400,7 @@ function JsonValidatorTool() {
       </div>
 
       {/* Footer — actions only */}
-      <footer className="flex items-end gap-2 px-4 py-3 border-t border-border-dark bg-panel-dark shrink-0">
+      <footer className="flex items-end gap-2 px-4 py-3 border-t border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0">
         <div
           className="flex flex-col gap-1 ml-auto"
           role="group"
@@ -411,14 +411,14 @@ function JsonValidatorTool() {
               type="button"
               onClick={handleCopyInput}
               disabled={!inputValue}
-              className="px-3 py-2 text-xs font-medium bg-panel-dark text-slate-300 border border-border-dark rounded-lg hover:text-primary hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="px-3 py-2 text-xs font-medium bg-panel-light dark:bg-panel-dark text-slate-700 dark:text-slate-300 border border-border-light dark:border-border-dark rounded-lg hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               Copy Input
             </button>
             <button
               type="button"
               onClick={handleClear}
-              className="px-4 py-2 text-sm bg-panel-dark text-slate-400 border border-border-dark rounded-lg hover:text-slate-200 hover:border-slate-500 transition-colors"
+              className="px-4 py-2 text-sm bg-panel-light dark:bg-panel-dark text-slate-500 dark:text-slate-400 border border-border-light dark:border-border-dark rounded-lg hover:text-slate-800 dark:hover:text-slate-200 hover:border-slate-400 dark:hover:border-slate-500 transition-colors"
             >
               Clear
             </button>

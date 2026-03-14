@@ -146,19 +146,19 @@ function UrlParserTool() {
   const hasResult = output != null && !hasError;
 
   return (
-    <div className="flex flex-col h-full bg-background-dark text-slate-100 font-display">
+    <div className="flex flex-col h-full bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
       {/* Header */}
-      <div className="px-4 py-3 border-b border-border-dark bg-panel-dark shrink-0">
-        <h2 className="text-lg font-semibold text-slate-100">URL Parser</h2>
-        <p className="text-sm text-slate-400 mt-0.5">Parse and inspect URLs</p>
+      <div className="px-4 py-3 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0">
+        <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">URL Parser</h2>
+        <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">Parse and inspect URLs</p>
       </div>
 
       {/* Input */}
-      <div className="px-4 py-3 border-b border-border-dark shrink-0">
+      <div className="px-4 py-3 border-b border-border-light dark:border-border-dark shrink-0">
         <input
           type="text"
           aria-label="URL to parse"
-          className="w-full px-3 py-2 bg-background-dark border border-border-dark rounded-lg font-mono text-sm text-slate-200 placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-primary"
+          className="w-full px-3 py-2 bg-background-light dark:bg-background-dark border border-border-light dark:border-border-dark rounded-lg font-mono text-sm text-slate-800 dark:text-slate-200 placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-primary"
           placeholder="https://example.com/..."
           value={input}
           onChange={(e) => setInput(e.target.value)}
@@ -180,19 +180,19 @@ function UrlParserTool() {
               {FIELD_GROUPS.map((group, gi) => (
                 <div
                   key={gi}
-                  className="border border-border-dark rounded-lg overflow-hidden bg-panel-dark"
+                  className="border border-border-light dark:border-border-dark rounded-lg overflow-hidden bg-panel-light dark:bg-panel-dark"
                 >
                   <table className="w-full text-sm">
                     <tbody>
                       {group.map(({ label, key }) => (
                         <tr
                           key={key}
-                          className="border-b border-border-dark last:border-b-0"
+                          className="border-b border-border-light dark:border-border-dark last:border-b-0"
                         >
-                          <td className="w-32 py-2 px-3 text-slate-400 font-medium align-top">
+                          <td className="w-32 py-2 px-3 text-slate-500 dark:text-slate-400 font-medium align-top">
                             {label}
                           </td>
-                          <td className="py-2 px-3 font-mono text-slate-200 break-all">
+                          <td className="py-2 px-3 font-mono text-slate-800 dark:text-slate-200 break-all">
                             {fieldValue(output, key)}
                           </td>
                         </tr>
@@ -205,17 +205,17 @@ function UrlParserTool() {
 
             {output.params.length > 0 && (
               <div className="mt-4">
-                <div className="text-slate-400 text-xs uppercase tracking-wider mb-2">
+                <div className="text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider mb-2">
                   Query params
                 </div>
-                <div className="border border-border-dark rounded-lg overflow-hidden bg-panel-dark">
+                <div className="border border-border-light dark:border-border-dark rounded-lg overflow-hidden bg-panel-light dark:bg-panel-dark">
                   <table className="w-full text-sm">
                     <thead>
-                      <tr className="border-b border-border-dark bg-background-dark/50">
-                        <th className="text-left py-2 px-3 text-slate-400 font-medium">
+                      <tr className="border-b border-border-light dark:border-border-dark bg-background-dark/10 dark:bg-background-dark/50">
+                        <th className="text-left py-2 px-3 text-slate-500 dark:text-slate-400 font-medium">
                           Key
                         </th>
-                        <th className="text-left py-2 px-3 text-slate-400 font-medium">
+                        <th className="text-left py-2 px-3 text-slate-500 dark:text-slate-400 font-medium">
                           Value
                         </th>
                       </tr>
@@ -224,9 +224,9 @@ function UrlParserTool() {
                       {output.params.map((p, i) => (
                         <tr
                           key={i}
-                          className="border-b border-border-dark last:border-b-0"
+                          className="border-b border-border-light dark:border-border-dark last:border-b-0"
                         >
-                          <td className="py-2 px-3 font-mono text-slate-200">
+                          <td className="py-2 px-3 font-mono text-slate-800 dark:text-slate-200">
                             {p.key}
                           </td>
                           <td className="py-2 px-3 font-mono text-slate-200 break-all">
@@ -258,14 +258,14 @@ function UrlParserTool() {
       </div>
 
       {/* Footer */}
-      <footer className="flex items-center justify-end gap-2 px-4 py-3 border-t border-border-dark bg-panel-dark shrink-0">
+      <footer className="flex items-center justify-end gap-2 px-4 py-3 border-t border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0">
         {isLoading && (
           <span className="text-xs text-primary mr-2">Parsing…</span>
         )}
         <button
           type="button"
           onClick={handleClear}
-          className="px-3 py-1.5 text-sm text-slate-400 border border-border-dark rounded-lg hover:text-slate-200 hover:border-slate-500 transition-colors"
+          className="px-3 py-1.5 text-sm text-slate-500 dark:text-slate-400 border border-border-light dark:border-border-dark rounded-lg hover:text-slate-800 dark:hover:text-slate-200 hover:border-slate-400 dark:hover:border-slate-500 transition-colors"
         >
           Clear
         </button>
