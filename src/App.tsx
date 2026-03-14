@@ -21,7 +21,7 @@ function ToolPage() {
   return (
     <div className="flex-1 flex flex-col min-h-0 w-full bg-background-light dark:bg-background-dark">
       <ToolHeader tool={tool} />
-      <ErrorBoundary toolName={tool?.name}>
+      <ErrorBoundary toolName={tool?.name} resetKey={toolId}>
         <Suspense fallback={<LoadingSpinner label="Loading tool..." />}>
           <div className="flex-1 flex flex-col min-h-0">
             <Component />

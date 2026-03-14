@@ -3,6 +3,7 @@ import { Component, type ErrorInfo, type ReactNode } from "react";
 interface ErrorBoundaryProps {
   children: ReactNode;
   toolName?: string;
+  resetKey?: string | number;
 }
 
 interface ErrorBoundaryState {
@@ -35,6 +36,17 @@ export class ErrorBoundary extends Component<
     this.setState({ errorInfo: info.componentStack ?? null });
   }
 
+  componentDidUpdate(prevProps: ErrorBoundaryProps): void {
+    if (this.state.hasError && prevProps.resetKey !== this.props.resetKey) {
+      this.setState({
+        hasError: false,
+        error: null,
+        errorInfo: null,
+        showDetails: false,
+      });
+    }
+  }
+
   handleTryAgain = (): void => {
     this.setState({ hasError: false, error: null, errorInfo: null, showDetails: false });
   };
@@ -47,17 +59,17 @@ export class ErrorBoundary extends Component<
         : "Something went wrong";
 
       return (
-        <div className="bg-panel-dark border border-red-500/30 rounded-lg p-6">
+        <div className="bg-panel-light dark:bg-panel-dark border border-red-500/30 rounded-lg p-6">
           <div className="flex items-start gap-3">
             <span
-              className="material-symbols-outlined text-red-400 shrink-0"
+              className="material-symbols-outlined text-red-600 dark:text-red-400 shrink-0"
               aria-hidden
             >
               error_outline
             </span>
             <div className="flex-1 min-w-0 space-y-2">
-              <h2 className="text-red-400 font-medium">{heading}</h2>
-              <p className="text-slate-400 text-sm">
+              <h2 className="text-red-600 dark:text-red-400 font-medium">{heading}</h2>
+              <p className="text-slate-600 dark:text-slate-400 text-sm">
                 This tool crashed unexpectedly. Your other tools are unaffected.
               </p>
               {import.meta.env.DEV && (
@@ -67,12 +79,12 @@ export class ErrorBoundary extends Component<
                     onClick={() =>
                       this.setState((s) => ({ showDetails: !s.showDetails }))
                     }
-                    className="text-slate-500 text-xs hover:text-slate-400 transition-colors"
+                    className="text-slate-500 dark:text-slate-500 text-xs hover:text-slate-600 dark:hover:text-slate-400 transition-colors"
                   >
                     {showDetails ? "Hide details" : "Show details"}
                   </button>
                   {showDetails && errorInfo && (
-                    <pre className="text-slate-500 text-xs font-mono whitespace-pre-wrap max-h-32 overflow-y-auto mt-2 p-2 bg-background-dark rounded">
+                    <pre className="text-slate-600 dark:text-slate-500 text-xs font-mono whitespace-pre-wrap max-h-32 overflow-y-auto mt-2 p-2 bg-background-light dark:bg-background-dark rounded">
                       {error.message}
                       {"\n\n"}
                       {errorInfo}
