@@ -11,6 +11,7 @@ import { CodeBlock } from "../../components/ui/CodeBlock";
 const RUST_COMMAND = "tool_json_validate";
 const TOOL_ID = "json-validator";
 const DEBOUNCE_MS = 150;
+const HISTORY_DEBOUNCE_MS = 1500;
 
 interface JsonValidateInputPayload {
   value: string;
@@ -63,6 +64,7 @@ function JsonValidatorTool() {
   const [showFormattedPreview, setShowFormattedPreview] = useState(false);
   const [showMistakes, setShowMistakes] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
 
   const runProcess = useCallback(async (value: string) => {
@@ -75,15 +77,20 @@ function JsonValidatorTool() {
       const payload: JsonValidateInputPayload = { value: trimmed };
       const result = (await callTool(
         RUST_COMMAND,
-        payload
+        payload,
+        { skipHistory: true }
       )) as JsonValidateOutputPayload;
       setOutput(result);
       if (result.isValid) {
-        addHistoryEntry(TOOL_ID, {
-          input: payload,
-          output: result,
-          timestamp: Date.now(),
-        });
+        if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
+        historyDebounceRef.current = setTimeout(() => {
+          addHistoryEntry(TOOL_ID, {
+            input: payload,
+            output: result,
+            timestamp: Date.now(),
+          });
+          historyDebounceRef.current = null;
+        }, HISTORY_DEBOUNCE_MS);
       }
     } catch (e) {
       const message =
@@ -95,6 +102,12 @@ function JsonValidatorTool() {
       });
     }
   }, [addHistoryEntry]);
+
+  useEffect(() => {
+    return () => {
+      if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
+    };
+  }, []);
 
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);

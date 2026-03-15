@@ -14,6 +14,7 @@ type IndentStyle = "spaces2" | "spaces4" | "tab";
 const RUST_COMMAND = "tool_json_format";
 const TOOL_ID = "json-formatter";
 const DEBOUNCE_MS = 150;
+const HISTORY_DEBOUNCE_MS = 1500;
 const COPIED_DURATION_MS = 1500;
 
 interface JsonFormatInputPayload {
@@ -44,6 +45,7 @@ function JsonFormatterTool() {
   const [output, setOutput] = useState<JsonFormatOutputPayload | null>(null);
   const [copyLabel, setCopyLabel] = useState("Copy");
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
 
   const runProcess = useCallback(
@@ -65,14 +67,18 @@ function JsonFormatterTool() {
           indent: currentIndent,
           sortKeys: currentSortKeys,
         };
-        const result = (await callTool(RUST_COMMAND, payload)) as JsonFormatOutputPayload;
+        const result = (await callTool(RUST_COMMAND, payload, { skipHistory: true })) as JsonFormatOutputPayload;
         setOutput(result);
         if (result.isValid) {
-          addHistoryEntry(TOOL_ID, {
-            input: payload,
-            output: result,
-            timestamp: Date.now(),
-          });
+          if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
+          historyDebounceRef.current = setTimeout(() => {
+            addHistoryEntry(TOOL_ID, {
+              input: payload,
+              output: result,
+              timestamp: Date.now(),
+            });
+            historyDebounceRef.current = null;
+          }, HISTORY_DEBOUNCE_MS);
         }
       } catch (e) {
         const message =
@@ -90,6 +96,12 @@ function JsonFormatterTool() {
     },
     [addHistoryEntry]
   );
+
+  useEffect(() => {
+    return () => {
+      if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
+    };
+  }, []);
 
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);

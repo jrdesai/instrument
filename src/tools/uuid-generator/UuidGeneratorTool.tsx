@@ -5,7 +5,6 @@ import {
   useState,
 } from "react";
 import { callTool } from "../../bridge";
-import { useHistoryStore } from "../../store";
 
 type UuidVersion = "v1" | "v4" | "v7";
 type TabId = "generate" | "inspect";
@@ -43,7 +42,7 @@ interface UuidInspectOutputPayload {
 
 const RUST_COMMAND_GENERATE = "uuid_process";
 const RUST_COMMAND_INSPECT = "uuid_inspect";
-const TOOL_ID = "uuid-generator";
+export const TOOL_ID = "uuid-generator";
 const COPIED_DURATION_MS = 1500;
 const INSPECT_DEBOUNCE_MS = 150;
 
@@ -86,7 +85,6 @@ function UuidGeneratorTool() {
   const [error, setError] = useState<string | null>(null);
   const [copyAllLabel, setCopyAllLabel] = useState("Copy all");
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
-  const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
 
   // Inspect tab state
   const [inspectValue, setInspectValue] = useState("");
@@ -114,13 +112,6 @@ function UuidGeneratorTool() {
         )) as UuidOutputPayload;
         setUuids(result.uuids ?? []);
         setError(result.error ?? null);
-        if (!result.error) {
-          addHistoryEntry(TOOL_ID, {
-            input: payload,
-            output: result,
-            timestamp: Date.now(),
-          });
-        }
       } catch (e) {
         const message =
           e instanceof Error
@@ -138,7 +129,7 @@ function UuidGeneratorTool() {
         setIsLoading(false);
       }
     },
-    [addHistoryEntry]
+    []
   );
 
   const runInspect = useCallback(async (value: string) => {

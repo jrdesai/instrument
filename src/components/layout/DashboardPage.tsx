@@ -301,9 +301,7 @@ export function DashboardPage() {
               {displayedRecent.length > 0 && (
                 <button
                   type="button"
-                  onClick={() => {
-                    if (window.confirm("Clear all recent tools?")) clearRecents();
-                  }}
+                  onClick={clearRecents}
                   className="text-xs text-slate-400 dark:text-slate-500 hover:text-red-500 dark:hover:text-red-400 transition-colors"
                 >
                   Clear

@@ -37,6 +37,7 @@ interface TimezoneOutputPayload {
 const RUST_COMMAND = "timezone_process";
 const TOOL_ID = "timezone-converter";
 const DEBOUNCE_MS = 150;
+const HISTORY_DEBOUNCE_MS = 1500;
 const COPIED_DURATION_MS = 1500;
 
 const OUTPUT_CARDS: {
@@ -171,6 +172,7 @@ function TimezoneConverterTool() {
   const [isLoading, setIsLoading] = useState(false);
   const [copyAllLabel, setCopyAllLabel] = useState("Copy All");
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
 
   const timezoneList = useMemo(() => getTimezoneList(), []);
@@ -190,15 +192,20 @@ function TimezoneConverterTool() {
         };
         const result = (await callTool(
           RUST_COMMAND,
-          payload
+          payload,
+          { skipHistory: true }
         )) as TimezoneOutputPayload;
         setOutput(result);
         if (!result.error) {
-          addHistoryEntry(TOOL_ID, {
-            input: payload,
-            output: result,
-            timestamp: Date.now(),
-          });
+          if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
+          historyDebounceRef.current = setTimeout(() => {
+            addHistoryEntry(TOOL_ID, {
+              input: payload,
+              output: result,
+              timestamp: Date.now(),
+            });
+            historyDebounceRef.current = null;
+          }, HISTORY_DEBOUNCE_MS);
         }
       } catch (e) {
         const message =
@@ -240,6 +247,12 @@ function TimezoneConverterTool() {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
   }, [datetime, fromTz, toTz, runProcess]);
+
+  useEffect(() => {
+    return () => {
+      if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
+    };
+  }, []);
 
   const handleSwap = useCallback(() => {
     setFromTz(toTz);

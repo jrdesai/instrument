@@ -10,6 +10,7 @@ import { useHistoryStore } from "../../store";
 const RUST_COMMAND = "tool_url_parse";
 const TOOL_ID = "url-parser";
 const DEBOUNCE_MS = 150;
+const HISTORY_DEBOUNCE_MS = 1500;
 const COPIED_DURATION_MS = 1500;
 
 interface UrlParseInputPayload {
@@ -70,6 +71,7 @@ function UrlParserTool() {
   const [isLoading, setIsLoading] = useState(false);
   const [copyLabel, setCopyLabel] = useState("Copy URL");
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
 
   const runProcess = useCallback(
@@ -84,15 +86,20 @@ function UrlParserTool() {
         const payload: UrlParseInputPayload = { value: trimmed };
         const result = (await callTool(
           RUST_COMMAND,
-          payload
+          payload,
+          { skipHistory: true }
         )) as UrlParseOutputPayload;
         setOutput(result);
         if (!result.error) {
-          addHistoryEntry(TOOL_ID, {
-            input: payload,
-            output: result,
-            timestamp: Date.now(),
-          });
+          if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
+          historyDebounceRef.current = setTimeout(() => {
+            addHistoryEntry(TOOL_ID, {
+              input: payload,
+              output: result,
+              timestamp: Date.now(),
+            });
+            historyDebounceRef.current = null;
+          }, HISTORY_DEBOUNCE_MS);
         }
       } catch (e) {
         const message =
@@ -124,6 +131,12 @@ function UrlParserTool() {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
   }, [input, runProcess]);
+
+  useEffect(() => {
+    return () => {
+      if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
+    };
+  }, []);
 
   const handleClear = useCallback(() => {
     setInput("");

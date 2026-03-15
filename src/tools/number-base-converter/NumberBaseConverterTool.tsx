@@ -42,6 +42,7 @@ interface BaseConverterOutputPayload {
 const RUST_COMMAND = "base_converter_process";
 const TOOL_ID = "number-base-converter";
 const DEBOUNCE_MS = 150;
+const HISTORY_DEBOUNCE_MS = 1500;
 const COPIED_DURATION_MS = 1500;
 
 const BASE_PILLS: { id: NumberBaseKey; label: string }[] = [
@@ -96,6 +97,7 @@ function NumberBaseConverterTool() {
   const [isLoading, setIsLoading] = useState(false);
   const [copyAllLabel, setCopyAllLabel] = useState("Copy All");
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
 
   const runProcess = useCallback(
@@ -120,15 +122,20 @@ function NumberBaseConverterTool() {
         };
         const result = (await callTool(
           RUST_COMMAND,
-          payload
+          payload,
+          { skipHistory: true }
         )) as BaseConverterOutputPayload;
         setOutput(result);
         if (!result.error) {
-          addHistoryEntry(TOOL_ID, {
-            input: payload,
-            output: result,
-            timestamp: Date.now(),
-          });
+          if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
+          historyDebounceRef.current = setTimeout(() => {
+            addHistoryEntry(TOOL_ID, {
+              input: payload,
+              output: result,
+              timestamp: Date.now(),
+            });
+            historyDebounceRef.current = null;
+          }, HISTORY_DEBOUNCE_MS);
         }
       } catch (e) {
         const message =
@@ -170,6 +177,12 @@ function NumberBaseConverterTool() {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
   }, [value, fromBase, bitWidth, uppercaseHex, runProcess]);
+
+  useEffect(() => {
+    return () => {
+      if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
+    };
+  }, []);
 
   const handleClear = useCallback(() => {
     setValue("");

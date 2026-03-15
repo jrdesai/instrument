@@ -59,6 +59,7 @@ interface ToolState {
   addToRecent: (tool: Tool) => void;
   toggleFavourite: (tool: Tool) => void;
   clearRecents: () => void;
+  clearFavourites: () => void;
 }
 
 /**
@@ -99,6 +100,11 @@ export const useToolStore = create<ToolState>()(
           set((state) => {
             state.recentToolIds = [];
           }),
+
+        clearFavourites: () =>
+          set((state) => {
+            state.favouriteToolIds = [];
+          }),
       })),
       { name: "instrument-tools" }
     ),
@@ -114,6 +120,7 @@ interface HistoryState {
   history: Record<string, HistoryEntry[]>;
   addHistoryEntry: (toolId: string, entry: HistoryEntry) => void;
   getHistory: (toolId: string) => HistoryEntry[];
+  clearHistory: () => void;
 }
 
 /**
@@ -134,6 +141,11 @@ export const useHistoryStore = create<HistoryState>()(
     getHistory: (toolId) => {
       return get().history[toolId] ?? [];
     },
+
+    clearHistory: () =>
+      set((state) => {
+        state.history = {};
+      }),
   })),
     { name: "HistoryStore" }
   )

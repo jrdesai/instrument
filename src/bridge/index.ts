@@ -8,6 +8,8 @@
  */
 
 import { useMemo } from "react";
+import { getToolByRustCommand } from "../registry";
+import { useHistoryStore } from "../store";
 
 /** Current runtime platform. */
 export type Platform = "desktop" | "web";
@@ -29,11 +31,13 @@ export const isWeb =
  *
  * @param toolId - Command name (desktop) or WASM export name (web), e.g. from registry rustCommand
  * @param input - Serializable input for the tool
+ * @param options.skipHistory - Pass true for auto-run tools to suppress history capture
  * @returns Promise resolving to the tool output
  */
 export async function callTool(
   toolId: string,
-  input: unknown
+  input: unknown,
+  options?: { skipHistory?: boolean }
 ): Promise<unknown> {
   const start = performance.now();
   try {
@@ -59,6 +63,16 @@ export async function callTool(
           `[bridge] ${toolId} took ${duration.toFixed(1)}ms — consider optimising`
         );
       }
+    }
+    if (!options?.skipHistory) {
+      // Resolve the registry tool ID from the Rust command name so the
+      // history page can look up the correct display name and icon.
+      const registryId = getToolByRustCommand(toolId)?.id ?? toolId;
+      useHistoryStore.getState().addHistoryEntry(registryId, {
+        input,
+        output: result,
+        timestamp: Date.now(),
+      });
     }
     return result;
   } catch (err) {

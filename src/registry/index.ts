@@ -664,6 +664,15 @@ export function getToolById(id: string): Tool | undefined {
 }
 
 /**
+ * Returns the tool whose rustCommand matches the given command string.
+ * Used by the bridge to resolve a Rust command name back to a registry tool ID.
+ * @param cmd - Rust command name (e.g. "word_counter_process")
+ */
+export function getToolByRustCommand(cmd: string): Tool | undefined {
+  return tools.find((t) => t.rustCommand === cmd);
+}
+
+/**
  * Returns all tools in the given category.
  * @param cat - Tool category (e.g. "encoding", "json")
  */

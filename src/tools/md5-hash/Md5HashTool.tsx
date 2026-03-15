@@ -23,6 +23,7 @@ interface Md5OutputPayload {
 const RUST_COMMAND = "md5_process";
 const TOOL_ID = "md5-hash";
 const DEBOUNCE_MS = 150;
+const HISTORY_DEBOUNCE_MS = 1500;
 const COPIED_DURATION_MS = 1500;
 const MD5_LENGTH = 32;
 
@@ -35,6 +36,7 @@ function Md5HashTool() {
   const [error, setError] = useState<string | null>(null);
   const [copyLabel, setCopyLabel] = useState("Copy hash");
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
 
   const runProcess = useCallback(
@@ -52,15 +54,19 @@ function Md5HashTool() {
       setError(null);
       try {
         const payload: Md5InputPayload = { text, uppercase: useUppercase };
-        const result = (await callTool(RUST_COMMAND, payload)) as Md5OutputPayload;
+        const result = (await callTool(RUST_COMMAND, payload, { skipHistory: true })) as Md5OutputPayload;
         setOutput(result.hash ?? "");
         setError(result.error ?? null);
         if (!result.error) {
-          addHistoryEntry(TOOL_ID, {
-            input: payload,
-            output: result,
-            timestamp: Date.now(),
-          });
+          if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
+          historyDebounceRef.current = setTimeout(() => {
+            addHistoryEntry(TOOL_ID, {
+              input: payload,
+              output: result,
+              timestamp: Date.now(),
+            });
+            historyDebounceRef.current = null;
+          }, HISTORY_DEBOUNCE_MS);
         }
       } catch (e) {
         const message =
@@ -92,6 +98,12 @@ function Md5HashTool() {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
   }, [input, uppercase, hashEmpty, runProcess]);
+
+  useEffect(() => {
+    return () => {
+      if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
+    };
+  }, []);
 
   const handleClear = useCallback(() => {
     setInput("");

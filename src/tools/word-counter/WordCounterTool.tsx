@@ -24,6 +24,7 @@ interface WordCounterOutputPayload {
 const RUST_COMMAND = "word_counter_process";
 const TOOL_ID = "word-counter";
 const DEBOUNCE_MS = 150;
+const HISTORY_DEBOUNCE_MS = 1500;
 
 const STAT_KEYS: {
   key: keyof Omit<
@@ -76,6 +77,7 @@ function WordCounterTool() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
 
   const runProcess = useCallback(
@@ -92,16 +94,24 @@ function WordCounterTool() {
         const payload: WordCounterInputPayload = { text: currentInput };
         const result = (await callTool(
           RUST_COMMAND,
-          payload
+          payload,
+          { skipHistory: true }
         )) as WordCounterOutputPayload;
         setOutput(result);
         setError(result.error ?? null);
+        // Schedule a history entry 1.5s after the last successful run.
+        // If the user keeps typing the timer resets, so only the settled
+        // value (when they pause) is recorded.
         if (!result.error) {
-          addHistoryEntry(TOOL_ID, {
-            input: payload,
-            output: result,
-            timestamp: Date.now(),
-          });
+          if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
+          historyDebounceRef.current = setTimeout(() => {
+            addHistoryEntry(TOOL_ID, {
+              input: payload,
+              output: result,
+              timestamp: Date.now(),
+            });
+            historyDebounceRef.current = null;
+          }, HISTORY_DEBOUNCE_MS);
         }
       } catch (e) {
         const message =
@@ -133,6 +143,13 @@ function WordCounterTool() {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
   }, [input, runProcess]);
+
+  // Cancel pending history capture on unmount to avoid writing stale state.
+  useEffect(() => {
+    return () => {
+      if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
+    };
+  }, []);
 
   const handleClear = useCallback(() => {
     setInput("");

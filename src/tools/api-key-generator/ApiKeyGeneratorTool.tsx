@@ -3,7 +3,6 @@ import {
   useState,
 } from "react";
 import { callTool } from "../../bridge";
-import { useHistoryStore } from "../../store";
 
 type ApiKeyFormat = "raw" | "grouped" | "prefixed";
 type ApiKeyCharset = "alphanumeric" | "alphaOnly" | "hexOnly" | "urlSafe";
@@ -24,7 +23,7 @@ interface ApiKeyOutputPayload {
 }
 
 const RUST_COMMAND = "api_key_process";
-const TOOL_ID = "api-key-generator";
+export const TOOL_ID = "api-key-generator";
 const COPIED_DURATION_MS = 1500;
 
 function ApiKeyGeneratorTool() {
@@ -38,7 +37,6 @@ function ApiKeyGeneratorTool() {
   const [error, setError] = useState<string | null>(null);
   const [copyAllLabel, setCopyAllLabel] = useState("Copy all");
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
-  const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
 
   const runProcess = useCallback(
     async (
@@ -64,13 +62,6 @@ function ApiKeyGeneratorTool() {
         )) as ApiKeyOutputPayload;
         setKeys(result.keys ?? []);
         setError(result.error ?? null);
-        if (!result.error) {
-          addHistoryEntry(TOOL_ID, {
-            input: payload,
-            output: result,
-            timestamp: Date.now(),
-          });
-        }
       } catch (e) {
         const message =
           e instanceof Error
@@ -88,7 +79,7 @@ function ApiKeyGeneratorTool() {
         setIsLoading(false);
       }
     },
-    [addHistoryEntry]
+    []
   );
 
   const handleGenerate = useCallback(() => {

@@ -30,6 +30,7 @@ interface FindReplaceOutputPayload {
 const RUST_COMMAND = "find_replace_process";
 const TOOL_ID = "find-replace";
 const DEBOUNCE_MS = 150;
+const HISTORY_DEBOUNCE_MS = 1500;
 const COPIED_DURATION_MS = 1500;
 
 /** Convert byte ranges (from Rust) to character ranges for JS string.slice. */
@@ -96,6 +97,7 @@ function FindReplaceTool() {
   const [isLoading, setIsLoading] = useState(false);
   const [copyLabel, setCopyLabel] = useState("Copy output");
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const highlightRef = useRef<HTMLDivElement>(null);
   const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
 
@@ -122,7 +124,8 @@ function FindReplaceTool() {
         };
         const result = (await callTool(
           RUST_COMMAND,
-          payload
+          payload,
+          { skipHistory: true }
         )) as FindReplaceOutputPayload;
         setOutput(result);
         if (result.error || currentFind.trim() === "") {
@@ -131,11 +134,15 @@ function FindReplaceTool() {
           setMatchRanges(result.matchRanges ?? []);
         }
         if (!result.error) {
-          addHistoryEntry(TOOL_ID, {
-            input: payload,
-            output: result,
-            timestamp: Date.now(),
-          });
+          if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
+          historyDebounceRef.current = setTimeout(() => {
+            addHistoryEntry(TOOL_ID, {
+              input: payload,
+              output: result,
+              timestamp: Date.now(),
+            });
+            historyDebounceRef.current = null;
+          }, HISTORY_DEBOUNCE_MS);
         }
       } catch (e) {
         const message =
@@ -180,6 +187,12 @@ function FindReplaceTool() {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
   }, [text, find, replace, caseSensitive, wholeWord, regexMode, replaceAll, runProcess]);
+
+  useEffect(() => {
+    return () => {
+      if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
+    };
+  }, []);
 
   const handleClear = useCallback(() => {
     setText("");

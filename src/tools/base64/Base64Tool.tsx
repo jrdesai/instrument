@@ -25,6 +25,7 @@ interface Base64OutputPayload {
 const RUST_COMMAND = "base64_process";
 const TOOL_ID = "base64-encoder";
 const DEBOUNCE_MS = 150;
+const HISTORY_DEBOUNCE_MS = 1500;
 const COPIED_DURATION_MS = 1500;
 
 function Base64Tool() {
@@ -37,6 +38,7 @@ function Base64Tool() {
   const [leftPanelPercent, setLeftPanelPercent] = useState(50);
   const [copyLabel, setCopyLabel] = useState("Copy output");
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
 
   const runProcess = useCallback(
@@ -54,15 +56,19 @@ function Base64Tool() {
           urlSafe: currentUrlSafe,
           mode: currentMode,
         };
-        const result = (await callTool(RUST_COMMAND, payload)) as Base64OutputPayload;
+        const result = (await callTool(RUST_COMMAND, payload, { skipHistory: true })) as Base64OutputPayload;
         setOutput(result.result ?? "");
         setError(result.error ?? null);
         if (!result.error) {
-          addHistoryEntry(TOOL_ID, {
-            input: payload,
-            output: result,
-            timestamp: Date.now(),
-          });
+          if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
+          historyDebounceRef.current = setTimeout(() => {
+            addHistoryEntry(TOOL_ID, {
+              input: payload,
+              output: result,
+              timestamp: Date.now(),
+            });
+            historyDebounceRef.current = null;
+          }, HISTORY_DEBOUNCE_MS);
         }
       } catch (e) {
         const message =
@@ -94,6 +100,12 @@ function Base64Tool() {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
   }, [input, mode, urlSafe, runProcess]);
+
+  useEffect(() => {
+    return () => {
+      if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
+    };
+  }, []);
 
   const handleSwap = useCallback(() => {
     const newInput = output;

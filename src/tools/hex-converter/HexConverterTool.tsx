@@ -24,6 +24,7 @@ interface HexOutputPayload {
 const RUST_COMMAND = "hex_process";
 const TOOL_ID = "hex-converter";
 const DEBOUNCE_MS = 150;
+const HISTORY_DEBOUNCE_MS = 1500;
 const COPIED_DURATION_MS = 1500;
 
 function HexConverterTool() {
@@ -37,6 +38,7 @@ function HexConverterTool() {
   const [leftPanelPercent, setLeftPanelPercent] = useState(50);
   const [copyLabel, setCopyLabel] = useState("Copy output");
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
 
   const runProcess = useCallback(
@@ -59,16 +61,20 @@ function HexConverterTool() {
           mode: currentMode,
           separator: currentSeparator,
         };
-        const result = (await callTool(RUST_COMMAND, payload)) as HexOutputPayload;
+        const result = (await callTool(RUST_COMMAND, payload, { skipHistory: true })) as HexOutputPayload;
         setOutput(result.result ?? "");
         setError(result.error ?? null);
         setByteCount(result.byteCount ?? 0);
         if (!result.error) {
-          addHistoryEntry(TOOL_ID, {
-            input: payload,
-            output: result,
-            timestamp: Date.now(),
-          });
+          if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
+          historyDebounceRef.current = setTimeout(() => {
+            addHistoryEntry(TOOL_ID, {
+              input: payload,
+              output: result,
+              timestamp: Date.now(),
+            });
+            historyDebounceRef.current = null;
+          }, HISTORY_DEBOUNCE_MS);
         }
       } catch (e) {
         const message =
@@ -101,6 +107,12 @@ function HexConverterTool() {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
   }, [input, mode, separator, runProcess]);
+
+  useEffect(() => {
+    return () => {
+      if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
+    };
+  }, []);
 
   const handleSwap = useCallback(() => {
     const newInput = output;

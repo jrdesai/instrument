@@ -1,6 +1,5 @@
 import { useCallback, useState } from "react";
 import { callTool } from "../../bridge";
-import { useHistoryStore } from "../../store";
 
 type LoremOutputType = "paragraphs" | "sentences" | "words";
 
@@ -21,7 +20,7 @@ interface LoremIpsumOutputPayload {
 }
 
 const RUST_COMMAND = "lorem_ipsum_process";
-const TOOL_ID = "lorem-ipsum";
+export const TOOL_ID = "lorem-ipsum";
 const COPIED_DURATION_MS = 1500;
 const DEFAULT_COUNT = 3;
 
@@ -32,7 +31,6 @@ function LoremIpsumTool() {
   const [output, setOutput] = useState<LoremIpsumOutputPayload | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [copyLabel, setCopyLabel] = useState("Copy");
-  const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
 
   const runProcess = useCallback(
     async (
@@ -53,13 +51,6 @@ function LoremIpsumTool() {
           payload
         )) as LoremIpsumOutputPayload;
         setOutput(result);
-        if (!result.error) {
-          addHistoryEntry(TOOL_ID, {
-            input: payload,
-            output: result,
-            timestamp: Date.now(),
-          });
-        }
       } catch (e) {
         const message =
           e instanceof Error
@@ -82,7 +73,7 @@ function LoremIpsumTool() {
         setIsLoading(false);
       }
     },
-    [addHistoryEntry]
+    []
   );
 
   const handleGenerate = useCallback(() => {

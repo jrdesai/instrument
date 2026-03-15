@@ -33,6 +33,7 @@ interface TimestampOutputPayload {
 const RUST_COMMAND = "timestamp_process";
 const TOOL_ID = "timestamp-converter";
 const DEBOUNCE_MS = 150;
+const HISTORY_DEBOUNCE_MS = 1500;
 const COPIED_DURATION_MS = 1500;
 const NOW_TICK_MS = 1000;
 
@@ -65,6 +66,7 @@ function TimestampConverterTool() {
   const [isLoading, setIsLoading] = useState(false);
   const [copyAllLabel, setCopyAllLabel] = useState("Copy All");
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const nowTickRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
 
@@ -83,15 +85,20 @@ function TimestampConverterTool() {
         };
         const result = (await callTool(
           RUST_COMMAND,
-          payload
+          payload,
+          { skipHistory: true }
         )) as TimestampOutputPayload;
         setOutput(result);
         if (!result.error) {
-          addHistoryEntry(TOOL_ID, {
-            input: payload,
-            output: result,
-            timestamp: Date.now(),
-          });
+          if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
+          historyDebounceRef.current = setTimeout(() => {
+            addHistoryEntry(TOOL_ID, {
+              input: payload,
+              output: result,
+              timestamp: Date.now(),
+            });
+            historyDebounceRef.current = null;
+          }, HISTORY_DEBOUNCE_MS);
         }
       } catch (e) {
         const message =
@@ -156,6 +163,12 @@ function TimestampConverterTool() {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
   }, [value, mode, unit, runProcess]);
+
+  useEffect(() => {
+    return () => {
+      if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
+    };
+  }, []);
 
   const handleClear = useCallback(() => {
     setValue("");

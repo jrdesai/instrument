@@ -23,6 +23,7 @@ interface UrlEncodeOutputPayload {
 const RUST_COMMAND = "url_encode_process";
 const TOOL_ID = "url-encoder";
 const DEBOUNCE_MS = 150;
+const HISTORY_DEBOUNCE_MS = 1500;
 const COPIED_DURATION_MS = 1500;
 
 function UrlEncoderTool() {
@@ -35,6 +36,7 @@ function UrlEncoderTool() {
   const [leftPanelPercent, setLeftPanelPercent] = useState(50);
   const [copyLabel, setCopyLabel] = useState("Copy output");
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
 
   const runProcess = useCallback(
@@ -56,15 +58,19 @@ function UrlEncoderTool() {
           mode: currentMode,
           encodeType: currentEncodeType,
         };
-        const result = (await callTool(RUST_COMMAND, payload)) as UrlEncodeOutputPayload;
+        const result = (await callTool(RUST_COMMAND, payload, { skipHistory: true })) as UrlEncodeOutputPayload;
         setOutput(result.result ?? "");
         setError(result.error ?? null);
         if (!result.error) {
-          addHistoryEntry(TOOL_ID, {
-            input: payload,
-            output: result,
-            timestamp: Date.now(),
-          });
+          if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
+          historyDebounceRef.current = setTimeout(() => {
+            addHistoryEntry(TOOL_ID, {
+              input: payload,
+              output: result,
+              timestamp: Date.now(),
+            });
+            historyDebounceRef.current = null;
+          }, HISTORY_DEBOUNCE_MS);
         }
       } catch (e) {
         const message =
@@ -96,6 +102,12 @@ function UrlEncoderTool() {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
   }, [input, mode, encodeType, runProcess]);
+
+  useEffect(() => {
+    return () => {
+      if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
+    };
+  }, []);
 
   const handleSwap = useCallback(() => {
     const newInput = output;
