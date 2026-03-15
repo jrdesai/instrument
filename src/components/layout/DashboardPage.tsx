@@ -17,22 +17,43 @@ function ToolCard({
   tool,
   onClick,
   disabled,
+  isFavourite,
+  onToggleFavourite,
 }: {
   tool: Tool;
   onClick: () => void;
   disabled?: boolean;
+  isFavourite: boolean;
+  onToggleFavourite: (e: React.MouseEvent) => void;
 }) {
   return (
-    <button
-      type="button"
+    <div
+      role="button"
+      tabIndex={disabled ? -1 : 0}
+      aria-disabled={disabled}
       onClick={disabled ? undefined : onClick}
-      disabled={disabled}
-      className={`group flex flex-col p-4 rounded-lg border border-slate-200 dark:border-border-dark bg-white dark:bg-panel-dark text-left transition-colors min-w-[180px] ${
+      onKeyDown={(e) => {
+        if (!disabled && (e.key === "Enter" || e.key === " ")) {
+          e.preventDefault();
+          onClick();
+        }
+      }}
+      className={`group relative flex flex-col p-4 rounded-lg border border-slate-200 dark:border-border-dark bg-white dark:bg-panel-dark text-left transition-colors min-w-[180px] ${
         disabled
           ? "opacity-60 cursor-not-allowed"
           : "hover:border-primary/40 cursor-pointer"
       }`}
     >
+      <button
+        type="button"
+        onClick={onToggleFavourite}
+        aria-label={isFavourite ? "Remove from favourites" : "Add to favourites"}
+        className={`absolute top-2 right-2 transition-opacity hover:text-amber-400 dark:hover:text-amber-400 ${isFavourite ? "opacity-100 text-amber-400" : "opacity-20 group-hover:opacity-100 focus-visible:opacity-100 text-slate-400 dark:text-slate-500"}`}
+      >
+        <span className="material-symbols-outlined text-[18px]" aria-hidden style={{ fontVariationSettings: isFavourite ? "'FILL' 1" : "'FILL' 0" }}>
+          star
+        </span>
+      </button>
       <div className="size-10 rounded bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-3 text-slate-500 dark:text-slate-400 group-hover:bg-primary/20 group-hover:text-primary transition-colors">
         <span className="material-symbols-outlined text-[24px]" aria-hidden>
           {tool.icon}
@@ -44,7 +65,7 @@ function ToolCard({
       <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-semibold uppercase tracking-wider mt-1 w-fit">
         {tool.displayCategory}
       </span>
-    </button>
+    </div>
   );
 }
 
@@ -73,8 +94,11 @@ function ExplorePlaceholderCard({ onClick }: { onClick: () => void }) {
 export function DashboardPage() {
   const navigate = useNavigate();
   const recentToolIds = useToolStore((s) => s.recentToolIds);
+  const favouriteToolIds = useToolStore((s) => s.favouriteToolIds);
   const setActiveTool = useToolStore((s) => s.setActiveTool);
   const addToRecent = useToolStore((s) => s.addToRecent);
+  const toggleFavourite = useToolStore((s) => s.toggleFavourite);
+  const clearRecents = useToolStore((s) => s.clearRecents);
 
   const recentTools: Tool[] = useMemo(
     () =>
@@ -82,6 +106,14 @@ export function DashboardPage() {
         .map((id) => getToolById(id))
         .filter((t): t is Tool => Boolean(t)),
     [recentToolIds]
+  );
+
+  const favouriteTools: Tool[] = useMemo(
+    () =>
+      favouriteToolIds
+        .map((id) => getToolById(id))
+        .filter((t): t is Tool => Boolean(t)),
+    [favouriteToolIds]
   );
 
   const implementedTools = useMemo(
@@ -236,24 +268,55 @@ export function DashboardPage() {
         <h1 className="text-sm font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-6">
           Dashboard
         </h1>
+        {favouriteTools.length > 0 && (
+          <section className="mb-6">
+            <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-2 mb-4">
+              <span className="material-symbols-outlined text-[18px] text-amber-400" aria-hidden style={{ fontVariationSettings: "'FILL' 1" }}>
+                star
+              </span>
+              Favourites
+            </h2>
+            <div className="flex flex-wrap gap-4">
+              {favouriteTools.map((tool) => (
+                <ToolCard
+                  key={tool.id}
+                  tool={tool}
+                  onClick={() => handleOpenTool(tool)}
+                  isFavourite={true}
+                  onToggleFavourite={(e) => { e.stopPropagation(); toggleFavourite(tool); }}
+                />
+              ))}
+            </div>
+          </section>
+        )}
         <section>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-2">
-              <span
-                className="material-symbols-outlined text-[18px]"
-                aria-hidden
-              >
+              <span className="material-symbols-outlined text-[18px]" aria-hidden>
                 history
               </span>
               Recent
             </h2>
-            <button
-              type="button"
-              onClick={handleSeeAllRecent}
-              className="text-primary text-xs hover:text-primary/80 transition-colors"
-            >
-              See all →
-            </button>
+            <div className="flex items-center gap-3">
+              {displayedRecent.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (window.confirm("Clear all recent tools?")) clearRecents();
+                  }}
+                  className="text-xs text-slate-400 dark:text-slate-500 hover:text-red-500 dark:hover:text-red-400 transition-colors"
+                >
+                  Clear
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={handleSeeAllRecent}
+                className="text-primary text-xs hover:text-primary/80 transition-colors"
+              >
+                See all →
+              </button>
+            </div>
           </div>
           {displayedRecent.length === 0 ? (
             <p className="text-sm text-slate-500 dark:text-slate-400">
@@ -266,6 +329,8 @@ export function DashboardPage() {
                   key={tool.id}
                   tool={tool}
                   onClick={() => handleOpenTool(tool)}
+                  isFavourite={favouriteToolIds.includes(tool.id)}
+                  onToggleFavourite={(e) => { e.stopPropagation(); toggleFavourite(tool); }}
                 />
               ))}
               {showExplorePlaceholder && (
@@ -370,12 +435,33 @@ export function DashboardPage() {
                         {getToolsByDisplayCategory(
                           activeCategoryId ?? ""
                         ).map((tool) => (
-                              <button
+                              <div
                                 key={tool.id}
-                                type="button"
+                                role="button"
+                                tabIndex={0}
                                 onClick={() => handleOpenTool(tool)}
-                                className="flex items-center gap-3 p-3 rounded-lg border border-slate-200 dark:border-border-dark bg-slate-50 dark:bg-panel-dark hover:border-primary/30 hover:bg-slate-100 dark:hover:bg-white/5 transition-all text-left w-full cursor-pointer"
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter" || e.key === " ") {
+                                    e.preventDefault();
+                                    handleOpenTool(tool);
+                                  }
+                                }}
+                                className="group relative flex items-center gap-3 p-3 rounded-lg border border-slate-200 dark:border-border-dark bg-slate-50 dark:bg-panel-dark hover:border-primary/30 hover:bg-slate-100 dark:hover:bg-white/5 transition-all text-left w-full cursor-pointer"
                               >
+                                <button
+                                  type="button"
+                                  onClick={(e) => { e.stopPropagation(); toggleFavourite(tool); }}
+                                  aria-label={favouriteToolIds.includes(tool.id) ? "Remove from favourites" : "Add to favourites"}
+                                  className={`absolute top-2 right-2 transition-opacity hover:text-amber-400 dark:hover:text-amber-400 ${favouriteToolIds.includes(tool.id) ? "opacity-100 text-amber-400" : "opacity-20 group-hover:opacity-100 focus-visible:opacity-100 text-slate-400 dark:text-slate-500"}`}
+                                >
+                                  <span
+                                    className="material-symbols-outlined text-[18px]"
+                                    aria-hidden
+                                    style={{ fontVariationSettings: favouriteToolIds.includes(tool.id) ? "'FILL' 1" : "'FILL' 0" }}
+                                  >
+                                    star
+                                  </span>
+                                </button>
                                 <span
                                   className="material-symbols-outlined leading-none flex-shrink-0 text-primary/70"
                                   style={{ fontSize: "20px" }}
@@ -391,7 +477,7 @@ export function DashboardPage() {
                                     {tool.description}
                                   </span>
                                 </div>
-                              </button>
+                              </div>
                             ))}
                       </div>
                     </div>

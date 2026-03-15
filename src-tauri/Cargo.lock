@@ -1903,7 +1903,7 @@ dependencies = [
 
 [[package]]
 name = "instrument-core"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "base64 0.22.1",
  "chrono",
@@ -1930,7 +1930,7 @@ dependencies = [
 
 [[package]]
 name = "instrument-desktop"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "instrument-core",
  "regex-core",

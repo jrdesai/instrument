@@ -28,7 +28,9 @@ export function LibraryPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const setActiveTool = useToolStore((s) => s.setActiveTool);
-   const addToRecent = useToolStore((s) => s.addToRecent);
+  const addToRecent = useToolStore((s) => s.addToRecent);
+  const favouriteToolIds = useToolStore((s) => s.favouriteToolIds);
+  const toggleFavourite = useToolStore((s) => s.toggleFavourite);
   const [currentRole, setCurrentRole] = useState<(typeof ROLES)[number]>("All");
   const [currentCategory, setCurrentCategory] = useState<string>("Encoding");
 
@@ -153,16 +155,40 @@ export function LibraryPage() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredTools.map((tool) => (
-              <button
+              <div
                 key={tool.id}
-                type="button"
+                role="button"
+                tabIndex={tool.implemented ? 0 : -1}
+                aria-disabled={!tool.implemented}
                 onClick={() => handleToolClick(tool)}
+                onKeyDown={(e) => {
+                  if (tool.implemented && (e.key === "Enter" || e.key === " ")) {
+                    e.preventDefault();
+                    handleToolClick(tool);
+                  }
+                }}
                 className={`group relative flex flex-col p-4 rounded-lg border border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark text-left transition-all ${
                   tool.implemented
                     ? "hover:border-primary/40 hover:bg-panel-light dark:hover:bg-panel-dark cursor-pointer"
                     : "opacity-50 cursor-not-allowed"
                 }`}
               >
+                {tool.implemented && (
+                  <button
+                    type="button"
+                    onClick={(e) => { e.stopPropagation(); toggleFavourite(tool); }}
+                    aria-label={favouriteToolIds.includes(tool.id) ? "Remove from favourites" : "Add to favourites"}
+                    className={`absolute top-2 right-2 transition-opacity hover:text-amber-400 dark:hover:text-amber-400 ${favouriteToolIds.includes(tool.id) ? "opacity-100 text-amber-400" : "opacity-20 group-hover:opacity-100 focus-visible:opacity-100 text-slate-400 dark:text-slate-500"}`}
+                  >
+                    <span
+                      className="material-symbols-outlined text-[18px]"
+                      aria-hidden
+                      style={{ fontVariationSettings: favouriteToolIds.includes(tool.id) ? "'FILL' 1" : "'FILL' 0" }}
+                    >
+                      star
+                    </span>
+                  </button>
+                )}
                 {!tool.implemented && (
                   <span className="absolute top-2 right-2 text-[10px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 bg-slate-200 dark:bg-slate-800 px-2 py-0.5 rounded">
                     Coming soon
@@ -197,7 +223,7 @@ export function LibraryPage() {
                     </span>
                   )}
                 </div>
-              </button>
+              </div>
             ))}
           </div>
         </div>

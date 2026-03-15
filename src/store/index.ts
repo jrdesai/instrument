@@ -54,8 +54,11 @@ const MAX_RECENT_TOOLS = 10;
 interface ToolState {
   activeToolId: string | null;
   recentToolIds: string[];
+  favouriteToolIds: string[];
   setActiveTool: (tool: Tool | null) => void;
   addToRecent: (tool: Tool) => void;
+  toggleFavourite: (tool: Tool) => void;
+  clearRecents: () => void;
 }
 
 /**
@@ -65,21 +68,40 @@ interface ToolState {
  */
 export const useToolStore = create<ToolState>()(
   devtools(
-    immer((set) => ({
-    activeToolId: null,
-    recentToolIds: [],
+    persist(
+      immer((set) => ({
+        activeToolId: null,
+        recentToolIds: [],
+        favouriteToolIds: [],
 
-    setActiveTool: (tool) =>
-      set((state) => {
-        state.activeToolId = tool?.id ?? null;
-      }),
+        setActiveTool: (tool) =>
+          set((state) => {
+            state.activeToolId = tool?.id ?? null;
+          }),
 
-    addToRecent: (tool) =>
-      set((state) => {
-        const filtered = state.recentToolIds.filter((id) => id !== tool.id);
-        state.recentToolIds = [tool.id, ...filtered].slice(0, MAX_RECENT_TOOLS);
-      }),
-  })),
+        addToRecent: (tool) =>
+          set((state) => {
+            const filtered = state.recentToolIds.filter((id) => id !== tool.id);
+            state.recentToolIds = [tool.id, ...filtered].slice(0, MAX_RECENT_TOOLS);
+          }),
+
+        toggleFavourite: (tool) =>
+          set((state) => {
+            const idx = state.favouriteToolIds.indexOf(tool.id);
+            if (idx >= 0) {
+              state.favouriteToolIds.splice(idx, 1);
+            } else {
+              state.favouriteToolIds.push(tool.id);
+            }
+          }),
+
+        clearRecents: () =>
+          set((state) => {
+            state.recentToolIds = [];
+          }),
+      })),
+      { name: "instrument-tools" }
+    ),
     { name: "ToolStore" }
   )
 );
