@@ -104,7 +104,7 @@ export function CodeBlock({
         <button
           type="button"
           onClick={handleCopy}
-          className="absolute top-2 right-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 bg-background-light dark:bg-background-dark border border-border-light dark:border-border-dark rounded px-2 py-1 text-xs"
+          className="absolute top-2 right-2 z-10 opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 bg-background-light dark:bg-background-dark border border-border-light dark:border-border-dark rounded px-2 py-1 text-xs"
         >
           {copied ? "Copied" : "Copy"}
         </button>

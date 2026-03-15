@@ -1,4 +1,4 @@
-import { Suspense, useEffect } from "react";
+import { Suspense, useEffect, useRef } from "react";
 import { BrowserRouter, Routes, Route, useParams } from "react-router-dom";
 import { getToolById } from "./registry";
 import { AppShell } from "./components/layout/AppShell";
@@ -16,10 +16,16 @@ import "./App.css";
 function ToolPage() {
   const { toolId } = useParams<{ toolId: string }>();
   const tool = toolId ? getToolById(toolId) : null;
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    containerRef.current?.focus();
+  }, [toolId]);
+
   if (!tool) return <div className="p-4 text-slate-500 dark:text-slate-400">Tool not found.</div>;
   const Component = tool.component;
   return (
-    <div className="flex-1 flex flex-col min-h-0 w-full bg-background-light dark:bg-background-dark">
+    <div ref={containerRef} tabIndex={-1} className="flex-1 flex flex-col min-h-0 w-full bg-background-light dark:bg-background-dark outline-none">
       <ToolHeader tool={tool} />
       <ErrorBoundary toolName={tool?.name} resetKey={toolId}>
         <Suspense fallback={<LoadingSpinner label="Loading tool..." />}>
