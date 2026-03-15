@@ -1,4 +1,6 @@
+import { useEffect, useState } from "react";
 import { NavLink, Outlet } from "react-router-dom";
+import { SearchModal } from "../ui/SearchModal";
 
 const SIDEBAR_WIDTH = 48;
 
@@ -11,6 +13,19 @@ const navItems: { to: string; icon: string; label: string }[] = [
 ];
 
 export function AppShell() {
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        setIsSearchOpen((prev) => !prev);
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
   return (
     <div className="flex h-screen w-full overflow-hidden bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
       <aside
@@ -31,6 +46,17 @@ export function AppShell() {
           </div>
         </div>
         <nav className="flex flex-col gap-1 flex-1 items-center py-4">
+          <button
+            type="button"
+            onClick={() => setIsSearchOpen(true)}
+            className="flex items-center justify-center size-10 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 transition-colors"
+            aria-label="Search tools (⌘K)"
+            title="Search tools (⌘K)"
+          >
+            <span className="material-symbols-outlined text-[24px]" aria-hidden>
+              search
+            </span>
+          </button>
           {navItems.map(({ to, icon, label }) => (
             <NavLink
               key={to}
@@ -60,6 +86,7 @@ export function AppShell() {
       <main className="flex-1 flex flex-col min-w-0 min-h-0 overflow-hidden">
         <Outlet />
       </main>
+      <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
     </div>
   );
 }
