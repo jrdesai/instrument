@@ -61,4 +61,4 @@ jobs:
             ${{ runner.os }}-cargo-
 
       - name: Tests
-        run: cargo test --manifest-path src-core/Cargo.toml
+        run: cargo test --manifest-path src-core/Cargo.toml -p instrument-core -p regex-core
