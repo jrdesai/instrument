@@ -401,6 +401,24 @@ function parseErrorPosition(error: string): number | null {
   return match ? Number.parseInt(match[1], 10) : null;
 }
 
+function detectReDoS(pattern: string): string | null {
+  if (!pattern.trim()) return null;
+
+  // Nested quantifiers: group containing a quantified atom, itself quantified
+  // e.g. (\w+)+  (a+b*)+  (?:x+)+
+  if (/\((?:[^()]*[+*][^()]*)\)[+*{]/.test(pattern)) {
+    return "Nested quantifiers detected (e.g. (a+)+). This pattern may cause catastrophic backtracking on non-matching input.";
+  }
+
+  // Quantified alternation group — branches may overlap
+  // e.g. (a|ab)+  (foo|foobar)*
+  if (/\([^()]*\|[^()]*\)[+*{]/.test(pattern)) {
+    return "Quantified alternation detected (e.g. (a|ab)+). If branches overlap, this may cause ReDoS on non-matching input.";
+  }
+
+  return null;
+}
+
 function runJsReplace(
   pattern: string,
   flags: string,
@@ -483,6 +501,9 @@ const RegexTesterTool: React.FC = () => {
   const [codeLanguage, setCodeLanguage] = useState<Language>(
     ENGINE_DEFAULT_LANGUAGE["javascript"] ?? "javascript"
   );
+  const [matchView, setMatchView] = useState<"list" | "table">("list");
+
+  const redosWarning = useMemo(() => detectReDoS(pattern), [pattern]);
 
   const replacedText = useMemo(() => {
     if (mode !== "replace" || !pattern.trim()) return text;
@@ -724,6 +745,15 @@ const RegexTesterTool: React.FC = () => {
               </div>
             )}
 
+            {!error && redosWarning && (
+              <div className="flex items-start gap-2 mt-2 text-xs text-amber-600 dark:text-amber-400 bg-amber-500/10 border border-amber-500/20 rounded-md px-3 py-2">
+                <span className="shrink-0 mt-0.5 material-symbols-outlined text-sm leading-none">
+                  warning
+                </span>
+                <span>{redosWarning}</span>
+              </div>
+            )}
+
             {/* Replacement input — only in Replace mode */}
             {mode === "replace" && (
               <div>
@@ -834,25 +864,45 @@ const RegexTesterTool: React.FC = () => {
             </div>
             {rightTab === "matches" && (
               <div className="flex items-center gap-3 text-xs text-slate-500">
-                {isRunning && (
-                  <span className="text-primary animate-pulse">
-                    Evaluating…
+                <div className="flex items-center gap-3">
+                  {isRunning && (
+                    <span className="text-primary animate-pulse">
+                      Evaluating…
+                    </span>
+                  )}
+                  {!isRunning && executionMs !== null && (
+                    <span>{executionMs} ms</span>
+                  )}
+                  <span>
+                    {matches.length}{" "}
+                    {matches.length === 1 ? "match" : "matches"}
                   </span>
+                </div>
+                {matches.length > 0 && mode === "match" && (
+                  <div className="flex gap-0.5 rounded-md overflow-hidden border border-border-light dark:border-border-dark">
+                    {(["list", "table"] as const).map((v) => (
+                      <button
+                        key={v}
+                        type="button"
+                        onClick={() => setMatchView(v)}
+                        className={`px-2 py-0.5 text-xs font-medium transition-colors ${
+                          matchView === v
+                            ? "bg-primary text-white"
+                            : "bg-panel-light dark:bg-panel-dark text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+                        }`}
+                      >
+                        {v === "list" ? "List" : "Table"}
+                      </button>
+                    ))}
+                  </div>
                 )}
-                {!isRunning && executionMs !== null && (
-                  <span>{executionMs} ms</span>
-                )}
-                <span>
-                  {matches.length}{" "}
-                  {matches.length === 1 ? "match" : "matches"}
-                </span>
               </div>
             )}
           </div>
 
           {rightTab === "matches" &&
             (mode === "match" ? (
-              <div className="flex-1 min-h-0 overflow-auto space-y-2">
+              <div className="flex-1 min-h-0 overflow-auto">
                 {matches.length === 0 && !error && (
                   <div className="h-full flex items-center justify-center text-slate-600 text-sm">
                     {pattern
@@ -860,29 +910,91 @@ const RegexTesterTool: React.FC = () => {
                       : "Enter a pattern and text to see matches."}
                   </div>
                 )}
-                {matches.map((m, idx) => (
-                  <div
-                    key={`${m.start}-${m.end}-${idx}`}
-                    className="rounded-md bg-panel-light dark:bg-panel-dark border border-border-light dark:border-border-dark px-3 py-2 text-xs text-slate-800 dark:text-slate-200"
-                  >
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="font-mono text-slate-500 dark:text-slate-400">
-                        #{idx + 1} [{m.start}..{m.end})
-                      </span>
-                      <span className="font-mono bg-primary/10 text-primary px-2 py-0.5 rounded-full">
-                        {m.value}
-                      </span>
-                    </div>
-                    {m.groups.length > 0 && (
-                      <CodeBlock
-                        code={JSON.stringify(m.groups, null, 2)}
-                        language="json"
-                        maxHeight="120px"
-                        showCopyButton
-                      />
-                    )}
+
+                {matches.length > 0 && matchView === "list" && (
+                  <div className="space-y-2">
+                    {matches.map((m, idx) => (
+                      <div
+                        key={`${m.start}-${m.end}-${idx}`}
+                        className="rounded-md bg-panel-light dark:bg-panel-dark border border-border-light dark:border-border-dark px-3 py-2 text-xs text-slate-800 dark:text-slate-200"
+                      >
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="font-mono text-slate-500 dark:text-slate-400">
+                            #{idx + 1} [{m.start}..{m.end})
+                          </span>
+                          <span className="font-mono bg-primary/10 text-primary px-2 py-0.5 rounded-full">
+                            {m.value}
+                          </span>
+                        </div>
+                        {m.groups.length > 0 && (
+                          <CodeBlock
+                            code={JSON.stringify(m.groups, null, 2)}
+                            language="json"
+                            maxHeight="120px"
+                            showCopyButton
+                          />
+                        )}
+                      </div>
+                    ))}
                   </div>
-                ))}
+                )}
+
+                {matches.length > 0 && matchView === "table" && (() => {
+                  const maxGroups = Math.max(
+                    ...matches.map((m) => m.groups.length),
+                    0
+                  );
+                  return (
+                    <table className="w-full text-xs font-mono border-collapse">
+                      <thead>
+                        <tr className="text-left text-[10px] uppercase tracking-wider text-slate-500 border-b border-border-light dark:border-border-dark">
+                          <th className="pr-3 py-1.5 font-medium">#</th>
+                          <th className="pr-3 py-1.5 font-medium">Match</th>
+                          <th className="pr-3 py-1.5 font-medium">Start</th>
+                          <th className="pr-3 py-1.5 font-medium">End</th>
+                          {Array.from({ length: maxGroups }, (_, i) => (
+                            <th key={i} className="pr-3 py-1.5 font-medium">
+                              Group {i + 1}
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {matches.map((m, idx) => (
+                          <tr
+                            key={`${m.start}-${m.end}-${idx}`}
+                            className="border-b border-border-light dark:border-border-dark hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
+                          >
+                            <td className="pr-3 py-1.5 text-slate-400">
+                              {idx + 1}
+                            </td>
+                            <td className="pr-3 py-1.5">
+                              <span className="bg-primary/10 text-primary px-1.5 py-0.5 rounded">
+                                {m.value}
+                              </span>
+                            </td>
+                            <td className="pr-3 py-1.5 text-slate-500">
+                              {m.start}
+                            </td>
+                            <td className="pr-3 py-1.5 text-slate-500">
+                              {m.end}
+                            </td>
+                            {Array.from({ length: maxGroups }, (_, i) => (
+                              <td
+                                key={i}
+                                className="pr-3 py-1.5 text-slate-400"
+                              >
+                                {m.groups[i] ?? (
+                                  <span className="opacity-30">—</span>
+                                )}
+                              </td>
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  );
+                })()}
               </div>
             ) : (
               <div className="flex-1 min-h-0 overflow-auto">
