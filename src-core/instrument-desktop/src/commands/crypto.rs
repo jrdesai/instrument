@@ -16,6 +16,9 @@ use instrument_core::crypto::ulid::{
     UlidInspectInput, UlidInspectOutput, UlidInput, UlidOutput,
 };
 use instrument_core::crypto::api_key::{process as api_key_process_core, ApiKeyInput, ApiKeyOutput};
+use instrument_core::crypto::nanoid::{
+    process as nanoid_process_core, NanoIdInput, NanoIdOutput,
+};
 
 /// Runs MD5 hash via instrument-core.
 #[tauri::command]
@@ -63,4 +66,10 @@ pub fn ulid_inspect(input: UlidInspectInput) -> UlidInspectOutput {
 #[tauri::command]
 pub fn api_key_process(input: ApiKeyInput) -> ApiKeyOutput {
     api_key_process_core(input)
+}
+
+/// Runs Nano ID generation via instrument-core.
+#[tauri::command]
+pub fn nanoid_process(input: NanoIdInput) -> NanoIdOutput {
+    nanoid_process_core(input)
 }

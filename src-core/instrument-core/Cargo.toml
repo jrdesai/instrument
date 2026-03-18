@@ -19,6 +19,7 @@ md-5 = { workspace = true }
 uuid = { workspace = true }
 percent-encoding = { workspace = true }
 ulid = "1"
+nanoid = "0.4"
 rand = { version = "0.8", features = ["getrandom"] }
 regex = "1"
 chrono = { version = "0.4", features = ["serde"] }

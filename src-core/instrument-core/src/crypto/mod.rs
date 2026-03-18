@@ -6,3 +6,4 @@ pub mod sha512;
 pub mod uuid_gen;
 pub mod ulid;
 pub mod api_key;
+pub mod nanoid;

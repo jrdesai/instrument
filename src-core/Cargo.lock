@@ -1667,7 +1667,7 @@ dependencies = [
 
 [[package]]
 name = "instrument-core"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "base64 0.22.1",
  "chrono",
@@ -1677,6 +1677,7 @@ dependencies = [
  "jsonpath-rust",
  "md-5",
  "meval",
+ "nanoid",
  "percent-encoding",
  "quick-xml 0.36.2",
  "rand 0.8.5",
@@ -1694,7 +1695,7 @@ dependencies = [
 
 [[package]]
 name = "instrument-desktop"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "instrument-core",
  "regex-core",
@@ -1706,7 +1707,7 @@ dependencies = [
 
 [[package]]
 name = "instrument-web"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "getrandom 0.3.4",
  "instrument-core",
@@ -2073,6 +2074,15 @@ dependencies = [
  "serde",
  "thiserror 2.0.18",
  "windows-sys 0.60.2",
+]
+
+[[package]]
+name = "nanoid"
+version = "0.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3ffa00dec017b5b1a8b7cf5e2c008bfda1aa7e0697ac1508b491fdf2622fb4d8"
+dependencies = [
+ "rand 0.8.5",
 ]
 
 [[package]]

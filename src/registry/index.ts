@@ -224,6 +224,24 @@ export const tools: Tool[] = [
     implemented: true,
   },
   {
+    id: "nano-id-generator",
+    name: "Nano ID Generator",
+    description:
+      "Generate compact, URL-safe random IDs with configurable size and alphabet.",
+    category: "crypto",
+    displayCategory: "Security",
+    displayCategoryIcon: "verified_user",
+    roles: ["backend", "general"],
+    icon: "tag",
+    platforms: ["desktop", "web"],
+    rustCommand: "nanoid_process",
+    keywords: ["nanoid", "nano", "id", "generate", "random"],
+    component: React.lazy(() =>
+      import("../tools/nano-id-generator").then((m) => ({ default: m.default }))
+    ),
+    implemented: true,
+  },
+  {
     id: "jwt-decoder",
     name: "JWT Decoder",
     description: "Decode and inspect JWT tokens including expiry status and lifetime.",

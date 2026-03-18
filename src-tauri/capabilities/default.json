@@ -39,6 +39,7 @@
     "allow-sql-formatter",
     "allow-url-parser",
     "allow-csv-to-json",
-    "allow-expression-eval"
+    "allow-expression-eval",
+    "allow-nanoid"
   ]
 }
