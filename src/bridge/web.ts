@@ -6,8 +6,9 @@
 
 type WasmModule = Record<string, (input: unknown) => Promise<unknown> | unknown>
 
-// Load from build output: run `pnpm run build:wasm` to generate src/wasm-pkg.
-const WASM_MODULE_PATH = new URL('../wasm-pkg/instrument_web.js', import.meta.url).href
+// Load from public/wasm-pkg/ (copied to dist/wasm-pkg/ by Vite automatically).
+// Run `pnpm run build:wasm` to regenerate.
+const WASM_MODULE_PATH = '/wasm-pkg/instrument_web.js'
 
 let wasmCache: WasmModule | null = null
 let loadingPromise: Promise<WasmModule> | null = null
@@ -16,12 +17,15 @@ async function loadWasmModule(): Promise<WasmModule> {
   if (wasmCache !== null) return wasmCache
   if (loadingPromise !== null) return loadingPromise
 
-  loadingPromise = import(/* @vite-ignore */ WASM_MODULE_PATH)
-    .then(mod => {
+  loadingPromise = import(/* @vite-ignore */ WASM_MODULE_PATH).then(
+    async (mod) => {
+      const init = (mod as { default?: () => Promise<unknown> }).default
+      if (typeof init === "function") await init()
       wasmCache = mod as WasmModule
       loadingPromise = null
       return wasmCache
-    })
+    }
+  )
 
   return loadingPromise
 }

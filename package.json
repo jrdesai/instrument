@@ -11,7 +11,7 @@
     "build": "node scripts/tauri-build.mjs",
     "preview": "vite preview",
     "tauri": "tauri",
-    "build:wasm": "wasm-pack build src-core/instrument-web --target web --out-dir ../../src/wasm-pkg",
+    "build:wasm": "wasm-pack build src-core/instrument-web --target web --out-dir ../../public/wasm-pkg",
     "build:web": "pnpm run build:wasm && vite build --mode web",
     "test:rust": "cargo test --manifest-path src-core/Cargo.toml",
     "test:rust:core": "cargo test --manifest-path src-core/Cargo.toml -p instrument-core",

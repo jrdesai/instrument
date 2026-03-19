@@ -10,7 +10,7 @@ src-core/target/
 src-tauri/target/
 
 # ── WASM build output ────────────────────────────────
-# src/wasm-pkg/ is committed so Cloudflare Pages can build without Rust/wasm-pack
+# public/wasm-pkg/ is committed so Cloudflare Pages can build without Rust/wasm-pack
 
 # ── Logs ─────────────────────────────────────────────
 logs/
