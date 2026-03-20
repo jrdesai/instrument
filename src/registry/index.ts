@@ -42,6 +42,8 @@ export interface Tool {
   keywords: string[];
   component: React.LazyExoticComponent<React.ComponentType<unknown>>;
   implemented: boolean;
+  /** If true, input/output are never recorded in history (e.g. JWT, API keys). */
+  sensitive?: boolean;
 }
 
 /** Placeholder lazy component for future tools (currently unused). */
@@ -257,6 +259,7 @@ export const tools: Tool[] = [
       import("../tools/jwt-decoder").then((m) => ({ default: m.default }))
     ),
     implemented: true,
+    sensitive: true,
   },
   {
     id: "jwt-builder",
@@ -274,6 +277,7 @@ export const tools: Tool[] = [
       import("../tools/jwt-builder").then((m) => ({ default: m.default }))
     ),
     implemented: true,
+    sensitive: true,
   },
   {
     id: "api-key-generator",
@@ -291,6 +295,7 @@ export const tools: Tool[] = [
       import("../tools/api-key-generator").then((m) => ({ default: m.default }))
     ),
     implemented: true,
+    sensitive: true,
   },
   {
     id: "json-formatter",

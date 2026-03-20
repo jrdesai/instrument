@@ -1,13 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { categorySubtitles } from "../../constants/library";
-import {
-  tools,
-  getRoleCategoryMapping,
-  getToolsByDisplayCategory,
-  getDisplayCategories,
-} from "../../registry";
+import { tools, getDisplayCategories } from "../../registry";
 import type { Role, Tool } from "../../registry";
+import { isWeb } from "../../bridge";
 import { useToolStore } from "../../store";
 import { APP_VERSION } from "../../version";
 
@@ -25,6 +21,11 @@ function StatusBar({ toolCount }: { toolCount: number }) {
 }
 
 export function LibraryPage() {
+  const platformTools = useMemo(
+    () => tools.filter((tool) => !isWeb || tool.platforms.includes("web")),
+    []
+  );
+
   const navigate = useNavigate();
   const location = useLocation();
   const setActiveTool = useToolStore((s) => s.setActiveTool);
@@ -48,19 +49,49 @@ export function LibraryPage() {
     }
   }, [location.state]);
 
-  const roleCategoryMapping = useMemo(() => getRoleCategoryMapping(), []);
+  const roleCategoryMapping = useMemo(() => {
+    const result: Record<string, string[]> = { All: [] };
+    const allCategories = new Set<string>();
+
+    for (const tool of platformTools) {
+      if (!tool.implemented) continue;
+      allCategories.add(tool.displayCategory);
+      for (const role of tool.roles) {
+        const key = role.charAt(0).toUpperCase() + role.slice(1);
+        if (!result[key]) result[key] = [];
+        if (!result[key].includes(tool.displayCategory)) {
+          result[key].push(tool.displayCategory);
+        }
+      }
+    }
+
+    result["All"] = Array.from(allCategories);
+    return result;
+  }, [platformTools]);
+
   const filteredCategories = useMemo(
     () => roleCategoryMapping[currentRole] ?? [],
     [currentRole, roleCategoryMapping]
   );
 
+  useEffect(() => {
+    if (
+      filteredCategories.length > 0 &&
+      !filteredCategories.includes(currentCategory)
+    ) {
+      setCurrentCategory(filteredCategories[0]);
+    }
+  }, [filteredCategories, currentCategory]);
+
   const filteredTools = useMemo(() => {
-    const byCategory = getToolsByDisplayCategory(currentCategory);
+    const byCategory = platformTools.filter(
+      (t) => t.displayCategory === currentCategory && t.implemented
+    );
     if (currentRole === "All") return byCategory;
     return byCategory.filter((t) =>
       t.roles.includes(currentRole.toLowerCase() as Role)
     );
-  }, [currentRole, currentCategory]);
+  }, [currentRole, currentCategory, platformTools]);
 
   const categoryIconMap = useMemo(() => {
     return Object.fromEntries(
@@ -82,8 +113,8 @@ export function LibraryPage() {
   };
 
   const implementedCount = useMemo(
-    () => tools.filter((t) => t.implemented).length,
-    [tools]
+    () => platformTools.filter((t) => t.implemented).length,
+    [platformTools]
   );
   const implementedInFiltered = useMemo(
     () => filteredTools.filter((t) => t.implemented).length,

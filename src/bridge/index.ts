@@ -40,6 +40,10 @@ export async function callTool(
   options?: { skipHistory?: boolean }
 ): Promise<unknown> {
   const start = performance.now();
+  const tool = getToolByRustCommand(toolId);
+  const effectiveSkipHistory =
+    options?.skipHistory || tool?.sensitive === true;
+
   try {
     let result: unknown;
     if (isDesktop) {
@@ -64,10 +68,10 @@ export async function callTool(
         );
       }
     }
-    if (!options?.skipHistory) {
+    if (!effectiveSkipHistory) {
       // Resolve the registry tool ID from the Rust command name so the
       // history page can look up the correct display name and icon.
-      const registryId = getToolByRustCommand(toolId)?.id ?? toolId;
+      const registryId = tool?.id ?? toolId;
       useHistoryStore.getState().addHistoryEntry(registryId, {
         input,
         output: result,

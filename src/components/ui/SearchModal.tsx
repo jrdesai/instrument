@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { isWeb } from "../../bridge";
 import { tools } from "../../registry";
 import { useToolStore } from "../../store";
 import type { Tool } from "../../registry";
@@ -39,7 +40,12 @@ export function SearchModal({
   const addToRecent = useToolStore((s) => s.addToRecent);
   const setActiveTool = useToolStore((s) => s.setActiveTool);
 
-  const allImplemented = tools.filter((t) => t.implemented);
+  const platformTools = useMemo(
+    () => tools.filter((tool) => !isWeb || tool.platforms.includes("web")),
+    []
+  );
+
+  const allImplemented = platformTools.filter((t) => t.implemented);
 
   const results: Tool[] = query.trim()
     ? allImplemented
@@ -114,7 +120,7 @@ export function SearchModal({
     ? results.length > 0
       ? `${results.length} result${results.length === 1 ? "" : "s"}`
       : null
-    : recentToolIds.length > 0 || favouriteToolIds.length > 0
+    : results.length > 0
       ? "Recent & Favourites"
       : null;
 

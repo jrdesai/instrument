@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { isWeb } from "../../bridge";
 import type { Tool } from "../../registry";
 import { tools, getToolById } from "../../registry";
 import { useToolStore } from "../../store";
@@ -68,6 +69,11 @@ function ToolCard({
 }
 
 export function DashboardPage() {
+  const platformTools = useMemo(
+    () => tools.filter((tool) => !isWeb || tool.platforms.includes("web")),
+    []
+  );
+
   const navigate = useNavigate();
   const recentToolIds = useToolStore((s) => s.recentToolIds);
   const favouriteToolIds = useToolStore((s) => s.favouriteToolIds);
@@ -80,7 +86,8 @@ export function DashboardPage() {
     () =>
       recentToolIds
         .map((id) => getToolById(id))
-        .filter((t): t is Tool => Boolean(t)),
+        .filter((t): t is Tool => Boolean(t))
+        .filter((t) => !isWeb || t.platforms.includes("web")),
     [recentToolIds]
   );
 
@@ -88,11 +95,15 @@ export function DashboardPage() {
     () =>
       favouriteToolIds
         .map((id) => getToolById(id))
-        .filter((t): t is Tool => Boolean(t)),
+        .filter((t): t is Tool => Boolean(t))
+        .filter((t) => !isWeb || t.platforms.includes("web")),
     [favouriteToolIds]
   );
 
-  const implementedTools = useMemo(() => tools.filter((t) => t.implemented), []);
+  const implementedTools = useMemo(
+    () => platformTools.filter((t) => t.implemented),
+    [platformTools]
+  );
 
   const totalImplemented = implementedTools.length;
   const categoriesWithTools = useMemo(
