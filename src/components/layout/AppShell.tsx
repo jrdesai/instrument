@@ -46,17 +46,6 @@ export function AppShell() {
           </div>
         </div>
         <nav className="flex flex-col gap-1 flex-1 items-center py-4">
-          <button
-            type="button"
-            onClick={() => setIsSearchOpen(true)}
-            className="flex items-center justify-center size-10 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 transition-colors"
-            aria-label="Search tools (⌘K)"
-            title="Search tools (⌘K)"
-          >
-            <span className="material-symbols-outlined text-[24px]" aria-hidden>
-              search
-            </span>
-          </button>
           {navItems.map(({ to, icon, label }) => (
             <NavLink
               key={to}
@@ -84,6 +73,26 @@ export function AppShell() {
         </div>
       </aside>
       <main className="flex-1 flex flex-col min-w-0 min-h-0 overflow-hidden">
+        {/* Global top bar */}
+        <div className="shrink-0 h-12 flex items-center gap-3 px-4 border-b border-slate-200 dark:border-border-dark bg-background-light dark:bg-background-dark">
+          <span className="text-sm font-semibold text-slate-700 dark:text-slate-300 tracking-tight select-none">
+            Instrument
+          </span>
+          <button
+            type="button"
+            onClick={() => setIsSearchOpen(true)}
+            className="flex items-center gap-2 flex-1 h-8 px-3 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors text-sm text-left"
+            aria-label="Search tools (⌘K)"
+          >
+            <span className="material-symbols-outlined text-[18px] shrink-0" aria-hidden>
+              search
+            </span>
+            <span className="flex-1">Search tools...</span>
+            <kbd className="hidden sm:inline-flex items-center gap-0.5 text-xs text-slate-400 dark:text-slate-500 font-mono">
+              <span>⌘</span><span>K</span>
+            </kbd>
+          </button>
+        </div>
         <Outlet />
       </main>
       <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />

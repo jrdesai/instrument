@@ -31,6 +31,48 @@ use instrument_core::text::word_counter::{
 use instrument_core::crypto::api_key::{
     process as api_key_process_core, ApiKeyInput, ApiKeyOutput,
 };
+use instrument_core::crypto::nanoid::{
+    process as nanoid_process_core, NanoIdInput, NanoIdOutput,
+};
+use instrument_core::auth::jwt_decoder::{
+    process as jwt_decode_process_core, JwtDecodeInput, JwtDecodeOutput,
+};
+use instrument_core::auth::jwt_builder::{
+    process as jwt_build_process_core, JwtBuildInput, JwtBuildOutput,
+};
+use instrument_core::json::formatter::{
+    process as json_format_process_core, JsonFormatInput, JsonFormatOutput,
+};
+use instrument_core::json::validator::{
+    process as json_validate_process_core, JsonValidateInput, JsonValidateOutput,
+};
+use instrument_core::json::diff::{
+    process as json_diff_process_core, JsonDiffInput, JsonDiffOutput,
+};
+use instrument_core::json::path::{
+    process as json_path_process_core, JsonPathInput, JsonPathOutput,
+};
+use instrument_core::json::converter::{
+    process as json_convert_process_core, JsonConvertInput, JsonConvertOutput,
+};
+use instrument_core::json::yaml_to_json::{
+    process as yaml_to_json_process_core, YamlToJsonInput, YamlToJsonOutput,
+};
+use instrument_core::datetime::timestamp::{
+    process as timestamp_process_core, TimestampInput, TimestampOutput,
+};
+use instrument_core::datetime::timezone::{
+    process as timezone_process_core, TimezoneInput, TimezoneOutput,
+};
+use instrument_core::datetime::iso8601::{
+    process as iso8601_process_core, Iso8601Input, Iso8601Output,
+};
+use instrument_core::numbers::base_converter::{
+    process as base_converter_process_core, BaseConverterInput, BaseConverterOutput,
+};
+use instrument_core::numbers::bitwise::{
+    process as bitwise_process_core, BitwiseInput, BitwiseOutput,
+};
 use instrument_core::encoding::base64::{process, Base64Input};
 use instrument_core::encoding::hex::{
     process as hex_process_core, HexInput, HexOutput,
@@ -208,6 +250,132 @@ pub fn api_key_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
     let input: ApiKeyInput =
         from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
     let output: ApiKeyOutput = api_key_process_core(input);
+    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
+}
+
+/// Nano ID generation. Receives NanoIdInput (camelCase) and returns NanoIdOutput (camelCase).
+#[wasm_bindgen(js_name = nanoid_process)]
+pub fn nanoid_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
+    let input: NanoIdInput =
+        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let output: NanoIdOutput = nanoid_process_core(input);
+    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
+}
+
+/// JWT decoder. Receives JwtDecodeInput (camelCase) and returns JwtDecodeOutput (camelCase).
+#[wasm_bindgen(js_name = tool_jwt_decode)]
+pub fn tool_jwt_decode_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
+    let input: JwtDecodeInput =
+        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let output: JwtDecodeOutput = jwt_decode_process_core(input);
+    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
+}
+
+/// JWT builder. Receives JwtBuildInput (camelCase) and returns JwtBuildOutput (camelCase).
+#[wasm_bindgen(js_name = tool_jwt_build)]
+pub fn tool_jwt_build_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
+    let input: JwtBuildInput =
+        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let output: JwtBuildOutput = jwt_build_process_core(input);
+    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
+}
+
+/// JSON formatter. Receives JsonFormatInput (camelCase) and returns JsonFormatOutput (camelCase).
+#[wasm_bindgen(js_name = tool_json_format)]
+pub fn tool_json_format_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
+    let input: JsonFormatInput =
+        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let output: JsonFormatOutput = json_format_process_core(input);
+    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
+}
+
+/// JSON validator. Receives JsonValidateInput (camelCase) and returns JsonValidateOutput (camelCase).
+#[wasm_bindgen(js_name = tool_json_validate)]
+pub fn tool_json_validate_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
+    let input: JsonValidateInput =
+        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let output: JsonValidateOutput = json_validate_process_core(input);
+    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
+}
+
+/// JSON diff. Receives JsonDiffInput (camelCase) and returns JsonDiffOutput (camelCase).
+#[wasm_bindgen(js_name = tool_json_diff)]
+pub fn tool_json_diff_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
+    let input: JsonDiffInput =
+        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let output: JsonDiffOutput = json_diff_process_core(input);
+    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
+}
+
+/// JSON path query. Receives JsonPathInput (camelCase) and returns JsonPathOutput (camelCase).
+#[wasm_bindgen(js_name = tool_json_path)]
+pub fn tool_json_path_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
+    let input: JsonPathInput =
+        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let output: JsonPathOutput = json_path_process_core(input);
+    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
+}
+
+/// JSON converter. Receives JsonConvertInput (camelCase) and returns JsonConvertOutput (camelCase).
+#[wasm_bindgen(js_name = tool_json_convert)]
+pub fn tool_json_convert_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
+    let input: JsonConvertInput =
+        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let output: JsonConvertOutput = json_convert_process_core(input);
+    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
+}
+
+/// YAML to JSON converter. Receives YamlToJsonInput (camelCase) and returns YamlToJsonOutput (camelCase).
+#[wasm_bindgen(js_name = tool_yaml_to_json)]
+pub fn tool_yaml_to_json_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
+    let input: YamlToJsonInput =
+        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let output: YamlToJsonOutput = yaml_to_json_process_core(input);
+    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
+}
+
+/// Timestamp converter. Receives TimestampInput (camelCase) and returns TimestampOutput (camelCase).
+#[wasm_bindgen(js_name = timestamp_process)]
+pub fn timestamp_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
+    let input: TimestampInput =
+        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let output: TimestampOutput = timestamp_process_core(input);
+    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
+}
+
+/// Timezone converter. Receives TimezoneInput (camelCase) and returns TimezoneOutput (camelCase).
+#[wasm_bindgen(js_name = timezone_process)]
+pub fn timezone_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
+    let input: TimezoneInput =
+        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let output: TimezoneOutput = timezone_process_core(input);
+    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
+}
+
+/// ISO 8601 formatter. Receives Iso8601Input (camelCase) and returns Iso8601Output (camelCase).
+#[wasm_bindgen(js_name = iso8601_process)]
+pub fn iso8601_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
+    let input: Iso8601Input =
+        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let output: Iso8601Output = iso8601_process_core(input);
+    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
+}
+
+/// Number base converter. Receives BaseConverterInput (camelCase) and returns BaseConverterOutput (camelCase).
+#[wasm_bindgen(js_name = base_converter_process)]
+pub fn base_converter_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
+    let input: BaseConverterInput =
+        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let output: BaseConverterOutput = base_converter_process_core(input);
+    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
+}
+
+/// Bitwise calculator. Receives BitwiseInput (camelCase) and returns BitwiseOutput (camelCase).
+#[wasm_bindgen(js_name = bitwise_process)]
+pub fn bitwise_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
+    let input: BitwiseInput =
+        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let output: BitwiseOutput = bitwise_process_core(input);
     to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
 }
 
