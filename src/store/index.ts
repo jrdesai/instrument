@@ -50,6 +50,7 @@ export type Theme = "dark" | "light";
 // ---------------------------------------------------------------------------
 
 const MAX_RECENT_TOOLS = 10;
+const MAX_HISTORY_PER_TOOL = 100;
 
 interface ToolState {
   activeToolId: string | null;
@@ -67,49 +68,50 @@ interface ToolState {
  * Only IDs are stored so that Tool objects (with React.lazy components) are
  * never frozen by Immer, which would break lazy resolution.
  */
+const toolStoreImpl = persist(
+  immer<ToolState>((set) => ({
+    activeToolId: null,
+    recentToolIds: [],
+    favouriteToolIds: [],
+
+    setActiveTool: (tool) =>
+      set((state) => {
+        state.activeToolId = tool?.id ?? null;
+      }),
+
+    addToRecent: (tool) =>
+      set((state) => {
+        const filtered = state.recentToolIds.filter((id) => id !== tool.id);
+        state.recentToolIds = [tool.id, ...filtered].slice(0, MAX_RECENT_TOOLS);
+      }),
+
+    toggleFavourite: (tool) =>
+      set((state) => {
+        const idx = state.favouriteToolIds.indexOf(tool.id);
+        if (idx >= 0) {
+          state.favouriteToolIds.splice(idx, 1);
+        } else {
+          state.favouriteToolIds.push(tool.id);
+        }
+      }),
+
+    clearRecents: () =>
+      set((state) => {
+        state.recentToolIds = [];
+      }),
+
+    clearFavourites: () =>
+      set((state) => {
+        state.favouriteToolIds = [];
+      }),
+  })),
+  { name: "instrument-tools" }
+);
+
 export const useToolStore = create<ToolState>()(
-  devtools(
-    persist(
-      immer((set) => ({
-        activeToolId: null,
-        recentToolIds: [],
-        favouriteToolIds: [],
-
-        setActiveTool: (tool) =>
-          set((state) => {
-            state.activeToolId = tool?.id ?? null;
-          }),
-
-        addToRecent: (tool) =>
-          set((state) => {
-            const filtered = state.recentToolIds.filter((id) => id !== tool.id);
-            state.recentToolIds = [tool.id, ...filtered].slice(0, MAX_RECENT_TOOLS);
-          }),
-
-        toggleFavourite: (tool) =>
-          set((state) => {
-            const idx = state.favouriteToolIds.indexOf(tool.id);
-            if (idx >= 0) {
-              state.favouriteToolIds.splice(idx, 1);
-            } else {
-              state.favouriteToolIds.push(tool.id);
-            }
-          }),
-
-        clearRecents: () =>
-          set((state) => {
-            state.recentToolIds = [];
-          }),
-
-        clearFavourites: () =>
-          set((state) => {
-            state.favouriteToolIds = [];
-          }),
-      })),
-      { name: "instrument-tools" }
-    ),
-    { name: "ToolStore" }
-  )
+  (import.meta.env.DEV
+    ? devtools(toolStoreImpl, { name: "ToolStore" })
+    : toolStoreImpl) as typeof toolStoreImpl
 );
 
 // ---------------------------------------------------------------------------
@@ -127,28 +129,35 @@ interface HistoryState {
  * Store for per-tool input/output history. Kept in memory only (not persisted).
  * Use for "recent runs" or replay within a session.
  */
+const historyStoreImpl = immer<HistoryState>((set, get) => ({
+  history: {},
+
+  addHistoryEntry: (toolId, entry) =>
+    set((state) => {
+      if (!state.history[toolId]) state.history[toolId] = [];
+      state.history[toolId].unshift(entry);
+      if (state.history[toolId].length > MAX_HISTORY_PER_TOOL) {
+        state.history[toolId] = state.history[toolId].slice(
+          0,
+          MAX_HISTORY_PER_TOOL
+        );
+      }
+    }),
+
+  getHistory: (toolId) => {
+    return get().history[toolId] ?? [];
+  },
+
+  clearHistory: () =>
+    set((state) => {
+      state.history = {};
+    }),
+}));
+
 export const useHistoryStore = create<HistoryState>()(
-  devtools(
-    immer((set, get) => ({
-    history: {},
-
-    addHistoryEntry: (toolId, entry) =>
-      set((state) => {
-        if (!state.history[toolId]) state.history[toolId] = [];
-        state.history[toolId].unshift(entry);
-      }),
-
-    getHistory: (toolId) => {
-      return get().history[toolId] ?? [];
-    },
-
-    clearHistory: () =>
-      set((state) => {
-        state.history = {};
-      }),
-  })),
-    { name: "HistoryStore" }
-  )
+  (import.meta.env.DEV
+    ? devtools(historyStoreImpl, { name: "HistoryStore" })
+    : historyStoreImpl) as typeof historyStoreImpl
 );
 
 // ---------------------------------------------------------------------------
@@ -182,59 +191,60 @@ export function areStepsCompatible(_stepA: Tool, _stepB: Tool): boolean {
  * Store for chains (sequences of tools). Create chains, add/remove steps,
  * and run a chain. activeChain is the one currently being edited or viewed.
  */
-export const useChainStore = create<ChainState>()(
-  devtools(
-    immer((set, get) => ({
-    chains: [],
-    activeChain: null,
+const chainStoreImpl = immer<ChainState>((set, get) => ({
+  chains: [],
+  activeChain: null,
 
-    createChain: (name) => {
-      const chain: Chain = {
-        id: generateId(),
-        name,
-        steps: [],
-        createdAt: Date.now(),
-      };
-      set((state) => {
-        state.chains.push(chain);
-        state.activeChain = chain;
-      });
-      return chain;
-    },
+  createChain: (name) => {
+    const chain: Chain = {
+      id: generateId(),
+      name,
+      steps: [],
+      createdAt: Date.now(),
+    };
+    set((state) => {
+      state.chains.push(chain);
+      state.activeChain = chain;
+    });
+    return chain;
+  },
 
-    addStep: (chainId, toolId) =>
-      set((state) => {
-        const chain = state.chains.find((c: Chain) => c.id === chainId);
-        if (!chain) return;
-        const step: ChainStep = {
-          id: generateId(),
-          toolId,
-          inputKey: "",
-          config: {},
-        };
-        chain.steps.push(step);
-      }),
-
-    removeStep: (chainId, stepId) =>
-      set((state) => {
-        const chain = state.chains.find((c: Chain) => c.id === chainId);
-        if (!chain) return;
-        chain.steps = chain.steps.filter((s: ChainStep) => s.id !== stepId);
-      }),
-
-    runChain: (chainId) => {
-      const chain = get().chains.find((c: Chain) => c.id === chainId);
+  addStep: (chainId, toolId) =>
+    set((state) => {
+      const chain = state.chains.find((c: Chain) => c.id === chainId);
       if (!chain) return;
-      // TODO: iterate steps, call callTool for each, pass previous output into next step
-    },
+      const step: ChainStep = {
+        id: generateId(),
+        toolId,
+        inputKey: "",
+        config: {},
+      };
+      chain.steps.push(step);
+    }),
 
-      setActiveChain: (chain) =>
-      set((state) => {
-        state.activeChain = chain;
-      }),
-  })),
-    { name: "ChainStore" }
-  )
+  removeStep: (chainId, stepId) =>
+    set((state) => {
+      const chain = state.chains.find((c: Chain) => c.id === chainId);
+      if (!chain) return;
+      chain.steps = chain.steps.filter((s: ChainStep) => s.id !== stepId);
+    }),
+
+  runChain: (chainId) => {
+    const chain = get().chains.find((c: Chain) => c.id === chainId);
+    if (!chain) return;
+    // TODO: iterate steps, call callTool for each, pass previous output into next step
+  },
+
+  setActiveChain: (chain) =>
+    set((state) => {
+      state.activeChain = chain;
+    }),
+}));
+
+export const useChainStore = create<ChainState>()(
+  (import.meta.env.DEV
+    ? devtools(chainStoreImpl, { name: "ChainStore" })
+    : chainStoreImpl) as typeof chainStoreImpl
 );
 
 // ---------------------------------------------------------------------------
@@ -254,25 +264,26 @@ interface PreferenceState {
  * Store for user preferences (theme, active role). Persisted to localStorage
  * so they survive reloads. Use for dark/light mode and Library role filter.
  */
+const preferenceStoreImpl = persist(
+  immer<PreferenceState>((set) => ({
+    theme: "dark",
+    activeRole: "general",
+
+    setTheme: (theme) =>
+      set((state) => {
+        state.theme = theme;
+      }),
+
+    setRole: (role) =>
+      set((state) => {
+        state.activeRole = role;
+      }),
+  })),
+  { name: "instrument-preferences" }
+);
+
 export const usePreferenceStore = create<PreferenceState>()(
-  devtools(
-    persist(
-      immer((set) => ({
-      theme: "dark",
-      activeRole: "general",
-
-      setTheme: (theme) =>
-        set((state) => {
-          state.theme = theme;
-        }),
-
-        setRole: (role) =>
-        set((state) => {
-          state.activeRole = role;
-        }),
-      })),
-      { name: "instrument-preferences" }
-    ),
-    { name: "PreferenceStore" }
-  )
+  (import.meta.env.DEV
+    ? devtools(preferenceStoreImpl, { name: "PreferenceStore" })
+    : preferenceStoreImpl) as typeof preferenceStoreImpl
 );

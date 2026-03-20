@@ -81,26 +81,62 @@ export function HistoryPage() {
           <div className="px-8 py-6 space-y-2">
             {allEntries.map((entry, idx) => {
               const tool = getToolById(entry.toolId);
+
+              if (!tool) {
+                return (
+                  <div
+                    key={idx}
+                    title="Tool no longer available"
+                    className="flex items-start gap-4 p-4 rounded-lg border border-dashed border-slate-200 dark:border-slate-700 bg-panel-light/80 dark:bg-panel-dark/80"
+                  >
+                    <div className="size-8 rounded bg-slate-100 dark:bg-slate-800 flex items-center justify-center shrink-0 text-slate-400 dark:text-slate-500 mt-0.5">
+                      <span className="material-symbols-outlined text-[18px]" aria-hidden>
+                        build
+                      </span>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-0.5">
+                        Tool no longer available
+                      </p>
+                      <div className="flex items-center justify-between gap-4 mb-1">
+                        <span className="text-sm font-mono text-slate-400 dark:text-slate-500 truncate">
+                          {entry.toolId}
+                        </span>
+                        <span className="text-xs text-slate-400 dark:text-slate-500 shrink-0">
+                          {formatTime(entry.timestamp)}
+                        </span>
+                      </div>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 font-mono truncate">
+                        <span className="text-slate-400 dark:text-slate-500">in </span>
+                        {summarise(entry.input)}
+                      </p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 font-mono truncate">
+                        <span className="text-slate-400 dark:text-slate-500">out </span>
+                        {summarise(entry.output)}
+                      </p>
+                    </div>
+                  </div>
+                );
+              }
+
               return (
                 <div
                   key={idx}
                   role="button"
-                  tabIndex={tool ? 0 : -1}
-                  onClick={() => tool && navigate(`/tools/${tool.id}`)}
+                  tabIndex={0}
+                  onClick={() => navigate(`/tools/${tool.id}`)}
                   onKeyDown={(e) => {
-                    if (tool && (e.key === "Enter" || e.key === " ")) {
+                    if (e.key === "Enter" || e.key === " ") {
                       e.preventDefault();
                       navigate(`/tools/${tool.id}`);
                     }
                   }}
-                  className={`group flex items-start gap-4 p-4 rounded-lg border border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark transition-colors ${
-                    tool ? "hover:border-primary/40 cursor-pointer" : ""
-                  }`}
+                  className="group flex items-start gap-4 p-4 rounded-lg border border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark transition-colors hover:border-primary/40 cursor-pointer"
                 >
                   {/* Tool icon */}
                   <div className="size-8 rounded bg-slate-100 dark:bg-slate-800 flex items-center justify-center shrink-0 text-slate-500 dark:text-slate-400 group-hover:bg-primary/20 group-hover:text-primary transition-colors mt-0.5">
                     <span className="material-symbols-outlined text-[18px]" aria-hidden>
-                      {tool?.icon ?? "build"}
+                      {tool.icon}
                     </span>
                   </div>
 
@@ -108,7 +144,7 @@ export function HistoryPage() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-4 mb-1">
                       <span className="text-sm font-medium text-slate-900 dark:text-slate-100">
-                        {tool?.name ?? entry.toolId}
+                        {tool.name}
                       </span>
                       <span className="text-xs text-slate-400 dark:text-slate-500 shrink-0">
                         {formatTime(entry.timestamp)}
@@ -125,11 +161,9 @@ export function HistoryPage() {
                   </div>
 
                   {/* Arrow */}
-                  {tool && (
-                    <span className="material-symbols-outlined text-[16px] text-slate-400 dark:text-slate-600 group-hover:text-primary transition-colors shrink-0 mt-1" aria-hidden>
-                      arrow_forward
-                    </span>
-                  )}
+                  <span className="material-symbols-outlined text-[16px] text-slate-400 dark:text-slate-600 group-hover:text-primary transition-colors shrink-0 mt-1" aria-hidden>
+                    arrow_forward
+                  </span>
                 </div>
               );
             })}
