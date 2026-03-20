@@ -1,29 +1,48 @@
 import { useEffect, useState } from "react";
-import { NavLink, Outlet } from "react-router-dom";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { SearchModal } from "../ui/SearchModal";
 
 const SIDEBAR_WIDTH = 48;
 
-const navItems: { to: string; icon: string; label: string }[] = [
-  { to: "/", icon: "home", label: "Dashboard" },
-  { to: "/library", icon: "grid_view", label: "Library" },
-  { to: "/history", icon: "history", label: "History" },
-  { to: "/settings", icon: "settings", label: "Settings" },
-];
+const navItems: { to: string; icon: string; label: string; shortcut: string }[] =
+  [
+    { to: "/", icon: "home", label: "Dashboard", shortcut: "⌘1" },
+    { to: "/library", icon: "grid_view", label: "Library", shortcut: "⌘2" },
+    { to: "/history", icon: "history", label: "History", shortcut: "⌘3" },
+    { to: "/settings", icon: "settings", label: "Settings", shortcut: "⌘4" },
+  ];
 
 export function AppShell() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
-      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+      const mod = e.metaKey || e.ctrlKey;
+      if (mod && e.key === "k") {
         e.preventDefault();
         setIsSearchOpen((prev) => !prev);
+      }
+      if (mod && e.key === "1") {
+        e.preventDefault();
+        navigate("/");
+      }
+      if (mod && e.key === "2") {
+        e.preventDefault();
+        navigate("/library");
+      }
+      if (mod && e.key === "3") {
+        e.preventDefault();
+        navigate("/history");
+      }
+      if (mod && e.key === "4") {
+        e.preventDefault();
+        navigate("/settings");
       }
     }
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
+  }, [navigate]);
 
   return (
     <div className="flex h-screen w-full overflow-hidden bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
@@ -45,7 +64,7 @@ export function AppShell() {
           </div>
         </div>
         <nav className="flex flex-col gap-1 flex-1 items-center py-4">
-          {navItems.map(({ to, icon, label }) => (
+          {navItems.map(({ to, icon, label, shortcut }) => (
             <NavLink
               key={to}
               to={to}
@@ -55,7 +74,8 @@ export function AppShell() {
                   isActive ? "bg-primary/10 text-primary" : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"
                 }`
               }
-              aria-label={label}
+              aria-label={`${label} (${shortcut})`}
+              title={`${label} (${shortcut})`}
             >
               <span className="material-symbols-outlined text-[24px]" aria-hidden>
                 {icon}
