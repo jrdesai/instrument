@@ -7,6 +7,7 @@ pub mod json;
 pub mod text;
 pub mod datetime;
 pub mod numbers;
+#[cfg(feature = "sql")]
 pub mod sql;
 pub mod csv;
 pub mod expression;

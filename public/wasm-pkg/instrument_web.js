@@ -378,19 +378,6 @@ export function tool_jwt_decode(js_input) {
 }
 
 /**
- * SQL formatter. Receives SqlFormatInput (camelCase) and returns SqlFormatOutput (camelCase).
- * @param {any} js_input
- * @returns {any}
- */
-export function tool_sql_format(js_input) {
-    const ret = wasm.tool_sql_format(js_input);
-    if (ret[2]) {
-        throw takeFromExternrefTable0(ret[1]);
-    }
-    return takeFromExternrefTable0(ret[0]);
-}
-
-/**
  * URL parser. Receives UrlParseInput (camelCase) and returns UrlParseOutput (camelCase).
  * @param {any} js_input
  * @returns {any}

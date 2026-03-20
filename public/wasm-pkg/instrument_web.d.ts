@@ -147,11 +147,6 @@ export function tool_jwt_build(js_input: any): any;
 export function tool_jwt_decode(js_input: any): any;
 
 /**
- * SQL formatter. Receives SqlFormatInput (camelCase) and returns SqlFormatOutput (camelCase).
- */
-export function tool_sql_format(js_input: any): any;
-
-/**
  * URL parser. Receives UrlParseInput (camelCase) and returns UrlParseOutput (camelCase).
  */
 export function tool_url_parse(js_input: any): any;
@@ -224,7 +219,6 @@ export interface InitOutput {
     readonly tool_json_validate: (a: any) => [number, number, number];
     readonly tool_jwt_build: (a: any) => [number, number, number];
     readonly tool_jwt_decode: (a: any) => [number, number, number];
-    readonly tool_sql_format: (a: any) => [number, number, number];
     readonly tool_url_parse: (a: any) => [number, number, number];
     readonly tool_yaml_to_json: (a: any) => [number, number, number];
     readonly ulid_inspect: (a: any) => [number, number, number];

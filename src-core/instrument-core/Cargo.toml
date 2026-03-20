@@ -9,6 +9,11 @@ description = "Shared library crate for Instrument (no Tauri deps)"
 name = "instrument_core"
 path = "src/lib.rs"
 
+[features]
+default = ["full"]
+full = ["sql"]
+sql = ["dep:sqlformat"]
+
 [dependencies]
 serde = { workspace = true }
 thiserror = { workspace = true }
@@ -28,7 +33,7 @@ serde_json = { workspace = true }
 jsonpath-rust = "0.7"
 serde_yaml = "0.9"
 quick-xml = { version = "0.36", features = ["serialize"] }
-sqlformat = "0.2"
+sqlformat = { version = "0.2", optional = true }
 url = "2"
 csv = "1"
 meval = "0.2"
