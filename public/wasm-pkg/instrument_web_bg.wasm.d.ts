@@ -18,6 +18,7 @@ export const regex_match: (a: any) => [number, number, number];
 export const sha256_process: (a: any) => [number, number, number];
 export const sha512_process: (a: any) => [number, number, number];
 export const string_escaper_process: (a: any) => [number, number, number];
+export const text_diff_process: (a: any) => [number, number, number];
 export const timestamp_process: (a: any) => [number, number, number];
 export const timezone_process: (a: any) => [number, number, number];
 export const tool_csv_to_json: (a: any) => [number, number, number];

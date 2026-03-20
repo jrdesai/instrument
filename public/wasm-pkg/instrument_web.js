@@ -222,6 +222,19 @@ export function string_escaper_process(js_input) {
 }
 
 /**
+ * Text diff. Receives TextDiffInput (camelCase) and returns TextDiffOutput (camelCase).
+ * @param {any} js_input
+ * @returns {any}
+ */
+export function text_diff_process(js_input) {
+    const ret = wasm.text_diff_process(js_input);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
  * Timestamp converter. Receives TimestampInput (camelCase) and returns TimestampOutput (camelCase).
  * @param {any} js_input
  * @returns {any}

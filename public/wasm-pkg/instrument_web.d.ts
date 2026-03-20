@@ -87,6 +87,11 @@ export function sha512_process(js_input: any): any;
 export function string_escaper_process(js_input: any): any;
 
 /**
+ * Text diff. Receives TextDiffInput (camelCase) and returns TextDiffOutput (camelCase).
+ */
+export function text_diff_process(js_input: any): any;
+
+/**
  * Timestamp converter. Receives TimestampInput (camelCase) and returns TimestampOutput (camelCase).
  */
 export function timestamp_process(js_input: any): any;
@@ -207,6 +212,7 @@ export interface InitOutput {
     readonly sha256_process: (a: any) => [number, number, number];
     readonly sha512_process: (a: any) => [number, number, number];
     readonly string_escaper_process: (a: any) => [number, number, number];
+    readonly text_diff_process: (a: any) => [number, number, number];
     readonly timestamp_process: (a: any) => [number, number, number];
     readonly timezone_process: (a: any) => [number, number, number];
     readonly tool_csv_to_json: (a: any) => [number, number, number];
