@@ -19,6 +19,9 @@ use instrument_core::text::case::{process as case_process_core, CaseInput, CaseO
 use instrument_core::text::find_replace::{
     process as find_replace_process_core, FindReplaceInput, FindReplaceOutput,
 };
+use instrument_core::text::diff::{
+    process as text_diff_process_core, TextDiffInput, TextDiffOutput,
+};
 use instrument_core::text::lorem_ipsum::{
     process as lorem_ipsum_process_core, LoremIpsumInput, LoremIpsumOutput,
 };
@@ -403,6 +406,15 @@ pub fn find_replace_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> 
     let input: FindReplaceInput =
         from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
     let output: FindReplaceOutput = find_replace_process_core(input);
+    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
+}
+
+/// Text diff. Receives TextDiffInput (camelCase) and returns TextDiffOutput (camelCase).
+#[wasm_bindgen(js_name = text_diff_process)]
+pub fn text_diff_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
+    let input: TextDiffInput =
+        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let output: TextDiffOutput = text_diff_process_core(input);
     to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
 }
 

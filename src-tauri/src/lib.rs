@@ -26,6 +26,7 @@ pub fn run() {
             instrument_desktop::commands::text::string_escaper_process,
             instrument_desktop::commands::text::find_replace_process,
             instrument_desktop::commands::text::lorem_ipsum_process,
+            instrument_desktop::commands::text::text_diff_process,
             instrument_desktop::commands::datetime::timestamp_process,
             instrument_desktop::commands::datetime::timezone_process,
             instrument_desktop::commands::datetime::iso8601_process,

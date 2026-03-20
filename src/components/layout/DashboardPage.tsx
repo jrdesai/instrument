@@ -6,7 +6,6 @@ import { useToolStore } from "../../store";
 import { APP_VERSION } from "../../version";
 
 const MAX_RECENT = 6;
-const SUGGESTED_TOOL_IDS = ["json-formatter", "base64", "jwt-decoder"];
 
 function ToolCard({
   tool,
@@ -213,32 +212,12 @@ export function DashboardPage() {
             </div>
           </div>
           {displayedRecent.length === 0 ? (
-            <div className="flex flex-col gap-3">
-              <p className="text-sm text-slate-400 dark:text-slate-500">
-                No recent tools yet.{" "}
-                <Link to="/library" className="text-primary hover:underline">
-                  Open a tool from the Library.
-                </Link>
-              </p>
-              <div className="flex flex-wrap gap-3">
-                {SUGGESTED_TOOL_IDS.map((id) => {
-                  const tool = getToolById(id);
-                  if (!tool) return null;
-                  return (
-                    <ToolCard
-                      key={tool.id}
-                      tool={tool}
-                      onClick={() => handleOpenTool(tool)}
-                      isFavourite={favouriteToolIds.includes(tool.id)}
-                      onToggleFavourite={(e) => {
-                        e.stopPropagation();
-                        toggleFavourite(tool);
-                      }}
-                    />
-                  );
-                })}
-              </div>
-            </div>
+            <p className="text-sm text-slate-400 dark:text-slate-500">
+              No recent tools yet.{" "}
+              <Link to="/library" className="text-primary hover:underline">
+                Open a tool from the Library.
+              </Link>
+            </p>
           ) : (
             <div className="flex flex-wrap gap-4">
               {displayedRecent.map((tool) => (

@@ -35,7 +35,7 @@ export function AppShell() {
       >
         {/* Logo mark + tooltip (icon-only sidebar) */}
         <div
-          className="py-3 flex items-center justify-center border-b border-slate-200 dark:border-border-dark w-full"
+          className="h-12 flex items-center justify-center border-b border-slate-200 dark:border-border-dark w-full shrink-0"
           title="Instrument"
         >
           <div

@@ -504,6 +504,23 @@ export const tools: Tool[] = [
     implemented: true,
   },
   {
+    id: "text-diff",
+    name: "Text Diff",
+    description: "Compare two blocks of text line by line.",
+    category: "text",
+    displayCategory: "Formatting",
+    displayCategoryIcon: "format_indent_increase",
+    roles: ["frontend", "backend", "general"],
+    icon: "difference",
+    platforms: ["desktop", "web"],
+    rustCommand: "text_diff_process",
+    keywords: ["text", "diff", "compare", "difference", "lines"],
+    component: React.lazy(() =>
+      import("../tools/text-diff").then((m) => ({ default: m.default }))
+    ),
+    implemented: true,
+  },
+  {
     id: "lorem-ipsum",
     name: "Lorem Ipsum Generator",
     description: "Generate placeholder text (paragraphs, sentences, or words).",

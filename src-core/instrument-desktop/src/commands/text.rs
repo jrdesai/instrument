@@ -4,6 +4,9 @@ use instrument_core::text::case::{process as case_process_core, CaseInput, CaseO
 use instrument_core::text::find_replace::{
     process as find_replace_process_core, FindReplaceInput, FindReplaceOutput,
 };
+use instrument_core::text::diff::{
+    process as text_diff_process_core, TextDiffInput, TextDiffOutput,
+};
 use instrument_core::text::string_escaper::{
     process as string_escaper_process_core, StringEscaperInput, StringEscaperOutput,
 };
@@ -42,5 +45,11 @@ pub fn find_replace_process(input: FindReplaceInput) -> FindReplaceOutput {
 #[tauri::command]
 pub fn lorem_ipsum_process(input: LoremIpsumInput) -> LoremIpsumOutput {
     lorem_ipsum_process_core(input)
+}
+
+/// Runs line-by-line text diff via instrument-core.
+#[tauri::command]
+pub fn text_diff_process(input: TextDiffInput) -> TextDiffOutput {
+    text_diff_process_core(input)
 }
 

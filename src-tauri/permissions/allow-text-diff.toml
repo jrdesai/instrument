@@ -1,0 +1,6 @@
+# Allow the Text Diff tool command to be invoked from the frontend.
+[[permission]]
+identifier = "allow-text-diff"
+description = "Enables the text_diff_process command."
+commands.allow = ["text_diff_process"]
+
