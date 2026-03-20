@@ -62,3 +62,83 @@ jobs:
 
       - name: Tests
         run: cargo test --manifest-path src-core/Cargo.toml -p instrument-core -p regex-core
+
+  web:
+    name: Web — Vite build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: "10"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build web
+        run: pnpm exec vite build --mode web
+
+  wasm-sync:
+    name: WASM — sync check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: "10"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+
+      - name: Cache cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            src-core/target
+          key: ${{ runner.os }}-cargo-wasm-${{ hashFiles('src-core/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-wasm-
+            ${{ runner.os }}-cargo-
+
+      - name: Install wasm-pack
+        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+
+      - name: Rebuild WASM
+        run: pnpm run build:wasm
+
+      - name: Check WASM is up to date
+        run: |
+          if ! git diff --exit-code public/wasm-pkg/; then
+            echo ""
+            echo "❌ public/wasm-pkg/ is out of sync with the Rust source."
+            echo "   Run 'pnpm run build:wasm' locally and commit the updated public/wasm-pkg/."
+            exit 1
+          fi
+          echo "✅ public/wasm-pkg/ is up to date."
