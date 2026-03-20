@@ -7,7 +7,6 @@ const SIDEBAR_WIDTH = 48;
 const navItems: { to: string; icon: string; label: string }[] = [
   { to: "/", icon: "home", label: "Dashboard" },
   { to: "/library", icon: "grid_view", label: "Library" },
-  { to: "/chains", icon: "device_hub", label: "Chains" },
   { to: "/history", icon: "history", label: "History" },
   { to: "/settings", icon: "settings", label: "Settings" },
 ];
