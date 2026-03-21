@@ -30,6 +30,7 @@ export const tool_json_path: (a: any) => [number, number, number];
 export const tool_json_validate: (a: any) => [number, number, number];
 export const tool_jwt_build: (a: any) => [number, number, number];
 export const tool_jwt_decode: (a: any) => [number, number, number];
+export const tool_sql_format: (a: any) => [number, number, number];
 export const tool_url_parse: (a: any) => [number, number, number];
 export const tool_yaml_to_json: (a: any) => [number, number, number];
 export const ulid_inspect: (a: any) => [number, number, number];

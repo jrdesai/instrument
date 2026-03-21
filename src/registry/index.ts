@@ -720,8 +720,7 @@ export const tools: Tool[] = [
     displayCategoryIcon: "code",
     roles: ["backend", "data", "general"],
     icon: "storage",
-    // For now, only desktop is supported; add web once sqlformat is confirmed WASM-safe.
-    platforms: ["desktop"],
+    platforms: ["desktop", "web"],
     rustCommand: "tool_sql_format",
     keywords: ["sql", "format", "beautify", "query"],
     component: React.lazy(() =>

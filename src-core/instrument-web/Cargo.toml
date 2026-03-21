@@ -12,7 +12,7 @@ wasm-opt = true
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-instrument-core = { path = "../instrument-core", default-features = false }
+instrument-core = { path = "../instrument-core", default-features = false, features = ["sql"] }
 regex-core = { path = "../regex-core" }
 wasm-bindgen = { workspace = true }
 serde-wasm-bindgen = { workspace = true }
