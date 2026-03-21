@@ -4,6 +4,8 @@
  * use callTool() from the bridge index instead.
  */
 
+import { getToolByRustCommand } from "../registry";
+
 /**
  * Invokes a Tauri command by name with the given input payload.
  * @param toolId - Tauri command name (e.g. from registry rustCommand)
@@ -14,10 +16,8 @@ export async function callToolDesktop(
   input: unknown
 ): Promise<unknown> {
   const { invoke } = await import("@tauri-apps/api/core");
-  // Regex commands use `req` as the argument name; all others use `input`.
-  const payload =
-    toolId === "tool_regex_test" || toolId === "tool_regex_explain"
-      ? { req: input }
-      : { input };
+  const tool = getToolByRustCommand(toolId);
+  const payloadKey = tool?.desktopPayloadKey ?? "input";
+  const payload = { [payloadKey]: input };
   return invoke(toolId, payload);
 }

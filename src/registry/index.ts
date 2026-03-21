@@ -44,6 +44,20 @@ export interface Tool {
   implemented: boolean;
   /** If true, input/output are never recorded in history (e.g. JWT, API keys). */
   sensitive?: boolean;
+
+  /**
+   * Override for the WASM export name when it differs from rustCommand.
+   * Example: rustCommand "tool_regex_explain" → wasmExport "regex_explain"
+   * If omitted, rustCommand is used as-is for both desktop and web.
+   */
+  wasmExport?: string;
+
+  /**
+   * Override for the Tauri invoke payload key when it differs from "input".
+   * Example: regex commands use "req" instead of "input".
+   * Defaults to "input" if omitted.
+   */
+  desktopPayloadKey?: string;
 }
 
 /** Placeholder lazy component for future tools (currently unused). */
@@ -80,6 +94,7 @@ export const tools: Tool[] = [
     icon: "find_in_page",
     platforms: ["desktop", "web"],
     rustCommand: "tool_regex_test",
+    desktopPayloadKey: "req",
     keywords: ["regex", "regular expression", "match", "pattern"],
     component: React.lazy(
       () =>
@@ -88,6 +103,29 @@ export const tools: Tool[] = [
         }>
     ),
     implemented: true,
+  },
+  /** Same UI as Regex Tester; separate row so `tool_regex_explain` resolves for the bridge. Not shown in Library (implemented: false). */
+  {
+    id: "regex-explain",
+    name: "Regex Explain",
+    description: "Explain regex pattern structure (used from Regex Tester).",
+    category: "code",
+    displayCategory: "Code",
+    displayCategoryIcon: "code",
+    roles: ["frontend", "backend", "general"],
+    icon: "find_in_page",
+    platforms: ["desktop", "web"],
+    rustCommand: "tool_regex_explain",
+    wasmExport: "regex_explain",
+    desktopPayloadKey: "req",
+    keywords: ["regex", "explain", "pattern"],
+    component: React.lazy(
+      () =>
+        import("../tools/regex-tester") as Promise<{
+          default: React.ComponentType<unknown>;
+        }>
+    ),
+    implemented: false,
   },
   {
     id: "url-encoder",
