@@ -695,12 +695,20 @@ export const tools: Tool[] = [
   },
 ];
 
+// Build lookup maps once at module init for O(1) access.
+const _toolById = new Map<string, Tool>(tools.map((t) => [t.id, t]));
+const _toolByRustCommand = new Map<string, Tool>(
+  tools
+    .filter((t) => t.rustCommand !== undefined)
+    .map((t) => [t.rustCommand as string, t])
+);
+
 /**
  * Returns the tool with the given id, or undefined if not found.
  * @param id - Tool id (e.g. "base64-encoder")
  */
 export function getToolById(id: string): Tool | undefined {
-  return tools.find((t) => t.id === id);
+  return _toolById.get(id);
 }
 
 /**
@@ -709,7 +717,7 @@ export function getToolById(id: string): Tool | undefined {
  * @param cmd - Rust command name (e.g. "word_counter_process")
  */
 export function getToolByRustCommand(cmd: string): Tool | undefined {
-  return tools.find((t) => t.rustCommand === cmd);
+  return _toolByRustCommand.get(cmd);
 }
 
 /**
