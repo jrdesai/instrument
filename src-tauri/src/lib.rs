@@ -1,8 +1,26 @@
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 
+use tauri_plugin_log::{RotationStrategy, Target, TargetKind};
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(
+            tauri_plugin_log::Builder::new()
+                .targets([
+                    Target::new(TargetKind::Stdout),
+                    Target::new(TargetKind::LogDir {
+                        file_name: Some("instrument".into()),
+                    }),
+                ])
+                .rotation_strategy(RotationStrategy::KeepOne)
+                .max_file_size(5_000_000)
+                // Suppress noisy internal windowing / webview TRACE logs.
+                // Only instrument_desktop emits at DEBUG; everything else at WARN+.
+                .level(log::LevelFilter::Warn)
+                .level_for("instrument_desktop", log::LevelFilter::Debug)
+                .build(),
+        )
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
             instrument_desktop::commands::auth::tool_jwt_decode,
@@ -44,6 +62,10 @@ pub fn run() {
             instrument_desktop::commands::csv::tool_csv_to_json,
             instrument_desktop::commands::expression::tool_expression_eval,
         ])
+        .setup(|_| {
+            log::info!("Instrument v{} started", env!("CARGO_PKG_VERSION"));
+            Ok(())
+        })
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
