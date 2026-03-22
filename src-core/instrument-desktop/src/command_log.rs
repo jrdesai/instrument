@@ -1,13 +1,28 @@
-//! Privacy-safe timing logs for Tauri commands (tool name + duration + error text only).
+//! Privacy-safe timing logs for Tauri commands.
+//!
+//! ## What is logged
+//! - `WARN`  — tool completed but took longer than [`SLOW_MS`] milliseconds
+//! - `ERROR` — tool returned an error (error message text only, never input/output values)
+//! - `INFO`  — app startup (logged from `src-tauri/src/lib.rs`)
+//!
+//! ## What is NOT logged (by design)
+//! - Fast successful completions (<[`SLOW_MS`]ms) — intentionally silent.
+//!   Most tools are auto-run and fire on every keystroke; logging each call would
+//!   produce hundreds of identical "completed in 0ms" lines per minute with no
+//!   diagnostic value.
+//! - Input values, output values, or any user content — privacy requirement.
+//!
+//! ## Log destinations
+//! Configured in `src-tauri/src/lib.rs`:
+//! - **Terminal** (stdout): DEBUG+ for this crate — shows all tool calls during dev.
+//! - **Log file**: WARN+ only — only anomalies (slow calls, errors) are persisted.
 
 use std::time::Instant;
 
-/// Threshold above which a tool call is considered slow and worth logging.
+/// Tool calls faster than this threshold are not logged (see module docs).
 const SLOW_MS: u128 = 200;
 
 /// Log successful command completion (never logs input/output).
-/// Fast completions (<200ms) are silent — they are routine and would flood the log
-/// for auto-run tools that fire on every keystroke. Only slow calls appear.
 pub(crate) fn finish_ok(tool: &'static str, start: Instant) {
     let elapsed = start.elapsed().as_millis();
     if elapsed > SLOW_MS {
@@ -15,8 +30,7 @@ pub(crate) fn finish_ok(tool: &'static str, start: Instant) {
     }
 }
 
-/// Log `Result`-based command completion or error (error message only).
-/// Fast successful completions are silent; slow calls warn; errors always log.
+/// Log `Result`-based command completion or error (error message only, never input/output).
 pub(crate) fn finish_result<T, E: std::fmt::Display>(
     tool: &'static str,
     start: Instant,

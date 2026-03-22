@@ -1,5 +1,7 @@
 //! Tauri commands for datetime tools (timestamp, timezone, ISO 8601, etc.).
 
+use std::time::Instant;
+
 use instrument_core::datetime::iso8601::{
     process as iso8601_process_core, Iso8601Input, Iso8601Output,
 };
@@ -10,20 +12,31 @@ use instrument_core::datetime::timezone::{
     process as timezone_process_core, TimezoneInput, TimezoneOutput,
 };
 
+use crate::command_log::finish_ok;
+
 /// Runs timestamp conversion via instrument-core.
 #[tauri::command]
 pub fn timestamp_process(input: TimestampInput) -> TimestampOutput {
-    timestamp_process_core(input)
+    let start = Instant::now();
+    let output = timestamp_process_core(input);
+    finish_ok("timestamp_process", start);
+    output
 }
 
 /// Runs timezone conversion via instrument-core.
 #[tauri::command]
 pub fn timezone_process(input: TimezoneInput) -> TimezoneOutput {
-    timezone_process_core(input)
+    let start = Instant::now();
+    let output = timezone_process_core(input);
+    finish_ok("timezone_process", start);
+    output
 }
 
 /// Runs ISO 8601 parse/format via instrument-core.
 #[tauri::command]
 pub fn iso8601_process(input: Iso8601Input) -> Iso8601Output {
-    iso8601_process_core(input)
+    let start = Instant::now();
+    let output = iso8601_process_core(input);
+    finish_ok("iso8601_process", start);
+    output
 }

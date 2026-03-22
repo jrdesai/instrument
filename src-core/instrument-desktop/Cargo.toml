@@ -12,6 +12,7 @@ crate-type = ["rlib"]
 [dependencies]
 instrument-core = { path = "../instrument-core" }
 regex-core = { path = "../regex-core" }
+log = "0.4"
 serde = { workspace = true }
 serde_json = { workspace = true }
 tauri = { workspace = true }

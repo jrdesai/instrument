@@ -6,17 +6,37 @@ use tauri_plugin_log::{RotationStrategy, Target, TargetKind};
 pub fn run() {
     tauri::Builder::default()
         .plugin(
+            // Logging strategy (two targets, different verbosity):
+            //
+            //   Stdout  — DEBUG+  for instrument_desktop, WARN+ for everything else.
+            //             Shows every tool call timing in the terminal during `pnpm tauri dev`.
+            //             Useful for active debugging sessions.
+            //
+            //   Log file — WARN+  only (platform log directory, 5 MB cap, single rotating file).
+            //             Keeps the persistent log clean: only slow calls (>200ms) and errors
+            //             are recorded. Fast auto-run tool completions are intentionally silent
+            //             — they fire on every keystroke and would flood the file with noise.
+            //
+            //   Privacy: tool names and durations are logged; input/output values are NEVER
+            //             logged anywhere. See src-core/instrument-desktop/src/command_log.rs.
             tauri_plugin_log::Builder::new()
                 .targets([
-                    Target::new(TargetKind::Stdout),
+                    // Terminal: full DEBUG output for instrument_desktop
+                    Target::new(TargetKind::Stdout)
+                        .filter(|m| {
+                            m.level() <= log::Level::Warn
+                                || m.target().starts_with("instrument_desktop")
+                        }),
+                    // File: WARN+ only — anomalies (slow calls, errors) and startup
                     Target::new(TargetKind::LogDir {
                         file_name: Some("instrument".into()),
-                    }),
+                    })
+                    .filter(|m| m.level() <= log::Level::Warn),
                 ])
                 .rotation_strategy(RotationStrategy::KeepOne)
                 .max_file_size(5_000_000)
-                // Suppress noisy internal windowing / webview TRACE logs.
-                // Only instrument_desktop emits at DEBUG; everything else at WARN+.
+                // Global floor: suppress tao/wry TRACE/DEBUG noise (window focus events etc.)
+                // instrument_desktop is allowed through to DEBUG by the Stdout target filter above.
                 .level(log::LevelFilter::Warn)
                 .level_for("instrument_desktop", log::LevelFilter::Debug)
                 .build(),

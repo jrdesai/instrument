@@ -1,5 +1,7 @@
 //! Tauri commands for crypto tools (MD5, SHA-256, SHA-512, UUID, ULID, API keys, etc.).
 
+use std::time::Instant;
+
 use instrument_core::crypto::md5::{process, Md5Input, Md5Output};
 use instrument_core::crypto::sha256::{
     process as sha256_process_core, Sha256Input, Sha256Output,
@@ -20,56 +22,85 @@ use instrument_core::crypto::nanoid::{
     process as nanoid_process_core, NanoIdInput, NanoIdOutput,
 };
 
+use crate::command_log::finish_ok;
+
 /// Runs MD5 hash via instrument-core.
 #[tauri::command]
 pub fn md5_process(input: Md5Input) -> Md5Output {
-    process(input)
+    let start = Instant::now();
+    let output = process(input);
+    finish_ok("md5_process", start);
+    output
 }
 
 /// Runs SHA-256 hash via instrument-core.
 #[tauri::command]
 pub fn sha256_process(input: Sha256Input) -> Sha256Output {
-    sha256_process_core(input)
+    let start = Instant::now();
+    let output = sha256_process_core(input);
+    finish_ok("sha256_process", start);
+    output
 }
 
 /// Runs SHA-512 hash via instrument-core.
 #[tauri::command]
 pub fn sha512_process(input: Sha512Input) -> Sha512Output {
-    sha512_process_core(input)
+    let start = Instant::now();
+    let output = sha512_process_core(input);
+    finish_ok("sha512_process", start);
+    output
 }
 
 /// Runs UUID generation via instrument-core.
 #[tauri::command]
 pub fn uuid_process(input: UuidInput) -> UuidOutput {
-    uuid_process_core(input)
+    let start = Instant::now();
+    let output = uuid_process_core(input);
+    finish_ok("uuid_process", start);
+    output
 }
 
 /// Runs UUID inspection via instrument-core.
 #[tauri::command]
 pub fn uuid_inspect(input: UuidInspectInput) -> UuidInspectOutput {
-    uuid_inspect_core(input)
+    let start = Instant::now();
+    let output = uuid_inspect_core(input);
+    finish_ok("uuid_inspect", start);
+    output
 }
 
 /// Runs ULID generation via instrument-core.
 #[tauri::command]
 pub fn ulid_process(input: UlidInput) -> UlidOutput {
-    ulid_process_core(input)
+    let start = Instant::now();
+    let output = ulid_process_core(input);
+    finish_ok("ulid_process", start);
+    output
 }
 
 /// Runs ULID inspection via instrument-core.
 #[tauri::command]
 pub fn ulid_inspect(input: UlidInspectInput) -> UlidInspectOutput {
-    ulid_inspect_core(input)
+    let start = Instant::now();
+    let output = ulid_inspect_core(input);
+    finish_ok("ulid_inspect", start);
+    output
 }
 
 /// Runs API key generation via instrument-core.
 #[tauri::command]
 pub fn api_key_process(input: ApiKeyInput) -> ApiKeyOutput {
-    api_key_process_core(input)
+    let start = Instant::now();
+    let output = api_key_process_core(input);
+    finish_ok("api_key_process", start);
+    output
 }
 
 /// Runs Nano ID generation via instrument-core.
 #[tauri::command]
 pub fn nanoid_process(input: NanoIdInput) -> NanoIdOutput {
-    nanoid_process_core(input)
+    let start = Instant::now();
+    let output = nanoid_process_core(input);
+    finish_ok("nanoid_process", start);
+    output
 }
