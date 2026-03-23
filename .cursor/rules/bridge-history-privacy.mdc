@@ -1,0 +1,76 @@
+---
+description: Bridge pattern, history recording, sensitive tools, and logging privacy rules
+globs: src/**/*.ts, src/**/*.tsx, src-core/**/*.rs
+alwaysApply: false
+---
+
+# Bridge Pattern
+
+## Never bypass the bridge
+Components call `callTool(rustCommand, input)` from `src/bridge/index.ts` ONLY.
+Never import `@tauri-apps/api` or the WASM module directly in any component or utility.
+
+## Bridge config lives in the registry
+Non-standard WASM export names → set `wasmExport` on the registry entry.
+Non-standard Tauri payload key → set `desktopPayloadKey` on the registry entry.
+Do NOT add string special-cases to `bridge/index.ts` or `bridge/desktop.ts`.
+
+---
+
+# History Recording
+
+## Auto-run tools (fire on every keystroke)
+Tools that run automatically as the user types MUST use the dual debounce pattern:
+- 150ms debounce → call `callTool(cmd, input, { skipHistory: true })` (fast, no history)
+- 1500ms debounce → call `callTool(cmd, input)` (captures history entry)
+
+This prevents flooding the history store with every keystroke.
+Reference implementation: `src/tools/base64/`
+
+## History is capped
+`useHistoryStore` caps at 100 entries per tool (`MAX_HISTORY_PER_TOOL`).
+Do not implement your own history trimming in tool components.
+
+---
+
+# Sensitive Tools
+
+## Mark secrets-handling tools with sensitive: true
+Any tool that processes secrets, credentials, or private keys must have `sensitive: true`
+in its registry entry:
+```ts
+{ id: "jwt-decoder", ..., sensitive: true }
+```
+The bridge automatically applies `skipHistory: true` for sensitive tools — their
+input/output is never recorded in history regardless of how `callTool` is called.
+
+Sensitive tools: jwt-decoder, jwt-builder, api-key-generator, and any future tool
+handling passwords, tokens, private keys, or PII.
+
+---
+
+# Logging Privacy (Rust)
+
+## What to log — tool name, duration, errors only
+Use the helpers in `src-core/instrument-desktop/src/command_log.rs`:
+- `command_log::finish_ok(tool_name, start)` — for infallible commands
+- `command_log::finish_result(tool_name, start, &result)` — for Result-returning commands
+
+## What NEVER to log
+**Never** log input values, output values, or any field content the user typed.
+This is a hard privacy requirement — not a style preference.
+
+Bad:
+```rust
+log::debug!("base64 input: {}", input.value);  // ❌ logs user content
+```
+
+Good:
+```rust
+command_log::finish_ok("base64_process", start);  // ✅ logs name + duration only
+```
+
+## Fast completions are intentionally silent
+Calls completing in <200ms produce no log entry. This is by design — auto-run tools
+fire on every keystroke and would flood the log file with noise.
+Only slow calls (WARN) and errors (ERROR) are persisted to the log file.

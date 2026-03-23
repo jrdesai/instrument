@@ -5,14 +5,32 @@ alwaysApply: true
 
 # Architecture Rules
 
+## Rust layer
 - instrument-core must NEVER import tauri, wasm-bindgen, tokio, or std::fs
 - All Rust logic in instrument-core must be pure functions — no side effects
+- Use thiserror for error types — never panic! in library code
+- All public structs: #[derive(Debug, Clone, Serialize, Deserialize)] + #[serde(rename_all = "camelCase")]
+
+## React / TypeScript layer
 - All React components call src/bridge/index.ts only — never invoke() directly
-- Platform detection uses "__TAURI_INTERNALS__" in window (Tauri v2)
-- Every new tool must have an entry in src/registry/index.ts
+- Platform detection uses isDesktop / isWeb from src/bridge/index.ts — never check __TAURI_INTERNALS__ in components
 - Tool components are always lazy-loaded via React.lazy()
 - src/constants/library.ts is the source of truth for category/role mappings
+
+## Registry
+- Every new tool must have an entry in src/registry/index.ts
+- Registry drives Library display, search, routing, platform filtering, and history recording
+- platforms: ["desktop", "web"] for cross-platform tools; platforms: ["desktop"] for native-only tools
+- sensitive: true for any tool handling secrets, tokens, or keys (auto-skips history)
+
+## WASM sync (critical)
+- After any src-core/ Rust change: run `pnpm run build:wasm` and commit public/wasm-pkg/
+- See wasm-workflow.mdc for the full workflow
+
+## Package management
 - Use pnpm for all package operations — never npm or yarn
 - pnpm add for dependencies, pnpm add -D for dev, pnpm dlx for one-off CLIs
-- Every tool must have a corresponding doc in docs/tools/<tool-name>.md
+
+## General
 - Inline comments explain WHY not WHAT
+- Every tool should have a corresponding doc in docs/tools/<tool-name>.md

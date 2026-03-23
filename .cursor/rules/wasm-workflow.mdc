@@ -1,0 +1,33 @@
+---
+description: WASM build and sync rules — required after any Rust source change
+alwaysApply: true
+---
+
+# WASM Workflow Rules
+
+## public/wasm-pkg/ is committed to git
+`public/wasm-pkg/` (NOT `src/wasm-pkg/`) is committed so Cloudflare Pages can
+deploy without a Rust toolchain. `src/wasm-pkg/` is gitignored — ignore it.
+
+## After ANY change to src-core/ Rust files you MUST:
+1. Run `pnpm run build:wasm`
+2. `git add public/wasm-pkg/`
+3. Commit the updated wasm-pkg alongside your Rust changes
+
+This applies to:
+- New WASM bindings in `src-core/instrument-web/src/lib.rs`
+- Cargo.toml dependency changes in any `src-core/` crate
+- Version bumps in `package.json` or workspace `Cargo.toml` (version is embedded in WASM package.json)
+- Any logic change in `src-core/instrument-core/`
+
+## CI will fail if you skip this
+The `wasm-sync` CI job runs `pnpm run build:wasm` and checks `git diff public/wasm-pkg/`.
+If they differ, the job fails with: "public/wasm-pkg/ is out of sync with the Rust source."
+
+## instrument-core must stay pure
+No `std::fs`, no `tauri`, no `tokio`, no `wasm-bindgen` in `src-core/instrument-core/`.
+Run `pnpm run check:pure` to verify. Violations break the WASM build.
+
+## sqlformat feature flag
+`instrument-core` has an optional `sql` feature. `instrument-web/Cargo.toml` currently
+enables it (`features = ["sql"]`). If excluding it, set `default-features = false`.
