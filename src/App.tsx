@@ -8,7 +8,7 @@ import { ChainsPage } from "./components/layout/ChainsPage";
 import { HistoryPage } from "./components/layout/HistoryPage";
 import { SettingsPage } from "./components/layout/SettingsPage";
 import { ToolHeader } from "./components/layout/ToolHeader";
-import { ErrorBoundary } from "./components/ErrorBoundary";
+import { ToolErrorBoundary } from "./components/ui/ToolErrorBoundary";
 import { LoadingSpinner } from "./components/ui/LoadingSpinner";
 import { usePreferenceStore } from "./store";
 import "./App.css";
@@ -27,13 +27,13 @@ function ToolPage() {
   return (
     <div ref={containerRef} tabIndex={-1} className="flex-1 flex flex-col min-h-0 w-full bg-background-light dark:bg-background-dark outline-none">
       <ToolHeader tool={tool} />
-      <ErrorBoundary toolName={tool?.name} resetKey={toolId}>
+      <ToolErrorBoundary key={toolId} toolName={tool.name}>
         <Suspense fallback={<LoadingSpinner label="Loading tool..." />}>
           <div className="flex-1 flex flex-col min-h-0">
             <Component />
           </div>
         </Suspense>
-      </ErrorBoundary>
+      </ToolErrorBoundary>
     </div>
   );
 }

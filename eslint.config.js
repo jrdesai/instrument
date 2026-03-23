@@ -44,7 +44,11 @@ export default tseslint.config(
 
   // Allow console in bridge and ErrorBoundary (DEV-only logging; gated by import.meta.env.DEV)
   {
-    files: ["src/bridge/index.ts", "src/components/ErrorBoundary.tsx"],
+    files: [
+      "src/bridge/index.ts",
+      "src/components/ErrorBoundary.tsx",
+      "src/components/ui/ToolErrorBoundary.tsx",
+    ],
     rules: {
       "no-console": "off",
     },
