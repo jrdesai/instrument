@@ -6,6 +6,7 @@ export const base64_process: (a: any) => [number, number, number];
 export const base_converter_process: (a: any) => [number, number, number];
 export const bitwise_process: (a: any) => [number, number, number];
 export const case_process: (a: any) => [number, number, number];
+export const cron_process: (a: any) => [number, number, number];
 export const find_replace_process: (a: any) => [number, number, number];
 export const hex_process: (a: any) => [number, number, number];
 export const html_entity_process: (a: any) => [number, number, number];

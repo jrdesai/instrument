@@ -29,6 +29,7 @@ rand = { version = "0.8", features = ["getrandom"] }
 regex = "1"
 chrono = { version = "0.4", features = ["serde"] }
 chrono-tz = "0.9"
+cron = "0.12"
 serde_json = { workspace = true }
 jsonpath-rust = "0.7"
 serde_yaml = "0.9"

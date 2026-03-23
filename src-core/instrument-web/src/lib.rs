@@ -67,6 +67,9 @@ use instrument_core::datetime::timestamp::{
 use instrument_core::datetime::timezone::{
     process as timezone_process_core, TimezoneInput, TimezoneOutput,
 };
+use instrument_core::datetime::cron::{
+    process as cron_process_core, CronInput, CronOutput,
+};
 use instrument_core::datetime::iso8601::{
     process as iso8601_process_core, Iso8601Input, Iso8601Output,
 };
@@ -361,6 +364,15 @@ pub fn iso8601_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
     let input: Iso8601Input =
         from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
     let output: Iso8601Output = iso8601_process_core(input);
+    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
+}
+
+/// Cron expression parser. Receives CronInput (camelCase) and returns CronOutput (camelCase).
+#[wasm_bindgen(js_name = cron_process)]
+pub fn cron_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
+    let input: CronInput =
+        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let output: CronOutput = cron_process_core(input);
     to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
 }
 

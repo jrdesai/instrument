@@ -632,6 +632,26 @@ export const tools: Tool[] = [
     implemented: true,
   },
   {
+    id: "cron-parser",
+    name: "Cron Expression Parser",
+    description:
+      "Parse and validate cron expressions. See next scheduled run times.",
+    category: "datetime",
+    displayCategory: "Date & Time",
+    displayCategoryIcon: "schedule",
+    roles: ["backend", "devops", "general"],
+    icon: "update",
+    platforms: ["desktop", "web"],
+    rustCommand: "cron_process",
+    keywords: ["cron", "schedule", "expression", "job", "interval", "timer"],
+    component: React.lazy(() =>
+      import("../tools/cron-parser/CronParserTool").then((m) => ({
+        default: m.default,
+      }))
+    ),
+    implemented: true,
+  },
+  {
     id: "number-base-converter",
     name: "Number Base Converter",
     description: "Convert between decimal, hex, binary, octal.",

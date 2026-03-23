@@ -2,6 +2,7 @@
 
 use std::time::Instant;
 
+use instrument_core::datetime::cron::{process as cron_process_core, CronInput, CronOutput};
 use instrument_core::datetime::iso8601::{
     process as iso8601_process_core, Iso8601Input, Iso8601Output,
 };
@@ -38,5 +39,14 @@ pub fn iso8601_process(input: Iso8601Input) -> Iso8601Output {
     let start = Instant::now();
     let output = iso8601_process_core(input);
     finish_ok("iso8601_process", start);
+    output
+}
+
+/// Parses a cron expression and returns next run times (UTC).
+#[tauri::command]
+pub fn cron_process(input: CronInput) -> CronOutput {
+    let start = Instant::now();
+    let output = cron_process_core(input);
+    finish_ok("cron_process", start);
     output
 }

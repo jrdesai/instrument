@@ -27,6 +27,11 @@ export function bitwise_process(js_input: any): any;
 export function case_process(js_input: any): any;
 
 /**
+ * Cron expression parser. Receives CronInput (camelCase) and returns CronOutput (camelCase).
+ */
+export function cron_process(js_input: any): any;
+
+/**
  * Find & replace. Receives FindReplaceInput (camelCase) and returns FindReplaceOutput (camelCase).
  */
 export function find_replace_process(js_input: any): any;
@@ -200,6 +205,7 @@ export interface InitOutput {
     readonly base_converter_process: (a: any) => [number, number, number];
     readonly bitwise_process: (a: any) => [number, number, number];
     readonly case_process: (a: any) => [number, number, number];
+    readonly cron_process: (a: any) => [number, number, number];
     readonly find_replace_process: (a: any) => [number, number, number];
     readonly hex_process: (a: any) => [number, number, number];
     readonly html_entity_process: (a: any) => [number, number, number];
