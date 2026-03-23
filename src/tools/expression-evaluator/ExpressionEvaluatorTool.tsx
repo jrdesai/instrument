@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { callTool } from "../../bridge";
+import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 
+const TOOL_ID = "expression-evaluator";
 const RUST_COMMAND = "tool_expression_eval";
 const DEBOUNCE_MS = 300;
 const COPIED_DURATION_MS = 1500;
@@ -16,7 +18,9 @@ interface ExprEvalOutput {
 }
 
 function ExpressionEvaluatorTool() {
+  const { setDraft } = useDraftInput(TOOL_ID);
   const [expression, setExpression] = useState("");
+  useRestoreStringDraft(TOOL_ID, setExpression);
   const [output, setOutput] = useState<ExprEvalOutput | null>(null);
   const [copyLabel, setCopyLabel] = useState("Copy");
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -68,8 +72,9 @@ function ExpressionEvaluatorTool() {
 
   const handleClear = useCallback(() => {
     setExpression("");
+    setDraft("");
     setOutput(null);
-  }, []);
+  }, [setDraft]);
 
   const isEmpty = expression.trim() === "";
 
@@ -93,7 +98,11 @@ function ExpressionEvaluatorTool() {
             className="flex-1 w-full min-h-0 p-4 font-mono text-xs text-slate-700 dark:text-slate-300 bg-transparent resize-none border-none focus:outline-none leading-relaxed placeholder:text-slate-500"
             placeholder={"sqrt(2) + 3^2\npi * 2\nmin(10, 20) / max(3, 5)"}
             value={expression}
-            onChange={(e) => setExpression(e.target.value)}
+            onChange={(e) => {
+              const v = e.target.value;
+              setExpression(v);
+              setDraft(v);
+            }}
           />
         </div>
 

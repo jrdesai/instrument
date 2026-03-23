@@ -5,6 +5,7 @@ import {
   useState,
 } from "react";
 import { callTool } from "../../bridge";
+import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useHistoryStore } from "../../store";
 
 const RUST_COMMAND = "tool_url_parse";
@@ -66,7 +67,9 @@ function fieldValue(
 }
 
 function UrlParserTool() {
+  const { setDraft } = useDraftInput(TOOL_ID);
   const [input, setInput] = useState("");
+  useRestoreStringDraft(TOOL_ID, setInput);
   const [output, setOutput] = useState<UrlParseOutputPayload | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [copyLabel, setCopyLabel] = useState("Copy URL");
@@ -140,8 +143,9 @@ function UrlParserTool() {
 
   const handleClear = useCallback(() => {
     setInput("");
+    setDraft("");
     setOutput(null);
-  }, []);
+  }, [setDraft]);
 
   const handleCopyUrl = useCallback(async () => {
     if (!input) return;
@@ -174,7 +178,11 @@ function UrlParserTool() {
           className="w-full px-3 py-2 bg-background-light dark:bg-background-dark border border-border-light dark:border-border-dark rounded-lg font-mono text-sm text-slate-800 dark:text-slate-200 placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-primary"
           placeholder="https://example.com/..."
           value={input}
-          onChange={(e) => setInput(e.target.value)}
+          onChange={(e) => {
+            const v = e.target.value;
+            setInput(v);
+            setDraft(v);
+          }}
           spellCheck={false}
         />
       </div>

@@ -5,6 +5,7 @@ import {
   useState,
 } from "react";
 import { callTool } from "../../bridge";
+import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useHistoryStore } from "../../store";
 
 /** Matches Rust EscapeMode (camelCase). */
@@ -49,7 +50,9 @@ const TARGETS: { value: EscapeTargetPayload; label: string }[] = [
 ];
 
 function StringEscaperTool() {
+  const { setDraft } = useDraftInput(TOOL_ID);
   const [input, setInput] = useState("");
+  useRestoreStringDraft(TOOL_ID, setInput);
   const [output, setOutput] = useState<StringEscaperOutputPayload | null>(null);
   const [mode, setMode] = useState<EscapeModePayload>("escape");
   const [target, setTarget] = useState<EscapeTargetPayload>("json");
@@ -139,16 +142,18 @@ function StringEscaperTool() {
     const newInput = output?.result ?? "";
     const newMode: EscapeModePayload = mode === "escape" ? "unescape" : "escape";
     setInput(newInput);
+    setDraft(newInput);
     setOutput(null);
     setMode(newMode);
     runProcess(newInput, newMode, target);
-  }, [output?.result, mode, target, runProcess]);
+  }, [output?.result, mode, target, runProcess, setDraft]);
 
   const handleClear = useCallback(() => {
     setInput("");
+    setDraft("");
     setOutput(null);
     setError(null);
-  }, []);
+  }, [setDraft]);
 
   const handleCopy = useCallback(async () => {
     const text = output?.result ?? "";
@@ -213,7 +218,11 @@ function StringEscaperTool() {
                 : "Enter escaped string to unescape…"
             }
             value={input}
-            onChange={(e) => setInput(e.target.value)}
+            onChange={(e) => {
+              const v = e.target.value;
+              setInput(v);
+              setDraft(v);
+            }}
             spellCheck={false}
           />
         </div>

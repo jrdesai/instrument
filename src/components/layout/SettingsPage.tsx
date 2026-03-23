@@ -8,6 +8,7 @@ export function SettingsPage() {
 
   const clearRecents = useToolStore((s) => s.clearRecents);
   const clearFavourites = useToolStore((s) => s.clearFavourites);
+  const clearDraftInputs = useToolStore((s) => s.clearDraftInputs);
   const clearHistory = useHistoryStore((s) => s.clearHistory);
 
   return (
@@ -127,18 +128,40 @@ export function SettingsPage() {
                 </button>
               </div>
 
+              {/* Clear saved tool inputs */}
+              <div className="flex items-center justify-between px-4 py-3 bg-panel-light dark:bg-panel-dark">
+                <div>
+                  <p className="text-sm text-slate-700 dark:text-slate-300">Clear saved inputs</p>
+                  <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
+                    Removes last-typed drafts stored for each tool (not session history)
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={clearDraftInputs}
+                  className="shrink-0 ml-4 px-3 py-1.5 text-xs font-medium rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                >
+                  Clear
+                </button>
+              </div>
+
               {/* Clear All Data */}
               <div className="flex items-center justify-between px-4 py-3 bg-panel-light dark:bg-panel-dark">
                 <div>
                   <p className="text-sm font-medium text-slate-700 dark:text-slate-300">Clear all data</p>
                   <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
-                    Clears recents, favourites, and session history in one go
+                    Clears recents, favourites, session history, and saved tool inputs in one go
                   </p>
                 </div>
                 <ConfirmButton
                   label="Clear all"
                   confirmLabel="Yes, clear all"
-                  onConfirm={() => { clearRecents(); clearFavourites(); clearHistory(); }}
+                  onConfirm={() => {
+                    clearRecents();
+                    clearFavourites();
+                    clearHistory();
+                    clearDraftInputs();
+                  }}
                   className="px-3 py-1.5 text-xs font-medium rounded-md bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors"
                 />
               </div>

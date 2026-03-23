@@ -5,6 +5,7 @@ import React, {
   useState,
 } from "react";
 import { callTool } from "../../bridge";
+import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useHistoryStore } from "../../store";
 
 /** Matches Rust HtmlEntityInput (camelCase). */
@@ -28,7 +29,9 @@ const HISTORY_DEBOUNCE_MS = 1500;
 const COPIED_DURATION_MS = 1500;
 
 function HtmlEntityTool() {
+  const { setDraft } = useDraftInput(TOOL_ID);
   const [input, setInput] = useState("");
+  useRestoreStringDraft(TOOL_ID, setInput);
   const [output, setOutput] = useState("");
   const [mode, setMode] = useState<"encode" | "decode">("encode");
   const [encodeType, setEncodeType] = useState<"named" | "numeric">("named");
@@ -118,17 +121,19 @@ function HtmlEntityTool() {
     const newInput = output;
     const newMode = mode === "encode" ? "decode" : "encode";
     setInput(newInput);
+    setDraft(newInput);
     setOutput(input);
     setMode(newMode);
     runProcess(newInput, newMode, encodeType);
-  }, [input, output, mode, encodeType, runProcess]);
+  }, [input, output, mode, encodeType, runProcess, setDraft]);
 
   const handleClear = useCallback(() => {
     setInput("");
+    setDraft("");
     setOutput("");
     setError(null);
     setEntitiesFound(0);
-  }, []);
+  }, [setDraft]);
 
   const handleCopy = useCallback(async () => {
     if (!output) return;
@@ -195,7 +200,11 @@ function HtmlEntityTool() {
                 : "Enter HTML entities to decode…"
             }
             value={input}
-            onChange={(e) => setInput(e.target.value)}
+            onChange={(e) => {
+              const v = e.target.value;
+              setInput(v);
+              setDraft(v);
+            }}
             spellCheck={false}
           />
         </div>

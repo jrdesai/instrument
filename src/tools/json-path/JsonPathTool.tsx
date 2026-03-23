@@ -6,8 +6,10 @@ import {
 } from "react";
 import { callTool } from "../../bridge";
 import { CodeBlock } from "../../components/ui/CodeBlock";
+import { useDraftInput, useRestoreDraft } from "../../hooks/useDraftInput";
 
 const RUST_COMMAND = "tool_json_path";
+const TOOL_ID = "json-path";
 const DEBOUNCE_MS = 300;
 
 interface JsonPathInputPayload {
@@ -40,6 +42,14 @@ interface JsonPathOutputPayload {
   annotatedDocument?: string | null;
 }
 
+function isJsonPathDraft(
+  raw: unknown
+): raw is { input: string; path: string } {
+  if (typeof raw !== "object" || raw === null) return false;
+  const o = raw as Record<string, unknown>;
+  return typeof o.input === "string" && typeof o.path === "string";
+}
+
 function typeBadgeClasses(t: JsonValueType): string {
   switch (t) {
     case "string":
@@ -60,8 +70,15 @@ function typeBadgeClasses(t: JsonValueType): string {
 }
 
 function JsonPathTool() {
+  const { setDraft } = useDraftInput(TOOL_ID);
   const [query, setQuery] = useState("");
   const [jsonInput, setJsonInput] = useState("");
+
+  useRestoreDraft(TOOL_ID, (raw) => {
+    if (!isJsonPathDraft(raw)) return;
+    setJsonInput(raw.input);
+    setQuery(raw.path);
+  });
   const [output, setOutput] = useState<JsonPathOutputPayload | null>(null);
   const [fullDocOpen, setFullDocOpen] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -114,9 +131,10 @@ function JsonPathTool() {
   const handleClear = useCallback(() => {
     setQuery("");
     setJsonInput("");
+    setDraft({ input: "", path: "" });
     setOutput(null);
     setFullDocOpen(false);
-  }, []);
+  }, [setDraft]);
 
   const handleCopyAll = useCallback(async () => {
     if (!output || !output.matches || output.matchCount === 0) return;
@@ -174,7 +192,11 @@ function JsonPathTool() {
           className="flex-1 bg-transparent px-3 py-2 font-mono text-xs text-slate-800 dark:text-slate-200 placeholder:text-slate-500 focus:outline-none"
           placeholder=".store.book[*].title"
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          onChange={(e) => {
+            const v = e.target.value;
+            setQuery(v);
+            setDraft({ input: jsonInput, path: v });
+          }}
         />
         {hasMatches && (
           <div className="flex items-center px-3">
@@ -204,7 +226,11 @@ function JsonPathTool() {
             className="flex-1 w-full min-h-0 p-4 font-mono text-xs text-slate-700 dark:text-slate-300 bg-transparent resize-none border-none focus:outline-none leading-relaxed placeholder:text-slate-500"
             placeholder="Paste JSON document..."
             value={jsonInput}
-            onChange={(e) => setJsonInput(e.target.value)}
+            onChange={(e) => {
+              const v = e.target.value;
+              setJsonInput(v);
+              setDraft({ input: v, path: query });
+            }}
           />
         </div>
 

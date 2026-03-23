@@ -5,6 +5,7 @@ import React, {
   useState,
 } from "react";
 import { callTool } from "../../bridge";
+import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useHistoryStore } from "../../store";
 
 /** Matches Rust Base64Input (camelCase). Mode values match serde rename: encode/decode. */
@@ -29,7 +30,9 @@ const HISTORY_DEBOUNCE_MS = 1500;
 const COPIED_DURATION_MS = 1500;
 
 function Base64Tool() {
+  const { setDraft } = useDraftInput(TOOL_ID);
   const [input, setInput] = useState("");
+  useRestoreStringDraft(TOOL_ID, setInput);
   const [output, setOutput] = useState("");
   const [mode, setMode] = useState<"encode" | "decode">("encode");
   const [urlSafe, setUrlSafe] = useState(false);
@@ -111,16 +114,18 @@ function Base64Tool() {
     const newInput = output;
     const newMode = mode === "encode" ? "decode" : "encode";
     setInput(newInput);
+    setDraft(newInput);
     setOutput(input);
     setMode(newMode);
     runProcess(newInput, newMode, urlSafe);
-  }, [input, output, mode, urlSafe, runProcess]);
+  }, [input, output, mode, urlSafe, runProcess, setDraft]);
 
   const handleClear = useCallback(() => {
     setInput("");
+    setDraft("");
     setOutput("");
     setError(null);
-  }, []);
+  }, [setDraft]);
 
   const handleCopy = useCallback(async () => {
     if (!output) return;
@@ -178,7 +183,11 @@ function Base64Tool() {
             className="flex-1 w-full p-4 bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-mono text-sm resize-none outline-none focus:ring-0 border-0"
             placeholder={mode === "encode" ? "Enter text to encode…" : "Enter Base64 to decode…"}
             value={input}
-            onChange={(e) => setInput(e.target.value)}
+            onChange={(e) => {
+              const v = e.target.value;
+              setInput(v);
+              setDraft(v);
+            }}
             spellCheck={false}
           />
         </div>

@@ -56,11 +56,16 @@ interface ToolState {
   activeToolId: string | null;
   recentToolIds: string[];
   favouriteToolIds: string[];
+  /** Last-typed input per tool id (persisted). Do not use for sensitive tools. */
+  draftInputs: Record<string, unknown>;
   setActiveTool: (tool: Tool | null) => void;
   addToRecent: (tool: Tool) => void;
   toggleFavourite: (tool: Tool) => void;
   clearRecents: () => void;
   clearFavourites: () => void;
+  setDraftInput: (toolId: string, input: unknown) => void;
+  getDraftInput: (toolId: string) => unknown;
+  clearDraftInputs: () => void;
 }
 
 /**
@@ -69,10 +74,11 @@ interface ToolState {
  * never frozen by Immer, which would break lazy resolution.
  */
 const toolStoreImpl = persist(
-  immer<ToolState>((set) => ({
+  immer<ToolState>((set, get) => ({
     activeToolId: null,
     recentToolIds: [],
     favouriteToolIds: [],
+    draftInputs: {},
 
     setActiveTool: (tool) =>
       set((state) => {
@@ -103,6 +109,18 @@ const toolStoreImpl = persist(
     clearFavourites: () =>
       set((state) => {
         state.favouriteToolIds = [];
+      }),
+
+    setDraftInput: (toolId, input) =>
+      set((state) => {
+        state.draftInputs[toolId] = input;
+      }),
+
+    getDraftInput: (toolId) => get().draftInputs[toolId] ?? null,
+
+    clearDraftInputs: () =>
+      set((state) => {
+        state.draftInputs = {};
       }),
   })),
   { name: "instrument-tools" }

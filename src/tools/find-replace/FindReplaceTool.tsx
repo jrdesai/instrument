@@ -5,6 +5,7 @@ import {
   useState,
 } from "react";
 import { callTool } from "../../bridge";
+import { useDraftInput, useRestoreDraft } from "../../hooks/useDraftInput";
 import { useHistoryStore } from "../../store";
 
 /** Matches Rust FindReplaceInput (camelCase). */
@@ -32,6 +33,18 @@ const TOOL_ID = "find-replace";
 const DEBOUNCE_MS = 150;
 const HISTORY_DEBOUNCE_MS = 1500;
 const COPIED_DURATION_MS = 1500;
+
+function isFindReplaceDraft(
+  raw: unknown
+): raw is { text: string; find: string; replace: string } {
+  if (typeof raw !== "object" || raw === null) return false;
+  const o = raw as Record<string, unknown>;
+  return (
+    typeof o.text === "string" &&
+    typeof o.find === "string" &&
+    typeof o.replace === "string"
+  );
+}
 
 /** Convert byte ranges (from Rust) to character ranges for JS string.slice. */
 function byteRangesToCharRanges(
@@ -85,9 +98,17 @@ function buildHighlightedSegments(
 }
 
 function FindReplaceTool() {
+  const { setDraft } = useDraftInput(TOOL_ID);
   const [text, setText] = useState("");
   const [find, setFind] = useState("");
   const [replace, setReplace] = useState("");
+
+  useRestoreDraft(TOOL_ID, (raw) => {
+    if (!isFindReplaceDraft(raw)) return;
+    setText(raw.text);
+    setFind(raw.find);
+    setReplace(raw.replace);
+  });
   const [caseSensitive, setCaseSensitive] = useState(false);
   const [wholeWord, setWholeWord] = useState(false);
   const [regexMode, setRegexMode] = useState(false);
@@ -198,9 +219,10 @@ function FindReplaceTool() {
     setText("");
     setFind("");
     setReplace("");
+    setDraft({ text: "", find: "", replace: "" });
     setOutput(null);
     setMatchRanges([]);
-  }, []);
+  }, [setDraft]);
 
   const handleCopy = useCallback(async () => {
     const resultText = output?.result ?? "";
@@ -235,7 +257,11 @@ function FindReplaceTool() {
             className="w-full px-3 py-2 bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-mono text-sm outline-none focus:ring-1 focus:ring-primary border border-border-light dark:border-border-dark rounded-lg"
             placeholder="Find..."
             value={find}
-            onChange={(e) => setFind(e.target.value)}
+            onChange={(e) => {
+              const v = e.target.value;
+              setFind(v);
+              setDraft({ text, find: v, replace });
+            }}
             spellCheck={false}
           />
         </div>
@@ -249,7 +275,11 @@ function FindReplaceTool() {
             className="w-full px-3 py-2 bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-mono text-sm outline-none focus:ring-1 focus:ring-primary border border-border-light dark:border-border-dark rounded-lg"
             placeholder="Replace with..."
             value={replace}
-            onChange={(e) => setReplace(e.target.value)}
+            onChange={(e) => {
+              const v = e.target.value;
+              setReplace(v);
+              setDraft({ text, find, replace: v });
+            }}
             spellCheck={false}
           />
         </div>
@@ -286,7 +316,11 @@ function FindReplaceTool() {
             className="absolute inset-0 w-full h-full p-3 font-mono text-sm leading-relaxed whitespace-pre-wrap bg-transparent text-slate-700 dark:text-slate-300 resize-none focus:outline-none overflow-y-auto"
             placeholder="Paste text here..."
             value={text}
-            onChange={(e) => setText(e.target.value)}
+            onChange={(e) => {
+              const v = e.target.value;
+              setText(v);
+              setDraft({ text: v, find, replace });
+            }}
             onScroll={(e) => {
               if (highlightRef.current) {
                 highlightRef.current.scrollTop = (

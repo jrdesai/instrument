@@ -6,10 +6,12 @@ import {
 } from "react";
 import { callTool } from "../../bridge";
 import { CodeBlock } from "../../components/ui/CodeBlock";
+import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 
 type SqlIndentStyle = "spaces2" | "spaces4" | "tab";
 type SqlKeywordCase = "upper" | "lower" | "preserve";
 
+const TOOL_ID = "sql-formatter";
 const RUST_COMMAND = "tool_sql_format";
 const DEBOUNCE_MS = 300;
 const COPIED_DURATION_MS = 1500;
@@ -28,7 +30,9 @@ interface SqlFormatOutputPayload {
 }
 
 function SqlFormatterTool() {
+  const { setDraft } = useDraftInput(TOOL_ID);
   const [inputValue, setInputValue] = useState("");
+  useRestoreStringDraft(TOOL_ID, setInputValue);
   const [indent, setIndent] = useState<SqlIndentStyle>("spaces2");
   const [keywordCase, setKeywordCase] = useState<SqlKeywordCase>("upper");
   const [output, setOutput] = useState<SqlFormatOutputPayload | null>(null);
@@ -95,8 +99,9 @@ function SqlFormatterTool() {
 
   const handleClear = useCallback(() => {
     setInputValue("");
+    setDraft("");
     setOutput(null);
-  }, []);
+  }, [setDraft]);
 
   const handleFormatNow = useCallback(() => {
     if (debounceRef.current) {
@@ -128,7 +133,11 @@ function SqlFormatterTool() {
             className="flex-1 w-full min-h-0 p-4 font-mono text-xs text-slate-700 dark:text-slate-300 bg-transparent resize-none border-none focus:outline-none leading-relaxed placeholder:text-slate-500"
             placeholder={`SELECT *\nFROM users\nWHERE id = 1;`}
             value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
+            onChange={(e) => {
+              const v = e.target.value;
+              setInputValue(v);
+              setDraft(v);
+            }}
           />
         </div>
 

@@ -5,6 +5,7 @@ import {
   useState,
 } from "react";
 import { callTool } from "../../bridge";
+import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useHistoryStore } from "../../store";
 
 /** Rust NumberBase/BitWidth use serde rename_all = "camelCase" so values are lowercase. */
@@ -89,7 +90,9 @@ const BIT_WIDTH_OPTIONS: { id: BitWidthKey; label: string }[] = [
 ];
 
 function NumberBaseConverterTool() {
+  const { setDraft } = useDraftInput(TOOL_ID);
   const [value, setValue] = useState("");
+  useRestoreStringDraft(TOOL_ID, setValue);
   const [fromBase, setFromBase] = useState<NumberBaseKey>("decimal");
   const [bitWidth, setBitWidth] = useState<BitWidthKey>("auto");
   const [uppercaseHex, setUppercaseHex] = useState(false);
@@ -186,8 +189,9 @@ function NumberBaseConverterTool() {
 
   const handleClear = useCallback(() => {
     setValue("");
+    setDraft("");
     setOutput(null);
-  }, []);
+  }, [setDraft]);
 
   const handleCopyValue = useCallback(async (text: string) => {
     if (!text) return;
@@ -247,7 +251,11 @@ function NumberBaseConverterTool() {
             className="flex-1 min-w-0 px-3 py-2 bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-mono text-sm outline-none focus:ring-1 focus:ring-primary border border-border-light dark:border-border-dark rounded-lg"
             placeholder={PLACEHOLDERS[fromBase]}
             value={value}
-            onChange={(e) => setValue(e.target.value)}
+            onChange={(e) => {
+              const v = e.target.value;
+              setValue(v);
+              setDraft(v);
+            }}
           />
         </div>
         {hasError && (

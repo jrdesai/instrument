@@ -6,9 +6,11 @@ import {
 } from "react";
 import { callTool } from "../../bridge";
 import { CodeBlock } from "../../components/ui/CodeBlock";
+import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 
 type CsvOutputFormat = "arrayOfObjects" | "arrayOfArrays";
 
+const TOOL_ID = "csv-to-json";
 const RUST_COMMAND = "tool_csv_to_json";
 const DEBOUNCE_MS = 300;
 const COPIED_DURATION_MS = 1500;
@@ -28,9 +30,14 @@ interface CsvToJsonOutputPayload {
 }
 
 function CsvToJsonTool() {
+  const { setDraft } = useDraftInput(TOOL_ID);
   const [inputValue, setInputValue] = useState(
-    ["name,email,age", "Alice,alice@example.com,30", "Bob,bob@example.com,25"].join("\n")
+    () =>
+      ["name,email,age", "Alice,alice@example.com,30", "Bob,bob@example.com,25"].join(
+        "\n"
+      )
   );
+  useRestoreStringDraft(TOOL_ID, setInputValue);
   const [hasHeaders, setHasHeaders] = useState(true);
   const [delimiter, setDelimiter] = useState<"," | "\t" | "|" | ";">(",");
   const [outputFormat, setOutputFormat] = useState<CsvOutputFormat>("arrayOfObjects");
@@ -107,8 +114,9 @@ function CsvToJsonTool() {
 
   const handleClear = useCallback(() => {
     setInputValue("");
+    setDraft("");
     setOutput(null);
-  }, []);
+  }, [setDraft]);
 
   const handleConvertNow = useCallback(() => {
     if (debounceRef.current) {
@@ -142,7 +150,11 @@ function CsvToJsonTool() {
               "\n"
             )}
             value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
+            onChange={(e) => {
+              const v = e.target.value;
+              setInputValue(v);
+              setDraft(v);
+            }}
           />
         </div>
 

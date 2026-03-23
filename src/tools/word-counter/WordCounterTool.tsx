@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { callTool } from "../../bridge";
+import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useHistoryStore } from "../../store";
 
 /** Matches Rust WordCounterInput (camelCase). */
@@ -72,7 +73,9 @@ function StatCard({
 }
 
 function WordCounterTool() {
+  const { setDraft } = useDraftInput(TOOL_ID);
   const [input, setInput] = useState("");
+  useRestoreStringDraft(TOOL_ID, setInput);
   const [output, setOutput] = useState<WordCounterOutputPayload | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -153,9 +156,10 @@ function WordCounterTool() {
 
   const handleClear = useCallback(() => {
     setInput("");
+    setDraft("");
     setOutput(null);
     setError(null);
-  }, []);
+  }, [setDraft]);
 
   const hasOutput = output != null && !output.error;
 
@@ -184,7 +188,11 @@ function WordCounterTool() {
               className="w-full h-full min-h-[200px] p-3 bg-background-light dark:bg-background-dark text-slate-700 dark:text-slate-300 font-mono text-sm resize-none outline-none focus:ring-1 focus:ring-primary border border-border-light dark:border-border-dark rounded-lg"
               placeholder="Paste or type text to analyse..."
               value={input}
-              onChange={(e) => setInput(e.target.value)}
+              onChange={(e) => {
+                const v = e.target.value;
+                setInput(v);
+                setDraft(v);
+              }}
             />
           </div>
         </div>

@@ -6,6 +6,7 @@ import {
 } from "react";
 import { callTool } from "../../bridge";
 import { FormatHint } from "../../components/ui/FormatHint";
+import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useHistoryStore } from "../../store";
 
 /** Matches Rust TimestampInput (camelCase). */
@@ -59,7 +60,9 @@ type TimestampMode = "toHuman" | "toUnix" | "now";
 type TimestampUnit = "seconds" | "milliseconds";
 
 function TimestampConverterTool() {
+  const { setDraft } = useDraftInput(TOOL_ID);
   const [value, setValue] = useState("");
+  useRestoreStringDraft(TOOL_ID, setValue);
   const [mode, setMode] = useState<TimestampMode>("toHuman");
   const [unit, setUnit] = useState<TimestampUnit>("seconds");
   const [output, setOutput] = useState<TimestampOutputPayload | null>(null);
@@ -172,8 +175,9 @@ function TimestampConverterTool() {
 
   const handleClear = useCallback(() => {
     setValue("");
+    setDraft("");
     setOutput(null);
-  }, []);
+  }, [setDraft]);
 
   const handleCopyValue = useCallback(async (text: string) => {
     if (!text) return;
@@ -204,12 +208,16 @@ function TimestampConverterTool() {
 
   const fillNow = useCallback(() => {
     if (mode === "toHuman") {
-      setValue(String(Math.floor(Date.now() / 1000)));
+      const v = String(Math.floor(Date.now() / 1000));
+      setValue(v);
+      setDraft(v);
     } else if (mode === "toUnix") {
       const d = new Date();
-      setValue(d.toISOString().replace(/\.\d{3}Z$/, "Z"));
+      const v = d.toISOString().replace(/\.\d{3}Z$/, "Z");
+      setValue(v);
+      setDraft(v);
     }
-  }, [mode]);
+  }, [mode, setDraft]);
 
   const placeholders: Record<TimestampMode, string> = {
     toHuman: "Enter Unix timestamp (e.g. 1709558400)",
@@ -257,7 +265,11 @@ function TimestampConverterTool() {
                   className="flex-1 w-full min-w-0 px-3 py-2 bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-mono text-sm outline-none focus:ring-1 focus:ring-primary border border-border-light dark:border-border-dark rounded-lg"
                   placeholder={placeholders[mode]}
                   value={value}
-                  onChange={(e) => setValue(e.target.value)}
+                  onChange={(e) => {
+                    const v = e.target.value;
+                    setValue(v);
+                    setDraft(v);
+                  }}
                 />
                 <FormatHint
                   formats={[
@@ -272,6 +284,7 @@ function TimestampConverterTool() {
                   ]}
                   onSelect={(example) => {
                     setValue(example);
+                    setDraft(example);
                     runProcess(example, mode, unit);
                   }}
                 />

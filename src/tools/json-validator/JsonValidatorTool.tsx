@@ -5,6 +5,7 @@ import {
   useState,
 } from "react";
 import { callTool } from "../../bridge";
+import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useHistoryStore } from "../../store";
 import { CodeBlock } from "../../components/ui/CodeBlock";
 
@@ -59,7 +60,9 @@ function rootTypeLabel(t: string): string {
 }
 
 function JsonValidatorTool() {
+  const { setDraft } = useDraftInput(TOOL_ID);
   const [inputValue, setInputValue] = useState("");
+  useRestoreStringDraft(TOOL_ID, setInputValue);
   const [output, setOutput] = useState<JsonValidateOutputPayload | null>(null);
   const [showFormattedPreview, setShowFormattedPreview] = useState(false);
   const [showMistakes, setShowMistakes] = useState(false);
@@ -138,8 +141,9 @@ function JsonValidatorTool() {
 
   const handleClear = useCallback(() => {
     setInputValue("");
+    setDraft("");
     setOutput(null);
-  }, []);
+  }, [setDraft]);
 
   const isEmpty = inputValue.trim() === "";
   const isValid = output?.isValid === true;
@@ -164,7 +168,11 @@ function JsonValidatorTool() {
             className="flex-1 w-full min-h-0 p-4 font-mono text-xs text-slate-700 dark:text-slate-300 bg-transparent resize-none border-none focus:outline-none leading-relaxed placeholder:text-slate-500"
             placeholder="Paste JSON to validate..."
             value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
+            onChange={(e) => {
+              const v = e.target.value;
+              setInputValue(v);
+              setDraft(v);
+            }}
           />
         </div>
 

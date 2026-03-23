@@ -5,6 +5,7 @@ import {
   useState,
 } from "react";
 import { callTool } from "../../bridge";
+import { useDraftInput, useRestoreDraft } from "../../hooks/useDraftInput";
 import { useHistoryStore } from "../../store";
 
 type BitwiseBaseKey = "decimal" | "hexadecimal" | "binary" | "octal";
@@ -66,6 +67,14 @@ const TWO_OP_OPS: { key: keyof BitwiseOutputPayload; label: string }[] = [
   { key: "nor", label: "NOR" },
 ];
 
+function isBitwiseDraft(
+  raw: unknown
+): raw is { valueA: string; valueB: string } {
+  if (typeof raw !== "object" || raw === null) return false;
+  const o = raw as Record<string, unknown>;
+  return typeof o.valueA === "string" && typeof o.valueB === "string";
+}
+
 const BIT_WIDTH_OPTIONS: { id: BitwiseWidthKey; label: string; maxShift: number }[] = [
   { id: "bit8", label: "8", maxShift: 7 },
   { id: "bit16", label: "16", maxShift: 15 },
@@ -106,8 +115,15 @@ function ResultCard({
 }
 
 function BitwiseCalculatorTool() {
+  const { setDraft } = useDraftInput(TOOL_ID);
   const [valueA, setValueA] = useState("");
   const [valueB, setValueB] = useState("");
+
+  useRestoreDraft(TOOL_ID, (raw) => {
+    if (!isBitwiseDraft(raw)) return;
+    setValueA(raw.valueA);
+    setValueB(raw.valueB);
+  });
   const [fromBase, setFromBase] = useState<BitwiseBaseKey>("decimal");
   const [bitWidth, setBitWidth] = useState<BitwiseWidthKey>("bit8");
   const [shiftAmount, setShiftAmount] = useState(1);
@@ -207,8 +223,9 @@ function BitwiseCalculatorTool() {
   const handleClear = useCallback(() => {
     setValueA("");
     setValueB("");
+    setDraft({ valueA: "", valueB: "" });
     setOutput(null);
-  }, []);
+  }, [setDraft]);
 
   const hasError = Boolean(output?.error);
   const hasA = valueA.trim() !== "";
@@ -232,7 +249,11 @@ function BitwiseCalculatorTool() {
               className="w-full px-3 py-2 bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-mono text-sm outline-none focus:ring-1 focus:ring-primary border border-border-light dark:border-border-dark rounded-lg"
               placeholder="e.g. 60"
               value={valueA}
-              onChange={(e) => setValueA(e.target.value)}
+              onChange={(e) => {
+                const v = e.target.value;
+                setValueA(v);
+                setDraft({ valueA: v, valueB });
+              }}
             />
             {hasError && (
               <p className="text-red-600 dark:text-red-400 text-xs font-mono mt-1">{output?.error}</p>
@@ -248,7 +269,11 @@ function BitwiseCalculatorTool() {
               className="w-full px-3 py-2 bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-mono text-sm outline-none focus:ring-1 focus:ring-primary border border-border-light dark:border-border-dark rounded-lg"
               placeholder="e.g. 13"
               value={valueB}
-              onChange={(e) => setValueB(e.target.value)}
+              onChange={(e) => {
+                const v = e.target.value;
+                setValueB(v);
+                setDraft({ valueA, valueB: v });
+              }}
             />
             <p className="text-slate-500 text-xs mt-0.5">
               (optional — for two-operand ops)

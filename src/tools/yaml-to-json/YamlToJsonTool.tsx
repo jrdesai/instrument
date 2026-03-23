@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { CodeBlock } from "../../components/ui/CodeBlock";
 import { callTool } from "../../bridge";
+import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 
 type YamlToJsonInputPayload = {
   value: string;
@@ -20,10 +21,13 @@ type YamlToJsonOutputPayload = {
 
 type IndentOption = 2 | 4;
 
-const TOOL_ID = "tool_yaml_to_json";
+const RUST_COMMAND = "tool_yaml_to_json";
+const DRAFT_TOOL_ID = "yaml-to-json";
 
 const YamlToJsonTool: React.FC = () => {
+  const { setDraft } = useDraftInput(DRAFT_TOOL_ID);
   const [input, setInput] = useState("");
+  useRestoreStringDraft(DRAFT_TOOL_ID, setInput);
   const [indent, setIndent] = useState<IndentOption>(2);
   const [sortKeys, setSortKeys] = useState(false);
   const [output, setOutput] = useState<YamlToJsonOutputPayload | null>(null);
@@ -47,7 +51,7 @@ const YamlToJsonTool: React.FC = () => {
           sortKeys: nextSortKeys,
         };
         const result = (await callTool(
-          TOOL_ID,
+          RUST_COMMAND,
           payload
         )) as unknown as YamlToJsonOutputPayload;
         setOutput(result);
@@ -87,11 +91,14 @@ const YamlToJsonTool: React.FC = () => {
   }, [input, indent, sortKeys, debouncedProcess]);
 
   const handleChangeInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setInput(e.target.value);
+    const v = e.target.value;
+    setInput(v);
+    setDraft(v);
   };
 
   const handleClear = () => {
     setInput("");
+    setDraft("");
     setOutput(null);
   };
 

@@ -5,6 +5,7 @@ import React, {
   useState,
 } from "react";
 import { callTool } from "../../bridge";
+import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useHistoryStore } from "../../store";
 
 /** Matches Rust UrlEncodeInput (camelCase). */
@@ -27,7 +28,9 @@ const HISTORY_DEBOUNCE_MS = 1500;
 const COPIED_DURATION_MS = 1500;
 
 function UrlEncoderTool() {
+  const { setDraft } = useDraftInput(TOOL_ID);
   const [input, setInput] = useState("");
+  useRestoreStringDraft(TOOL_ID, setInput);
   const [output, setOutput] = useState("");
   const [mode, setMode] = useState<"encode" | "decode">("encode");
   const [encodeType, setEncodeType] = useState<"full" | "component">("component");
@@ -113,16 +116,18 @@ function UrlEncoderTool() {
     const newInput = output;
     const newMode = mode === "encode" ? "decode" : "encode";
     setInput(newInput);
+    setDraft(newInput);
     setOutput(input);
     setMode(newMode);
     runProcess(newInput, newMode, encodeType);
-  }, [input, output, mode, encodeType, runProcess]);
+  }, [input, output, mode, encodeType, runProcess, setDraft]);
 
   const handleClear = useCallback(() => {
     setInput("");
+    setDraft("");
     setOutput("");
     setError(null);
-  }, []);
+  }, [setDraft]);
 
   const handleCopy = useCallback(async () => {
     if (!output) return;
@@ -182,7 +187,11 @@ function UrlEncoderTool() {
                 : "Enter percent-encoded string to decode…"
             }
             value={input}
-            onChange={(e) => setInput(e.target.value)}
+            onChange={(e) => {
+              const v = e.target.value;
+              setInput(v);
+              setDraft(v);
+            }}
             spellCheck={false}
           />
         </div>

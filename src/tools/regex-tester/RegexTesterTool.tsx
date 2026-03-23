@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import { useDebouncedCallback } from "use-debounce";
+import { useDraftInput, useRestoreDraft } from "../../hooks/useDraftInput";
 import { useRegexWorker, MatchResult } from "../../hooks/useRegexWorker";
 import {
   explainPattern,
@@ -84,6 +85,16 @@ const ENGINE_DEFAULT_LANGUAGE: Record<string, Language> = {
   python: "python",
   pcre: "php",
 };
+
+const REGEX_TESTER_TOOL_ID = "regex-tester";
+
+function isRegexTesterDraft(
+  raw: unknown
+): raw is { pattern: string; testInput: string } {
+  if (typeof raw !== "object" || raw === null) return false;
+  const o = raw as Record<string, unknown>;
+  return typeof o.pattern === "string" && typeof o.testInput === "string";
+}
 
 const LANGUAGE_LABELS: Record<Language, string> = {
   javascript: "JavaScript",
@@ -479,6 +490,7 @@ const KIND_STYLES: Record<string, string> = {
 
 const RegexTesterTool: React.FC = () => {
   const { runRegex } = useRegexWorker();
+  const { setDraft } = useDraftInput(REGEX_TESTER_TOOL_ID);
 
   const patternInputRef = useRef<HTMLInputElement | null>(null);
   const languageManuallySet = useRef(false);
@@ -487,6 +499,12 @@ const RegexTesterTool: React.FC = () => {
   const [pattern, setPattern] = useState("");
   const [flags, setFlags] = useState("g");
   const [text, setText] = useState("");
+
+  useRestoreDraft(REGEX_TESTER_TOOL_ID, (raw) => {
+    if (!isRegexTesterDraft(raw)) return;
+    setPattern(raw.pattern);
+    setText(raw.testInput);
+  });
   const [engine, setEngine] = useState<EngineId>("javascript");
 
   const [matches, setMatches] = useState<MatchResult[]>([]);
@@ -570,6 +588,7 @@ const RegexTesterTool: React.FC = () => {
   ) => {
     const value = e.target.value;
     setPattern(value);
+    setDraft({ pattern: value, testInput: text });
     evaluate(value, text, engine);
   };
 
@@ -584,6 +603,7 @@ const RegexTesterTool: React.FC = () => {
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const value = e.target.value;
     setText(value);
+    setDraft({ pattern, testInput: value });
     evaluate(pattern, value, engine);
   };
 
@@ -599,18 +619,21 @@ const RegexTesterTool: React.FC = () => {
     setPattern("");
     setFlags("g");
     setText("");
+    setDraft({ pattern: "", testInput: "" });
     setReplacement("");
     setMatches([]);
     setError(null);
     setExecutionMs(null);
-  }, []);
+  }, [setDraft]);
 
   const insertToken = useCallback(
     (token: string) => {
       const input = patternInputRef.current;
       if (!input) {
-        setPattern((prev) => prev + token);
-        evaluate(pattern + token, text, engine);
+        const newPattern = pattern + token;
+        setPattern(newPattern);
+        setDraft({ pattern: newPattern, testInput: text });
+        evaluate(newPattern, text, engine);
         return;
       }
 
@@ -619,6 +642,7 @@ const RegexTesterTool: React.FC = () => {
       const newPattern = pattern.slice(0, start) + token + pattern.slice(end);
 
       setPattern(newPattern);
+      setDraft({ pattern: newPattern, testInput: text });
 
       requestAnimationFrame(() => {
         input.focus();
@@ -628,7 +652,7 @@ const RegexTesterTool: React.FC = () => {
 
       evaluate(newPattern, text, engine);
     },
-    [pattern, text, engine, evaluate]
+    [pattern, text, engine, evaluate, setDraft]
   );
 
   return (

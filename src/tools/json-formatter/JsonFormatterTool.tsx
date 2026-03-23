@@ -5,6 +5,7 @@ import {
   useState,
 } from "react";
 import { callTool } from "../../bridge";
+import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useHistoryStore } from "../../store";
 import { CodeBlock } from "../../components/ui/CodeBlock";
 
@@ -38,7 +39,9 @@ interface JsonFormatOutputPayload {
 }
 
 function JsonFormatterTool() {
+  const { setDraft } = useDraftInput(TOOL_ID);
   const [inputValue, setInputValue] = useState("");
+  useRestoreStringDraft(TOOL_ID, setInputValue);
   const [mode, setMode] = useState<JsonFormatMode>("pretty");
   const [indent, setIndent] = useState<IndentStyle>("spaces2");
   const [sortKeys, setSortKeys] = useState(false);
@@ -134,8 +137,9 @@ function JsonFormatterTool() {
 
   const handleClear = useCallback(() => {
     setInputValue("");
+    setDraft("");
     setOutput(null);
-  }, []);
+  }, [setDraft]);
 
   const isEmpty = inputValue.trim() === "";
   const showValidBadge = !isEmpty && output != null;
@@ -161,7 +165,11 @@ function JsonFormatterTool() {
             className="flex-1 w-full min-h-0 p-4 font-mono text-xs text-slate-700 dark:text-slate-300 bg-transparent resize-none border-none focus:outline-none leading-relaxed placeholder:text-slate-500"
             placeholder="Paste JSON here..."
             value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
+            onChange={(e) => {
+              const v = e.target.value;
+              setInputValue(v);
+              setDraft(v);
+            }}
           />
         </div>
 

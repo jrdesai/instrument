@@ -5,6 +5,7 @@ import {
   useState,
 } from "react";
 import { callTool } from "../../bridge";
+import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useHistoryStore } from "../../store";
 
 /** Matches Rust CaseInput (camelCase). */
@@ -54,7 +55,9 @@ const CASES: {
 ];
 
 function TextCaseConverterTool() {
+  const { setDraft } = useDraftInput(TOOL_ID);
   const [input, setInput] = useState("");
+  useRestoreStringDraft(TOOL_ID, setInput);
   const [output, setOutput] = useState<CaseOutputPayload | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -132,9 +135,10 @@ function TextCaseConverterTool() {
 
   const handleClear = useCallback(() => {
     setInput("");
+    setDraft("");
     setOutput(null);
     setError(null);
-  }, []);
+  }, [setDraft]);
 
   const handleCopyValue = useCallback(async (value: string) => {
     if (!value) return;
@@ -179,7 +183,11 @@ function TextCaseConverterTool() {
           className="w-full h-28 p-3 bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-mono text-sm resize-none outline-none focus:ring-1 focus:ring-primary border border-border-light dark:border-border-dark rounded-lg"
           placeholder="Enter text to convert..."
           value={input}
-          onChange={(e) => setInput(e.target.value)}
+          onChange={(e) => {
+            const v = e.target.value;
+            setInput(v);
+            setDraft(v);
+          }}
         />
       </div>
 
