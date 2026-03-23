@@ -1,6 +1,19 @@
 /* @ts-self-types="./instrument_web.d.ts" */
 
 /**
+ * AES-256-GCM encrypt/decrypt. Receives AesInput (camelCase) and returns AesOutput (camelCase).
+ * @param {any} js_input
+ * @returns {any}
+ */
+export function aes_process(js_input) {
+    const ret = wasm.aes_process(js_input);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
  * API key generation. Receives ApiKeyInput (camelCase) and returns ApiKeyOutput (camelCase).
  * @param {any} js_input
  * @returns {any}

@@ -1,6 +1,7 @@
 /* tslint:disable */
 /* eslint-disable */
 export const memory: WebAssembly.Memory;
+export const aes_process: (a: any) => [number, number, number];
 export const api_key_process: (a: any) => [number, number, number];
 export const base64_process: (a: any) => [number, number, number];
 export const base_converter_process: (a: any) => [number, number, number];

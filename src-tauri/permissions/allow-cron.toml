@@ -1,0 +1,5 @@
+# Allow the Cron Expression Parser tool command to be invoked from the frontend.
+[[permission]]
+identifier = "allow-cron"
+description = "Allows invoking the cron_process command."
+commands.allow = ["cron_process"]

@@ -16,6 +16,7 @@
     "allow-uuid",
     "allow-ulid",
     "allow-api-key",
+    "allow-aes",
     "allow-text-case",
     "allow-word-counter",
     "allow-string-escaper",
@@ -40,6 +41,7 @@
     "allow-sql-formatter",
     "allow-url-parser",
     "allow-csv-to-json",
+    "allow-cron",
     "allow-expression-eval",
     "allow-nanoid"
   ]

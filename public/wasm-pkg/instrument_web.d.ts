@@ -2,6 +2,11 @@
 /* eslint-disable */
 
 /**
+ * AES-256-GCM encrypt/decrypt. Receives AesInput (camelCase) and returns AesOutput (camelCase).
+ */
+export function aes_process(js_input: any): any;
+
+/**
  * API key generation. Receives ApiKeyInput (camelCase) and returns ApiKeyOutput (camelCase).
  */
 export function api_key_process(js_input: any): any;
@@ -200,6 +205,7 @@ export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembl
 
 export interface InitOutput {
     readonly memory: WebAssembly.Memory;
+    readonly aes_process: (a: any) => [number, number, number];
     readonly api_key_process: (a: any) => [number, number, number];
     readonly base64_process: (a: any) => [number, number, number];
     readonly base_converter_process: (a: any) => [number, number, number];

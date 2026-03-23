@@ -1,4 +1,4 @@
-//! Tauri commands for crypto tools (MD5, SHA-256, SHA-512, UUID, ULID, API keys, etc.).
+//! Tauri commands for crypto tools (MD5, SHA-256, SHA-512, AES-GCM, UUID, ULID, API keys, etc.).
 
 use std::time::Instant;
 
@@ -17,6 +17,7 @@ use instrument_core::crypto::ulid::{
     inspect as ulid_inspect_core, process as ulid_process_core,
     UlidInspectInput, UlidInspectOutput, UlidInput, UlidOutput,
 };
+use instrument_core::crypto::aes::{process as aes_process_core, AesInput, AesOutput};
 use instrument_core::crypto::api_key::{process as api_key_process_core, ApiKeyInput, ApiKeyOutput};
 use instrument_core::crypto::nanoid::{
     process as nanoid_process_core, NanoIdInput, NanoIdOutput,
@@ -102,5 +103,14 @@ pub fn nanoid_process(input: NanoIdInput) -> NanoIdOutput {
     let start = Instant::now();
     let output = nanoid_process_core(input);
     finish_ok("nanoid_process", start);
+    output
+}
+
+/// Runs AES-256-GCM encrypt/decrypt via instrument-core.
+#[tauri::command]
+pub fn aes_process(input: AesInput) -> AesOutput {
+    let start = Instant::now();
+    let output = aes_process_core(input);
+    finish_ok("aes_process", start);
     output
 }

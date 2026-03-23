@@ -336,6 +336,35 @@ export const tools: Tool[] = [
     sensitive: true,
   },
   {
+    id: "aes-encrypt-decrypt",
+    name: "AES Encrypt / Decrypt",
+    description:
+      "Encrypt and decrypt text using AES-256-GCM with a passphrase.",
+    category: "crypto",
+    displayCategory: "Security",
+    displayCategoryIcon: "security",
+    roles: ["backend", "security", "general"],
+    icon: "lock",
+    platforms: ["desktop", "web"],
+    rustCommand: "aes_process",
+    sensitive: true,
+    keywords: [
+      "aes",
+      "encrypt",
+      "decrypt",
+      "gcm",
+      "symmetric",
+      "cipher",
+      "secret",
+    ],
+    component: React.lazy(() =>
+      import("../tools/aes-encrypt-decrypt/AesEncryptDecryptTool").then((m) => ({
+        default: m.default,
+      }))
+    ),
+    implemented: true,
+  },
+  {
     id: "json-formatter",
     name: "JSON Formatter",
     description: "Format and minify JSON.",

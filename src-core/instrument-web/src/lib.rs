@@ -37,6 +37,7 @@ use instrument_core::crypto::api_key::{
 use instrument_core::crypto::nanoid::{
     process as nanoid_process_core, NanoIdInput, NanoIdOutput,
 };
+use instrument_core::crypto::aes::{process as aes_process_core, AesInput, AesOutput};
 use instrument_core::auth::jwt_decoder::{
     process as jwt_decode_process_core, JwtDecodeInput, JwtDecodeOutput,
 };
@@ -265,6 +266,15 @@ pub fn nanoid_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
     let input: NanoIdInput =
         from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
     let output: NanoIdOutput = nanoid_process_core(input);
+    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
+}
+
+/// AES-256-GCM encrypt/decrypt. Receives AesInput (camelCase) and returns AesOutput (camelCase).
+#[wasm_bindgen(js_name = aes_process)]
+pub fn aes_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
+    let input: AesInput =
+        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let output: AesOutput = aes_process_core(input);
     to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
 }
 

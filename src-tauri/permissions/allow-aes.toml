@@ -1,0 +1,5 @@
+# Allow the AES Encrypt / Decrypt tool command to be invoked from the frontend.
+[[permission]]
+identifier = "allow-aes"
+description = "Allows invoking the aes_process command."
+commands.allow = ["aes_process"]

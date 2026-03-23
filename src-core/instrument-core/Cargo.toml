@@ -19,6 +19,9 @@ serde = { workspace = true }
 thiserror = { workspace = true }
 base64 = { workspace = true }
 sha2 = { workspace = true }
+aes-gcm = "0.10"
+pbkdf2 = { version = "0.12", features = ["simple"] }
+hex = "0.4"
 hmac = { workspace = true }
 md-5 = { workspace = true }
 uuid = { workspace = true }
