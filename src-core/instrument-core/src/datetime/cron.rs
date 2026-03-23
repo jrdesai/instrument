@@ -290,6 +290,15 @@ fn describe(expr: &str) -> String {
             }
         }
 
+        // Every minute during a specific hour: * H * * *
+        ["*", hour, "*", "*", "*"] if !hour.starts_with('*') => {
+            if let Ok(h) = hour.parse::<u32>() {
+                format!("Every minute during hour {h} ({h}:00–{h}:59 UTC)")
+            } else {
+                format!("Scheduled: {expr}")
+            }
+        }
+
         _ => format!("Scheduled: {expr}"),
     }
 }
