@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: "Material Symbols Outlined";
+  font-style: normal;
+  font-weight: 100 700;
+  font-display: block;
+  src: url("/fonts/material-symbols-outlined.woff2") format("woff2");
+}
+
 /* Class-based dark mode: add .dark to html to enable dark: variants */
 @custom-variant dark (&:where(.dark, .dark *));
 
@@ -24,24 +32,24 @@
 /* Usage in components is identical to v3: bg-primary, text-primary,
    font-mono, rounded-lg etc. Only the config location changed. */
 
-/* Material Symbols Outlined: render icon names (e.g. "binary") as icon glyphs.
-   Ligatures map text like "binary" to the icon glyph; without 'liga' the word shows as text. */
+/* Material Symbols Outlined: self-hosted variable font; ligatures map names like "home" to glyphs. */
 span.material-symbols-outlined,
 .material-symbols-outlined {
-  font-family: 'Material Symbols Outlined' !important;
+  font-family: "Material Symbols Outlined", sans-serif;
   font-weight: normal;
   font-style: normal;
   font-size: 24px;
-  display: inline-block;
   line-height: 1;
-  text-transform: none;
   letter-spacing: normal;
-  word-wrap: normal;
+  text-transform: none;
+  display: inline-block;
   white-space: nowrap;
+  word-wrap: normal;
   direction: ltr;
-  -webkit-font-feature-settings: 'liga';
-  font-feature-settings: 'liga';
   -webkit-font-smoothing: antialiased;
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+  -webkit-font-feature-settings: "liga";
+  font-feature-settings: "liga";
 }
 
 .custom-scrollbar::-webkit-scrollbar {

@@ -12,7 +12,7 @@
   "app": {
     "windows": [{ "title": "Instrument", "width": 800, "height": 600 }],
     "security": {
-      "csp": "default-src 'self' tauri: asset: https://asset.localhost; script-src 'self' tauri: asset: https://asset.localhost 'unsafe-inline'; style-src 'self' tauri: asset: https://asset.localhost 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'none'; img-src 'self' tauri: asset: https://asset.localhost data:; object-src 'none'"
+      "csp": "default-src 'self' tauri: asset: https://asset.localhost; script-src 'self' tauri: asset: https://asset.localhost 'unsafe-inline'; style-src 'self' tauri: asset: https://asset.localhost 'unsafe-inline'; font-src 'self' asset: https://asset.localhost; connect-src 'none'; img-src 'self' tauri: asset: https://asset.localhost data:; object-src 'none'"
     }
   },
   "bundle": {
