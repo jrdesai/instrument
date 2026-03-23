@@ -202,3 +202,119 @@ Build in this order to reuse patterns and minimise rework:
 - **Phase 6** focuses on quality, packaging, and launch.
 
 Build tools in the order of the table in §2 to reuse patterns and contain risk. Track the risk areas in §3 in backlog or ADRs, and use the complexity ratings in §4 for scheduling and testing focus.
+
+---
+
+## 5. Current status (as of v0.4.0)
+
+Phases 1–5 are complete. All 38 tools are implemented, tested, and available on both
+desktop and web. The web version is deployed to Cloudflare Pages.
+
+Active work is in Phase 6 (polish and launch).
+
+---
+
+## 6. Deferred technical improvements
+
+These are known improvements that are not urgent but should be revisited as the tool
+count grows. Each entry describes the problem, the solution, and the trigger condition
+(when it becomes worth doing).
+
+---
+
+### 6.1 Auto-generated TypeScript types from Rust (ts-rs)
+
+**Problem:** TypeScript input/output interfaces are written by hand to match Rust structs.
+If a Rust field changes type or is renamed, the TypeScript side drifts silently — the
+mismatch is only caught at runtime, not at compile time.
+
+**Solution:** Add `ts-rs` to `instrument-core`. Derive `TS` on all public Input/Output
+structs. A build step generates TypeScript interfaces into `src/bindings/` automatically.
+`pnpm run typecheck` then catches Rust/TypeScript drift at compile time.
+
+**Effort:** ~1–1.5 days
+**Risk:** Low — ts-rs is stable and doesn't touch runtime code
+**Trigger:** When a type drift bug is caught in production, or when adding 10+ new tools
+**Reference:** https://github.com/Aleph-Alpha/ts-rs
+
+---
+
+### 6.2 Auto-generated Tauri command bindings (tauri-specta)
+
+**Problem:** Every new tool requires manually writing the same boilerplate in three places:
+1. `#[tauri::command]` wrapper in `instrument-desktop/src/commands/`
+2. `#[wasm_bindgen]` export in `instrument-web/src/lib.rs`
+3. Entry in `src-tauri/src/lib.rs` `generate_handler![]`
+
+At 38 commands this is manageable. At 100+ it becomes a maintenance burden and a common
+source of mistakes (forgetting to register a command, mismatched function names).
+
+**Solution:** Adopt `tauri-specta` to generate Tauri command registration and TypeScript
+client code from annotated Rust functions. Combined with ts-rs (§6.1), this eliminates
+both the binding boilerplate and the manual TypeScript types in one pass.
+
+Note: WASM bindings (`instrument-web`) are not covered by tauri-specta and would still
+need manual maintenance or a separate macro-based solution.
+
+**Effort:** ~2–3 days
+**Risk:** Medium — requires adapting the bridge to use specta's generated client
+**Trigger:** When adding a large batch of new tools (10+) or when binding drift causes a bug
+**Reference:** https://github.com/oscartbeaumont/tauri-specta
+
+---
+
+### 6.3 Self-hosted Material Symbols font
+
+**Problem:** The app loads the Material Symbols icon font from `fonts.googleapis.com`.
+This is the only remaining external network dependency on the web version, which otherwise
+runs fully offline. It also adds a render-blocking request on first load.
+
+**Solution:** Download the font files and serve them from `public/fonts/`. Update
+`src/App.css` to load from the local path instead of Google Fonts.
+
+**Effort:** ~2–3 hours
+**Risk:** Very low
+**Trigger:** Any time — this is a straightforward improvement
+
+---
+
+### 6.4 Vite vendor chunk splitting
+
+**Problem:** The Vite build produces a single large JS bundle that includes React, React
+Router, Zustand, and all tool components together. First load on web downloads everything
+even if the user only uses one tool.
+
+**Solution:** Add `manualChunks` to `vite.config.ts` to split vendor libraries (react,
+react-router, zustand) from tool code. Tools are already lazy-loaded via `React.lazy()` —
+this ensures the vendor chunk is cached separately across deployments.
+
+**Effort:** ~1–2 hours
+**Risk:** Low
+**Trigger:** When Lighthouse performance score for the web version becomes a priority
+
+---
+
+### 6.5 Mobile layout for web version
+
+**Problem:** The current layout (fixed sidebar + content area) does not adapt to mobile
+screen sizes. The web version is effectively desktop-only despite being accessible on mobile.
+
+**Solution:** Add responsive breakpoints — collapse sidebar to a bottom nav or hamburger
+menu on small screens, stack tool inputs vertically, adjust font sizes.
+
+**Effort:** ~2–3 days
+**Risk:** Low (UI only, no Rust changes)
+**Trigger:** When mobile usage of the web version becomes significant
+
+---
+
+### 6.6 CI cargo clippy gate
+
+**Problem:** CI runs `cargo test` but not `cargo clippy`. Clippy catches a broader class
+of Rust issues (unused imports, non-idiomatic code, potential bugs) that tests don't cover.
+
+**Solution:** Add `cargo clippy -- -D warnings` as a CI job step.
+
+**Effort:** ~30 minutes + time to fix existing clippy warnings
+**Risk:** Very low
+**Trigger:** Any time — quick win

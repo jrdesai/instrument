@@ -8,6 +8,10 @@ Current version: **0.4.0**
 Web: https://instrument-wqt.pages.dev
 Stack: Tauri 2 · React 18 · TypeScript · Vite · Zustand · Rust (Cargo workspace) · wasm-pack
 
+**Backlog and future improvements:** see `docs/DEVELOPMENT_PLAN.md` §6 — covers deferred
+technical improvements (ts-rs, tauri-specta, self-hosted fonts, mobile layout, CI clippy)
+with effort estimates and trigger conditions for when each becomes worth doing.
+
 ---
 
 ## Project structure
