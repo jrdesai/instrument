@@ -8,15 +8,17 @@ alwaysApply: false
 
 - Read docs/design/DESIGN_REFERENCE.md before writing any React component
 - Open docs/design/prototype-v4.html to see the target visual output
-- Use only Tailwind colour tokens from src/index.css @theme — no hardcoded hex
+- Use only Tailwind colour tokens from src/App.css @theme — no hardcoded hex values
 - Dark mode surface hierarchy:
     bg-background-dark (#1B1D21) — page background
     bg-panel-dark      (#23262B) — panel/card surface
     border-border-dark (#2D3139) — all borders
-- Active state: bg-primary/10 text-primary (tinted, not solid)
+- Active state: bg-primary/10 text-primary (tinted, not solid fill)
 - Primary buttons only: bg-primary text-white
-- font-display for UI text, font-mono for all code content
-- All icons use Material Symbols Outlined
-- Category icons defined in src/constants/library.ts categoryIcons
-- Import sidebarMapping, gridRoleMapping, categorySubtitles from
-  src/constants/library.ts — never redefine them in a component
+- font-display for UI text, font-mono for all code/monospace content
+- All icons use Material Symbols Outlined (icon name as text content in <span>)
+
+## Constants from src/constants/library.ts
+Only `categorySubtitles` is exported from this file. Import it when needed.
+Category icons and display categories are derived from the registry via
+`getDisplayCategories()` — do not hardcode them in components.

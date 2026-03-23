@@ -14,16 +14,33 @@ alwaysApply: false
 
 # Code Style — Rust
 
-- All public functions must have doc comments (///) with an example
-- Use thiserror for error types — never panic in library code
-- Return Result<T, E> for all fallible operations
+- All public functions must have doc comments (///)
+- Use thiserror for error types — never panic! in library code
 - Derive Debug, Clone, Serialize, Deserialize on all public structs
+
+## Return type convention for instrument-core
+Most tool functions return a plain Output struct (NOT Result) with an embedded
+`error: Option<String>` field. This lets the frontend always receive a structured
+response and handle errors in the UI.
+
+```rust
+// ✅ Standard pattern — infallible at the type level, error embedded in output
+pub fn process(input: Base64Input) -> Base64Output {
+    Base64Output { value: ..., error: None }
+}
+
+// ✅ Acceptable — when the operation is genuinely fallible at the command level
+pub fn process(input: JsonFormatInput) -> Result<JsonFormatOutput, String> { ... }
+```
+
+Always follow the pattern of the nearest similar existing tool.
+Do not introduce `Result` where the existing pattern uses `Output { error: Option<String> }`.
 
 # Serialisation
 
 - Use serde for all Rust/TypeScript data exchange
 - All Tauri commands receive and return named structs — not primitives
-- Use serde rename_all = "camelCase" for JSON field names
+- Use `#[serde(rename_all = "camelCase")]` on all structs exchanged with the frontend
 
 # When generating code
 
