@@ -16,6 +16,14 @@ vi.mock("../../bridge/index.ts", () => ({
 vi.mock("../../store/index.ts", () => ({
   useHistoryStore: (selector: (s: { addHistoryEntry: () => void }) => unknown) =>
     selector({ addHistoryEntry: mockAddHistoryEntry }),
+  useToolStore: Object.assign(
+    (selector: (s: { setDraftInput: () => void; draftInputs: Record<string, unknown> }) => unknown) =>
+      selector({ setDraftInput: () => {}, draftInputs: {} }),
+    {
+      getState: () => ({ draftInputs: {} }),
+      persist: { hasHydrated: () => true, onFinishHydration: () => () => {} },
+    }
+  ),
 }));
 
 const waitForProcess = () =>
