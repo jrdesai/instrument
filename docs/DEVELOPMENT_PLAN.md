@@ -245,9 +245,10 @@ Every `#[tauri::command]` in `instrument-desktop` also has `#[specta::specta]`.
 On debug builds (`#[cfg(debug_assertions)]`), bindings are exported to
 `src/bindings/tauri.ts` (gitignored) when `pnpm tauri dev` starts.
 
-**Follow-up:** `src/bridge/desktop.ts` still uses generic `invoke()` — wire it to
-import from the generated `src/bindings/tauri.ts` for fully type-safe desktop calls
-(prompt: `temp/polish-bridge-wiring.md`; requires `pnpm tauri dev` to generate the file first).
+`src/bridge/desktop.ts` now dispatches through the tauri-specta generated
+`commands` object (`src/bindings/tauri.ts`) instead of raw `invoke()`. The file is
+only emitted on debug builds so a `// @ts-ignore TS2307` keeps `tsc` green on clean
+checkouts. `desktopPayloadKey` in the registry is retained for a future cleanup pass.
 WASM bindings (`instrument-web`) remain manual.
 
 ---

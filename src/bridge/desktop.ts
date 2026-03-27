@@ -1,23 +1,39 @@
 /**
  * Desktop (Tauri) implementation of the platform bridge.
- * Uses @tauri-apps/api/core for invoke — no React component should import this directly;
- * use callTool() from the bridge index instead.
+ * Dispatches through tauri-specta-generated `commands` — no React component should import
+ * this file directly; use callTool() from the bridge index instead.
  */
 
-import { getToolByRustCommand } from "../registry";
+/**
+ * Snake_case Tauri command name → camelCase key on `commands` (tauri-specta convention).
+ */
+function rustCommandToCommandsKey(rustCommand: string): string {
+  return rustCommand.replace(/_([a-z])/g, (_, c: string) => c.toUpperCase());
+}
 
 /**
- * Invokes a Tauri command by name with the given input payload.
- * @param toolId - Tauri command name (e.g. from registry rustCommand)
- * @param input - Serializable input object (passed as `{ input }` or `{ req }` to the command)
+ * Invokes a Tauri command by Rust name with the given input (Specta-shaped struct).
+ * @param toolId - Tauri command name (e.g. registry `rustCommand`)
+ * @param input - Serializable input object for the command
  */
 export async function callToolDesktop(
   toolId: string,
   input: unknown
 ): Promise<unknown> {
-  const { invoke } = await import("@tauri-apps/api/core");
-  const tool = getToolByRustCommand(toolId);
-  const payloadKey = tool?.desktopPayloadKey ?? "input";
-  const payload = { [payloadKey]: input };
-  return invoke(toolId, payload);
+  // Module is emitted by tauri-specta when running the desktop shell (`pnpm tauri dev`); see temp/polish-bridge-wiring.md.
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment -- optional file: present only after a debug desktop run
+  // @ts-ignore TS2307
+  const { commands } = (await import("../bindings/tauri")) as {
+    commands: Record<string, (input: unknown) => Promise<unknown>>;
+  };
+
+  const fnName = rustCommandToCommandsKey(toolId);
+  const fn = commands[fnName];
+  if (!fn) {
+    throw new Error(
+      `[bridge] no generated command for "${toolId}" (looked up as "${fnName}")`
+    );
+  }
+
+  return fn(input);
 }
