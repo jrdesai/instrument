@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { HexColorPicker } from "react-colorful";
 import { callTool } from "../../bridge";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useHistoryStore } from "../../store";
@@ -37,9 +38,26 @@ function ColorConverterTool() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [pickerOpen, setPickerOpen] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pickerContainerRef = useRef<HTMLDivElement>(null);
   const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
+
+  // Close picker on outside click
+  useEffect(() => {
+    if (!pickerOpen) return;
+    const handlePointerDown = (e: MouseEvent) => {
+      if (
+        pickerContainerRef.current &&
+        !pickerContainerRef.current.contains(e.target as Node)
+      ) {
+        setPickerOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handlePointerDown);
+    return () => document.removeEventListener("mousedown", handlePointerDown);
+  }, [pickerOpen]);
 
   const runProcess = useCallback(
     async (value: string) => {
@@ -75,11 +93,7 @@ function ColorConverterTool() {
         }
       } catch (e) {
         const message =
-          e instanceof Error
-            ? e.message
-            : typeof e === "string"
-              ? e
-              : "Failed to run tool";
+          e instanceof Error ? e.message : typeof e === "string" ? e : "Failed to run tool";
         setError(message);
         setOutput(null);
       } finally {
@@ -114,10 +128,10 @@ function ColorConverterTool() {
     [setDraft]
   );
 
+  // react-colorful fires with #rrggbb
   const handlePickerChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      // Native picker always returns 6-char hex
-      handleInputChange(e.target.value);
+    (hex: string) => {
+      handleInputChange(hex);
     },
     [handleInputChange]
   );
@@ -127,6 +141,7 @@ function ColorConverterTool() {
     setDraft("");
     setOutput(null);
     setError(null);
+    setPickerOpen(false);
   }, [setDraft]);
 
   const handleCopy = useCallback(async (value: string, id: string) => {
@@ -140,24 +155,24 @@ function ColorConverterTool() {
     }
   }, []);
 
-  // Derive picker-compatible hex (always #rrggbb)
   const pickerHex = output?.hex ?? "#000000";
-  const swatchColor = output?.hex ? output.hex : null;
+  const swatchColor = output?.hex ?? null;
 
   return (
     <div className="flex flex-col h-full bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
       {/* Input row */}
       <div className="flex items-center gap-3 px-4 py-3 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark">
-        {/* Colour swatch — the <input type="color"> is overlaid transparently so
-            the picker opens anchored to the swatch, not at a random screen corner. */}
-        <div className="relative shrink-0 w-12 h-10">
-          {/* Visual swatch */}
-          <div
-            className="w-full h-full rounded-lg border-2 border-border-light dark:border-border-dark overflow-hidden"
+
+        {/* Swatch button + popover picker */}
+        <div ref={pickerContainerRef} className="relative shrink-0">
+          <button
+            type="button"
+            aria-label="Open colour picker"
+            onClick={() => setPickerOpen((o) => !o)}
+            className="w-12 h-10 rounded-lg border-2 border-border-light dark:border-border-dark hover:border-primary/60 transition-colors overflow-hidden"
             style={swatchColor ? { backgroundColor: swatchColor } : undefined}
           >
             {!swatchColor && (
-              /* Hue strip — universally recognised as a colour picker affordance */
               <div
                 className="w-full h-full"
                 style={{
@@ -166,16 +181,14 @@ function ColorConverterTool() {
                 }}
               />
             )}
-          </div>
-          {/* Transparent colour input — overlaid so picker opens near the swatch */}
-          <input
-            type="color"
-            aria-label="Open colour picker"
-            value={pickerHex}
-            onChange={handlePickerChange}
-            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer rounded-lg"
-            title="Pick a colour"
-          />
+          </button>
+
+          {/* react-colorful popover */}
+          {pickerOpen && (
+            <div className="absolute left-0 top-12 z-50 p-3 rounded-xl border border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shadow-xl">
+              <HexColorPicker color={pickerHex} onChange={handlePickerChange} />
+            </div>
+          )}
         </div>
 
         {/* Text input */}
@@ -207,7 +220,6 @@ function ColorConverterTool() {
           <p className="text-red-600 dark:text-red-400 text-sm font-mono">{error}</p>
         ) : output ? (
           <div className="flex flex-col gap-2">
-            {/* Format rows */}
             {FORMATS.map(({ id, label }) => {
               const value = output[id];
               const isCopied = copiedId === id;

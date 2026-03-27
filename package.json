@@ -4,7 +4,9 @@
   "version": "0.4.0",
   "type": "module",
   "pnpm": {
-    "onlyBuiltDependencies": ["esbuild"]
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
   },
   "scripts": {
     "dev": "tauri dev",
@@ -31,6 +33,7 @@
     "prettier": "^3.4.2",
     "prismjs": "^1.29.0",
     "react": "^19.1.0",
+    "react-colorful": "^5.6.1",
     "react-dom": "^19.1.0",
     "react-router-dom": "^7.13.1",
     "tailwind-merge": "^3.5.0",
