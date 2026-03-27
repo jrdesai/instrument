@@ -43,23 +43,7 @@ function ColorConverterTool() {
   const [pickerColor, setPickerColor] = useState("#000000");
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const pickerContainerRef = useRef<HTMLDivElement>(null);
   const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
-
-  // Close picker on outside click
-  useEffect(() => {
-    if (!pickerOpen) return;
-    const handlePointerDown = (e: MouseEvent) => {
-      if (
-        pickerContainerRef.current &&
-        !pickerContainerRef.current.contains(e.target as Node)
-      ) {
-        setPickerOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handlePointerDown);
-    return () => document.removeEventListener("mousedown", handlePointerDown);
-  }, [pickerOpen]);
 
   const runProcess = useCallback(
     async (value: string) => {
@@ -167,36 +151,27 @@ function ColorConverterTool() {
       {/* Input row */}
       <div className="flex items-center gap-3 px-4 py-3 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark">
 
-        {/* Swatch button + popover picker */}
-        <div ref={pickerContainerRef} className="relative shrink-0">
-          <button
-            type="button"
-            aria-label="Open colour picker"
-            onClick={() => {
-              if (!pickerOpen && output?.hex) setPickerColor(output.hex);
-              setPickerOpen((o) => !o);
-            }}
-            className="w-12 h-10 rounded-lg border-2 border-border-light dark:border-border-dark hover:border-primary/60 transition-colors overflow-hidden"
-            style={swatchColor ? { backgroundColor: swatchColor } : undefined}
-          >
-            {!swatchColor && (
-              <div
-                className="w-full h-full"
-                style={{
-                  background:
-                    "linear-gradient(to right, hsl(0,100%,50%), hsl(60,100%,50%), hsl(120,100%,50%), hsl(180,100%,50%), hsl(240,100%,50%), hsl(300,100%,50%), hsl(360,100%,50%))",
-                }}
-              />
-            )}
-          </button>
-
-          {/* react-colorful popover */}
-          {pickerOpen && (
-            <div className="absolute left-0 top-12 z-50 p-3 rounded-xl border border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shadow-xl">
-              <HexColorPicker color={pickerHex} onChange={handlePickerChange} />
-            </div>
+        {/* Swatch toggle button */}
+        <button
+          type="button"
+          aria-label="Toggle colour picker"
+          onClick={() => {
+            if (!pickerOpen && output?.hex) setPickerColor(output.hex);
+            setPickerOpen((o) => !o);
+          }}
+          className="shrink-0 w-12 h-10 rounded-lg border-2 border-border-light dark:border-border-dark hover:border-primary/60 transition-colors overflow-hidden"
+          style={swatchColor ? { backgroundColor: swatchColor } : undefined}
+        >
+          {!swatchColor && (
+            <div
+              className="w-full h-full"
+              style={{
+                background:
+                  "linear-gradient(to right, hsl(0,100%,50%), hsl(60,100%,50%), hsl(120,100%,50%), hsl(180,100%,50%), hsl(240,100%,50%), hsl(300,100%,50%), hsl(360,100%,50%))",
+              }}
+            />
           )}
-        </div>
+        </button>
 
         {/* Text input */}
         <input
@@ -220,6 +195,13 @@ function ColorConverterTool() {
           Clear
         </button>
       </div>
+
+      {/* Inline colour picker — shown below the input bar, above the output rows */}
+      {pickerOpen && (
+        <div className="flex justify-start px-4 pt-4 pb-2 border-b border-border-light dark:border-border-dark">
+          <HexColorPicker color={pickerHex} onChange={handlePickerChange} />
+        </div>
+      )}
 
       {/* Output */}
       <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar p-4">
