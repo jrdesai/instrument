@@ -72,3 +72,9 @@ span.material-symbols-outlined,
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .bottom-nav {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}

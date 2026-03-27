@@ -278,17 +278,12 @@ Tool code remains lazy-loaded via `React.lazy()`.
 
 ---
 
-### 6.5 Mobile layout for web version
+### 6.5 Mobile layout for web version ✅ Done
 
-**Problem:** The current layout (fixed sidebar + content area) does not adapt to mobile
-screen sizes. The web version is effectively desktop-only despite being accessible on mobile.
-
-**Solution:** Add responsive breakpoints — collapse sidebar to a bottom nav or hamburger
-menu on small screens, stack tool inputs vertically, adjust font sizes.
-
-**Effort:** ~2–3 days
-**Risk:** Low (UI only, no Rust changes)
-**Trigger:** When mobile usage of the web version becomes significant
+`AppShell` switches to `flex-col` below `md` (768px): sidebar hidden, bottom nav bar
+appears with the same four nav items. Header shows a logo mark on mobile. `<main>` is
+`overflow-y-auto` on mobile so tool routes scroll. Safe-area inset padding added in
+`App.css` for iOS home indicator. Per-tool split/stack layouts are a deferred follow-up.
 
 ---
 
