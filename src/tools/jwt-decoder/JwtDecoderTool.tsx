@@ -5,49 +5,14 @@ import {
   useState,
 } from "react";
 import { callTool } from "../../bridge";
+import type { JwtDecodeInput } from "../../bindings/JwtDecodeInput";
+import type { JwtDecodeOutput } from "../../bindings/JwtDecodeOutput";
+import type { SecretEncoding } from "../../bindings/SecretEncoding";
 
 const RUST_COMMAND = "tool_jwt_decode";
 const TOKEN_DEBOUNCE_MS = 150;
 const SECRET_DEBOUNCE_MS = 300;
 const TRUNCATE_LEN = 20;
-
-type SecretEncoding = "utf8" | "base64" | "hex";
-
-interface JwtDecodeInputPayload {
-  token: string;
-  secret: string;
-  secretEncoding: SecretEncoding;
-}
-
-interface JwtDecodeOutputPayload {
-  headerRaw: string;
-  payloadRaw: string;
-  signatureRaw: string;
-  algorithm: string;
-  tokenType: string;
-  keyId?: string | null;
-  subject?: string | null;
-  issuer?: string | null;
-  audience?: string | null;
-  issuedAt?: number | null;
-  expiresAt?: number | null;
-  notBefore?: string | null;
-  jwtId?: string | null;
-  issuedAtHuman?: string | null;
-  expiresAtHuman?: string | null;
-  isExpired?: boolean | null;
-  timeUntilExpiry?: string | null;
-  lifetimeSeconds?: number | null;
-  lifetimeHuman?: string | null;
-  consumedPercent?: number | null;
-  nbfActive?: boolean | null;
-  allClaims: string;
-  signatureValid?: boolean | null;
-  signatureNote: string;
-  partCount: number;
-  isWellFormed: boolean;
-  error?: string | null;
-}
 
 function truncate(s: string, len: number): string {
   if (s.length <= len) return s;
@@ -83,7 +48,7 @@ function JwtDecoderTool() {
   const [secret, setSecret] = useState("");
   const [secretEncoding, setSecretEncoding] = useState<SecretEncoding>("utf8");
   const [showSecret, setShowSecret] = useState(false);
-  const [output, setOutput] = useState<JwtDecodeOutputPayload | null>(null);
+  const [output, setOutput] = useState<JwtDecodeOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [headerOpen, setHeaderOpen] = useState(true);
   const [payloadOpen, setPayloadOpen] = useState(true);
@@ -100,8 +65,8 @@ function JwtDecoderTool() {
   const calculateLiveValues = useCallback(() => {
     if (output?.issuedAt == null || output?.expiresAt == null) return;
     const now = Date.now() / 1000;
-    const iat = output.issuedAt;
-    const exp = output.expiresAt;
+    const iat = Number(output.issuedAt);
+    const exp = Number(output.expiresAt);
     const span = exp - iat;
     const consumed =
       span <= 0 ? 100 : Math.min(100, Math.max(0, ((now - iat) / span) * 100));
@@ -111,7 +76,7 @@ function JwtDecoderTool() {
   }, [output?.issuedAt, output?.expiresAt]);
 
   useEffect(() => {
-    if (!output?.issuedAt || output?.expiresAt == null) {
+    if (output?.issuedAt == null || output?.expiresAt == null) {
       setLiveConsumed(null);
       setLiveIsExpired(null);
       setLiveTimeUntil(null);
@@ -123,7 +88,7 @@ function JwtDecoderTool() {
   }, [output?.issuedAt, output?.expiresAt, output, calculateLiveValues]);
 
   useEffect(() => {
-    if (!output?.issuedAt || output?.expiresAt == null) return;
+    if (output?.issuedAt == null || output?.expiresAt == null) return;
     const interval = setInterval(() => {
       calculateLiveValues();
       setLastRefreshed(new Date());
@@ -165,7 +130,7 @@ function JwtDecoderTool() {
       }
       setIsLoading(true);
       try {
-        const payload: JwtDecodeInputPayload = {
+        const payload: JwtDecodeInput = {
           token: trimmed,
           secret: currentSecret.trim(),
           secretEncoding: currentEncoding,
@@ -173,7 +138,7 @@ function JwtDecoderTool() {
         const result = (await callTool(
           RUST_COMMAND,
           payload
-        )) as JwtDecodeOutputPayload;
+        )) as JwtDecodeOutput;
         setOutput(result);
       } catch (e) {
         const message =
@@ -190,7 +155,24 @@ function JwtDecoderTool() {
           signatureRaw: "",
           algorithm: "",
           tokenType: "",
+          keyId: null,
+          subject: null,
+          issuer: null,
+          audience: null,
+          issuedAt: null,
+          expiresAt: null,
+          notBefore: null,
+          jwtId: null,
+          issuedAtHuman: null,
+          expiresAtHuman: null,
+          isExpired: null,
+          timeUntilExpiry: null,
+          lifetimeSeconds: null,
+          lifetimeHuman: null,
+          consumedPercent: null,
+          nbfActive: null,
           allClaims: "",
+          signatureValid: null,
           signatureNote: "",
           partCount: 0,
           isWellFormed: false,
@@ -425,7 +407,7 @@ function JwtDecoderTool() {
                         Issued At
                       </span>
                       <span className="font-mono text-sm text-slate-800 dark:text-slate-200 mt-0.5">
-                        {output.issuedAt != null ? output.issuedAt : "—"}
+                        {output.issuedAt != null ? String(output.issuedAt) : "—"}
                       </span>
                       {output.issuedAtHuman && (
                         <span className="text-xs text-slate-500 mt-0.5 block">
@@ -438,7 +420,7 @@ function JwtDecoderTool() {
                         Expires At
                       </span>
                       <span className="font-mono text-sm text-slate-800 dark:text-slate-200 mt-0.5">
-                        {output.expiresAt != null ? output.expiresAt : "—"}
+                        {output.expiresAt != null ? String(output.expiresAt) : "—"}
                       </span>
                       {output.expiresAtHuman && (
                         <span className="text-xs text-slate-500 mt-0.5">
@@ -531,7 +513,10 @@ function JwtDecoderTool() {
                             <div className="relative flex justify-between text-xs font-mono text-slate-500">
                               <span>
                                 Issued{" "}
-                                {output.issuedAtHuman ?? output.issuedAt ?? "—"}
+                                {output.issuedAtHuman ??
+                                  (output.issuedAt != null
+                                    ? String(output.issuedAt)
+                                    : "—")}
                               </span>
                               <span
                                 className="absolute -top-5 left-0 -translate-x-1/2"
@@ -543,7 +528,10 @@ function JwtDecoderTool() {
                               </span>
                               <span>
                                 Expires{" "}
-                                {output.expiresAtHuman ?? output.expiresAt ?? "—"}
+                                {output.expiresAtHuman ??
+                                  (output.expiresAt != null
+                                    ? String(output.expiresAt)
+                                    : "—")}
                               </span>
                             </div>
                             <div className="text-slate-500 text-xs">
@@ -556,7 +544,7 @@ function JwtDecoderTool() {
                               (liveConsumed ?? output.consumedPercent) != null
                                 ? formatSecondsHuman(
                                     ((liveConsumed ?? output.consumedPercent ?? 0) / 100) *
-                                      output.lifetimeSeconds
+                                      Number(output.lifetimeSeconds)
                                   )
                                 : "—"}
                             </div>

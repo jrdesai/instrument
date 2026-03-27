@@ -5,19 +5,8 @@ import React, {
   useState,
 } from "react";
 import { callTool } from "../../bridge";
-
-/** Matches Rust AesInput (camelCase). */
-interface AesInputPayload {
-  text: string;
-  passphrase: string;
-  mode: "encrypt" | "decrypt";
-}
-
-/** Matches Rust AesOutput (camelCase). */
-interface AesOutputPayload {
-  result: string;
-  error?: string | null;
-}
+import type { AesInput } from "../../bindings/AesInput";
+import type { AesOutput } from "../../bindings/AesOutput";
 
 const RUST_COMMAND = "aes_process";
 const DEBOUNCE_MS = 150;
@@ -44,14 +33,14 @@ function AesEncryptDecryptTool() {
       setIsLoading(true);
       setError(null);
       try {
-        const payload: AesInputPayload = {
+        const payload: AesInput = {
           text,
           passphrase: pass,
           mode: currentMode,
         };
         const result = (await callTool(RUST_COMMAND, payload, {
           skipHistory: true,
-        })) as AesOutputPayload;
+        })) as AesOutput;
         setOutput(result.result ?? "");
         setError(result.error ?? null);
       } catch (e) {

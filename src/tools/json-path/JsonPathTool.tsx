@@ -7,40 +7,13 @@ import {
 import { callTool } from "../../bridge";
 import { CodeBlock } from "../../components/ui/CodeBlock";
 import { useDraftInput, useRestoreDraft } from "../../hooks/useDraftInput";
+import type { JsonPathInput } from "../../bindings/JsonPathInput";
+import type { JsonPathMatch } from "../../bindings/JsonPathMatch";
+import type { JsonPathOutput } from "../../bindings/JsonPathOutput";
 
 const RUST_COMMAND = "tool_json_path";
 const TOOL_ID = "json-path";
 const DEBOUNCE_MS = 300;
-
-interface JsonPathInputPayload {
-  value: string;
-  query: string;
-}
-
-type JsonValueType =
-  | "string"
-  | "number"
-  | "boolean"
-  | "null"
-  | "object"
-  | "array"
-  | string;
-
-interface JsonPathMatchPayload {
-  path: string;
-  value: string;
-  valueType: JsonValueType;
-  index: number;
-}
-
-interface JsonPathOutputPayload {
-  isValidJson: boolean;
-  isValidQuery: boolean;
-  matches: JsonPathMatchPayload[];
-  matchCount: number;
-  error?: string | null;
-  annotatedDocument?: string | null;
-}
 
 function isJsonPathDraft(
   raw: unknown
@@ -50,7 +23,7 @@ function isJsonPathDraft(
   return typeof o.input === "string" && typeof o.path === "string";
 }
 
-function typeBadgeClasses(t: JsonValueType): string {
+function typeBadgeClasses(t: string): string {
   switch (t) {
     case "string":
       return "bg-emerald-500/10 text-emerald-400";
@@ -79,7 +52,7 @@ function JsonPathTool() {
     setJsonInput(raw.input);
     setQuery(raw.path);
   });
-  const [output, setOutput] = useState<JsonPathOutputPayload | null>(null);
+  const [output, setOutput] = useState<JsonPathOutput | null>(null);
   const [fullDocOpen, setFullDocOpen] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -92,14 +65,14 @@ function JsonPathTool() {
         return;
       }
       try {
-        const payload: JsonPathInputPayload = {
+        const payload: JsonPathInput = {
           value: currentJson,
           query: currentQuery,
         };
         const result = (await callTool(
           RUST_COMMAND,
           payload
-        )) as JsonPathOutputPayload;
+        )) as JsonPathOutput;
         setOutput(result);
       } catch (e) {
         const message =
@@ -110,7 +83,7 @@ function JsonPathTool() {
           matches: [],
           matchCount: 0,
           error: message,
-          annotatedDocument: undefined,
+          annotatedDocument: null,
         });
       }
     },
@@ -154,7 +127,7 @@ function JsonPathTool() {
 
   const matches = output?.matches ?? [];
 
-  const renderValue = (m: JsonPathMatchPayload) => {
+  const renderValue = (m: JsonPathMatch) => {
     if (m.valueType === "object" || m.valueType === "array") {
       return (
         <CodeBlock

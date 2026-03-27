@@ -6,38 +6,16 @@ import {
 } from "react";
 import { useNavigate } from "react-router-dom";
 import { callTool } from "../../bridge";
+import type { JwtAlgorithm } from "../../bindings/JwtAlgorithm";
+import type { JwtBuildInput } from "../../bindings/JwtBuildInput";
+import type { JwtBuildOutput } from "../../bindings/JwtBuildOutput";
+import type { SecretEncoding } from "../../bindings/SecretEncoding";
 
 const RUST_COMMAND = "tool_jwt_build";
 const PENDING_DECODE_KEY = "instrument:jwt:pendingDecode";
 const TRUNCATE_LEN = 20;
 
-type SecretEncoding = "utf8" | "base64" | "hex";
-type JwtAlgorithm = "HS256" | "HS384" | "HS512" | "none";
 type ExpUnit = "minutes" | "hours" | "days";
-
-interface JwtBuildInputPayload {
-  algorithm: JwtAlgorithm;
-  secret: string;
-  secretEncoding: SecretEncoding;
-  payloadJson: string;
-  includeIat: boolean;
-  includeExp: boolean;
-  expSeconds: number;
-  extraHeaders: string;
-}
-
-interface JwtBuildOutputPayload {
-  token: string;
-  headerJson: string;
-  payloadJson: string;
-  headerB64: string;
-  payloadB64: string;
-  signatureB64: string;
-  algorithm: string;
-  expiresAt?: string | null;
-  issuedAt?: string | null;
-  error?: string | null;
-}
 
 function truncate(s: string, len: number): string {
   if (s.length <= len) return s;
@@ -81,7 +59,7 @@ function JwtBuilderTool() {
   const [extraHeadersOpen, setExtraHeadersOpen] = useState(false);
   const [extraHeaders, setExtraHeaders] = useState("");
 
-  const [output, setOutput] = useState<JwtBuildOutputPayload | null>(null);
+  const [output, setOutput] = useState<JwtBuildOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [headerPreviewOpen, setHeaderPreviewOpen] = useState(true);
   const [payloadPreviewOpen, setPayloadPreviewOpen] = useState(true);
@@ -126,20 +104,20 @@ function JwtBuilderTool() {
     const payloadJson = buildPayloadJson();
     setIsLoading(true);
     try {
-      const input: JwtBuildInputPayload = {
+      const input: JwtBuildInput = {
         algorithm,
         secret: secret.trim(),
         secretEncoding,
         payloadJson,
         includeIat: iatEnabled,
         includeExp: expEnabled,
-        expSeconds: expSecondsFromValue(expValue, expUnit),
+        expSeconds: BigInt(expSecondsFromValue(expValue, expUnit)),
         extraHeaders: extraHeaders.trim(),
       };
       const result = (await callTool(
         RUST_COMMAND,
         input
-      )) as JwtBuildOutputPayload;
+      )) as JwtBuildOutput;
       setOutput(result);
     } catch (e) {
       const message =
@@ -156,6 +134,8 @@ function JwtBuilderTool() {
         payloadB64: "",
         signatureB64: "",
         algorithm: "",
+        expiresAt: null,
+        issuedAt: null,
         error: message,
       });
     } finally {
@@ -186,6 +166,8 @@ function JwtBuilderTool() {
           payloadB64: "",
           signatureB64: "",
           algorithm: "",
+          expiresAt: null,
+          issuedAt: null,
           error: "Invalid JSON in custom claims",
         });
         return;

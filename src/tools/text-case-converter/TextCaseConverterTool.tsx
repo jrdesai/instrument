@@ -7,27 +7,8 @@ import {
 import { callTool } from "../../bridge";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useHistoryStore } from "../../store";
-
-/** Matches Rust CaseInput (camelCase). */
-interface CaseInputPayload {
-  text: string;
-}
-
-/** Matches Rust CaseOutput (camelCase). */
-interface CaseOutputPayload {
-  camelCase: string;
-  pascalCase: string;
-  snakeCase: string;
-  screamingCase: string;
-  kebabCase: string;
-  titleCase: string;
-  upperCase: string;
-  lowerCase: string;
-  dotCase: string;
-  pathCase: string;
-  wordCount: number;
-  error?: string | null;
-}
+import type { CaseInput } from "../../bindings/CaseInput";
+import type { CaseOutput } from "../../bindings/CaseOutput";
 
 const RUST_COMMAND = "case_process";
 const TOOL_ID = "text-case-converter";
@@ -36,10 +17,7 @@ const HISTORY_DEBOUNCE_MS = 1500;
 const COPIED_DURATION_MS = 1500;
 
 const CASES: {
-  id: keyof Omit<
-    CaseOutputPayload,
-    "wordCount" | "error"
-  >;
+  id: keyof Omit<CaseOutput, "wordCount" | "error">;
   label: string;
 }[] = [
   { id: "camelCase", label: "camelCase" },
@@ -58,7 +36,7 @@ function TextCaseConverterTool() {
   const { setDraft } = useDraftInput(TOOL_ID);
   const [input, setInput] = useState("");
   useRestoreStringDraft(TOOL_ID, setInput);
-  const [output, setOutput] = useState<CaseOutputPayload | null>(null);
+  const [output, setOutput] = useState<CaseOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [copyAllLabel, setCopyAllLabel] = useState("Copy all");
@@ -77,12 +55,12 @@ function TextCaseConverterTool() {
       setIsLoading(true);
       setError(null);
       try {
-        const payload: CaseInputPayload = { text };
+        const payload: CaseInput = { text };
         const result = (await callTool(
           RUST_COMMAND,
           payload,
           { skipHistory: true }
-        )) as CaseOutputPayload;
+        )) as CaseOutput;
         setOutput(result);
         setError(result.error ?? null);
         if (!result.error) {

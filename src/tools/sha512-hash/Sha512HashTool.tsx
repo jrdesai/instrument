@@ -6,20 +6,8 @@ import {
 } from "react";
 import { callTool } from "../../bridge";
 import { useHistoryStore } from "../../store";
-
-/** Matches Rust Sha512Input (camelCase). */
-interface Sha512InputPayload {
-  text: string;
-  uppercase: boolean;
-  hashEmpty: boolean;
-}
-
-/** Matches Rust Sha512Output (camelCase). */
-interface Sha512OutputPayload {
-  hash: string;
-  length: number;
-  error?: string | null;
-}
+import type { Sha512Input } from "../../bindings/Sha512Input";
+import type { Sha512Output } from "../../bindings/Sha512Output";
 
 const RUST_COMMAND = "sha512_process";
 const TOOL_ID = "sha512-hash";
@@ -53,7 +41,7 @@ function Sha512HashTool() {
       setIsLoading(true);
       setError(null);
       try {
-        const payload: Sha512InputPayload = {
+        const payload: Sha512Input = {
           text: currentInput,
           uppercase: currentUppercase,
           hashEmpty: currentHashEmpty,
@@ -62,7 +50,7 @@ function Sha512HashTool() {
           RUST_COMMAND,
           payload,
           { skipHistory: true }
-        )) as Sha512OutputPayload;
+        )) as Sha512Output;
         setOutput(result.hash ?? "");
         setError(result.error ?? null);
         if (!result.error) {

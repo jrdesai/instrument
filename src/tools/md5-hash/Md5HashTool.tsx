@@ -6,19 +6,8 @@ import {
 } from "react";
 import { callTool } from "../../bridge";
 import { useHistoryStore } from "../../store";
-
-/** Matches Rust Md5Input (camelCase). */
-interface Md5InputPayload {
-  text: string;
-  uppercase: boolean;
-}
-
-/** Matches Rust Md5Output (camelCase). */
-interface Md5OutputPayload {
-  hash: string;
-  length: number;
-  error?: string | null;
-}
+import type { Md5Input } from "../../bindings/Md5Input";
+import type { Md5Output } from "../../bindings/Md5Output";
 
 const RUST_COMMAND = "md5_process";
 const TOOL_ID = "md5-hash";
@@ -53,8 +42,8 @@ function Md5HashTool() {
       setIsLoading(true);
       setError(null);
       try {
-        const payload: Md5InputPayload = { text, uppercase: useUppercase };
-        const result = (await callTool(RUST_COMMAND, payload, { skipHistory: true })) as Md5OutputPayload;
+        const payload: Md5Input = { text, uppercase: useUppercase };
+        const result = (await callTool(RUST_COMMAND, payload, { skipHistory: true })) as Md5Output;
         setOutput(result.hash ?? "");
         setError(result.error ?? null);
         if (!result.error) {

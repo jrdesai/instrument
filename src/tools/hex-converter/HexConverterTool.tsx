@@ -7,20 +7,10 @@ import React, {
 import { callTool } from "../../bridge";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useHistoryStore } from "../../store";
-
-/** Matches Rust HexInput (camelCase). */
-interface HexInputPayload {
-  text: string;
-  mode: "textToHex" | "hexToText";
-  separator: "none" | "space" | "colon" | "dash";
-}
-
-/** Matches Rust HexOutput (camelCase). */
-interface HexOutputPayload {
-  result: string;
-  byteCount: number;
-  error?: string | null;
-}
+import type { HexInput } from "../../bindings/HexInput";
+import type { HexMode } from "../../bindings/HexMode";
+import type { HexOutput } from "../../bindings/HexOutput";
+import type { HexSeparator } from "../../bindings/HexSeparator";
 
 const RUST_COMMAND = "hex_process";
 const TOOL_ID = "hex-converter";
@@ -33,8 +23,8 @@ function HexConverterTool() {
   const [input, setInput] = useState("");
   useRestoreStringDraft(TOOL_ID, setInput);
   const [output, setOutput] = useState("");
-  const [mode, setMode] = useState<"textToHex" | "hexToText">("textToHex");
-  const [separator, setSeparator] = useState<"none" | "space" | "colon" | "dash">("space");
+  const [mode, setMode] = useState<HexMode>("textToHex");
+  const [separator, setSeparator] = useState<HexSeparator>("space");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [byteCount, setByteCount] = useState(0);
@@ -47,8 +37,8 @@ function HexConverterTool() {
   const runProcess = useCallback(
     async (
       text: string,
-      currentMode: "textToHex" | "hexToText",
-      currentSeparator: "none" | "space" | "colon" | "dash"
+      currentMode: HexMode,
+      currentSeparator: HexSeparator
     ) => {
       if (text === "") {
         setOutput("");
@@ -59,12 +49,12 @@ function HexConverterTool() {
       setIsLoading(true);
       setError(null);
       try {
-        const payload: HexInputPayload = {
+        const payload: HexInput = {
           text,
           mode: currentMode,
           separator: currentSeparator,
         };
-        const result = (await callTool(RUST_COMMAND, payload, { skipHistory: true })) as HexOutputPayload;
+        const result = (await callTool(RUST_COMMAND, payload, { skipHistory: true })) as HexOutput;
         setOutput(result.result ?? "");
         setError(result.error ?? null);
         setByteCount(result.byteCount ?? 0);

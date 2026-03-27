@@ -1,21 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { callTool } from "../../bridge";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
+import type { ExprEvalInput } from "../../bindings/ExprEvalInput";
+import type { ExprEvalOutput } from "../../bindings/ExprEvalOutput";
 
 const TOOL_ID = "expression-evaluator";
 const RUST_COMMAND = "tool_expression_eval";
 const DEBOUNCE_MS = 300;
 const COPIED_DURATION_MS = 1500;
-
-interface ExprEvalInput {
-  expression: string;
-}
-
-interface ExprEvalOutput {
-  result: string;
-  success: boolean;
-  error?: string | null;
-}
 
 function ExpressionEvaluatorTool() {
   const { setDraft } = useDraftInput(TOOL_ID);

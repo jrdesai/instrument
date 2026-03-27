@@ -7,29 +7,12 @@ import {
 import { callTool } from "../../bridge";
 import { CodeBlock } from "../../components/ui/CodeBlock";
 
+import type { ConversionTarget } from "../../bindings/ConversionTarget";
+import type { JsonConvertInput } from "../../bindings/JsonConvertInput";
+import type { JsonConvertOutput } from "../../bindings/JsonConvertOutput";
+
 const RUST_COMMAND = "tool_json_convert";
 const DEBOUNCE_MS = 200;
-
-type ConversionTarget = "yaml" | "typeScript" | "csv" | "xml";
-
-interface JsonConvertInputPayload {
-  value: string;
-  target: ConversionTarget;
-  tsRootName?: string;
-  tsExport?: boolean;
-  tsOptionalFields?: boolean;
-  xmlRootElement?: string;
-}
-
-interface JsonConvertOutputPayload {
-  result: string;
-  isValidJson: boolean;
-  target: ConversionTarget;
-  error?: string | null;
-  warning?: string | null;
-  lineCount: number;
-  charCount: number;
-}
 
 function targetLabel(target: ConversionTarget): string {
   switch (target) {
@@ -64,7 +47,7 @@ function JsonConverterTool() {
   const [tsExport, setTsExport] = useState(true);
   const [tsOptional, setTsOptional] = useState(false);
   const [xmlRootElement, setXmlRootElement] = useState("root");
-  const [output, setOutput] = useState<JsonConvertOutputPayload | null>(null);
+  const [output, setOutput] = useState<JsonConvertOutput | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const runProcess = useCallback(
@@ -84,9 +67,13 @@ function JsonConverterTool() {
         return;
       }
       try {
-        const payload: JsonConvertInputPayload = {
+        const payload: JsonConvertInput = {
           value: trimmed,
           target: currentTarget,
+          tsRootName: null,
+          tsExport: null,
+          tsOptionalFields: null,
+          xmlRootElement: null,
         };
         if (currentTarget === "typeScript") {
           payload.tsRootName = options.tsRootName || "Root";
@@ -99,7 +86,7 @@ function JsonConverterTool() {
         const result = (await callTool(
           RUST_COMMAND,
           payload
-        )) as JsonConvertOutputPayload;
+        )) as JsonConvertOutput;
         setOutput(result);
       } catch (e) {
         const message =

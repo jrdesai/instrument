@@ -8,6 +8,8 @@ import {
 import { callTool } from "../../bridge";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useHistoryStore } from "../../store";
+import type { CronInput } from "../../bindings/CronInput";
+import type { CronOutput } from "../../bindings/CronOutput";
 
 const RUST_COMMAND = "cron_process";
 const TOOL_ID = "cron-parser";
@@ -15,20 +17,6 @@ const DEBOUNCE_MS = 150;
 const HISTORY_DEBOUNCE_MS = 1500;
 const COPIED_DURATION_MS = 1500;
 const NEXT_RUN_COUNT = 5;
-
-// ─── Shared payload types ─────────────────────────────────────────────────────
-
-interface CronInputPayload {
-  expression: string;
-  count?: number;
-}
-
-interface CronOutputPayload {
-  isValid: boolean;
-  description: string;
-  nextRuns: string[];
-  error?: string | null;
-}
 
 // ─── Build tab types ──────────────────────────────────────────────────────────
 
@@ -235,7 +223,7 @@ function defaultForMode(mode: FieldMode, ft: FieldType): FieldValue {
 
 interface OutputSectionProps {
   expression: string;
-  output: CronOutputPayload | null;
+  output: CronOutput | null;
   emptyHint?: string;
 }
 
@@ -532,7 +520,7 @@ function FieldRow({ label, field, onChange, fieldType }: FieldRowProps) {
 
 function BuildTab() {
   const [fields, setFields]       = useState<FieldState>(DEFAULT_FIELDS);
-  const [output, setOutput]       = useState<CronOutputPayload | null>(null);
+  const [output, setOutput]       = useState<CronOutput | null>(null);
   const [copyLabel, setCopyLabel] = useState("Copy");
   const debounceRef               = useRef<ReturnType<typeof setTimeout> | null>(null);
   const historyDebounceRef        = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -543,10 +531,10 @@ function BuildTab() {
   const runProcess = useCallback(
     async (expr: string) => {
       try {
-        const payload: CronInputPayload = { expression: expr, count: NEXT_RUN_COUNT };
+        const payload: CronInput = { expression: expr, count: NEXT_RUN_COUNT };
         const result = (await callTool(RUST_COMMAND, payload, {
           skipHistory: true,
-        })) as CronOutputPayload;
+        })) as CronOutput;
         setOutput(result);
         if (result.isValid) {
           if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
@@ -710,7 +698,7 @@ function CronParserTool() {
   const { setDraft } = useDraftInput(TOOL_ID);
   const [expression, setExpression] = useState("");
   useRestoreStringDraft(TOOL_ID, setExpression);
-  const [output, setOutput]               = useState<CronOutputPayload | null>(null);
+  const [output, setOutput]               = useState<CronOutput | null>(null);
   const [copyExprLabel, setCopyExprLabel] = useState("Copy expression");
   const [cheatOpen, setCheatOpen]         = useState(false);
   const debounceRef                       = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -725,13 +713,13 @@ function CronParserTool() {
         return;
       }
       try {
-        const payload: CronInputPayload = {
+        const payload: CronInput = {
           expression: trimmed,
           count: NEXT_RUN_COUNT,
         };
         const result = (await callTool(RUST_COMMAND, payload, {
           skipHistory: true,
-        })) as CronOutputPayload;
+        })) as CronOutput;
         setOutput(result);
         if (result.isValid) {
           if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);

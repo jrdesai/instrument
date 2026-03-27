@@ -7,20 +7,10 @@ import React, {
 import { callTool } from "../../bridge";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useHistoryStore } from "../../store";
-
-/** Matches Rust HtmlEntityInput (camelCase). */
-interface HtmlEntityInputPayload {
-  text: string;
-  mode: "encode" | "decode";
-  encodeType: "named" | "numeric";
-}
-
-/** Matches Rust HtmlEntityOutput (camelCase). */
-interface HtmlEntityOutputPayload {
-  result: string;
-  entitiesFound: number;
-  error?: string | null;
-}
+import type { HtmlEntityEncodeType } from "../../bindings/HtmlEntityEncodeType";
+import type { HtmlEntityInput } from "../../bindings/HtmlEntityInput";
+import type { HtmlEntityMode } from "../../bindings/HtmlEntityMode";
+import type { HtmlEntityOutput } from "../../bindings/HtmlEntityOutput";
 
 const RUST_COMMAND = "html_entity_process";
 const TOOL_ID = "html-entity";
@@ -33,8 +23,8 @@ function HtmlEntityTool() {
   const [input, setInput] = useState("");
   useRestoreStringDraft(TOOL_ID, setInput);
   const [output, setOutput] = useState("");
-  const [mode, setMode] = useState<"encode" | "decode">("encode");
-  const [encodeType, setEncodeType] = useState<"named" | "numeric">("named");
+  const [mode, setMode] = useState<HtmlEntityMode>("encode");
+  const [encodeType, setEncodeType] = useState<HtmlEntityEncodeType>("named");
   const [entitiesFound, setEntitiesFound] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -47,8 +37,8 @@ function HtmlEntityTool() {
   const runProcess = useCallback(
     async (
       text: string,
-      currentMode: "encode" | "decode",
-      currentEncodeType: "named" | "numeric"
+      currentMode: HtmlEntityMode,
+      currentEncodeType: HtmlEntityEncodeType
     ) => {
       if (text === "") {
         setOutput("");
@@ -59,12 +49,12 @@ function HtmlEntityTool() {
       setIsLoading(true);
       setError(null);
       try {
-        const payload: HtmlEntityInputPayload = {
+        const payload: HtmlEntityInput = {
           text,
           mode: currentMode,
           encodeType: currentEncodeType,
         };
-        const result = (await callTool(RUST_COMMAND, payload, { skipHistory: true })) as HtmlEntityOutputPayload;
+        const result = (await callTool(RUST_COMMAND, payload, { skipHistory: true })) as HtmlEntityOutput;
         setOutput(result.result ?? "");
         setError(result.error ?? null);
         setEntitiesFound(result.entitiesFound ?? 0);

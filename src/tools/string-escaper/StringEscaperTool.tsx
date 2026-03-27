@@ -7,32 +7,10 @@ import {
 import { callTool } from "../../bridge";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useHistoryStore } from "../../store";
-
-/** Matches Rust EscapeMode (camelCase). */
-type EscapeModePayload = "escape" | "unescape";
-
-/** Matches Rust EscapeTarget (camelCase). */
-type EscapeTargetPayload =
-  | "json"
-  | "regex"
-  | "html"
-  | "sql"
-  | "shell"
-  | "csv";
-
-/** Matches Rust StringEscaperInput (camelCase). */
-interface StringEscaperInputPayload {
-  text: string;
-  mode: EscapeModePayload;
-  target: EscapeTargetPayload;
-}
-
-/** Matches Rust StringEscaperOutput (camelCase). */
-interface StringEscaperOutputPayload {
-  result: string;
-  changes: number;
-  error?: string | null;
-}
+import type { EscapeMode } from "../../bindings/EscapeMode";
+import type { EscapeTarget } from "../../bindings/EscapeTarget";
+import type { StringEscaperInput } from "../../bindings/StringEscaperInput";
+import type { StringEscaperOutput } from "../../bindings/StringEscaperOutput";
 
 const RUST_COMMAND = "string_escaper_process";
 const TOOL_ID = "string-escaper";
@@ -40,7 +18,7 @@ const DEBOUNCE_MS = 150;
 const HISTORY_DEBOUNCE_MS = 1500;
 const COPIED_DURATION_MS = 1500;
 
-const TARGETS: { value: EscapeTargetPayload; label: string }[] = [
+const TARGETS: { value: EscapeTarget; label: string }[] = [
   { value: "json", label: "JSON" },
   { value: "regex", label: "Regex" },
   { value: "html", label: "HTML" },
@@ -53,9 +31,9 @@ function StringEscaperTool() {
   const { setDraft } = useDraftInput(TOOL_ID);
   const [input, setInput] = useState("");
   useRestoreStringDraft(TOOL_ID, setInput);
-  const [output, setOutput] = useState<StringEscaperOutputPayload | null>(null);
-  const [mode, setMode] = useState<EscapeModePayload>("escape");
-  const [target, setTarget] = useState<EscapeTargetPayload>("json");
+  const [output, setOutput] = useState<StringEscaperOutput | null>(null);
+  const [mode, setMode] = useState<EscapeMode>("escape");
+  const [target, setTarget] = useState<EscapeTarget>("json");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [leftPanelPercent, setLeftPanelPercent] = useState(50);
@@ -67,8 +45,8 @@ function StringEscaperTool() {
   const runProcess = useCallback(
     async (
       text: string,
-      currentMode: EscapeModePayload,
-      currentTarget: EscapeTargetPayload
+      currentMode: EscapeMode,
+      currentTarget: EscapeTarget
     ) => {
       if (text === "") {
         setOutput(null);
@@ -78,7 +56,7 @@ function StringEscaperTool() {
       setIsLoading(true);
       setError(null);
       try {
-        const payload: StringEscaperInputPayload = {
+        const payload: StringEscaperInput = {
           text,
           mode: currentMode,
           target: currentTarget,
@@ -87,7 +65,7 @@ function StringEscaperTool() {
           RUST_COMMAND,
           payload,
           { skipHistory: true }
-        )) as StringEscaperOutputPayload;
+        )) as StringEscaperOutput;
         setOutput(result);
         setError(result.error ?? null);
         if (!result.error) {
@@ -140,7 +118,7 @@ function StringEscaperTool() {
 
   const handleSwap = useCallback(() => {
     const newInput = output?.result ?? "";
-    const newMode: EscapeModePayload = mode === "escape" ? "unescape" : "escape";
+    const newMode: EscapeMode = mode === "escape" ? "unescape" : "escape";
     setInput(newInput);
     setDraft(newInput);
     setOutput(null);

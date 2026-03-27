@@ -1,28 +1,15 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { callTool } from "../../bridge";
 import { useHistoryStore } from "../../store";
+import type { AnnotatedLine } from "../../bindings/TextDiffAnnotatedLine";
+import type { TextDiffInput } from "../../bindings/TextDiffInput";
+import type { TextDiffOutput } from "../../bindings/TextDiffOutput";
+import type { LineAnnotation } from "../../bindings/TextDiffLineAnnotation";
 
 const RUST_COMMAND = "text_diff_process";
 const TOOL_ID = "text-diff";
 const DEBOUNCE_MS = 300;
 const HISTORY_DEBOUNCE_MS = 1500;
-
-type LineAnnotation = "unchanged" | "added" | "removed";
-
-interface AnnotatedLine {
-  lineNumber: number;
-  content: string;
-  annotation: LineAnnotation;
-}
-
-interface TextDiffOutput {
-  isIdentical: boolean;
-  addedCount: number;
-  removedCount: number;
-  unchangedCount: number;
-  leftAnnotated: AnnotatedLine[];
-  rightAnnotated: AnnotatedLine[];
-}
 
 function toAnnotatedLines(value: unknown): AnnotatedLine[] {
   if (Array.isArray(value)) return value as AnnotatedLine[];
@@ -87,7 +74,7 @@ function TextDiffTool() {
         return;
       }
       try {
-        const payload = {
+        const payload: TextDiffInput = {
           left: currentLeft,
           right: currentRight,
         };

@@ -2,22 +2,8 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { CodeBlock } from "../../components/ui/CodeBlock";
 import { callTool } from "../../bridge";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
-
-type YamlToJsonInputPayload = {
-  value: string;
-  indent: number;
-  sortKeys: boolean;
-};
-
-type YamlToJsonOutputPayload = {
-  result: string;
-  isValidYaml: boolean;
-  error?: string | null;
-  errorLine?: number | null;
-  errorColumn?: number | null;
-  lineCount: number;
-  charCount: number;
-};
+import type { YamlToJsonInput } from "../../bindings/YamlToJsonInput";
+import type { YamlToJsonOutput } from "../../bindings/YamlToJsonOutput";
 
 type IndentOption = 2 | 4;
 
@@ -30,7 +16,7 @@ const YamlToJsonTool: React.FC = () => {
   useRestoreStringDraft(DRAFT_TOOL_ID, setInput);
   const [indent, setIndent] = useState<IndentOption>(2);
   const [sortKeys, setSortKeys] = useState(false);
-  const [output, setOutput] = useState<YamlToJsonOutputPayload | null>(null);
+  const [output, setOutput] = useState<YamlToJsonOutput | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
   const hasInput = input.trim().length > 0;
@@ -45,7 +31,7 @@ const YamlToJsonTool: React.FC = () => {
 
       setIsProcessing(true);
       try {
-        const payload: YamlToJsonInputPayload = {
+        const payload: YamlToJsonInput = {
           value,
           indent: nextIndent,
           sortKeys: nextSortKeys,
@@ -53,7 +39,7 @@ const YamlToJsonTool: React.FC = () => {
         const result = (await callTool(
           RUST_COMMAND,
           payload
-        )) as unknown as YamlToJsonOutputPayload;
+        )) as YamlToJsonOutput;
         setOutput(result);
       } catch (err) {
         // eslint-disable-next-line no-console

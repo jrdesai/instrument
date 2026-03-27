@@ -7,38 +7,10 @@ import {
 import { callTool } from "../../bridge";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useHistoryStore } from "../../store";
-
-/** Rust NumberBase/BitWidth use serde rename_all = "camelCase" so values are lowercase. */
-type NumberBaseKey =
-  | "decimal"
-  | "hexadecimal"
-  | "binary"
-  | "octal"
-  | "base32"
-  | "base36";
-type BitWidthKey = "auto" | "bit8" | "bit16" | "bit32" | "bit64";
-
-/** Matches Rust BaseConverterInput (camelCase). */
-interface BaseConverterInputPayload {
-  value: string;
-  fromBase: NumberBaseKey;
-  bitWidth: BitWidthKey;
-  uppercaseHex: boolean;
-}
-
-/** Matches Rust BaseConverterOutput (camelCase). */
-interface BaseConverterOutputPayload {
-  decimal: string;
-  hexadecimal: string;
-  binary: string;
-  binaryGrouped: string;
-  octal: string;
-  base32: string;
-  base36: string;
-  bitLength: number;
-  isNegative: boolean;
-  error?: string | null;
-}
+import type { BaseConverterInput } from "../../bindings/BaseConverterInput";
+import type { BaseConverterOutput } from "../../bindings/BaseConverterOutput";
+import type { BitWidth } from "../../bindings/BitWidth";
+import type { NumberBase } from "../../bindings/NumberBase";
 
 const RUST_COMMAND = "base_converter_process";
 const TOOL_ID = "number-base-converter";
@@ -46,7 +18,7 @@ const DEBOUNCE_MS = 150;
 const HISTORY_DEBOUNCE_MS = 1500;
 const COPIED_DURATION_MS = 1500;
 
-const BASE_PILLS: { id: NumberBaseKey; label: string }[] = [
+const BASE_PILLS: { id: NumberBase; label: string }[] = [
   { id: "decimal", label: "Dec" },
   { id: "hexadecimal", label: "Hex" },
   { id: "binary", label: "Bin" },
@@ -56,10 +28,7 @@ const BASE_PILLS: { id: NumberBaseKey; label: string }[] = [
 ];
 
 const OUTPUT_CARDS: {
-  id: keyof Omit<
-    BaseConverterOutputPayload,
-    "error" | "isNegative"
-  >;
+  id: keyof Omit<BaseConverterOutput, "error" | "isNegative">;
   label: string;
 }[] = [
   { id: "decimal", label: "Decimal" },
@@ -72,7 +41,7 @@ const OUTPUT_CARDS: {
   { id: "bitLength", label: "Bit length" },
 ];
 
-const PLACEHOLDERS: Record<NumberBaseKey, string> = {
+const PLACEHOLDERS: Record<NumberBase, string> = {
   decimal: "Enter decimal (e.g. 255)",
   hexadecimal: "Enter hex (e.g. ff or 0xff)",
   binary: "Enter binary (e.g. 11111111 or 0b11111111)",
@@ -81,7 +50,7 @@ const PLACEHOLDERS: Record<NumberBaseKey, string> = {
   base36: "Enter base36 (e.g. 73)",
 };
 
-const BIT_WIDTH_OPTIONS: { id: BitWidthKey; label: string }[] = [
+const BIT_WIDTH_OPTIONS: { id: BitWidth; label: string }[] = [
   { id: "auto", label: "Auto" },
   { id: "bit8", label: "8" },
   { id: "bit16", label: "16" },
@@ -93,10 +62,10 @@ function NumberBaseConverterTool() {
   const { setDraft } = useDraftInput(TOOL_ID);
   const [value, setValue] = useState("");
   useRestoreStringDraft(TOOL_ID, setValue);
-  const [fromBase, setFromBase] = useState<NumberBaseKey>("decimal");
-  const [bitWidth, setBitWidth] = useState<BitWidthKey>("auto");
+  const [fromBase, setFromBase] = useState<NumberBase>("decimal");
+  const [bitWidth, setBitWidth] = useState<BitWidth>("auto");
   const [uppercaseHex, setUppercaseHex] = useState(false);
-  const [output, setOutput] = useState<BaseConverterOutputPayload | null>(null);
+  const [output, setOutput] = useState<BaseConverterOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [copyAllLabel, setCopyAllLabel] = useState("Copy All");
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -106,8 +75,8 @@ function NumberBaseConverterTool() {
   const runProcess = useCallback(
     async (
       currentValue: string,
-      currentBase: NumberBaseKey,
-      currentBitWidth: BitWidthKey,
+      currentBase: NumberBase,
+      currentBitWidth: BitWidth,
       currentUppercaseHex: boolean
     ) => {
       if (!currentValue.trim()) {
@@ -117,7 +86,7 @@ function NumberBaseConverterTool() {
       }
       setIsLoading(true);
       try {
-        const payload: BaseConverterInputPayload = {
+        const payload: BaseConverterInput = {
           value: currentValue,
           fromBase: currentBase,
           bitWidth: currentBitWidth,
@@ -127,7 +96,7 @@ function NumberBaseConverterTool() {
           RUST_COMMAND,
           payload,
           { skipHistory: true }
-        )) as BaseConverterOutputPayload;
+        )) as BaseConverterOutput;
         setOutput(result);
         if (!result.error) {
           if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);

@@ -12,27 +12,8 @@ import {
   formatTimezoneLabel,
   getTimezoneList,
 } from "./timezoneLists";
-
-/** Matches Rust TimezoneInput (camelCase). */
-interface TimezoneInputPayload {
-  datetime: string;
-  fromTz: string;
-  toTz: string;
-}
-
-/** Matches Rust TimezoneOutput (camelCase). */
-interface TimezoneOutputPayload {
-  result: string;
-  resultIso: string;
-  fromOffset: string;
-  toOffset: string;
-  fromAbbr: string;
-  toAbbr: string;
-  fromDst: boolean;
-  toDst: boolean;
-  difference: string;
-  error?: string | null;
-}
+import type { TimezoneInput } from "../../bindings/TimezoneInput";
+import type { TimezoneOutput } from "../../bindings/TimezoneOutput";
 
 const RUST_COMMAND = "timezone_process";
 const TOOL_ID = "timezone-converter";
@@ -41,7 +22,7 @@ const HISTORY_DEBOUNCE_MS = 1500;
 const COPIED_DURATION_MS = 1500;
 
 const OUTPUT_CARDS: {
-  id: keyof Omit<TimezoneOutputPayload, "error">;
+  id: keyof Omit<TimezoneOutput, "error">;
   label: string;
 }[] = [
   { id: "result", label: "Result datetime" },
@@ -168,7 +149,7 @@ function TimezoneConverterTool() {
   });
   const [fromTz, setFromTz] = useState("UTC");
   const [toTz, setToTz] = useState("America/New_York");
-  const [output, setOutput] = useState<TimezoneOutputPayload | null>(null);
+  const [output, setOutput] = useState<TimezoneOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [copyAllLabel, setCopyAllLabel] = useState("Copy All");
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -185,7 +166,7 @@ function TimezoneConverterTool() {
     ) => {
       setIsLoading(true);
       try {
-        const payload: TimezoneInputPayload = {
+        const payload: TimezoneInput = {
           datetime: currentDatetime,
           fromTz: currentFromTz,
           toTz: currentToTz,
@@ -194,7 +175,7 @@ function TimezoneConverterTool() {
           RUST_COMMAND,
           payload,
           { skipHistory: true }
-        )) as TimezoneOutputPayload;
+        )) as TimezoneOutput;
         setOutput(result);
         if (!result.error) {
           if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);

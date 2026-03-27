@@ -2,25 +2,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { callTool } from "../../bridge";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useHistoryStore } from "../../store";
-
-/** Matches Rust WordCounterInput (camelCase). */
-interface WordCounterInputPayload {
-  text: string;
-}
-
-/** Matches Rust WordCounterOutput (camelCase). */
-interface WordCounterOutputPayload {
-  words: number;
-  charactersWithSpaces: number;
-  charactersWithoutSpaces: number;
-  lines: number;
-  sentences: number;
-  paragraphs: number;
-  uniqueWords: number;
-  avgWordLength: number;
-  readingTimeSeconds: number;
-  error?: string | null;
-}
+import type { WordCounterInput } from "../../bindings/WordCounterInput";
+import type { WordCounterOutput } from "../../bindings/WordCounterOutput";
 
 const RUST_COMMAND = "word_counter_process";
 const TOOL_ID = "word-counter";
@@ -28,10 +11,7 @@ const DEBOUNCE_MS = 150;
 const HISTORY_DEBOUNCE_MS = 1500;
 
 const STAT_KEYS: {
-  key: keyof Omit<
-    WordCounterOutputPayload,
-    "error"
-  >;
+  key: keyof Omit<WordCounterOutput, "error">;
   label: string;
 }[] = [
   { key: "words", label: "Words" },
@@ -76,7 +56,7 @@ function WordCounterTool() {
   const { setDraft } = useDraftInput(TOOL_ID);
   const [input, setInput] = useState("");
   useRestoreStringDraft(TOOL_ID, setInput);
-  const [output, setOutput] = useState<WordCounterOutputPayload | null>(null);
+  const [output, setOutput] = useState<WordCounterOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -94,12 +74,12 @@ function WordCounterTool() {
       setIsLoading(true);
       setError(null);
       try {
-        const payload: WordCounterInputPayload = { text: currentInput };
+        const payload: WordCounterInput = { text: currentInput };
         const result = (await callTool(
           RUST_COMMAND,
           payload,
           { skipHistory: true }
-        )) as WordCounterOutputPayload;
+        )) as WordCounterOutput;
         setOutput(result);
         setError(result.error ?? null);
         // Schedule a history entry 1.5s after the last successful run.
@@ -163,7 +143,7 @@ function WordCounterTool() {
 
   const hasOutput = output != null && !output.error;
 
-  function getStatDisplay(key: keyof Omit<WordCounterOutputPayload, "error">): string | number {
+  function getStatDisplay(key: keyof Omit<WordCounterOutput, "error">): string | number {
     if (!hasOutput || !output) return "—";
     if (key === "readingTimeSeconds") {
       return output.readingTimeSeconds > 0 ? formatReadingTime(output.readingTimeSeconds) : "—";

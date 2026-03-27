@@ -8,36 +8,13 @@ import { callTool } from "../../bridge";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useHistoryStore } from "../../store";
 import { CodeBlock } from "../../components/ui/CodeBlock";
+import type { JsonValidateInput } from "../../bindings/JsonValidateInput";
+import type { JsonValidateOutput } from "../../bindings/JsonValidateOutput";
 
 const RUST_COMMAND = "tool_json_validate";
 const TOOL_ID = "json-validator";
 const DEBOUNCE_MS = 150;
 const HISTORY_DEBOUNCE_MS = 1500;
-
-interface JsonValidateInputPayload {
-  value: string;
-}
-
-interface JsonValidateOutputPayload {
-  isValid: boolean;
-  error?: string | null;
-  errorLine?: number | null;
-  errorColumn?: number | null;
-  errorContext?: string | null;
-  rootType?: string | null;
-  depth?: number | null;
-  keyCount?: number | null;
-  valueCount?: number | null;
-  arrayCount?: number | null;
-  objectCount?: number | null;
-  stringCount?: number | null;
-  numberCount?: number | null;
-  booleanCount?: number | null;
-  nullCount?: number | null;
-  maxArrayLength?: number | null;
-  hasDuplicateKeys: boolean;
-  formatted?: string | null;
-}
 
 const COMMON_MISTAKES = [
   "Keys must be quoted: \"key\" not key",
@@ -63,7 +40,7 @@ function JsonValidatorTool() {
   const { setDraft } = useDraftInput(TOOL_ID);
   const [inputValue, setInputValue] = useState("");
   useRestoreStringDraft(TOOL_ID, setInputValue);
-  const [output, setOutput] = useState<JsonValidateOutputPayload | null>(null);
+  const [output, setOutput] = useState<JsonValidateOutput | null>(null);
   const [showFormattedPreview, setShowFormattedPreview] = useState(false);
   const [showMistakes, setShowMistakes] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -77,12 +54,12 @@ function JsonValidatorTool() {
       return;
     }
     try {
-      const payload: JsonValidateInputPayload = { value: trimmed };
+      const payload: JsonValidateInput = { value: trimmed };
       const result = (await callTool(
         RUST_COMMAND,
         payload,
         { skipHistory: true }
-      )) as JsonValidateOutputPayload;
+      )) as JsonValidateOutput;
       setOutput(result);
       if (result.isValid) {
         if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
@@ -101,7 +78,22 @@ function JsonValidatorTool() {
       setOutput({
         isValid: false,
         error: message,
+        errorLine: null,
+        errorColumn: null,
+        errorContext: null,
+        rootType: null,
+        depth: null,
+        keyCount: null,
+        valueCount: null,
+        arrayCount: null,
+        objectCount: null,
+        stringCount: null,
+        numberCount: null,
+        booleanCount: null,
+        nullCount: null,
+        maxArrayLength: null,
         hasDuplicateKeys: false,
+        formatted: null,
       });
     }
   }, [addHistoryEntry]);

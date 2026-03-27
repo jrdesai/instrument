@@ -5,40 +5,13 @@ import {
   useState,
 } from "react";
 import { callTool } from "../../bridge";
+import type { AnnotatedLine } from "../../bindings/JsonDiffAnnotatedLine";
+import type { JsonDiffOutput } from "../../bindings/JsonDiffOutput";
+import type { LineAnnotation } from "../../bindings/JsonDiffLineAnnotation";
 
 const RUST_COMMAND = "tool_json_diff";
 const DEBOUNCE_MS = 300;
 const TRUNCATE_LEN = 40;
-
-type ChangeType = "added" | "removed" | "changed" | "typeChanged";
-type LineAnnotation = "unchanged" | "added" | "removed" | "changed";
-
-interface AnnotatedLinePayload {
-  lineNumber: number;
-  content: string;
-  annotation: LineAnnotation;
-}
-
-interface DiffChangePayload {
-  path: string;
-  changeType: ChangeType;
-  leftValue: string | null;
-  rightValue: string | null;
-}
-
-interface JsonDiffOutputPayload {
-  isIdentical: boolean;
-  leftValid: boolean;
-  rightValid: boolean;
-  changes: DiffChangePayload[];
-  addedCount: number;
-  removedCount: number;
-  changedCount: number;
-  unchangedCount: number;
-  leftAnnotated: AnnotatedLinePayload[];
-  rightAnnotated: AnnotatedLinePayload[];
-  error: string | null;
-}
 
 function truncate(str: string, len: number): string {
   if (str.length <= len) return str;
@@ -46,8 +19,8 @@ function truncate(str: string, len: number): string {
 }
 
 /** Normalize backend response to an array (handles string/other if IPC or web layer changes). */
-function toAnnotatedLines(value: unknown): AnnotatedLinePayload[] {
-  if (Array.isArray(value)) return value as AnnotatedLinePayload[];
+function toAnnotatedLines(value: unknown): AnnotatedLine[] {
+  if (Array.isArray(value)) return value as AnnotatedLine[];
   return [];
 }
 
@@ -73,7 +46,7 @@ function lineClassForAnnotation(annotation: LineAnnotation, side: "left" | "righ
 function JsonDiffTool() {
   const [leftInput, setLeftInput] = useState("");
   const [rightInput, setRightInput] = useState("");
-  const [output, setOutput] = useState<JsonDiffOutputPayload | null>(null);
+  const [output, setOutput] = useState<JsonDiffOutput | null>(null);
   const [changesOpen, setChangesOpen] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const leftRef = useRef<HTMLDivElement>(null);
@@ -110,7 +83,7 @@ function JsonDiffTool() {
         const result = (await callTool(RUST_COMMAND, {
           left: currentLeft,
           right: currentRight,
-        })) as JsonDiffOutputPayload;
+        })) as JsonDiffOutput;
         setOutput(result);
       } catch (e) {
         const message =

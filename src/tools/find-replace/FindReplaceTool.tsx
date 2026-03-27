@@ -7,26 +7,8 @@ import {
 import { callTool } from "../../bridge";
 import { useDraftInput, useRestoreDraft } from "../../hooks/useDraftInput";
 import { useHistoryStore } from "../../store";
-
-/** Matches Rust FindReplaceInput (camelCase). */
-interface FindReplaceInputPayload {
-  text: string;
-  find: string;
-  replace: string;
-  caseSensitive: boolean;
-  wholeWord: boolean;
-  regexMode: boolean;
-  replaceAll: boolean;
-}
-
-/** Matches Rust FindReplaceOutput (camelCase). */
-interface FindReplaceOutputPayload {
-  result: string;
-  matchCount: number;
-  replacedCount: number;
-  matchRanges?: number[][];
-  error?: string | null;
-}
+import type { FindReplaceInput } from "../../bindings/FindReplaceInput";
+import type { FindReplaceOutput } from "../../bindings/FindReplaceOutput";
 
 const RUST_COMMAND = "find_replace_process";
 const TOOL_ID = "find-replace";
@@ -113,7 +95,7 @@ function FindReplaceTool() {
   const [wholeWord, setWholeWord] = useState(false);
   const [regexMode, setRegexMode] = useState(false);
   const [replaceAll, setReplaceAll] = useState(true);
-  const [output, setOutput] = useState<FindReplaceOutputPayload | null>(null);
+  const [output, setOutput] = useState<FindReplaceOutput | null>(null);
   const [matchRanges, setMatchRanges] = useState<number[][]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [copyLabel, setCopyLabel] = useState("Copy output");
@@ -134,7 +116,7 @@ function FindReplaceTool() {
     ) => {
       setIsLoading(true);
       try {
-        const payload: FindReplaceInputPayload = {
+        const payload: FindReplaceInput = {
           text: currentText,
           find: currentFind,
           replace: currentReplace,
@@ -147,7 +129,7 @@ function FindReplaceTool() {
           RUST_COMMAND,
           payload,
           { skipHistory: true }
-        )) as FindReplaceOutputPayload;
+        )) as FindReplaceOutput;
         setOutput(result);
         if (result.error || currentFind.trim() === "") {
           setMatchRanges([]);
@@ -180,6 +162,7 @@ function FindReplaceTool() {
           result: currentText,
           matchCount: 0,
           replacedCount: 0,
+          matchRanges: [],
           error: message,
         });
         setMatchRanges([]);

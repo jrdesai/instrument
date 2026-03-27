@@ -7,37 +7,8 @@ import {
 import { callTool } from "../../bridge";
 import { FormatHint } from "../../components/ui/FormatHint";
 import { useHistoryStore } from "../../store";
-
-/** Matches Rust Iso8601Input (camelCase). */
-interface Iso8601InputPayload {
-  value: string;
-}
-
-/** Matches Rust Iso8601Output (camelCase). */
-interface Iso8601OutputPayload {
-  isValid: boolean;
-  inputType: string;
-  date?: string | null;
-  time?: string | null;
-  offset?: string | null;
-  utcEquivalent?: string | null;
-  weekNumber?: string | null;
-  dayOfYear?: number | null;
-  quarter?: number | null;
-  dayOfWeek?: string | null;
-  asDateOnly?: string | null;
-  asWeekDate?: string | null;
-  asOrdinal?: string | null;
-  asUtc?: string | null;
-  asLocalOffset?: string | null;
-  durationYears?: number | null;
-  durationMonths?: number | null;
-  durationDays?: number | null;
-  durationHours?: number | null;
-  durationMinutes?: number | null;
-  durationSeconds?: number | null;
-  error?: string | null;
-}
+import type { Iso8601Input } from "../../bindings/Iso8601Input";
+import type { Iso8601Output } from "../../bindings/Iso8601Output";
 
 const RUST_COMMAND = "iso8601_process";
 const TOOL_ID = "iso8601-formatter";
@@ -46,7 +17,7 @@ const HISTORY_DEBOUNCE_MS = 1500;
 const COPIED_DURATION_MS = 1500;
 
 const COMPONENT_FIELDS: {
-  id: keyof Iso8601OutputPayload;
+  id: keyof Iso8601Output;
   label: string;
   isDuration?: boolean;
 }[] = [
@@ -67,7 +38,7 @@ const COMPONENT_FIELDS: {
 ];
 
 const CONVERSION_FIELDS: {
-  id: keyof Iso8601OutputPayload;
+  id: keyof Iso8601Output;
   label: string;
 }[] = [
   { id: "asDateOnly", label: "Date only" },
@@ -88,7 +59,7 @@ const QUICK_REF_EXAMPLES: { label: string; value: string }[] = [
 
 function Iso8601FormatterTool() {
   const [value, setValue] = useState("");
-  const [output, setOutput] = useState<Iso8601OutputPayload | null>(null);
+  const [output, setOutput] = useState<Iso8601Output | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [copyAllLabel, setCopyAllLabel] = useState("Copy All");
   const [quickRefOpen, setQuickRefOpen] = useState(false);
@@ -100,12 +71,12 @@ function Iso8601FormatterTool() {
     async (currentValue: string) => {
       setIsLoading(true);
       try {
-        const payload: Iso8601InputPayload = { value: currentValue };
+        const payload: Iso8601Input = { value: currentValue };
         const result = (await callTool(
           RUST_COMMAND,
           payload,
           { skipHistory: true }
-        )) as Iso8601OutputPayload;
+        )) as Iso8601Output;
         setOutput(result);
         if (result.isValid && !result.error) {
           if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
@@ -132,6 +103,25 @@ function Iso8601FormatterTool() {
         setOutput({
           isValid: false,
           inputType: "Invalid",
+          date: null,
+          time: null,
+          offset: null,
+          utcEquivalent: null,
+          weekNumber: null,
+          dayOfYear: null,
+          quarter: null,
+          dayOfWeek: null,
+          asDateOnly: null,
+          asWeekDate: null,
+          asOrdinal: null,
+          asUtc: null,
+          asLocalOffset: null,
+          durationYears: null,
+          durationMonths: null,
+          durationDays: null,
+          durationHours: null,
+          durationMinutes: null,
+          durationSeconds: null,
           error: message,
         });
       } finally {
@@ -276,7 +266,9 @@ function Iso8601FormatterTool() {
                 if (!dur && isDuration) return null;
                 const raw = output[id];
                 const valueStr =
-                  typeof raw === "number" ? String(raw) : String(raw ?? "");
+                  typeof raw === "number" || typeof raw === "bigint"
+                    ? String(raw)
+                    : String(raw ?? "");
                 const display = valueStr || "—";
                 if (isDuration && raw == null) return null;
                 return (

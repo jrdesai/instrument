@@ -5,32 +5,12 @@ import {
   useState,
 } from "react";
 import { callTool } from "../../bridge";
+import type { UlidInput } from "../../bindings/UlidInput";
+import type { UlidInspectInput } from "../../bindings/UlidInspectInput";
+import type { UlidInspectOutput } from "../../bindings/UlidInspectOutput";
+import type { UlidOutput } from "../../bindings/UlidOutput";
 
 type TabId = "generate" | "inspect";
-
-/** Matches Rust UlidInput (camelCase). */
-interface UlidInputPayload {
-  count: number;
-  uppercase: boolean;
-}
-
-/** Matches Rust UlidOutput (camelCase). */
-interface UlidOutputPayload {
-  ulids: string[];
-  error?: string | null;
-}
-
-/** Matches Rust UlidInspectOutput (camelCase). */
-interface UlidInspectOutputPayload {
-  isValid: boolean;
-  timestampMs?: number | null;
-  timestampHuman?: string | null;
-  timestampIso?: string | null;
-  randomness?: string | null;
-  asUppercase?: string | null;
-  asLowercase?: string | null;
-  error?: string | null;
-}
 
 const RUST_COMMAND_GENERATE = "ulid_process";
 const RUST_COMMAND_INSPECT = "ulid_inspect";
@@ -78,7 +58,7 @@ function UlidGeneratorTool() {
 
   const [inspectValue, setInspectValue] = useState("");
   const [inspectResult, setInspectResult] =
-    useState<UlidInspectOutputPayload | null>(null);
+    useState<UlidInspectOutput | null>(null);
   const [inspectLoading, setInspectLoading] = useState(false);
   const inspectDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -87,14 +67,14 @@ function UlidGeneratorTool() {
       setIsLoading(true);
       setError(null);
       try {
-        const payload: UlidInputPayload = {
+        const payload: UlidInput = {
           count: currentCount,
           uppercase: currentUppercase,
         };
         const result = (await callTool(
           RUST_COMMAND_GENERATE,
           payload
-        )) as UlidOutputPayload;
+        )) as UlidOutput;
         setUlids(result.ulids ?? []);
         setError(result.error ?? null);
       } catch (e) {
@@ -125,15 +105,23 @@ function UlidGeneratorTool() {
     }
     setInspectLoading(true);
     try {
-      const result = (await callTool(RUST_COMMAND_INSPECT, {
-        value: trimmed,
-      })) as UlidInspectOutputPayload;
+      const inspectPayload: UlidInspectInput = { value: trimmed };
+      const result = (await callTool(
+        RUST_COMMAND_INSPECT,
+        inspectPayload
+      )) as UlidInspectOutput;
       setInspectResult(result);
     } catch (e) {
       const message =
         e instanceof Error ? e.message : String(e ?? "Inspect failed");
       setInspectResult({
         isValid: false,
+        timestampMs: null,
+        timestampHuman: null,
+        timestampIso: null,
+        randomness: null,
+        asUppercase: null,
+        asLowercase: null,
         error: message,
       });
     } finally {

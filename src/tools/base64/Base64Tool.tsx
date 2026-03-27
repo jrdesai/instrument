@@ -7,21 +7,9 @@ import React, {
 import { callTool } from "../../bridge";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useHistoryStore } from "../../store";
-
-/** Matches Rust Base64Input (camelCase). Mode values match serde rename: encode/decode. */
-interface Base64InputPayload {
-  text: string;
-  urlSafe: boolean;
-  mode: "encode" | "decode";
-}
-
-/** Matches Rust Base64Output (camelCase). */
-interface Base64OutputPayload {
-  result: string;
-  byteCount: number;
-  charCount: number;
-  error?: string | null;
-}
+import type { Base64Input } from "../../bindings/Base64Input";
+import type { Base64Mode } from "../../bindings/Base64Mode";
+import type { Base64Output } from "../../bindings/Base64Output";
 
 const RUST_COMMAND = "base64_process";
 const TOOL_ID = "base64-encoder";
@@ -34,7 +22,7 @@ function Base64Tool() {
   const [input, setInput] = useState("");
   useRestoreStringDraft(TOOL_ID, setInput);
   const [output, setOutput] = useState("");
-  const [mode, setMode] = useState<"encode" | "decode">("encode");
+  const [mode, setMode] = useState<Base64Mode>("encode");
   const [urlSafe, setUrlSafe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -45,7 +33,7 @@ function Base64Tool() {
   const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
 
   const runProcess = useCallback(
-    async (text: string, currentMode: typeof mode, currentUrlSafe: boolean) => {
+    async (text: string, currentMode: Base64Mode, currentUrlSafe: boolean) => {
       if (text === "") {
         setOutput("");
         setError(null);
@@ -54,12 +42,12 @@ function Base64Tool() {
       setIsLoading(true);
       setError(null);
       try {
-        const payload: Base64InputPayload = {
+        const payload: Base64Input = {
           text,
           urlSafe: currentUrlSafe,
           mode: currentMode,
         };
-        const result = (await callTool(RUST_COMMAND, payload, { skipHistory: true })) as Base64OutputPayload;
+        const result = (await callTool(RUST_COMMAND, payload, { skipHistory: true })) as Base64Output;
         setOutput(result.result ?? "");
         setError(result.error ?? null);
         if (!result.error) {

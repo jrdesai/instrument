@@ -5,40 +5,13 @@ import {
   useState,
 } from "react";
 import { callTool } from "../../bridge";
+import type { UuidInput } from "../../bindings/UuidInput";
+import type { UuidInspectInput } from "../../bindings/UuidInspectInput";
+import type { UuidInspectOutput } from "../../bindings/UuidInspectOutput";
+import type { UuidOutput } from "../../bindings/UuidOutput";
+import type { UuidVersion } from "../../bindings/UuidVersion";
 
-type UuidVersion = "v1" | "v4" | "v7";
 type TabId = "generate" | "inspect";
-
-/** Matches Rust UuidInput (camelCase). */
-interface UuidInputPayload {
-  version: UuidVersion;
-  count: number;
-  uppercase: boolean;
-}
-
-/** Matches Rust UuidOutput (camelCase). */
-interface UuidOutputPayload {
-  uuids: string[];
-  error?: string | null;
-}
-
-/** Matches Rust UuidInspectOutput (camelCase). */
-interface UuidInspectOutputPayload {
-  isValid: boolean;
-  version?: number | null;
-  versionName?: string | null;
-  variant?: string | null;
-  v1Timestamp?: string | null;
-  v1ClockSeq?: number | null;
-  v1Node?: string | null;
-  v7Timestamp?: string | null;
-  asUppercase?: string | null;
-  asLowercase?: string | null;
-  asUrn?: string | null;
-  asBraces?: string | null;
-  asRawBytes?: string | null;
-  error?: string | null;
-}
 
 const RUST_COMMAND_GENERATE = "uuid_process";
 const RUST_COMMAND_INSPECT = "uuid_inspect";
@@ -88,7 +61,7 @@ function UuidGeneratorTool() {
 
   // Inspect tab state
   const [inspectValue, setInspectValue] = useState("");
-  const [inspectResult, setInspectResult] = useState<UuidInspectOutputPayload | null>(null);
+  const [inspectResult, setInspectResult] = useState<UuidInspectOutput | null>(null);
   const [inspectLoading, setInspectLoading] = useState(false);
   const inspectDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -101,7 +74,7 @@ function UuidGeneratorTool() {
       setIsLoading(true);
       setError(null);
       try {
-        const payload: UuidInputPayload = {
+        const payload: UuidInput = {
           version: currentVersion,
           count: currentCount,
           uppercase: currentUppercase,
@@ -109,7 +82,7 @@ function UuidGeneratorTool() {
         const result = (await callTool(
           RUST_COMMAND_GENERATE,
           payload
-        )) as UuidOutputPayload;
+        )) as UuidOutput;
         setUuids(result.uuids ?? []);
         setError(result.error ?? null);
       } catch (e) {
@@ -140,15 +113,29 @@ function UuidGeneratorTool() {
     }
     setInspectLoading(true);
     try {
-      const result = (await callTool(RUST_COMMAND_INSPECT, {
-        value: trimmed,
-      })) as UuidInspectOutputPayload;
+      const inspectPayload: UuidInspectInput = { value: trimmed };
+      const result = (await callTool(
+        RUST_COMMAND_INSPECT,
+        inspectPayload
+      )) as UuidInspectOutput;
       setInspectResult(result);
     } catch (e) {
       const message =
         e instanceof Error ? e.message : String(e ?? "Inspect failed");
       setInspectResult({
         isValid: false,
+        version: null,
+        versionName: null,
+        variant: null,
+        v1Timestamp: null,
+        v1ClockSeq: null,
+        v1Node: null,
+        v7Timestamp: null,
+        asUppercase: null,
+        asLowercase: null,
+        asUrn: null,
+        asBraces: null,
+        asRawBytes: null,
         error: message,
       });
     } finally {

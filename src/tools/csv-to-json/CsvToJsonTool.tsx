@@ -7,27 +7,14 @@ import {
 import { callTool } from "../../bridge";
 import { CodeBlock } from "../../components/ui/CodeBlock";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
-
-type CsvOutputFormat = "arrayOfObjects" | "arrayOfArrays";
+import type { CsvOutputFormat } from "../../bindings/CsvOutputFormat";
+import type { CsvToJsonInput } from "../../bindings/CsvToJsonInput";
+import type { CsvToJsonOutput } from "../../bindings/CsvToJsonOutput";
 
 const TOOL_ID = "csv-to-json";
 const RUST_COMMAND = "tool_csv_to_json";
 const DEBOUNCE_MS = 300;
 const COPIED_DURATION_MS = 1500;
-
-interface CsvToJsonInputPayload {
-  value: string;
-  hasHeaders: boolean;
-  delimiter: string;
-  outputFormat: CsvOutputFormat;
-}
-
-interface CsvToJsonOutputPayload {
-  result: string;
-  rowCount: number;
-  columnCount: number;
-  error?: string | null;
-}
 
 function CsvToJsonTool() {
   const { setDraft } = useDraftInput(TOOL_ID);
@@ -41,7 +28,7 @@ function CsvToJsonTool() {
   const [hasHeaders, setHasHeaders] = useState(true);
   const [delimiter, setDelimiter] = useState<"," | "\t" | "|" | ";">(",");
   const [outputFormat, setOutputFormat] = useState<CsvOutputFormat>("arrayOfObjects");
-  const [output, setOutput] = useState<CsvToJsonOutputPayload | null>(null);
+  const [output, setOutput] = useState<CsvToJsonOutput | null>(null);
   const [copyLabel, setCopyLabel] = useState("Copy");
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -58,7 +45,7 @@ function CsvToJsonTool() {
         return;
       }
       try {
-        const payload: CsvToJsonInputPayload = {
+        const payload: CsvToJsonInput = {
           value: trimmed,
           hasHeaders: currentHasHeaders,
           delimiter: currentDelimiter,
@@ -67,7 +54,7 @@ function CsvToJsonTool() {
         const result = (await callTool(
           RUST_COMMAND,
           payload
-        )) as CsvToJsonOutputPayload;
+        )) as CsvToJsonOutput;
         setOutput(result);
       } catch (e) {
         const message =

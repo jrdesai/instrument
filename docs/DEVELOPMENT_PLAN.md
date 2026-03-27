@@ -230,8 +230,11 @@ emits 114 type roots into `src/bindings/` (gitignored). `pnpm run typecheck` now
 the exporter first, so Rust/TypeScript drift is caught at compile time. CI updated to
 set up Rust before typecheck so `gen:types` works on clean checkouts.
 
-**Follow-up:** Tool components still use hand-written TS interfaces — migrate imports
-to `src/bindings/` incrementally as types are touched.
+35 tool components now import types directly from `src/bindings/` — hand-written
+mirror interfaces removed. `RegexTesterTool` and `CodeFormatterTool` retain local
+types (no Rust-generated bindings for those). `bigint` fields (JWT timestamps,
+ISO 8601 durations, Timestamp unix values) handled with `Number()` conversions
+and `0n`-safe null guards where needed.
 
 ---
 
@@ -243,7 +246,8 @@ On debug builds (`#[cfg(debug_assertions)]`), bindings are exported to
 `src/bindings/tauri.ts` (gitignored) when `pnpm tauri dev` starts.
 
 **Follow-up:** `src/bridge/desktop.ts` still uses generic `invoke()` — wire it to
-import from the generated `src/bindings/tauri.ts` for fully type-safe desktop calls.
+import from the generated `src/bindings/tauri.ts` for fully type-safe desktop calls
+(prompt: `temp/polish-bridge-wiring.md`; requires `pnpm tauri dev` to generate the file first).
 WASM bindings (`instrument-web`) remain manual.
 
 ---

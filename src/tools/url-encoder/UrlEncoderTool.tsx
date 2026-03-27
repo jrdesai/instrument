@@ -7,19 +7,10 @@ import React, {
 import { callTool } from "../../bridge";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useHistoryStore } from "../../store";
-
-/** Matches Rust UrlEncodeInput (camelCase). */
-interface UrlEncodeInputPayload {
-  text: string;
-  mode: "encode" | "decode";
-  encodeType: "full" | "component";
-}
-
-/** Matches Rust UrlEncodeOutput (camelCase). */
-interface UrlEncodeOutputPayload {
-  result: string;
-  error?: string | null;
-}
+import type { UrlEncodeInput } from "../../bindings/UrlEncodeInput";
+import type { UrlEncodeMode } from "../../bindings/UrlEncodeMode";
+import type { UrlEncodeOutput } from "../../bindings/UrlEncodeOutput";
+import type { UrlEncodeType } from "../../bindings/UrlEncodeType";
 
 const RUST_COMMAND = "url_encode_process";
 const TOOL_ID = "url-encoder";
@@ -32,8 +23,8 @@ function UrlEncoderTool() {
   const [input, setInput] = useState("");
   useRestoreStringDraft(TOOL_ID, setInput);
   const [output, setOutput] = useState("");
-  const [mode, setMode] = useState<"encode" | "decode">("encode");
-  const [encodeType, setEncodeType] = useState<"full" | "component">("component");
+  const [mode, setMode] = useState<UrlEncodeMode>("encode");
+  const [encodeType, setEncodeType] = useState<UrlEncodeType>("component");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [leftPanelPercent, setLeftPanelPercent] = useState(50);
@@ -45,8 +36,8 @@ function UrlEncoderTool() {
   const runProcess = useCallback(
     async (
       text: string,
-      currentMode: "encode" | "decode",
-      currentEncodeType: "full" | "component"
+      currentMode: UrlEncodeMode,
+      currentEncodeType: UrlEncodeType
     ) => {
       if (text === "") {
         setOutput("");
@@ -56,12 +47,12 @@ function UrlEncoderTool() {
       setIsLoading(true);
       setError(null);
       try {
-        const payload: UrlEncodeInputPayload = {
+        const payload: UrlEncodeInput = {
           text,
           mode: currentMode,
           encodeType: currentEncodeType,
         };
-        const result = (await callTool(RUST_COMMAND, payload, { skipHistory: true })) as UrlEncodeOutputPayload;
+        const result = (await callTool(RUST_COMMAND, payload, { skipHistory: true })) as UrlEncodeOutput;
         setOutput(result.result ?? "");
         setError(result.error ?? null);
         if (!result.error) {

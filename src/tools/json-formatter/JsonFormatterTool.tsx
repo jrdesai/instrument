@@ -8,35 +8,16 @@ import { callTool } from "../../bridge";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useHistoryStore } from "../../store";
 import { CodeBlock } from "../../components/ui/CodeBlock";
-
-type JsonFormatMode = "pretty" | "minify" | "compact";
-type IndentStyle = "spaces2" | "spaces4" | "tab";
+import type { IndentStyle } from "../../bindings/IndentStyle";
+import type { JsonFormatInput } from "../../bindings/JsonFormatInput";
+import type { JsonFormatMode } from "../../bindings/JsonFormatMode";
+import type { JsonFormatOutput } from "../../bindings/JsonFormatOutput";
 
 const RUST_COMMAND = "tool_json_format";
 const TOOL_ID = "json-formatter";
 const DEBOUNCE_MS = 150;
 const HISTORY_DEBOUNCE_MS = 1500;
 const COPIED_DURATION_MS = 1500;
-
-interface JsonFormatInputPayload {
-  value: string;
-  mode: JsonFormatMode;
-  indent: IndentStyle;
-  sortKeys: boolean;
-}
-
-interface JsonFormatOutputPayload {
-  result: string;
-  isValid: boolean;
-  lineCount: number;
-  charCount: number;
-  sizeBytes: number;
-  sizeOriginalBytes: number;
-  compressionRatio?: number | null;
-  error?: string | null;
-  errorLine?: number | null;
-  errorColumn?: number | null;
-}
 
 function JsonFormatterTool() {
   const { setDraft } = useDraftInput(TOOL_ID);
@@ -45,7 +26,7 @@ function JsonFormatterTool() {
   const [mode, setMode] = useState<JsonFormatMode>("pretty");
   const [indent, setIndent] = useState<IndentStyle>("spaces2");
   const [sortKeys, setSortKeys] = useState(false);
-  const [output, setOutput] = useState<JsonFormatOutputPayload | null>(null);
+  const [output, setOutput] = useState<JsonFormatOutput | null>(null);
   const [copyLabel, setCopyLabel] = useState("Copy");
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -64,13 +45,13 @@ function JsonFormatterTool() {
         return;
       }
       try {
-        const payload: JsonFormatInputPayload = {
+        const payload: JsonFormatInput = {
           value: trimmed,
           mode: currentMode,
           indent: currentIndent,
           sortKeys: currentSortKeys,
         };
-        const result = (await callTool(RUST_COMMAND, payload, { skipHistory: true })) as JsonFormatOutputPayload;
+        const result = (await callTool(RUST_COMMAND, payload, { skipHistory: true })) as JsonFormatOutput;
         setOutput(result);
         if (result.isValid) {
           if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
@@ -93,7 +74,10 @@ function JsonFormatterTool() {
           charCount: 0,
           sizeBytes: 0,
           sizeOriginalBytes: trimmed.length,
+          compressionRatio: null,
           error: message,
+          errorLine: null,
+          errorColumn: null,
         });
       }
     },

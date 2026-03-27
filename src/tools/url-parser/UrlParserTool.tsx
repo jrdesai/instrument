@@ -7,6 +7,8 @@ import {
 import { callTool } from "../../bridge";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useHistoryStore } from "../../store";
+import type { UrlParseInput } from "../../bindings/UrlParseInput";
+import type { UrlParseOutput } from "../../bindings/UrlParseOutput";
 
 const RUST_COMMAND = "tool_url_parse";
 const TOOL_ID = "url-parser";
@@ -14,30 +16,7 @@ const DEBOUNCE_MS = 150;
 const HISTORY_DEBOUNCE_MS = 1500;
 const COPIED_DURATION_MS = 1500;
 
-interface UrlParseInputPayload {
-  value: string;
-}
-
-interface QueryParamPayload {
-  key: string;
-  value: string;
-}
-
-interface UrlParseOutputPayload {
-  scheme?: string | null;
-  username?: string | null;
-  password?: string | null;
-  host?: string | null;
-  port?: number | null;
-  path?: string | null;
-  query?: string | null;
-  params: QueryParamPayload[];
-  fragment?: string | null;
-  origin?: string | null;
-  error?: string | null;
-}
-
-const FIELD_GROUPS: { label: string; key: keyof UrlParseOutputPayload }[][] = [
+const FIELD_GROUPS: { label: string; key: keyof UrlParseOutput }[][] = [
   [
     { label: "Scheme", key: "scheme" },
     { label: "Username", key: "username" },
@@ -56,8 +35,8 @@ const FIELD_GROUPS: { label: string; key: keyof UrlParseOutputPayload }[][] = [
 ];
 
 function fieldValue(
-  output: UrlParseOutputPayload | null,
-  key: keyof UrlParseOutputPayload
+  output: UrlParseOutput | null,
+  key: keyof UrlParseOutput
 ): string {
   if (!output || key === "params" || key === "error") return "—";
   const v = output[key];
@@ -70,7 +49,7 @@ function UrlParserTool() {
   const { setDraft } = useDraftInput(TOOL_ID);
   const [input, setInput] = useState("");
   useRestoreStringDraft(TOOL_ID, setInput);
-  const [output, setOutput] = useState<UrlParseOutputPayload | null>(null);
+  const [output, setOutput] = useState<UrlParseOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [copyLabel, setCopyLabel] = useState("Copy URL");
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -86,12 +65,12 @@ function UrlParserTool() {
       }
       setIsLoading(true);
       try {
-        const payload: UrlParseInputPayload = { value: trimmed };
+        const payload: UrlParseInput = { value: trimmed };
         const result = (await callTool(
           RUST_COMMAND,
           payload,
           { skipHistory: true }
-        )) as UrlParseOutputPayload;
+        )) as UrlParseOutput;
         setOutput(result);
         if (!result.error) {
           if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
@@ -114,7 +93,16 @@ function UrlParserTool() {
                 ? String((e as { message: unknown }).message)
                 : "Parse failed";
         setOutput({
+          scheme: null,
+          username: null,
+          password: null,
+          host: null,
+          port: null,
+          path: null,
+          query: null,
           params: [],
+          fragment: null,
+          origin: null,
           error: message,
         });
       } finally {

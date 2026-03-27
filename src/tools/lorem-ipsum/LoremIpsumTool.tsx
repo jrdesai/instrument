@@ -1,23 +1,8 @@
 import { useCallback, useState } from "react";
 import { callTool } from "../../bridge";
-
-type LoremOutputType = "paragraphs" | "sentences" | "words";
-
-/** Matches Rust LoremIpsumInput (camelCase). */
-interface LoremIpsumInputPayload {
-  outputType: LoremOutputType;
-  count: number;
-  startWithClassic: boolean;
-}
-
-/** Matches Rust LoremIpsumOutput (camelCase). */
-interface LoremIpsumOutputPayload {
-  result: string;
-  wordCount: number;
-  paragraphCount: number;
-  sentenceCount: number;
-  error?: string | null;
-}
+import type { LoremIpsumInput } from "../../bindings/LoremIpsumInput";
+import type { LoremIpsumOutput } from "../../bindings/LoremIpsumOutput";
+import type { LoremOutputType } from "../../bindings/LoremOutputType";
 
 const RUST_COMMAND = "lorem_ipsum_process";
 export const TOOL_ID = "lorem-ipsum";
@@ -28,7 +13,7 @@ function LoremIpsumTool() {
   const [outputType, setOutputType] = useState<LoremOutputType>("paragraphs");
   const [count, setCount] = useState(DEFAULT_COUNT);
   const [startWithClassic, setStartWithClassic] = useState(true);
-  const [output, setOutput] = useState<LoremIpsumOutputPayload | null>(null);
+  const [output, setOutput] = useState<LoremIpsumOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [copyLabel, setCopyLabel] = useState("Copy");
 
@@ -41,7 +26,7 @@ function LoremIpsumTool() {
       setIsLoading(true);
       setOutput(null);
       try {
-        const payload: LoremIpsumInputPayload = {
+        const payload: LoremIpsumInput = {
           outputType: currentType,
           count: currentCount,
           startWithClassic: currentStartClassic,
@@ -49,7 +34,7 @@ function LoremIpsumTool() {
         const result = (await callTool(
           RUST_COMMAND,
           payload
-        )) as LoremIpsumOutputPayload;
+        )) as LoremIpsumOutput;
         setOutput(result);
       } catch (e) {
         const message =

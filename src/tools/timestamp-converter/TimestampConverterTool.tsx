@@ -8,28 +8,10 @@ import { callTool } from "../../bridge";
 import { FormatHint } from "../../components/ui/FormatHint";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useHistoryStore } from "../../store";
-
-/** Matches Rust TimestampInput (camelCase). */
-interface TimestampInputPayload {
-  value: string;
-  mode: "toHuman" | "toUnix" | "now";
-  unit: "seconds" | "milliseconds";
-}
-
-/** Matches Rust TimestampOutput (camelCase). */
-interface TimestampOutputPayload {
-  unixSeconds: number;
-  unixMilliseconds: number;
-  iso8601: string;
-  rfc2822: string;
-  utcHuman: string;
-  dateOnly: string;
-  timeOnly: string;
-  dayOfWeek: string;
-  relative: string;
-  isFuture: boolean;
-  error?: string | null;
-}
+import type { TimestampInput } from "../../bindings/TimestampInput";
+import type { TimestampMode } from "../../bindings/TimestampMode";
+import type { TimestampOutput } from "../../bindings/TimestampOutput";
+import type { TimestampUnit } from "../../bindings/TimestampUnit";
 
 const RUST_COMMAND = "timestamp_process";
 const TOOL_ID = "timestamp-converter";
@@ -39,10 +21,7 @@ const COPIED_DURATION_MS = 1500;
 const NOW_TICK_MS = 1000;
 
 const OUTPUT_FIELDS: {
-  id: keyof Omit<
-    TimestampOutputPayload,
-    "error"
-  >;
+  id: keyof Omit<TimestampOutput, "error">;
   label: string;
 }[] = [
   { id: "unixSeconds", label: "Unix (seconds)" },
@@ -56,16 +35,13 @@ const OUTPUT_FIELDS: {
   { id: "relative", label: "Relative" },
 ];
 
-type TimestampMode = "toHuman" | "toUnix" | "now";
-type TimestampUnit = "seconds" | "milliseconds";
-
 function TimestampConverterTool() {
   const { setDraft } = useDraftInput(TOOL_ID);
   const [value, setValue] = useState("");
   useRestoreStringDraft(TOOL_ID, setValue);
   const [mode, setMode] = useState<TimestampMode>("toHuman");
   const [unit, setUnit] = useState<TimestampUnit>("seconds");
-  const [output, setOutput] = useState<TimestampOutputPayload | null>(null);
+  const [output, setOutput] = useState<TimestampOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [copyAllLabel, setCopyAllLabel] = useState("Copy All");
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -81,7 +57,7 @@ function TimestampConverterTool() {
     ) => {
       setIsLoading(true);
       try {
-        const payload: TimestampInputPayload = {
+        const payload: TimestampInput = {
           value: currentMode === "now" ? "" : currentValue,
           mode: currentMode,
           unit: currentUnit,
@@ -90,7 +66,7 @@ function TimestampConverterTool() {
           RUST_COMMAND,
           payload,
           { skipHistory: true }
-        )) as TimestampOutputPayload;
+        )) as TimestampOutput;
         setOutput(result);
         if (!result.error) {
           if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
@@ -115,8 +91,8 @@ function TimestampConverterTool() {
                   ? String(e)
                   : "Failed to run tool";
         setOutput({
-          unixSeconds: 0,
-          unixMilliseconds: 0,
+          unixSeconds: 0n,
+          unixMilliseconds: 0n,
           iso8601: "",
           rfc2822: "",
           utcHuman: "",

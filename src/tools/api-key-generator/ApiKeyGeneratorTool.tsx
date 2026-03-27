@@ -3,24 +3,10 @@ import {
   useState,
 } from "react";
 import { callTool } from "../../bridge";
-
-type ApiKeyFormat = "raw" | "grouped" | "prefixed";
-type ApiKeyCharset = "alphanumeric" | "alphaOnly" | "hexOnly" | "urlSafe";
-
-/** Matches Rust ApiKeyInput (camelCase). */
-interface ApiKeyInputPayload {
-  count: number;
-  length: number;
-  prefix: string;
-  format: ApiKeyFormat;
-  charset: ApiKeyCharset;
-}
-
-/** Matches Rust ApiKeyOutput (camelCase). */
-interface ApiKeyOutputPayload {
-  keys: string[];
-  error?: string | null;
-}
+import type { ApiKeyCharset } from "../../bindings/ApiKeyCharset";
+import type { ApiKeyFormat } from "../../bindings/ApiKeyFormat";
+import type { ApiKeyInput } from "../../bindings/ApiKeyInput";
+import type { ApiKeyOutput } from "../../bindings/ApiKeyOutput";
 
 const RUST_COMMAND = "api_key_process";
 export const TOOL_ID = "api-key-generator";
@@ -49,7 +35,7 @@ function ApiKeyGeneratorTool() {
       setIsLoading(true);
       setError(null);
       try {
-        const payload: ApiKeyInputPayload = {
+        const payload: ApiKeyInput = {
           count: currentCount,
           length: currentLength,
           prefix: currentPrefix,
@@ -59,7 +45,7 @@ function ApiKeyGeneratorTool() {
         const result = (await callTool(
           RUST_COMMAND,
           payload
-        )) as ApiKeyOutputPayload;
+        )) as ApiKeyOutput;
         setKeys(result.keys ?? []);
         setError(result.error ?? null);
       } catch (e) {

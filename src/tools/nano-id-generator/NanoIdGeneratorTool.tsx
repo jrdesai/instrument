@@ -1,16 +1,7 @@
 import { useCallback, useState } from "react";
 import { callTool } from "../../bridge";
-
-interface NanoIdInput {
-  count: number;
-  size: number;
-  alphabet: string | null;
-}
-
-interface NanoIdOutput {
-  ids: string[];
-  error?: string | null;
-}
+import type { NanoIdInput } from "../../bindings/NanoIdInput";
+import type { NanoIdOutput } from "../../bindings/NanoIdOutput";
 
 const RUST_COMMAND = "nanoid_process";
 export const TOOL_ID = "nano-id-generator";

@@ -6,20 +6,8 @@ import {
 } from "react";
 import { callTool } from "../../bridge";
 import { useHistoryStore } from "../../store";
-
-/** Matches Rust Sha256Input (camelCase). */
-interface Sha256InputPayload {
-  text: string;
-  uppercase: boolean;
-  hashEmpty: boolean;
-}
-
-/** Matches Rust Sha256Output (camelCase). */
-interface Sha256OutputPayload {
-  hash: string;
-  length: number;
-  error?: string | null;
-}
+import type { Sha256Input } from "../../bindings/Sha256Input";
+import type { Sha256Output } from "../../bindings/Sha256Output";
 
 const RUST_COMMAND = "sha256_process";
 const TOOL_ID = "sha256-hash";
@@ -53,7 +41,7 @@ function Sha256HashTool() {
       setIsLoading(true);
       setError(null);
       try {
-        const payload: Sha256InputPayload = {
+        const payload: Sha256Input = {
           text: currentInput,
           uppercase: currentUppercase,
           hashEmpty: currentHashEmpty,
@@ -62,7 +50,7 @@ function Sha256HashTool() {
           RUST_COMMAND,
           payload,
           { skipHistory: true }
-        )) as Sha256OutputPayload;
+        )) as Sha256Output;
         setOutput(result.hash ?? "");
         setError(result.error ?? null);
         if (!result.error) {

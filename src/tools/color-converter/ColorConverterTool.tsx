@@ -3,19 +3,8 @@ import { HexColorPicker } from "react-colorful";
 import { callTool } from "../../bridge";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useHistoryStore } from "../../store";
-
-interface ColorInputPayload {
-  value: string;
-}
-
-interface ColorOutputPayload {
-  hex: string;
-  rgb: string;
-  hsl: string;
-  hsb: string;
-  name: string | null;
-  error: string | null;
-}
+import type { ColorInput } from "../../bindings/ColorInput";
+import type { ColorOutput } from "../../bindings/ColorOutput";
 
 const RUST_COMMAND = "color_convert";
 const TOOL_ID = "color-converter";
@@ -23,7 +12,7 @@ const DEBOUNCE_MS = 150;
 const HISTORY_DEBOUNCE_MS = 1500;
 const COPIED_DURATION_MS = 1500;
 
-const FORMATS: { id: keyof Omit<ColorOutputPayload, "name" | "error">; label: string }[] = [
+const FORMATS: { id: keyof Omit<ColorOutput, "name" | "error">; label: string }[] = [
   { id: "hex", label: "HEX" },
   { id: "rgb", label: "RGB" },
   { id: "hsl", label: "HSL" },
@@ -34,7 +23,7 @@ function ColorConverterTool() {
   const { setDraft } = useDraftInput(TOOL_ID);
   const [input, setInput] = useState("");
   useRestoreStringDraft(TOOL_ID, setInput);
-  const [output, setOutput] = useState<ColorOutputPayload | null>(null);
+  const [output, setOutput] = useState<ColorOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
@@ -56,10 +45,10 @@ function ColorConverterTool() {
       setIsLoading(true);
       setError(null);
       try {
-        const payload: ColorInputPayload = { value };
+        const payload: ColorInput = { value };
         const result = (await callTool(RUST_COMMAND, payload, {
           skipHistory: true,
-        })) as ColorOutputPayload;
+        })) as ColorOutput;
 
         if (result.error) {
           setError(result.error);

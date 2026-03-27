@@ -7,59 +7,25 @@ import {
 import { callTool } from "../../bridge";
 import { useDraftInput, useRestoreDraft } from "../../hooks/useDraftInput";
 import { useHistoryStore } from "../../store";
-
-type BitwiseBaseKey = "decimal" | "hexadecimal" | "binary" | "octal";
-type BitwiseWidthKey = "bit8" | "bit16" | "bit32" | "bit64";
-
-interface BitwiseResultPayload {
-  decimal: string;
-  hexadecimal: string;
-  binary: string;
-  binaryGrouped: string;
-  octal: string;
-}
-
-/** Matches Rust BitwiseInput (camelCase). */
-interface BitwiseInputPayload {
-  valueA: string;
-  valueB: string;
-  fromBase: BitwiseBaseKey;
-  bitWidth: BitwiseWidthKey;
-  shiftAmount: number;
-}
-
-/** Matches Rust BitwiseOutput (camelCase). */
-interface BitwiseOutputPayload {
-  and?: BitwiseResultPayload | null;
-  or?: BitwiseResultPayload | null;
-  xor?: BitwiseResultPayload | null;
-  nand?: BitwiseResultPayload | null;
-  nor?: BitwiseResultPayload | null;
-  notA?: BitwiseResultPayload | null;
-  shiftLeft?: BitwiseResultPayload | null;
-  shiftRight?: BitwiseResultPayload | null;
-  rotateLeft?: BitwiseResultPayload | null;
-  rotateRight?: BitwiseResultPayload | null;
-  bitCountA?: number | null;
-  leadingZerosA?: number | null;
-  trailingZerosA?: number | null;
-  isPowerOfTwoA?: boolean | null;
-  error?: string | null;
-}
+import type { BitwiseBase } from "../../bindings/BitwiseBase";
+import type { BitwiseInput } from "../../bindings/BitwiseInput";
+import type { BitwiseOutput } from "../../bindings/BitwiseOutput";
+import type { BitwiseResult } from "../../bindings/BitwiseResult";
+import type { BitwiseWidth } from "../../bindings/BitwiseWidth";
 
 const RUST_COMMAND = "bitwise_process";
 const TOOL_ID = "bitwise-calculator";
 const DEBOUNCE_MS = 150;
 const HISTORY_DEBOUNCE_MS = 1500;
 
-const BASE_PILLS: { id: BitwiseBaseKey; label: string }[] = [
+const BASE_PILLS: { id: BitwiseBase; label: string }[] = [
   { id: "decimal", label: "Dec" },
   { id: "hexadecimal", label: "Hex" },
   { id: "binary", label: "Bin" },
   { id: "octal", label: "Oct" },
 ];
 
-const TWO_OP_OPS: { key: keyof BitwiseOutputPayload; label: string }[] = [
+const TWO_OP_OPS: { key: keyof BitwiseOutput; label: string }[] = [
   { key: "and", label: "AND" },
   { key: "or", label: "OR" },
   { key: "xor", label: "XOR" },
@@ -75,7 +41,7 @@ function isBitwiseDraft(
   return typeof o.valueA === "string" && typeof o.valueB === "string";
 }
 
-const BIT_WIDTH_OPTIONS: { id: BitwiseWidthKey; label: string; maxShift: number }[] = [
+const BIT_WIDTH_OPTIONS: { id: BitwiseWidth; label: string; maxShift: number }[] = [
   { id: "bit8", label: "8", maxShift: 7 },
   { id: "bit16", label: "16", maxShift: 15 },
   { id: "bit32", label: "32", maxShift: 31 },
@@ -88,7 +54,7 @@ function ResultCard({
   onCopy,
 }: {
   label: string;
-  result: BitwiseResultPayload | null | undefined;
+  result: BitwiseResult | null | undefined;
   onCopy: (text: string) => void;
 }) {
   if (!result) return null;
@@ -124,10 +90,10 @@ function BitwiseCalculatorTool() {
     setValueA(raw.valueA);
     setValueB(raw.valueB);
   });
-  const [fromBase, setFromBase] = useState<BitwiseBaseKey>("decimal");
-  const [bitWidth, setBitWidth] = useState<BitwiseWidthKey>("bit8");
+  const [fromBase, setFromBase] = useState<BitwiseBase>("decimal");
+  const [bitWidth, setBitWidth] = useState<BitwiseWidth>("bit8");
   const [shiftAmount, setShiftAmount] = useState(1);
-  const [output, setOutput] = useState<BitwiseOutputPayload | null>(null);
+  const [output, setOutput] = useState<BitwiseOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -140,8 +106,8 @@ function BitwiseCalculatorTool() {
     async (
       a: string,
       b: string,
-      base: BitwiseBaseKey,
-      width: BitwiseWidthKey,
+      base: BitwiseBase,
+      width: BitwiseWidth,
       shift: number
     ) => {
       if (!a.trim()) {
@@ -151,7 +117,7 @@ function BitwiseCalculatorTool() {
       }
       setIsLoading(true);
       try {
-        const payload: BitwiseInputPayload = {
+        const payload: BitwiseInput = {
           valueA: a,
           valueB: b,
           fromBase: base,
@@ -162,7 +128,7 @@ function BitwiseCalculatorTool() {
           RUST_COMMAND,
           payload,
           { skipHistory: true }
-        )) as BitwiseOutputPayload;
+        )) as BitwiseOutput;
         setOutput(result);
         if (!result.error) {
           if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
@@ -186,7 +152,23 @@ function BitwiseCalculatorTool() {
                 : e != null
                   ? String(e)
                   : "Failed to run tool";
-        setOutput({ error: message });
+        setOutput({
+          and: null,
+          or: null,
+          xor: null,
+          nand: null,
+          nor: null,
+          notA: null,
+          shiftLeft: null,
+          shiftRight: null,
+          rotateLeft: null,
+          rotateRight: null,
+          bitCountA: null,
+          leadingZerosA: null,
+          trailingZerosA: null,
+          isPowerOfTwoA: null,
+          error: message,
+        });
       } finally {
         setIsLoading(false);
       }
@@ -314,7 +296,7 @@ function BitwiseCalculatorTool() {
                     <ResultCard
                       key={key}
                       label={label}
-                      result={output?.[key] as BitwiseResultPayload | undefined}
+                      result={output?.[key] as BitwiseResult | undefined}
                       onCopy={handleCopy}
                     />
                   ))}

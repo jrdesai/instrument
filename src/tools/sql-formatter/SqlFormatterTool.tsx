@@ -7,27 +7,15 @@ import {
 import { callTool } from "../../bridge";
 import { CodeBlock } from "../../components/ui/CodeBlock";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
-
-type SqlIndentStyle = "spaces2" | "spaces4" | "tab";
-type SqlKeywordCase = "upper" | "lower" | "preserve";
+import type { SqlFormatInput } from "../../bindings/SqlFormatInput";
+import type { SqlFormatOutput } from "../../bindings/SqlFormatOutput";
+import type { SqlIndentStyle } from "../../bindings/SqlIndentStyle";
+import type { SqlKeywordCase } from "../../bindings/SqlKeywordCase";
 
 const TOOL_ID = "sql-formatter";
 const RUST_COMMAND = "tool_sql_format";
 const DEBOUNCE_MS = 300;
 const COPIED_DURATION_MS = 1500;
-
-interface SqlFormatInputPayload {
-  value: string;
-  indent: SqlIndentStyle;
-  keywordCase: SqlKeywordCase;
-}
-
-interface SqlFormatOutputPayload {
-  result: string;
-  lineCount: number;
-  charCount: number;
-  error?: string | null;
-}
 
 function SqlFormatterTool() {
   const { setDraft } = useDraftInput(TOOL_ID);
@@ -35,7 +23,7 @@ function SqlFormatterTool() {
   useRestoreStringDraft(TOOL_ID, setInputValue);
   const [indent, setIndent] = useState<SqlIndentStyle>("spaces2");
   const [keywordCase, setKeywordCase] = useState<SqlKeywordCase>("upper");
-  const [output, setOutput] = useState<SqlFormatOutputPayload | null>(null);
+  const [output, setOutput] = useState<SqlFormatOutput | null>(null);
   const [copyLabel, setCopyLabel] = useState("Copy");
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -47,12 +35,12 @@ function SqlFormatterTool() {
         return;
       }
       try {
-        const payload: SqlFormatInputPayload = {
+        const payload: SqlFormatInput = {
           value: trimmed,
           indent: currentIndent,
           keywordCase: currentCase,
         };
-        const result = (await callTool(RUST_COMMAND, payload)) as SqlFormatOutputPayload;
+        const result = (await callTool(RUST_COMMAND, payload)) as SqlFormatOutput;
         setOutput(result);
       } catch (e) {
         const message =
