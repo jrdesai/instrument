@@ -4,10 +4,13 @@
 //! changes 0, no error.
 
 use serde::{Deserialize, Serialize};
+use specta::Type;
+use ts_rs::TS;
 
 /// Input for the String Escaper tool.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct StringEscaperInput {
     pub text: String,
     pub mode: EscapeMode,
@@ -15,16 +18,18 @@ pub struct StringEscaperInput {
 }
 
 /// Escape or unescape.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub enum EscapeMode {
     Escape,
     Unescape,
 }
 
 /// Target format: JSON, Regex, HTML, SQL, Shell, CSV.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub enum EscapeTarget {
     Json,
     Regex,
@@ -35,8 +40,9 @@ pub enum EscapeTarget {
 }
 
 /// Output: result string, number of replacements, optional error.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct StringEscaperOutput {
     pub result: String,
     pub changes: usize,

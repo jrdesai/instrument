@@ -17,6 +17,7 @@ use crate::command_log::finish_ok;
 
 /// Runs timestamp conversion via instrument-core.
 #[tauri::command]
+#[specta::specta]
 pub fn timestamp_process(input: TimestampInput) -> TimestampOutput {
     let start = Instant::now();
     let output = timestamp_process_core(input);
@@ -26,6 +27,7 @@ pub fn timestamp_process(input: TimestampInput) -> TimestampOutput {
 
 /// Runs timezone conversion via instrument-core.
 #[tauri::command]
+#[specta::specta]
 pub fn timezone_process(input: TimezoneInput) -> TimezoneOutput {
     let start = Instant::now();
     let output = timezone_process_core(input);
@@ -35,6 +37,7 @@ pub fn timezone_process(input: TimezoneInput) -> TimezoneOutput {
 
 /// Runs ISO 8601 parse/format via instrument-core.
 #[tauri::command]
+#[specta::specta]
 pub fn iso8601_process(input: Iso8601Input) -> Iso8601Output {
     let start = Instant::now();
     let output = iso8601_process_core(input);
@@ -44,6 +47,7 @@ pub fn iso8601_process(input: Iso8601Input) -> Iso8601Output {
 
 /// Parses a cron expression and returns next run times (UTC).
 #[tauri::command]
+#[specta::specta]
 pub fn cron_process(input: CronInput) -> CronOutput {
     let start = Instant::now();
     let output = cron_process_core(input);

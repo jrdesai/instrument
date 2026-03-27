@@ -4,10 +4,13 @@ pub mod to_csv;
 pub mod to_xml;
 
 use serde::{Deserialize, Serialize};
+use specta::Type;
+use ts_rs::TS;
 use serde_json::Value;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub enum ConversionTarget {
     Yaml,
     TypeScript,
@@ -15,8 +18,9 @@ pub enum ConversionTarget {
     Xml,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct JsonConvertInput {
     pub value: String,
     pub target: ConversionTarget,
@@ -32,8 +36,9 @@ pub struct JsonConvertInput {
     pub xml_root_element: Option<String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct JsonConvertOutput {
     pub result: String,
     pub is_valid_json: bool,

@@ -5,10 +5,13 @@
 
 use percent_encoding::{percent_decode_str, utf8_percent_encode, AsciiSet, CONTROLS, NON_ALPHANUMERIC};
 use serde::{Deserialize, Serialize};
+use specta::Type;
+use ts_rs::TS;
 
 /// Input for the URL encode/decode tool.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct UrlEncodeInput {
     pub text: String,
     pub mode: UrlEncodeMode,
@@ -16,8 +19,9 @@ pub struct UrlEncodeInput {
 }
 
 /// Whether to encode or decode.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub enum UrlEncodeMode {
     Encode,
     Decode,
@@ -25,8 +29,9 @@ pub enum UrlEncodeMode {
 
 /// Full: encodes everything including / ? & =.
 /// Component: encodes only special chars, preserves / (e.g. for path segments).
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub enum UrlEncodeType {
     Full,
     Component,
@@ -59,8 +64,9 @@ const COMPONENT: &AsciiSet = &CONTROLS
     .add(b'>');
 
 /// Output: result string and optional error message.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct UrlEncodeOutput {
     pub result: String,
     pub error: Option<String>,

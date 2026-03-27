@@ -5,18 +5,22 @@
 //! all zeros with no error.
 
 use serde::{Deserialize, Serialize};
+use specta::Type;
+use ts_rs::TS;
 use std::collections::HashSet;
 
 /// Input for the Word Counter tool.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct WordCounterInput {
     pub text: String,
 }
 
 /// Output for the Word Counter tool: all stats in one struct.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct WordCounterOutput {
     pub words: usize,
     pub characters_with_spaces: usize,

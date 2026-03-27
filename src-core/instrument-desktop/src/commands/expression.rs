@@ -7,6 +7,7 @@ use instrument_core::expression::{process, ExprEvalInput, ExprEvalOutput};
 use crate::command_log::finish_ok;
 
 #[tauri::command]
+#[specta::specta]
 pub fn tool_expression_eval(input: ExprEvalInput) -> ExprEvalOutput {
     let start = Instant::now();
     let output = process(input);

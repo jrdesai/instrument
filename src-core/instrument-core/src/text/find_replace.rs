@@ -5,10 +5,13 @@
 
 use regex::{escape as regex_escape, NoExpand, Regex};
 use serde::{Deserialize, Serialize};
+use specta::Type;
+use ts_rs::TS;
 
 /// Input for the Find & Replace tool.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct FindReplaceInput {
     pub text: String,
     pub find: String,
@@ -22,8 +25,9 @@ pub struct FindReplaceInput {
 /// Output: result string, total matches found, number replaced, match ranges, optional error.
 /// match_ranges: [start_byte, end_byte] of each match in the ORIGINAL text.
 /// Empty when find is empty, no matches, or on error.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct FindReplaceOutput {
     pub result: String,
     pub match_count: usize,

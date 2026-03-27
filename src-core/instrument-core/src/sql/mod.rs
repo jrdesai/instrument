@@ -1,25 +1,30 @@
 //! SQL formatter module backed by the `sqlformat` crate.
 
 use serde::{Deserialize, Serialize};
+use specta::Type;
+use ts_rs::TS;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub enum SqlIndentStyle {
     Spaces2,
     Spaces4,
     Tab,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub enum SqlKeywordCase {
     Upper,
     Lower,
     Preserve,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct SqlFormatInput {
     /// Raw SQL string to format.
     pub value: String,
@@ -29,8 +34,9 @@ pub struct SqlFormatInput {
     pub keyword_case: SqlKeywordCase,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct SqlFormatOutput {
     pub result: String,
     pub line_count: usize,

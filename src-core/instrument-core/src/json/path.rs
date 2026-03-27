@@ -16,13 +16,16 @@
 //! ```
 
 use serde::{Deserialize, Serialize};
+use specta::Type;
+use ts_rs::TS;
 use serde_json::Value;
 
 use jsonpath_rust::{JsonPath, JsonPathValue};
 
 /// Input for the JSONPath tool.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct JsonPathInput {
     /// JSON document to query.
     pub value: String,
@@ -31,8 +34,9 @@ pub struct JsonPathInput {
 }
 
 /// A single JSONPath match.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct JsonPathMatch {
     /// Canonical JSONPath for the matched value, e.g. "$['users'][0]['name']".
     pub path: String,
@@ -45,8 +49,9 @@ pub struct JsonPathMatch {
 }
 
 /// Output from the JSONPath tool.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct JsonPathOutput {
     pub is_valid_json: bool,
     pub is_valid_query: bool,

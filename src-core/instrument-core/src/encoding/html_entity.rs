@@ -8,10 +8,13 @@
 //! like `&foo;` are left as-is.
 
 use serde::{Deserialize, Serialize};
+use specta::Type;
+use ts_rs::TS;
 
 /// Input for the HTML entity encode/decode tool.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct HtmlEntityInput {
     pub text: String,
     pub mode: HtmlEntityMode,
@@ -19,24 +22,27 @@ pub struct HtmlEntityInput {
 }
 
 /// Whether to encode or decode.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub enum HtmlEntityMode {
     Encode,
     Decode,
 }
 
 /// Named: &amp;, &lt;, &gt;, &quot;, &apos;. Numeric: &#38;, &#60;, &#62;, &#34;, &#39;.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub enum HtmlEntityEncodeType {
     Named,
     Numeric,
 }
 
 /// Output: result string, count of entities encoded/decoded, and optional error.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct HtmlEntityOutput {
     pub result: String,
     pub entities_found: usize,

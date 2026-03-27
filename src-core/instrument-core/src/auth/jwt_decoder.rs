@@ -8,11 +8,14 @@ use base64::Engine;
 use chrono::{DateTime, Utc};
 use hmac::{Hmac, Mac};
 use serde::{Deserialize, Serialize};
+use specta::Type;
+use ts_rs::TS;
 use sha2::{Sha256, Sha384, Sha512};
 
 /// Input for JWT decode.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct JwtDecodeInput {
     /// The JWT token string (header.payload.signature).
     pub token: String,
@@ -23,8 +26,9 @@ pub struct JwtDecodeInput {
 }
 
 /// How the verification secret is encoded.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub enum SecretEncoding {
     Utf8,
     Base64,
@@ -32,8 +36,9 @@ pub enum SecretEncoding {
 }
 
 /// Output of JWT decode.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct JwtDecodeOutput {
     /// Base64url-decoded header JSON.
     pub header_raw: String,

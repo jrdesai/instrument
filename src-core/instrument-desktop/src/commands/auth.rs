@@ -13,6 +13,7 @@ use crate::command_log::finish_ok;
 
 /// Runs JWT decode via instrument-core.
 #[tauri::command]
+#[specta::specta]
 pub fn tool_jwt_decode(input: JwtDecodeInput) -> JwtDecodeOutput {
     let start = Instant::now();
     let output = jwt_decode_process_core(input);
@@ -22,6 +23,7 @@ pub fn tool_jwt_decode(input: JwtDecodeInput) -> JwtDecodeOutput {
 
 /// Runs JWT build via instrument-core.
 #[tauri::command]
+#[specta::specta]
 pub fn tool_jwt_build(input: JwtBuildInput) -> JwtBuildOutput {
     let start = Instant::now();
     let output = jwt_build_process_core(input);

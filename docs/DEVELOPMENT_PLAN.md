@@ -222,44 +222,29 @@ count grows. Each entry describes the problem, the solution, and the trigger con
 
 ---
 
-### 6.1 Auto-generated TypeScript types from Rust (ts-rs)
+### 6.1 Auto-generated TypeScript types from Rust (ts-rs) ✅ Done
 
-**Problem:** TypeScript input/output interfaces are written by hand to match Rust structs.
-If a Rust field changes type or is renamed, the TypeScript side drifts silently — the
-mismatch is only caught at runtime, not at compile time.
+`ts-rs` (with `serde-compat`) and `specta` added to `instrument-core`. All serde-backed
+tool types derive `TS`, `specta::Type`, and `#[ts(export)]`. Running `pnpm run gen:types`
+emits 114 type roots into `src/bindings/` (gitignored). `pnpm run typecheck` now runs
+the exporter first, so Rust/TypeScript drift is caught at compile time. CI updated to
+set up Rust before typecheck so `gen:types` works on clean checkouts.
 
-**Solution:** Add `ts-rs` to `instrument-core`. Derive `TS` on all public Input/Output
-structs. A build step generates TypeScript interfaces into `src/bindings/` automatically.
-`pnpm run typecheck` then catches Rust/TypeScript drift at compile time.
-
-**Effort:** ~1–1.5 days
-**Risk:** Low — ts-rs is stable and doesn't touch runtime code
-**Trigger:** When a type drift bug is caught in production, or when adding 10+ new tools
-**Reference:** https://github.com/Aleph-Alpha/ts-rs
+**Follow-up:** Tool components still use hand-written TS interfaces — migrate imports
+to `src/bindings/` incrementally as types are touched.
 
 ---
 
-### 6.2 Auto-generated Tauri command bindings (tauri-specta)
+### 6.2 Auto-generated Tauri command bindings (tauri-specta) ✅ Done
 
-**Problem:** Every new tool requires manually writing the same boilerplate in three places:
-1. `#[tauri::command]` wrapper in `instrument-desktop/src/commands/`
-2. `#[wasm_bindgen]` export in `instrument-web/src/lib.rs`
-3. Entry in `src-tauri/src/lib.rs` `generate_handler![]`
+Every `#[tauri::command]` in `instrument-desktop` also has `#[specta::specta]`.
+`src-tauri/src/lib.rs` uses tauri-specta's `Builder` for command registration.
+On debug builds (`#[cfg(debug_assertions)]`), bindings are exported to
+`src/bindings/tauri.ts` (gitignored) when `pnpm tauri dev` starts.
 
-At 38 commands this is manageable. At 100+ it becomes a maintenance burden and a common
-source of mistakes (forgetting to register a command, mismatched function names).
-
-**Solution:** Adopt `tauri-specta` to generate Tauri command registration and TypeScript
-client code from annotated Rust functions. Combined with ts-rs (§6.1), this eliminates
-both the binding boilerplate and the manual TypeScript types in one pass.
-
-Note: WASM bindings (`instrument-web`) are not covered by tauri-specta and would still
-need manual maintenance or a separate macro-based solution.
-
-**Effort:** ~2–3 days
-**Risk:** Medium — requires adapting the bridge to use specta's generated client
-**Trigger:** When adding a large batch of new tools (10+) or when binding drift causes a bug
-**Reference:** https://github.com/oscartbeaumont/tauri-specta
+**Follow-up:** `src/bridge/desktop.ts` still uses generic `invoke()` — wire it to
+import from the generated `src/bindings/tauri.ts` for fully type-safe desktop calls.
+WASM bindings (`instrument-web`) remain manual.
 
 ---
 

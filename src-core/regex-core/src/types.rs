@@ -1,6 +1,8 @@
 use serde::{Deserialize, Serialize};
+use specta::Type;
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize, Type)]
+#[serde(rename_all = "camelCase")]
 pub struct RegexRequest {
     pub pattern: String,
     pub text: String,
@@ -8,7 +10,8 @@ pub struct RegexRequest {
     pub flags: Option<String>,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Type)]
+#[serde(rename_all = "camelCase")]
 pub struct MatchResult {
     pub start: usize,
     pub end: usize,
@@ -16,7 +19,8 @@ pub struct MatchResult {
     pub groups: Vec<Option<String>>,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Type)]
+#[serde(rename_all = "camelCase")]
 pub struct ExplainToken {
     pub kind: String,
     pub label: String,
@@ -24,9 +28,9 @@ pub struct ExplainToken {
     pub depth: usize,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize, Type)]
+#[serde(rename_all = "camelCase")]
 pub struct ExplainRequest {
     pub pattern: String,
     pub engine: String,
 }
-

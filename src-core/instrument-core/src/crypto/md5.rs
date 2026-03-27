@@ -5,10 +5,13 @@
 
 use md5::{Digest, Md5};
 use serde::{Deserialize, Serialize};
+use specta::Type;
+use ts_rs::TS;
 
 /// Input for the MD5 Hash tool.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct Md5Input {
     /// Text to hash (UTF-8). Empty string is valid and returns the MD5 of empty input.
     pub text: String,
@@ -17,8 +20,9 @@ pub struct Md5Input {
 }
 
 /// Output of MD5 hashing.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct Md5Output {
     /// 32-character hex hash.
     pub hash: String,

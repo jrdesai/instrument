@@ -3,26 +3,31 @@
 //! Uses the `url` crate. All parsing happens in Rust; no browser URL API.
 
 use serde::{Deserialize, Serialize};
+use specta::Type;
+use ts_rs::TS;
 use url::Url;
 
 /// Input for the URL parse tool.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct UrlParseInput {
     pub value: String,
 }
 
 /// One query string key-value pair (decoded for display).
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct QueryParam {
     pub key: String,
     pub value: String,
 }
 
 /// Output from the URL parser.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct UrlParseOutput {
     pub scheme: Option<String>,
     pub username: Option<String>,

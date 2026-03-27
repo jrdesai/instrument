@@ -6,10 +6,13 @@
 
 use chrono::{DateTime, NaiveDate, NaiveDateTime, Utc};
 use serde::{Deserialize, Serialize};
+use specta::Type;
+use ts_rs::TS;
 
 /// Input for the timestamp converter.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct TimestampInput {
     /// The timestamp or date string to convert (ignored when mode is Now).
     pub value: String,
@@ -19,8 +22,9 @@ pub struct TimestampInput {
 }
 
 /// Conversion direction or "current time".
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub enum TimestampMode {
     /// Unix timestamp → human-readable formats.
     ToHuman,
@@ -31,16 +35,18 @@ pub enum TimestampMode {
 }
 
 /// Unit for ToHuman mode.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub enum TimestampUnit {
     Seconds,
     Milliseconds,
 }
 
 /// Output: all formats for the resolved instant.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct TimestampOutput {
     pub unix_seconds: i64,
     pub unix_milliseconds: i64,

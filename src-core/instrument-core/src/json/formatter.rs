@@ -17,11 +17,14 @@
 //! ```
 
 use serde::{Deserialize, Serialize};
+use specta::Type;
+use ts_rs::TS;
 use serde_json::Value;
 
 /// Indentation style for Pretty mode.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub enum IndentStyle {
     /// Two spaces per indent level.
     Spaces2,
@@ -32,8 +35,9 @@ pub enum IndentStyle {
 }
 
 /// Input for the JSON formatter.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct JsonFormatInput {
     /// Raw JSON string to format.
     pub value: String,
@@ -46,8 +50,9 @@ pub struct JsonFormatInput {
 }
 
 /// Format mode for JSON output.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub enum JsonFormatMode {
     /// Formatted with indentation.
     Pretty,
@@ -58,8 +63,9 @@ pub enum JsonFormatMode {
 }
 
 /// Output from the JSON formatter.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct JsonFormatOutput {
     pub result: String,
     pub is_valid: bool,

@@ -6,11 +6,14 @@
 use chrono::{NaiveDate, NaiveDateTime, NaiveTime, Offset, TimeZone, Timelike, Utc};
 use chrono_tz::{OffsetComponents, Tz};
 use serde::{Deserialize, Serialize};
+use specta::Type;
+use ts_rs::TS;
 use std::str::FromStr;
 
 /// Input for the timezone converter.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct TimezoneInput {
     /// Date/time string to convert (interpreted in from_tz).
     pub datetime: String,
@@ -21,8 +24,9 @@ pub struct TimezoneInput {
 }
 
 /// Output of the timezone conversion.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct TimezoneOutput {
     /// Converted datetime, e.g. "2024-03-04 07:00:00".
     pub result: String,

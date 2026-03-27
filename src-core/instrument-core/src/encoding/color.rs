@@ -5,17 +5,21 @@
 //! Returns all four formats simultaneously.
 
 use serde::{Deserialize, Serialize};
+use specta::Type;
+use ts_rs::TS;
 
 /// Input for the colour converter.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct ColorInput {
     pub value: String,
 }
 
 /// Output — all four colour formats plus an optional CSS name.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct ColorOutput {
     pub hex: String,
     pub rgb: String,

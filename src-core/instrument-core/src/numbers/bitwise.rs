@@ -4,10 +4,13 @@
 //! masked to that width (e.g. NOT of 60 in 8 bits = 195).
 
 use serde::{Deserialize, Serialize};
+use specta::Type;
+use ts_rs::TS;
 
 /// Input base for parsing value A and B.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub enum BitwiseBase {
     Decimal,
     Hexadecimal,
@@ -16,8 +19,9 @@ pub enum BitwiseBase {
 }
 
 /// Bit width for all operations (determines integer type: u8, u16, u32, u64).
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub enum BitwiseWidth {
     Bit8,
     Bit16,
@@ -26,8 +30,9 @@ pub enum BitwiseWidth {
 }
 
 /// Input for the bitwise calculator.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct BitwiseInput {
     pub value_a: String,
     pub value_b: String,
@@ -37,8 +42,9 @@ pub struct BitwiseInput {
 }
 
 /// One operation result in multiple bases.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct BitwiseResult {
     pub decimal: String,
     pub hexadecimal: String,
@@ -48,8 +54,9 @@ pub struct BitwiseResult {
 }
 
 /// Output: two-operand ops, single-operand ops, and bit analysis of A.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct BitwiseOutput {
     pub and: Option<BitwiseResult>,
     pub or: Option<BitwiseResult>,

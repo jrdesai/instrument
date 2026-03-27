@@ -3,18 +3,22 @@
 use chrono::Utc;
 use cron::Schedule;
 use serde::{Deserialize, Serialize};
+use specta::Type;
+use ts_rs::TS;
 use std::str::FromStr;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct CronInput {
     pub expression: String,
     /// How many upcoming run times to return (default 5, max 10).
     pub count: Option<usize>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct CronOutput {
     pub is_valid: bool,
     pub description: String,

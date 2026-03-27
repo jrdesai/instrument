@@ -27,6 +27,7 @@ use crate::command_log::finish_ok;
 
 /// Runs MD5 hash via instrument-core.
 #[tauri::command]
+#[specta::specta]
 pub fn md5_process(input: Md5Input) -> Md5Output {
     let start = Instant::now();
     let output = process(input);
@@ -36,6 +37,7 @@ pub fn md5_process(input: Md5Input) -> Md5Output {
 
 /// Runs SHA-256 hash via instrument-core.
 #[tauri::command]
+#[specta::specta]
 pub fn sha256_process(input: Sha256Input) -> Sha256Output {
     let start = Instant::now();
     let output = sha256_process_core(input);
@@ -45,6 +47,7 @@ pub fn sha256_process(input: Sha256Input) -> Sha256Output {
 
 /// Runs SHA-512 hash via instrument-core.
 #[tauri::command]
+#[specta::specta]
 pub fn sha512_process(input: Sha512Input) -> Sha512Output {
     let start = Instant::now();
     let output = sha512_process_core(input);
@@ -54,6 +57,7 @@ pub fn sha512_process(input: Sha512Input) -> Sha512Output {
 
 /// Runs UUID generation via instrument-core.
 #[tauri::command]
+#[specta::specta]
 pub fn uuid_process(input: UuidInput) -> UuidOutput {
     let start = Instant::now();
     let output = uuid_process_core(input);
@@ -63,6 +67,7 @@ pub fn uuid_process(input: UuidInput) -> UuidOutput {
 
 /// Runs UUID inspection via instrument-core.
 #[tauri::command]
+#[specta::specta]
 pub fn uuid_inspect(input: UuidInspectInput) -> UuidInspectOutput {
     let start = Instant::now();
     let output = uuid_inspect_core(input);
@@ -72,6 +77,7 @@ pub fn uuid_inspect(input: UuidInspectInput) -> UuidInspectOutput {
 
 /// Runs ULID generation via instrument-core.
 #[tauri::command]
+#[specta::specta]
 pub fn ulid_process(input: UlidInput) -> UlidOutput {
     let start = Instant::now();
     let output = ulid_process_core(input);
@@ -81,6 +87,7 @@ pub fn ulid_process(input: UlidInput) -> UlidOutput {
 
 /// Runs ULID inspection via instrument-core.
 #[tauri::command]
+#[specta::specta]
 pub fn ulid_inspect(input: UlidInspectInput) -> UlidInspectOutput {
     let start = Instant::now();
     let output = ulid_inspect_core(input);
@@ -90,6 +97,7 @@ pub fn ulid_inspect(input: UlidInspectInput) -> UlidInspectOutput {
 
 /// Runs API key generation via instrument-core.
 #[tauri::command]
+#[specta::specta]
 pub fn api_key_process(input: ApiKeyInput) -> ApiKeyOutput {
     let start = Instant::now();
     let output = api_key_process_core(input);
@@ -99,6 +107,7 @@ pub fn api_key_process(input: ApiKeyInput) -> ApiKeyOutput {
 
 /// Runs Nano ID generation via instrument-core.
 #[tauri::command]
+#[specta::specta]
 pub fn nanoid_process(input: NanoIdInput) -> NanoIdOutput {
     let start = Instant::now();
     let output = nanoid_process_core(input);
@@ -108,6 +117,7 @@ pub fn nanoid_process(input: NanoIdInput) -> NanoIdOutput {
 
 /// Runs AES-256-GCM encrypt/decrypt via instrument-core.
 #[tauri::command]
+#[specta::specta]
 pub fn aes_process(input: AesInput) -> AesOutput {
     let start = Instant::now();
     let output = aes_process_core(input);

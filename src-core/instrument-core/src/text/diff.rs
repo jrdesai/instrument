@@ -1,33 +1,39 @@
 //! Line-by-line text diff using the Myers/LCS algorithm (via `similar` crate).
 
 use serde::{Deserialize, Serialize};
+use specta::Type;
+use ts_rs::TS;
 use similar::{ChangeTag, TextDiff};
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct TextDiffInput {
     pub left: String,
     pub right: String,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export, export_to = "TextDiffLineAnnotation.ts")]
 pub enum LineAnnotation {
     Unchanged,
     Added,
     Removed,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export, export_to = "TextDiffAnnotatedLine.ts")]
 pub struct AnnotatedLine {
     pub line_number: u32,
     pub content: String,
     pub annotation: LineAnnotation,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct TextDiffOutput {
     pub is_identical: bool,
     pub added_count: u32,

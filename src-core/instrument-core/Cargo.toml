@@ -13,6 +13,12 @@ path = "src/lib.rs"
 default = ["full"]
 full = ["sql"]
 sql = ["dep:sqlformat"]
+ts-export = []
+
+[[bin]]
+name = "export_types"
+path = "src/bin/export_types.rs"
+required-features = ["ts-export"]
 
 [dependencies]
 serde = { workspace = true }
@@ -43,3 +49,5 @@ csv = "1"
 meval = "0.2"
 similar = "2"
 log = "0.4"
+ts-rs = { version = "10", features = ["serde-compat"] }
+specta = { version = "=2.0.0-rc.22", features = ["derive", "function"] }

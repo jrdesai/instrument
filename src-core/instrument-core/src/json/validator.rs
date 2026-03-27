@@ -13,12 +13,15 @@
 //! ```
 
 use serde::{Deserialize, Serialize};
+use specta::Type;
+use ts_rs::TS;
 use serde_json::Value;
 use std::collections::HashSet;
 
 /// Input for the JSON validator.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct JsonValidateInput {
     /// Raw JSON string to validate.
     pub value: String,
@@ -40,8 +43,9 @@ struct Stats {
 }
 
 /// Output from the JSON validator.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct JsonValidateOutput {
     pub is_valid: bool,
     pub error: Option<String>,

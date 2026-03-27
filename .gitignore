@@ -1,3 +1,6 @@
+# ── Generated TypeScript (ts-rs + tauri-specta) ───────
+src/bindings/
+
 # ── Node ────────────────────────────────────────────
 node_modules/
 dist/

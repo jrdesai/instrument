@@ -5,19 +5,23 @@
 //! millisecond when generated sequentially.
 
 use serde::{Deserialize, Serialize};
+use specta::Type;
+use ts_rs::TS;
 use ulid::{Generator, Ulid};
 
 /// Input for ULID inspection.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct UlidInspectInput {
     /// Raw ULID string (26 chars, Crockford Base32).
     pub value: String,
 }
 
 /// Output from ULID inspection.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct UlidInspectOutput {
     pub is_valid: bool,
     pub timestamp_ms: Option<i64>,
@@ -30,8 +34,9 @@ pub struct UlidInspectOutput {
 }
 
 /// Input for the ULID Generator tool.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct UlidInput {
     /// Number of ULIDs to generate (1–100).
     pub count: usize,
@@ -40,8 +45,9 @@ pub struct UlidInput {
 }
 
 /// Output from the ULID Generator tool.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct UlidOutput {
     /// Generated ULIDs as 26-character Base32 strings.
     pub ulids: Vec<String>,

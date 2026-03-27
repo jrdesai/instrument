@@ -4,10 +4,13 @@
 //! Uses u128 internally for large numbers.
 
 use serde::{Deserialize, Serialize};
+use specta::Type;
+use ts_rs::TS;
 
 /// Input base for the number string.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub enum NumberBase {
     Decimal,
     Hexadecimal,
@@ -18,8 +21,9 @@ pub enum NumberBase {
 }
 
 /// Bit width for binary output (padding and grouping).
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub enum BitWidth {
     Auto,
     Bit8,
@@ -29,8 +33,9 @@ pub enum BitWidth {
 }
 
 /// Input for the base converter.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct BaseConverterInput {
     pub value: String,
     pub from_base: NumberBase,
@@ -39,8 +44,9 @@ pub struct BaseConverterInput {
 }
 
 /// Output: the value in every supported base.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct BaseConverterOutput {
     pub decimal: String,
     pub hexadecimal: String,

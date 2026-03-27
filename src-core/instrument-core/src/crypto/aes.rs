@@ -5,10 +5,13 @@ use aes_gcm::{Aes256Gcm, Nonce};
 use pbkdf2::pbkdf2_hmac_array;
 use rand::RngCore;
 use serde::{Deserialize, Serialize};
+use specta::Type;
+use ts_rs::TS;
 use sha2::Sha256;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct AesInput {
     pub text: String,
     pub passphrase: String,
@@ -16,8 +19,9 @@ pub struct AesInput {
     pub mode: String,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct AesOutput {
     pub result: String,
     pub error: Option<String>,

@@ -14,11 +14,14 @@
 //! ```
 
 use serde::{Deserialize, Serialize};
+use specta::Type;
+use ts_rs::TS;
 use serde_json::{Value, to_string};
 
 /// Input for the JSON diff tool.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct JsonDiffInput {
     /// First JSON value (left side).
     pub left: String,
@@ -27,8 +30,9 @@ pub struct JsonDiffInput {
 }
 
 /// Type of change between left and right.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub enum ChangeType {
     /// Key exists in right but not in left.
     Added,
@@ -41,8 +45,9 @@ pub enum ChangeType {
 }
 
 /// A single diff change at a path.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct DiffChange {
     /// Dot-notation path, e.g. "user.name", "items[0].price".
     pub path: String,
@@ -54,8 +59,9 @@ pub struct DiffChange {
 }
 
 /// Annotation for a single line in the diff view.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export, export_to = "JsonDiffLineAnnotation.ts")]
 pub enum LineAnnotation {
     /// Line unchanged between left and right.
     Unchanged,
@@ -68,8 +74,9 @@ pub enum LineAnnotation {
 }
 
 /// A single line in the annotated diff output.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export, export_to = "JsonDiffAnnotatedLine.ts")]
 pub struct AnnotatedLine {
     pub line_number: usize,
     /// Line text without prefix.
@@ -78,8 +85,9 @@ pub struct AnnotatedLine {
 }
 
 /// Output from the JSON diff tool.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct JsonDiffOutput {
     pub is_identical: bool,
     pub left_valid: bool,

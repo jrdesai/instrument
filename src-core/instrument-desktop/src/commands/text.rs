@@ -23,6 +23,7 @@ use crate::command_log::finish_ok;
 
 /// Runs case conversion via instrument-core.
 #[tauri::command]
+#[specta::specta]
 pub fn case_process(input: CaseInput) -> CaseOutput {
     let start = Instant::now();
     let output = case_process_core(input);
@@ -32,6 +33,7 @@ pub fn case_process(input: CaseInput) -> CaseOutput {
 
 /// Runs word counting via instrument-core.
 #[tauri::command]
+#[specta::specta]
 pub fn word_counter_process(input: WordCounterInput) -> WordCounterOutput {
     let start = Instant::now();
     let output = word_counter_process_core(input);
@@ -41,6 +43,7 @@ pub fn word_counter_process(input: WordCounterInput) -> WordCounterOutput {
 
 /// Runs string escape/unescape via instrument-core.
 #[tauri::command]
+#[specta::specta]
 pub fn string_escaper_process(input: StringEscaperInput) -> StringEscaperOutput {
     let start = Instant::now();
     let output = string_escaper_process_core(input);
@@ -50,6 +53,7 @@ pub fn string_escaper_process(input: StringEscaperInput) -> StringEscaperOutput 
 
 /// Runs find and replace via instrument-core.
 #[tauri::command]
+#[specta::specta]
 pub fn find_replace_process(input: FindReplaceInput) -> FindReplaceOutput {
     let start = Instant::now();
     let output = find_replace_process_core(input);
@@ -59,6 +63,7 @@ pub fn find_replace_process(input: FindReplaceInput) -> FindReplaceOutput {
 
 /// Runs lorem ipsum generation via instrument-core.
 #[tauri::command]
+#[specta::specta]
 pub fn lorem_ipsum_process(input: LoremIpsumInput) -> LoremIpsumOutput {
     let start = Instant::now();
     let output = lorem_ipsum_process_core(input);
@@ -68,6 +73,7 @@ pub fn lorem_ipsum_process(input: LoremIpsumInput) -> LoremIpsumOutput {
 
 /// Runs line-by-line text diff via instrument-core.
 #[tauri::command]
+#[specta::specta]
 pub fn text_diff_process(input: TextDiffInput) -> TextDiffOutput {
     let start = Instant::now();
     let output = text_diff_process_core(input);

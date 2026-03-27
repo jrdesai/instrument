@@ -8,13 +8,16 @@ use base64::Engine;
 use chrono::Utc;
 use hmac::{Hmac, Mac};
 use serde::{Deserialize, Serialize};
+use specta::Type;
+use ts_rs::TS;
 use sha2::{Sha256, Sha384, Sha512};
 
 use crate::auth::jwt_decoder::{decode_secret, SecretEncoding};
 
 /// Input for JWT build.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct JwtBuildInput {
     pub algorithm: JwtAlgorithm,
     pub secret: String,
@@ -30,7 +33,8 @@ pub struct JwtBuildInput {
 }
 
 /// Signing algorithm for the JWT.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, TS, Type)]
+#[ts(export)]
 pub enum JwtAlgorithm {
     #[serde(rename = "HS256")]
     HS256,
@@ -43,8 +47,9 @@ pub enum JwtAlgorithm {
 }
 
 /// Output of JWT build.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct JwtBuildOutput {
     pub token: String,
     pub header_json: String,

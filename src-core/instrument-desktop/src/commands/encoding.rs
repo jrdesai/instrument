@@ -14,6 +14,7 @@ use crate::command_log::finish_ok;
 
 /// Runs Base64 encode or decode via instrument-core.
 #[tauri::command]
+#[specta::specta]
 pub fn base64_process(input: Base64Input) -> Base64Output {
     let start = Instant::now();
     let output = process(input);
@@ -23,6 +24,7 @@ pub fn base64_process(input: Base64Input) -> Base64Output {
 
 /// Runs URL percent-encode or decode via instrument-core.
 #[tauri::command]
+#[specta::specta]
 pub fn url_encode_process(input: UrlEncodeInput) -> UrlEncodeOutput {
     let start = Instant::now();
     let output = url_process(input);
@@ -32,6 +34,7 @@ pub fn url_encode_process(input: UrlEncodeInput) -> UrlEncodeOutput {
 
 /// Runs HTML entity encode or decode via instrument-core.
 #[tauri::command]
+#[specta::specta]
 pub fn html_entity_process(input: HtmlEntityInput) -> HtmlEntityOutput {
     let start = Instant::now();
     let output = html_entity_process_core(input);
@@ -41,6 +44,7 @@ pub fn html_entity_process(input: HtmlEntityInput) -> HtmlEntityOutput {
 
 /// Runs Hex encode or decode via instrument-core.
 #[tauri::command]
+#[specta::specta]
 pub fn hex_process(input: HexInput) -> HexOutput {
     let start = Instant::now();
     let output = hex_process_core(input);
@@ -50,6 +54,7 @@ pub fn hex_process(input: HexInput) -> HexOutput {
 
 /// Converts a colour string to HEX, RGB, HSL, HSB, and CSS name.
 #[tauri::command]
+#[specta::specta]
 pub fn color_convert(input: ColorInput) -> ColorOutput {
     let start = Instant::now();
     let output = color_process_core(input);

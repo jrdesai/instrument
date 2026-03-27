@@ -3,11 +3,14 @@
 //! Cryptographically strong; suitable for checksums, data integrity, and signatures.
 
 use serde::{Deserialize, Serialize};
+use specta::Type;
+use ts_rs::TS;
 use sha2::{Digest, Sha256};
 
 /// Input for the SHA-256 Hash tool.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct Sha256Input {
     /// Text to hash (UTF-8).
     pub text: String,
@@ -18,8 +21,9 @@ pub struct Sha256Input {
 }
 
 /// Output of SHA-256 hashing.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct Sha256Output {
     /// 64-character hex hash, or empty when input is empty and hash_empty is false.
     pub hash: String,

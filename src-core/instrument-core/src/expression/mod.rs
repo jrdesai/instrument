@@ -1,16 +1,20 @@
 //! Expression evaluator module backed by the `meval` crate.
 
 use serde::{Deserialize, Serialize};
+use specta::Type;
+use ts_rs::TS;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct ExprEvalInput {
     /// The mathematical expression to evaluate (e.g. "sqrt(2) + 3^2").
     pub expression: String,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct ExprEvalOutput {
     /// The numeric result as a string (to preserve precision and handle display).
     pub result: String,

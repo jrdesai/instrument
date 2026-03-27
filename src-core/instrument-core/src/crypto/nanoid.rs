@@ -5,14 +5,17 @@
 
 use nanoid::{format as nanoid_format, rngs::default as nanoid_default_rng};
 use serde::{Deserialize, Serialize};
+use specta::Type;
+use ts_rs::TS;
 
 /// Default URL-safe alphabet (same as the nanoid JS library default).
 const DEFAULT_ALPHABET: &str =
     "useandom-26T198340PX75pxJACKVERYMINDBUSHWOLF_GQZbfghjklqvwyzrict";
 
 /// Input for Nano ID generation.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct NanoIdInput {
     /// Number of IDs to generate (1–100).
     pub count: usize,
@@ -23,8 +26,9 @@ pub struct NanoIdInput {
 }
 
 /// Output from Nano ID generation.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct NanoIdOutput {
     /// Generated IDs.
     pub ids: Vec<String>,

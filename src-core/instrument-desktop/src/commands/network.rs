@@ -7,6 +7,7 @@ use instrument_core::network::{process as url_parse_process, UrlParseInput, UrlP
 use crate::command_log::finish_ok;
 
 #[tauri::command]
+#[specta::specta]
 pub fn tool_url_parse(input: UrlParseInput) -> UrlParseOutput {
     let start = Instant::now();
     let output = url_parse_process(input);

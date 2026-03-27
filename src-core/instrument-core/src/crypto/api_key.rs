@@ -4,10 +4,13 @@
 
 use rand::{distributions::Uniform, Rng};
 use serde::{Deserialize, Serialize};
+use specta::Type;
+use ts_rs::TS;
 
 /// Output string format for an API key.
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub enum ApiKeyFormat {
     Raw,
     Grouped,
@@ -15,8 +18,9 @@ pub enum ApiKeyFormat {
 }
 
 /// Character set used for API key generation.
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub enum ApiKeyCharset {
     Alphanumeric,
     AlphaOnly,
@@ -25,8 +29,9 @@ pub enum ApiKeyCharset {
 }
 
 /// Input for the API Key Generator tool.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct ApiKeyInput {
     pub count: usize,
     pub length: usize,
@@ -36,8 +41,9 @@ pub struct ApiKeyInput {
 }
 
 /// Output from the API Key Generator tool.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct ApiKeyOutput {
     pub keys: Vec<String>,
     pub error: Option<String>,

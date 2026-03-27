@@ -15,20 +15,24 @@
 //! ```
 
 use serde::{Deserialize, Serialize};
+use specta::Type;
+use ts_rs::TS;
 use serde_json::Value;
 
 use crate::json::formatter::sort_value;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct YamlToJsonInput {
     pub value: String,
     pub indent: u8,
     pub sort_keys: bool,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct YamlToJsonOutput {
     pub result: String,
     pub is_valid_yaml: bool,

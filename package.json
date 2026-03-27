@@ -21,7 +21,8 @@
     "test:watch": "vitest",
     "test:all": "pnpm run test:rust && pnpm run test:ts",
     "lint": "eslint src/",
-    "typecheck": "tsc --noEmit",
+    "gen:types": "cargo run --manifest-path src-core/Cargo.toml -p instrument-core --bin export_types --features ts-export",
+    "typecheck": "pnpm run gen:types && tsc --noEmit",
     "check:pure": "grep -r 'std::fs\\|tauri\\|tokio' src-core/instrument-core/src/ && echo 'PURITY VIOLATION' || echo 'instrument-core is pure'"
   },
   "dependencies": {

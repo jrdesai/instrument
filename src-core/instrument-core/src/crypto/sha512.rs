@@ -4,11 +4,14 @@
 //! applications and where collision resistance is critical.
 
 use serde::{Deserialize, Serialize};
+use specta::Type;
+use ts_rs::TS;
 use sha2::{Digest, Sha512};
 
 /// Input for the SHA-512 Hash tool.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct Sha512Input {
     /// Text to hash (UTF-8).
     pub text: String,
@@ -19,8 +22,9 @@ pub struct Sha512Input {
 }
 
 /// Output of SHA-512 hashing.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct Sha512Output {
     /// 128-character hex hash, or empty when input is empty and hash_empty is false.
     pub hash: String,

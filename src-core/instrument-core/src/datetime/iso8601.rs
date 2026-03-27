@@ -5,18 +5,22 @@
 
 use chrono::{Datelike, DateTime, NaiveDate, NaiveDateTime, TimeZone, Utc, Weekday};
 use serde::{Deserialize, Serialize};
+use specta::Type;
+use ts_rs::TS;
 
 /// Input for the ISO 8601 formatter.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct Iso8601Input {
     /// The ISO 8601 string to parse (date, datetime, week date, ordinal, or duration).
     pub value: String,
 }
 
 /// Output: parsed components and conversion formats.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct Iso8601Output {
     pub is_valid: bool,
     /// "Date", "DateTime", "DateTime with offset", "DateTime no offset",

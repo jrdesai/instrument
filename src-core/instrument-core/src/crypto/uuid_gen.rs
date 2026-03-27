@@ -5,11 +5,14 @@
 //! and V1 for legacy time-based UUIDs with a fixed node ID.
 
 use serde::{Deserialize, Serialize};
+use specta::Type;
+use ts_rs::TS;
 use uuid::Uuid;
 
 /// Which UUID version to generate.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub enum UuidVersion {
     V1,
     V4,
@@ -17,8 +20,9 @@ pub enum UuidVersion {
 }
 
 /// Input for the UUID Generator tool.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct UuidInput {
     /// UUID version to generate (V4 random, V7 time-ordered).
     pub version: UuidVersion,
@@ -29,8 +33,9 @@ pub struct UuidInput {
 }
 
 /// Output from the UUID Generator tool.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct UuidOutput {
     /// Generated UUIDs in canonical text form.
     pub uuids: Vec<String>,
@@ -94,16 +99,18 @@ pub fn process(input: UuidInput) -> UuidOutput {
 }
 
 /// Input for UUID inspection.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct UuidInspectInput {
     /// Raw UUID string (with or without braces/URN prefix).
     pub value: String,
 }
 
 /// Output from UUID inspection.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct UuidInspectOutput {
     pub is_valid: bool,
     pub version: Option<usize>,

@@ -4,10 +4,13 @@
 //! Deterministic: same input always produces the same output (cycle through pool).
 
 use serde::{Deserialize, Serialize};
+use specta::Type;
+use ts_rs::TS;
 
 /// Input for the Lorem Ipsum generator.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct LoremIpsumInput {
     pub output_type: LoremOutputType,
     pub count: usize,
@@ -15,8 +18,9 @@ pub struct LoremIpsumInput {
 }
 
 /// Output format: paragraphs, sentences, or words.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub enum LoremOutputType {
     Paragraphs,
     Sentences,
@@ -24,8 +28,9 @@ pub enum LoremOutputType {
 }
 
 /// Output: generated text and actual word/sentence/paragraph counts.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct LoremIpsumOutput {
     pub result: String,
     pub word_count: usize,

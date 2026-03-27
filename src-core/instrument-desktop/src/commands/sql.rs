@@ -8,6 +8,7 @@ use crate::command_log::finish_ok;
 
 /// Runs SQL formatting via instrument-core.
 #[tauri::command]
+#[specta::specta]
 pub fn tool_sql_format(input: SqlFormatInput) -> SqlFormatOutput {
     let start = Instant::now();
     let output = process(input);

@@ -17,6 +17,7 @@ use crate::command_log::finish_ok;
 
 /// Runs base conversion via instrument-core.
 #[tauri::command]
+#[specta::specta]
 pub fn base_converter_process(input: BaseConverterInput) -> BaseConverterOutput {
     let start = Instant::now();
     let output = base_converter_process_core(input);
@@ -26,6 +27,7 @@ pub fn base_converter_process(input: BaseConverterInput) -> BaseConverterOutput 
 
 /// Runs bitwise operations via instrument-core.
 #[tauri::command]
+#[specta::specta]
 pub fn bitwise_process(input: BitwiseInput) -> BitwiseOutput {
     let start = Instant::now();
     let output = bitwise_process_core(input);

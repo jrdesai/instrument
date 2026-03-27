@@ -5,10 +5,13 @@
 
 use csv::ReaderBuilder;
 use serde::{Deserialize, Serialize};
+use specta::Type;
+use ts_rs::TS;
 use serde_json::{Map, Value};
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct CsvToJsonInput {
     /// Raw CSV text.
     pub value: String,
@@ -20,8 +23,9 @@ pub struct CsvToJsonInput {
     pub output_format: CsvOutputFormat,
 }
 
-#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub enum CsvOutputFormat {
     /// Array of objects: one object per row, using headers (or synthetic column names) as keys.
     ArrayOfObjects,
@@ -29,8 +33,9 @@ pub enum CsvOutputFormat {
     ArrayOfArrays,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct CsvToJsonOutput {
     /// Pretty-printed JSON string.
     pub result: String,

@@ -4,17 +4,21 @@
 //! (camelCase, PascalCase, snake_case, SCREAMING_SNAKE_CASE, kebab-case, etc.).
 
 use serde::{Deserialize, Serialize};
+use specta::Type;
+use ts_rs::TS;
 
 /// Input for the Text Case Converter tool.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct CaseInput {
     pub text: String,
 }
 
 /// Output for the Text Case Converter tool: all case variants at once.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct CaseOutput {
     pub camel_case: String,
     pub pascal_case: String,

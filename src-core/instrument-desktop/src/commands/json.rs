@@ -25,6 +25,7 @@ use crate::command_log::finish_ok;
 
 /// Runs JSON format/minify via instrument-core.
 #[tauri::command]
+#[specta::specta]
 pub fn tool_json_format(input: JsonFormatInput) -> JsonFormatOutput {
     let start = Instant::now();
     let output = json_format_process_core(input);
@@ -34,6 +35,7 @@ pub fn tool_json_format(input: JsonFormatInput) -> JsonFormatOutput {
 
 /// Runs JSON validation and structure summary via instrument-core.
 #[tauri::command]
+#[specta::specta]
 pub fn tool_json_validate(input: JsonValidateInput) -> JsonValidateOutput {
     let start = Instant::now();
     let output = json_validate_process_core(input);
@@ -43,6 +45,7 @@ pub fn tool_json_validate(input: JsonValidateInput) -> JsonValidateOutput {
 
 /// Runs JSON diff (compare two JSON values) via instrument-core.
 #[tauri::command]
+#[specta::specta]
 pub fn tool_json_diff(input: JsonDiffInput) -> JsonDiffOutput {
     let start = Instant::now();
     let output = json_diff_process_core(input);
@@ -52,6 +55,7 @@ pub fn tool_json_diff(input: JsonDiffInput) -> JsonDiffOutput {
 
 /// Runs JSONPath query against a JSON document via instrument-core.
 #[tauri::command]
+#[specta::specta]
 pub fn tool_json_path(input: JsonPathInput) -> JsonPathOutput {
     let start = Instant::now();
     let output = json_path_process_core(input);
@@ -61,6 +65,7 @@ pub fn tool_json_path(input: JsonPathInput) -> JsonPathOutput {
 
 /// Runs JSON conversion (YAML, TypeScript, CSV, XML) via instrument-core.
 #[tauri::command]
+#[specta::specta]
 pub fn tool_json_convert(input: JsonConvertInput) -> JsonConvertOutput {
     let start = Instant::now();
     let output = json_convert_process_core(input);
@@ -70,6 +75,7 @@ pub fn tool_json_convert(input: JsonConvertInput) -> JsonConvertOutput {
 
 /// Converts YAML input into formatted JSON via instrument-core.
 #[tauri::command]
+#[specta::specta]
 pub fn tool_yaml_to_json(input: YamlToJsonInput) -> YamlToJsonOutput {
     let start = Instant::now();
     let output = yaml_to_json_process_core(input);
