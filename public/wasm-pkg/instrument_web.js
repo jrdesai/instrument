@@ -79,6 +79,19 @@ export function case_process(js_input) {
 }
 
 /**
+ * Colour converter. Receives ColorInput (camelCase) and returns ColorOutput (camelCase).
+ * @param {any} js_input
+ * @returns {any}
+ */
+export function color_convert(js_input) {
+    const ret = wasm.color_convert(js_input);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
  * Cron expression parser. Receives CronInput (camelCase) and returns CronOutput (camelCase).
  * @param {any} js_input
  * @returns {any}

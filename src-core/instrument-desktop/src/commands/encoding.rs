@@ -1,8 +1,9 @@
-//! Tauri commands for encoding tools (Base64, URL encoder, HTML entity, Hex, etc.).
+//! Tauri commands for encoding tools (Base64, URL encoder, HTML entity, Hex, colour, etc.).
 
 use std::time::Instant;
 
 use instrument_core::encoding::base64::{process, Base64Input, Base64Output};
+use instrument_core::encoding::color::{process as color_process_core, ColorInput, ColorOutput};
 use instrument_core::encoding::html_entity::{
     process as html_entity_process_core, HtmlEntityInput, HtmlEntityOutput,
 };
@@ -44,5 +45,14 @@ pub fn hex_process(input: HexInput) -> HexOutput {
     let start = Instant::now();
     let output = hex_process_core(input);
     finish_ok("hex_process", start);
+    output
+}
+
+/// Converts a colour string to HEX, RGB, HSL, HSB, and CSS name.
+#[tauri::command]
+pub fn color_convert(input: ColorInput) -> ColorOutput {
+    let start = Instant::now();
+    let output = color_process_core(input);
+    finish_ok("color_convert", start);
     output
 }

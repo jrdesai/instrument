@@ -179,6 +179,23 @@ export const tools: Tool[] = [
     implemented: true,
   },
   {
+    id: "color-converter",
+    name: "Color Converter",
+    description: "Convert colors between HEX, RGB, HSL, HSB, and CSS names.",
+    category: "encoding",
+    displayCategory: "Encoding",
+    displayCategoryIcon: "data_array",
+    roles: ["frontend", "general"],
+    icon: "palette",
+    platforms: ["desktop", "web"],
+    rustCommand: "color_convert",
+    keywords: ["color", "colour", "hex", "rgb", "hsl", "hsb", "hsv", "css", "convert", "palette"],
+    component: React.lazy(() =>
+      import("../tools/color-converter").then((m) => ({ default: m.default }))
+    ),
+    implemented: true,
+  },
+  {
     id: "md5-hash",
     name: "MD5 Hash",
     description: "Compute MD5 checksums.",

@@ -1,0 +1,4 @@
+[[permission]]
+identifier = "allow-color-converter"
+description = "Enables the color_convert command."
+commands.allow = ["color_convert"]
