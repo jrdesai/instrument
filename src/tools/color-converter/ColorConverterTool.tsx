@@ -157,13 +157,12 @@ function ColorConverterTool() {
             style={swatchColor ? { backgroundColor: swatchColor } : undefined}
           >
             {!swatchColor && (
-              /* Rainbow gradient to signal "click to pick" when empty */
+              /* Hue strip — universally recognised as a colour picker affordance */
               <div
                 className="w-full h-full"
                 style={{
                   background:
-                    "conic-gradient(red, yellow, lime, cyan, blue, magenta, red)",
-                  opacity: 0.7,
+                    "linear-gradient(to right, hsl(0,100%,50%), hsl(60,100%,50%), hsl(120,100%,50%), hsl(180,100%,50%), hsl(240,100%,50%), hsl(300,100%,50%), hsl(360,100%,50%))",
                 }}
               />
             )}
