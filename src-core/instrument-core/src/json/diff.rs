@@ -78,7 +78,8 @@ pub enum LineAnnotation {
 #[serde(rename_all = "camelCase")]
 #[ts(export, export_to = "JsonDiffAnnotatedLine.ts")]
 pub struct AnnotatedLine {
-    pub line_number: usize,
+    /// `u32` (not `usize`) so tauri-specta TypeScript export avoids bigint, which IPC forbids.
+    pub line_number: u32,
     /// Line text without prefix.
     pub content: String,
     pub annotation: LineAnnotation,
@@ -93,10 +94,11 @@ pub struct JsonDiffOutput {
     pub left_valid: bool,
     pub right_valid: bool,
     pub changes: Vec<DiffChange>,
-    pub added_count: usize,
-    pub removed_count: usize,
-    pub changed_count: usize,
-    pub unchanged_count: usize,
+    /// `u32` for tauri-specta export (no bigint in TS bindings).
+    pub added_count: u32,
+    pub removed_count: u32,
+    pub changed_count: u32,
+    pub unchanged_count: u32,
     pub left_annotated: Vec<AnnotatedLine>,
     pub right_annotated: Vec<AnnotatedLine>,
     pub error: Option<String>,
@@ -247,7 +249,7 @@ fn diff_values(
     right: &Value,
     path: &str,
     changes: &mut Vec<DiffChange>,
-    unchanged: &mut usize,
+    unchanged: &mut u32,
 ) {
     match (left, right) {
         (Value::Object(l_map), Value::Object(r_map)) => {
@@ -360,7 +362,7 @@ fn build_annotated_lines(
                 })
                 .unwrap_or(LineAnnotation::Unchanged);
             AnnotatedLine {
-                line_number: i + 1,
+                line_number: i as u32 + 1,
                 content,
                 annotation,
             }
@@ -381,7 +383,7 @@ fn build_annotated_lines(
                 })
                 .unwrap_or(LineAnnotation::Unchanged);
             AnnotatedLine {
-                line_number: i + 1,
+                line_number: i as u32 + 1,
                 content,
                 annotation,
             }
@@ -389,7 +391,7 @@ fn build_annotated_lines(
         .collect();
 
     let max_len = left_annotated.len().max(right_annotated.len());
-    let pad_line = |n: usize| AnnotatedLine {
+    let pad_line = |n: u32| AnnotatedLine {
         line_number: n + 1,
         content: String::new(),
         annotation: LineAnnotation::Unchanged,
@@ -398,10 +400,10 @@ fn build_annotated_lines(
     let mut left = left_annotated;
     let mut right = right_annotated;
     while left.len() < max_len {
-        left.push(pad_line(left.len()));
+        left.push(pad_line(left.len() as u32));
     }
     while right.len() < max_len {
-        right.push(pad_line(right.len()));
+        right.push(pad_line(right.len() as u32));
     }
     (left, right)
 }
@@ -447,7 +449,7 @@ pub fn process(input: JsonDiffInput) -> JsonDiffOutput {
                     .into_iter()
                     .enumerate()
                     .map(|(i, (content, _))| AnnotatedLine {
-                        line_number: i + 1,
+                        line_number: i as u32 + 1,
                         content,
                         annotation: LineAnnotation::Unchanged,
                     })
@@ -459,7 +461,7 @@ pub fn process(input: JsonDiffInput) -> JsonDiffOutput {
                     .lines()
                     .enumerate()
                     .map(|(i, l)| AnnotatedLine {
-                        line_number: i + 1,
+                        line_number: i as u32 + 1,
                         content: l.to_string(),
                         annotation: LineAnnotation::Unchanged,
                     })
@@ -472,7 +474,7 @@ pub fn process(input: JsonDiffInput) -> JsonDiffOutput {
                     .into_iter()
                     .enumerate()
                     .map(|(i, (content, _))| AnnotatedLine {
-                        line_number: i + 1,
+                        line_number: i as u32 + 1,
                         content,
                         annotation: LineAnnotation::Unchanged,
                     })
@@ -484,14 +486,14 @@ pub fn process(input: JsonDiffInput) -> JsonDiffOutput {
                     .lines()
                     .enumerate()
                     .map(|(i, l)| AnnotatedLine {
-                        line_number: i + 1,
+                        line_number: i as u32 + 1,
                         content: l.to_string(),
                         annotation: LineAnnotation::Unchanged,
                     })
                     .collect()
             });
         let max_len = left_lines.len().max(right_lines.len());
-        let pad = |n: usize| AnnotatedLine {
+        let pad = |n: u32| AnnotatedLine {
             line_number: n + 1,
             content: String::new(),
             annotation: LineAnnotation::Unchanged,
@@ -499,10 +501,10 @@ pub fn process(input: JsonDiffInput) -> JsonDiffOutput {
         let mut left_annotated = left_lines;
         let mut right_annotated = right_lines;
         while left_annotated.len() < max_len {
-            left_annotated.push(pad(left_annotated.len()));
+            left_annotated.push(pad(left_annotated.len() as u32));
         }
         while right_annotated.len() < max_len {
-            right_annotated.push(pad(right_annotated.len()));
+            right_annotated.push(pad(right_annotated.len() as u32));
         }
         return JsonDiffOutput {
             is_identical: false,
@@ -523,17 +525,17 @@ pub fn process(input: JsonDiffInput) -> JsonDiffOutput {
     let right_val = right_parsed.unwrap();
 
     let mut changes = vec![];
-    let mut unchanged_count = 0usize;
+    let mut unchanged_count: u32 = 0;
     diff_values(&left_val, &right_val, "", &mut changes, &mut unchanged_count);
 
-    let added_count = changes.iter().filter(|c| c.change_type == ChangeType::Added).count();
-    let removed_count = changes.iter().filter(|c| c.change_type == ChangeType::Removed).count();
+    let added_count = changes.iter().filter(|c| c.change_type == ChangeType::Added).count() as u32;
+    let removed_count = changes.iter().filter(|c| c.change_type == ChangeType::Removed).count() as u32;
     let changed_count = changes
         .iter()
         .filter(|c| {
             c.change_type == ChangeType::Changed || c.change_type == ChangeType::TypeChanged
         })
-        .count();
+        .count() as u32;
 
     let path_to_type = path_to_change_type(&changes);
     let left_with_paths = pretty_lines_with_paths(&left_val, 0, "");

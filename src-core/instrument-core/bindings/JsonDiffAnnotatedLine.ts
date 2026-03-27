@@ -4,7 +4,11 @@ import type { LineAnnotation } from "./JsonDiffLineAnnotation";
 /**
  * A single line in the annotated diff output.
  */
-export type AnnotatedLine = { lineNumber: number, 
+export type AnnotatedLine = { 
+/**
+ * `u32` (not `usize`) so tauri-specta TypeScript export avoids bigint, which IPC forbids.
+ */
+lineNumber: number, 
 /**
  * Line text without prefix.
  */

@@ -5,4 +5,8 @@ import type { DiffChange } from "./DiffChange";
 /**
  * Output from the JSON diff tool.
  */
-export type JsonDiffOutput = { isIdentical: boolean, leftValid: boolean, rightValid: boolean, changes: Array<DiffChange>, addedCount: number, removedCount: number, changedCount: number, unchangedCount: number, leftAnnotated: Array<AnnotatedLine>, rightAnnotated: Array<AnnotatedLine>, error: string | null, };
+export type JsonDiffOutput = { isIdentical: boolean, leftValid: boolean, rightValid: boolean, changes: Array<DiffChange>, 
+/**
+ * `u32` for tauri-specta export (no bigint in TS bindings).
+ */
+addedCount: number, removedCount: number, changedCount: number, unchangedCount: number, leftAnnotated: Array<AnnotatedLine>, rightAnnotated: Array<AnnotatedLine>, error: string | null, };
