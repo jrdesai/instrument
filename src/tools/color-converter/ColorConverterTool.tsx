@@ -39,7 +39,6 @@ function ColorConverterTool() {
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const pickerRef = useRef<HTMLInputElement>(null);
   const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
 
   const runProcess = useCallback(
@@ -149,31 +148,36 @@ function ColorConverterTool() {
     <div className="flex flex-col h-full bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
       {/* Input row */}
       <div className="flex items-center gap-3 px-4 py-3 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark">
-        {/* Colour swatch — clicking opens the native picker */}
-        <button
-          type="button"
-          aria-label="Open colour picker"
-          onClick={() => pickerRef.current?.click()}
-          className="relative shrink-0 w-12 h-10 rounded-lg border-2 border-border-light dark:border-border-dark hover:border-primary/60 transition-colors overflow-hidden"
-          style={{ backgroundColor: swatchColor ?? "#1B1D21" }}
-        >
-          {!swatchColor && (
-            <span className="material-symbols-outlined absolute inset-0 flex items-center justify-center text-slate-400 text-lg">
-              colorize
-            </span>
-          )}
-        </button>
-
-        {/* Hidden native colour picker */}
-        <input
-          ref={pickerRef}
-          type="color"
-          aria-hidden="true"
-          tabIndex={-1}
-          value={pickerHex}
-          onChange={handlePickerChange}
-          className="sr-only"
-        />
+        {/* Colour swatch — the <input type="color"> is overlaid transparently so
+            the picker opens anchored to the swatch, not at a random screen corner. */}
+        <div className="relative shrink-0 w-12 h-10">
+          {/* Visual swatch */}
+          <div
+            className="w-full h-full rounded-lg border-2 border-border-light dark:border-border-dark overflow-hidden"
+            style={swatchColor ? { backgroundColor: swatchColor } : undefined}
+          >
+            {!swatchColor && (
+              /* Rainbow gradient to signal "click to pick" when empty */
+              <div
+                className="w-full h-full"
+                style={{
+                  background:
+                    "conic-gradient(red, yellow, lime, cyan, blue, magenta, red)",
+                  opacity: 0.7,
+                }}
+              />
+            )}
+          </div>
+          {/* Transparent colour input — overlaid so picker opens near the swatch */}
+          <input
+            type="color"
+            aria-label="Open colour picker"
+            value={pickerHex}
+            onChange={handlePickerChange}
+            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer rounded-lg"
+            title="Pick a colour"
+          />
+        </div>
 
         {/* Text input */}
         <input
