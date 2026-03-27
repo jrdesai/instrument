@@ -96,10 +96,10 @@ pub fn process(input: ApiKeyInput) -> ApiKeyOutput {
 
     // Effective length for the raw key portion.
     let base_len = if input.format == ApiKeyFormat::Grouped {
-        if input.length % 4 == 0 {
+        if input.length.is_multiple_of(4) {
             input.length
         } else {
-            ((input.length + 3) / 4) * 4
+            input.length.div_ceil(4) * 4
         }
     } else {
         input.length
@@ -138,8 +138,7 @@ mod tests {
     use std::collections::HashSet;
 
     fn is_hex(s: &str) -> bool {
-        s.chars()
-            .all(|c| matches!(c, '0'..='9' | 'a'..='f' | 'A'..='F'))
+        s.chars().all(|c: char| c.is_ascii_hexdigit())
     }
 
     #[test]

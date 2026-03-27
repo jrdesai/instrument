@@ -103,7 +103,7 @@ fn encode(input: UrlEncodeInput) -> UrlEncodeOutput {
 }
 
 fn is_hex(b: u8) -> bool {
-    matches!(b, b'0'..=b'9' | b'a'..=b'f' | b'A'..=b'F')
+    b.is_ascii_hexdigit()
 }
 
 /// Validates that every `%` is followed by exactly two hex digits.

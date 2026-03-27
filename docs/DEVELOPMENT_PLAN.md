@@ -263,34 +263,18 @@ need manual maintenance or a separate macro-based solution.
 
 ---
 
-### 6.3 Self-hosted Material Symbols font
+### 6.3 Self-hosted Material Symbols font ✅ Done
 
-**Problem:** The app loads the Material Symbols icon font from `fonts.googleapis.com`.
-This is the only remaining external network dependency on the web version, which otherwise
-runs fully offline. It also adds a render-blocking request on first load.
-
-**Solution:** Download the font files and serve them from `public/fonts/`. Update
-`src/App.css` to load from the local path instead of Google Fonts.
-
-**Effort:** ~2–3 hours
-**Risk:** Very low
-**Trigger:** Any time — this is a straightforward improvement
+Material Symbols is served from `public/fonts/` as a self-hosted variable font.
+`src/App.css` loads it locally — no external network dependency.
 
 ---
 
-### 6.4 Vite vendor chunk splitting
+### 6.4 Vite vendor chunk splitting ✅ Done
 
-**Problem:** The Vite build produces a single large JS bundle that includes React, React
-Router, Zustand, and all tool components together. First load on web downloads everything
-even if the user only uses one tool.
-
-**Solution:** Add `manualChunks` to `vite.config.ts` to split vendor libraries (react,
-react-router, zustand) from tool code. Tools are already lazy-loaded via `React.lazy()` —
-this ensures the vendor chunk is cached separately across deployments.
-
-**Effort:** ~1–2 hours
-**Risk:** Low
-**Trigger:** When Lighthouse performance score for the web version becomes a priority
+`vite.config.ts` uses `manualChunks` to split React, React Router, and Zustand into
+separate cached vendor chunks (`vendor-react`, `vendor-router`, `vendor-state`).
+Tool code remains lazy-loaded via `React.lazy()`.
 
 ---
 
@@ -308,13 +292,8 @@ menu on small screens, stack tool inputs vertically, adjust font sizes.
 
 ---
 
-### 6.6 CI cargo clippy gate
+### 6.6 CI cargo clippy gate ✅ Done
 
-**Problem:** CI runs `cargo test` but not `cargo clippy`. Clippy catches a broader class
-of Rust issues (unused imports, non-idiomatic code, potential bugs) that tests don't cover.
-
-**Solution:** Add `cargo clippy -- -D warnings` as a CI job step.
-
-**Effort:** ~30 minutes + time to fix existing clippy warnings
-**Risk:** Very low
-**Trigger:** Any time — quick win
+`.github/workflows/ci.yml` has a `clippy` job running
+`cargo clippy --all-targets -- -D warnings`. Existing warnings in `instrument-core`
+were fixed as part of this work.

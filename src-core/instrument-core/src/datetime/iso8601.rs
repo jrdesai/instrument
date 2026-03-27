@@ -317,7 +317,7 @@ pub fn process(input: Iso8601Input) -> Iso8601Output {
             } else {
                 1u32
             };
-            if day < 1 || day > 7 {
+            if !(1..=7).contains(&day) {
                 return err_output("Weekday must be 1-7".to_string());
             }
             let weekday = match day {
@@ -345,7 +345,7 @@ pub fn process(input: Iso8601Input) -> Iso8601Output {
     if s.len() >= 8 && s.as_bytes().get(4) == Some(&b'-') {
         let (year_str, ord_str) = s.split_at(4);
         let ord_str = ord_str.trim_start_matches('-');
-        if ord_str.len() >= 1 && ord_str.len() <= 3 && ord_str.chars().all(|c| c.is_ascii_digit()) {
+        if !ord_str.is_empty() && ord_str.len() <= 3 && ord_str.chars().all(|c| c.is_ascii_digit()) {
             let year: i32 = match year_str.parse() {
                 Ok(y) => y,
                 Err(_) => return err_output("Invalid ordinal year".to_string()),

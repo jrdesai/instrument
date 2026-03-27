@@ -52,7 +52,10 @@ fn default_output() -> YamlToJsonOutput {
 }
 
 fn parse_error_line_column(err: &serde_yaml::Error) -> (Option<usize>, Option<usize>) {
-    (err.location().map(|l| l.line() as usize), err.location().map(|l| l.column() as usize))
+    (
+        err.location().map(|l| l.line()),
+        err.location().map(|l| l.column()),
+    )
 }
 
 /// Convert YAML input to formatted JSON.

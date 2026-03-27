@@ -106,13 +106,11 @@ fn lowercase_sql_outside_strings(s: &str) -> String {
                     inside_single = false;
                 }
             }
+        } else if c == '\'' {
+            out.push(c);
+            inside_single = true;
         } else {
-            if c == '\'' {
-                out.push(c);
-                inside_single = true;
-            } else {
-                out.extend(c.to_lowercase());
-            }
+            out.extend(c.to_lowercase());
         }
     }
     out

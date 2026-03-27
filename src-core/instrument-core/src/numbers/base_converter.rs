@@ -117,7 +117,7 @@ fn parse_digit_base32(c: char) -> Option<u32> {
     if c.is_ascii_digit() {
         return Some(c as u32 - b'0' as u32);
     }
-    if c >= 'A' && c <= 'Z' && !matches!(c, 'I' | 'L' | 'O' | 'U') {
+    if c.is_ascii_uppercase() && !matches!(c, 'I' | 'L' | 'O' | 'U') {
         let idx = CROCKFORD_B32.iter().position(|&b| b == c as u8)?;
         return Some(idx as u32);
     }
@@ -166,7 +166,7 @@ fn parse_to_u128(s: &str, base: NumberBase) -> Result<(u128, bool), String> {
                 }
             }
             NumberBase::Octal => {
-                if c >= '0' && c <= '7' {
+                if ('0'..='7').contains(&c) {
                     Some(c as u32 - b'0' as u32)
                 } else {
                     None
@@ -261,13 +261,13 @@ fn group_binary(s: &str, group_size: usize) -> String {
     let chars: Vec<char> = s.chars().collect();
     let len = chars.len();
     let mut out = String::new();
-    let first_len = if len % group_size == 0 {
+    let first_len = if len.is_multiple_of(group_size) {
         group_size
     } else {
         len % group_size
     };
-    for i in 0..first_len {
-        out.push(chars[i]);
+    for &c in chars.iter().take(first_len) {
+        out.push(c);
     }
     for chunk in chars[first_len..].chunks(group_size) {
         if !out.is_empty() {

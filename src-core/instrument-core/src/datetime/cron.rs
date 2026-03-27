@@ -242,7 +242,7 @@ pub fn process(input: CronInput) -> CronOutput {
         };
     }
 
-    let count = input.count.unwrap_or(5).min(10).max(1);
+    let count = input.count.unwrap_or(5).clamp(1, 10);
     let schedule_src = normalized_for_schedule(expr);
 
     match Schedule::from_str(&schedule_src) {
@@ -286,7 +286,7 @@ fn weekday_name(dow: &str) -> &'static str {
 /// Returns an English ordinal string: 1 → "1st", 2 → "2nd", 15 → "15th".
 fn ordinal(n: u32) -> String {
     let suffix = match n % 100 {
-        11 | 12 | 13 => "th",
+        11..=13 => "th",
         _ => match n % 10 {
             1 => "st",
             2 => "nd",

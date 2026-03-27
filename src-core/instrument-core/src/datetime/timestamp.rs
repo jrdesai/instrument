@@ -80,7 +80,7 @@ fn relative_string(dt: DateTime<Utc>, now: DateTime<Utc>) -> (String, bool) {
     let (value, unit, past) = if secs < 10 {
         (0, "just now", true)
     } else if secs < 60 {
-        (secs as i64, "seconds", delta.num_seconds() < 0)
+        (secs, "seconds", delta.num_seconds() < 0)
     } else if secs < 3600 {
         (secs / 60, "minutes", delta.num_seconds() < 0)
     } else if secs < 86400 {
@@ -202,7 +202,7 @@ pub fn process(input: TimestampInput) -> TimestampOutput {
     let now = Utc::now();
 
     match input.mode {
-        TimestampMode::Now => return output_from_dt(now),
+        TimestampMode::Now => output_from_dt(now),
         TimestampMode::ToHuman => {
             let value = input.value.trim();
             if value.is_empty() {

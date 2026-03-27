@@ -190,7 +190,7 @@ pub(crate) fn decode_secret(secret: &str, enc: SecretEncoding) -> Result<Vec<u8>
         }
         SecretEncoding::Hex => {
             let s = s.strip_prefix("0x").unwrap_or(s);
-            if s.len() % 2 != 0 {
+            if !s.len().is_multiple_of(2) {
                 return Err("Hex secret: odd length".to_string());
             }
             (0..s.len())

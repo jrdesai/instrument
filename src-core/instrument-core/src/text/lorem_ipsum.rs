@@ -166,7 +166,7 @@ fn generate_sentences(count: usize, start_with_classic: bool) -> String {
     let mut out = String::new();
     for i in 0..count {
         if i > 0 {
-            out.push_str(" ");
+            out.push(' ');
         }
         let sentence = if start_with_classic && i == 0 {
             CLASSIC_OPENING

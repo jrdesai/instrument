@@ -31,7 +31,7 @@ pub fn convert(
     // Emit interfaces in insertion order (nested first, root last).
     for (idx, iface) in interfaces.iter().enumerate() {
         if idx > 0 {
-            out.push_str("\n");
+            out.push('\n');
         }
         if export {
             out.push_str("export ");

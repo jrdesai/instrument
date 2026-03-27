@@ -353,8 +353,7 @@ fn html_unescape(s: &str) -> StringEscaperOutput {
             out.push_str(&s[amp_pos..i]);
             continue;
         }
-        if between.starts_with('#') {
-            let num = &between[1..];
+        if let Some(num) = between.strip_prefix('#') {
             let code = if num.starts_with('x') || num.starts_with('X') {
                 num[1..].chars().filter_map(|c| c.to_digit(16)).fold(0u32, |a, d| a * 16 + d)
             } else {

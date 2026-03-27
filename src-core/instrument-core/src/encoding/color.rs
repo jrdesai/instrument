@@ -178,7 +178,7 @@ fn extract_parens(s: &str) -> Option<&str> {
 }
 
 fn split_components(s: &str) -> Vec<&str> {
-    s.split(|c: char| c == ',' || c == '/' || c == ' ')
+    s.split([',', '/', ' '])
         .map(|p| p.trim())
         .filter(|p| !p.is_empty())
         .collect()

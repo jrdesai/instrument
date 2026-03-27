@@ -108,7 +108,7 @@ fn hex_to_text(input: HexInput) -> HexOutput {
         };
     }
 
-    if cleaned.len() % 2 != 0 {
+    if !cleaned.len().is_multiple_of(2) {
         return HexOutput {
             result: String::new(),
             byte_count: 0,
@@ -165,7 +165,7 @@ fn hex_to_text(input: HexInput) -> HexOutput {
 
     match String::from_utf8(bytes) {
         Ok(s) => {
-            let byte_count = s.as_bytes().len();
+            let byte_count = s.len();
             HexOutput {
                 result: s,
                 byte_count,
@@ -183,7 +183,7 @@ fn hex_to_text(input: HexInput) -> HexOutput {
 }
 
 fn is_hex_char(c: char) -> bool {
-    matches!(c, '0'..='9' | 'a'..='f' | 'A'..='F')
+    c.is_ascii_hexdigit()
 }
 
 #[cfg(test)]

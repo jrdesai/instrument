@@ -39,6 +39,24 @@ export default defineConfig(async () => ({
       process.env.npm_package_version ?? pkg.version
     ),
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          // Match only react + react-dom packages — not react-router* (those share the "react" prefix).
+          if (id.includes("node_modules/react/") || id.includes("node_modules/react-dom/")) {
+            return "vendor-react";
+          }
+          if (id.includes("node_modules/react-router-dom") || id.includes("node_modules/react-router/")) {
+            return "vendor-router";
+          }
+          if (id.includes("node_modules/zustand")) {
+            return "vendor-state";
+          }
+        },
+      },
+    },
+  },
   test: {
     environment: "jsdom",
     setupFiles: ["src/vitest.setup.ts"],

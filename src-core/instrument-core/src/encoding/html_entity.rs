@@ -203,8 +203,7 @@ fn decode_inner(s: &str) -> (String, usize) {
         }
 
         // Numeric: &#123; or &#x7b;
-        if between.starts_with('#') {
-            let num = &between[1..];
+        if let Some(num) = between.strip_prefix('#') {
             let code = if num.starts_with('x') || num.starts_with('X') {
                 num[1..].chars().filter_map(|c| c.to_digit(16)).fold(0u32, |a, d| a * 16 + d)
             } else {

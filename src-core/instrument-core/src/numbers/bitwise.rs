@@ -116,7 +116,7 @@ fn parse_to_u64(s: &str, base: BitwiseBase) -> Result<u64, String> {
                 }
             }
             BitwiseBase::Octal => {
-                if c >= '0' && c <= '7' {
+                if ('0'..='7').contains(&c) {
                     Some(c as u32 - b'0' as u32)
                 } else {
                     None
@@ -178,7 +178,7 @@ fn group_binary(s: &str, group_size: usize) -> String {
     let len = chars.len();
     let mut out = String::new();
     for (i, &c) in chars.iter().enumerate() {
-        if i > 0 && (len - i) % group_size == 0 {
+        if i > 0 && (len - i).is_multiple_of(group_size) {
             out.push(' ');
         }
         out.push(c);
