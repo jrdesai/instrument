@@ -39,6 +39,8 @@ function ColorConverterTool() {
   const [error, setError] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [pickerOpen, setPickerOpen] = useState(false);
+  // Tracks the picker's live colour immediately — separate from the debounced output
+  const [pickerColor, setPickerColor] = useState("#000000");
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pickerContainerRef = useRef<HTMLDivElement>(null);
@@ -128,9 +130,10 @@ function ColorConverterTool() {
     [setDraft]
   );
 
-  // react-colorful fires with #rrggbb
+  // react-colorful fires with #rrggbb — update swatch immediately, text input debounces to Rust
   const handlePickerChange = useCallback(
     (hex: string) => {
+      setPickerColor(hex);
       handleInputChange(hex);
     },
     [handleInputChange]
@@ -155,8 +158,9 @@ function ColorConverterTool() {
     }
   }, []);
 
-  const pickerHex = output?.hex ?? "#000000";
-  const swatchColor = output?.hex ?? null;
+  const pickerHex = output?.hex ?? pickerColor;
+  // Swatch reflects picker live colour when open; output hex when closed; null = show hue strip
+  const swatchColor = pickerOpen ? pickerColor : (output?.hex ?? null);
 
   return (
     <div className="flex flex-col h-full bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
@@ -168,7 +172,10 @@ function ColorConverterTool() {
           <button
             type="button"
             aria-label="Open colour picker"
-            onClick={() => setPickerOpen((o) => !o)}
+            onClick={() => {
+              if (!pickerOpen && output?.hex) setPickerColor(output.hex);
+              setPickerOpen((o) => !o);
+            }}
             className="w-12 h-10 rounded-lg border-2 border-border-light dark:border-border-dark hover:border-primary/60 transition-colors overflow-hidden"
             style={swatchColor ? { backgroundColor: swatchColor } : undefined}
           >
