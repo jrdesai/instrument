@@ -68,9 +68,9 @@ pub struct BitwiseOutput {
     pub shift_right: Option<BitwiseResult>,
     pub rotate_left: Option<BitwiseResult>,
     pub rotate_right: Option<BitwiseResult>,
-    pub bit_count_a: Option<usize>,
-    pub leading_zeros_a: Option<usize>,
-    pub trailing_zeros_a: Option<usize>,
+    pub bit_count_a: Option<u32>,
+    pub leading_zeros_a: Option<u32>,
+    pub trailing_zeros_a: Option<u32>,
     pub is_power_of_two_a: Option<bool>,
     pub error: Option<String>,
 }
@@ -293,10 +293,10 @@ pub fn process(input: BitwiseInput) -> BitwiseOutput {
     };
 
     // Bit analysis of A (use the masked value; leading/trailing within width)
-    out.bit_count_a = Some(parsed_a.count_ones() as usize);
+    out.bit_count_a = Some(parsed_a.count_ones() as u32);
     let leading = (parsed_a << (64 - width_bits)).leading_zeros();
-    out.leading_zeros_a = Some((leading.saturating_sub(64 - width_bits)) as usize);
-    out.trailing_zeros_a = Some((parsed_a.trailing_zeros()).min(width_bits) as usize);
+    out.leading_zeros_a = Some((leading.saturating_sub(64 - width_bits)) as u32);
+    out.trailing_zeros_a = Some((parsed_a.trailing_zeros()).min(width_bits) as u32);
     out.is_power_of_two_a = Some(parsed_a != 0 && parsed_a.is_power_of_two());
 
     // Single-operand ops

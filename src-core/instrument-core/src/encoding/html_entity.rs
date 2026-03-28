@@ -45,7 +45,7 @@ pub enum HtmlEntityEncodeType {
 #[ts(export)]
 pub struct HtmlEntityOutput {
     pub result: String,
-    pub entities_found: usize,
+    pub entities_found: u32,
     pub error: Option<String>,
 }
 
@@ -90,7 +90,7 @@ fn encode(input: HtmlEntityInput) -> HtmlEntityOutput {
     };
     HtmlEntityOutput {
         result,
-        entities_found,
+        entities_found: u32::try_from(entities_found).unwrap_or(u32::MAX),
         error: None,
     }
 }
@@ -161,7 +161,7 @@ fn decode(input: HtmlEntityInput) -> HtmlEntityOutput {
     let (result, entities_found) = decode_inner(&input.text);
     HtmlEntityOutput {
         result,
-        entities_found,
+        entities_found: u32::try_from(entities_found).unwrap_or(u32::MAX),
         error: None,
     }
 }

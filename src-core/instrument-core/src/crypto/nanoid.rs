@@ -18,9 +18,9 @@ const DEFAULT_ALPHABET: &str =
 #[ts(export)]
 pub struct NanoIdInput {
     /// Number of IDs to generate (1–100).
-    pub count: usize,
+    pub count: u32,
     /// Length of each ID (4–256). Default: 21.
-    pub size: usize,
+    pub size: u32,
     /// Optional custom alphabet. If None or empty, uses the default URL-safe alphabet.
     pub alphabet: Option<String>,
 }
@@ -71,7 +71,7 @@ pub fn process(input: NanoIdInput) -> NanoIdOutput {
         };
     }
 
-    let size = input.size;
+    let size = input.size as usize;
     let ids = (0..input.count)
         .map(|_| nanoid_format(nanoid_default_rng, &chars, size))
         .collect();

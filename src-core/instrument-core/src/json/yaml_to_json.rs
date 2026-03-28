@@ -37,10 +37,10 @@ pub struct YamlToJsonOutput {
     pub result: String,
     pub is_valid_yaml: bool,
     pub error: Option<String>,
-    pub error_line: Option<usize>,
-    pub error_column: Option<usize>,
-    pub line_count: usize,
-    pub char_count: usize,
+    pub error_line: Option<u32>,
+    pub error_column: Option<u32>,
+    pub line_count: u32,
+    pub char_count: u32,
 }
 
 fn default_output() -> YamlToJsonOutput {
@@ -55,10 +55,14 @@ fn default_output() -> YamlToJsonOutput {
     }
 }
 
-fn parse_error_line_column(err: &serde_yaml::Error) -> (Option<usize>, Option<usize>) {
+fn parse_error_line_column(err: &serde_yaml::Error) -> (Option<u32>, Option<u32>) {
     (
-        err.location().map(|l| l.line()),
-        err.location().map(|l| l.column()),
+        err
+            .location()
+            .and_then(|l| u32::try_from(l.line()).ok()),
+        err
+            .location()
+            .and_then(|l| u32::try_from(l.column()).ok()),
     )
 }
 
@@ -114,8 +118,8 @@ pub fn process(input: YamlToJsonInput) -> YamlToJsonOutput {
             .join("\n");
     }
 
-    let line_count = json.lines().count();
-    let char_count = json.chars().count();
+    let line_count = u32::try_from(json.lines().count()).unwrap_or(u32::MAX);
+    let char_count = u32::try_from(json.chars().count()).unwrap_or(u32::MAX);
 
     YamlToJsonOutput {
         result: json,

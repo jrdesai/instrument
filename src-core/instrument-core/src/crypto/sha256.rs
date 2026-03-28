@@ -28,7 +28,7 @@ pub struct Sha256Output {
     /// 64-character hex hash, or empty when input is empty and hash_empty is false.
     pub hash: String,
     /// 64 when a hash is returned, 0 when empty.
-    pub length: usize,
+    pub length: u32,
     /// Set when hashing fails; normally None.
     pub error: Option<String>,
 }

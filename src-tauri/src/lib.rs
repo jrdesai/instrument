@@ -1,8 +1,23 @@
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 
-use specta_typescript::Typescript;
+use specta_typescript::{BigIntExportBehavior, Typescript};
+use std::path::Path;
 use tauri_plugin_log::{RotationStrategy, Target, TargetKind};
 use tauri_specta::{collect_commands, Builder};
+
+/// `tauri-specta` emits imports/helpers at EOF that trip `tsc` `noUnusedLocals` when no events exist.
+fn prepend_ts_nocheck_if_needed(path: &Path) {
+    let Ok(content) = std::fs::read_to_string(path) else {
+        return;
+    };
+    if content.starts_with("// @ts-nocheck") {
+        return;
+    }
+    let _ = std::fs::write(
+        path,
+        format!("// @ts-nocheck\n{content}"),
+    );
+}
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -52,12 +67,17 @@ pub fn run() {
     ]);
 
     #[cfg(debug_assertions)]
-    builder
-        .export(
-            Typescript::default(),
-            std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../src/bindings/tauri.ts"),
-        )
-        .expect("failed to export tauri TypeScript bindings");
+    {
+        let tauri_ts = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../src/bindings/tauri.ts");
+        builder
+            .export(
+                // usize/i64/u64 map to TS bigint by default; serde_json uses numbers — match that in bindings.
+                Typescript::default().bigint(BigIntExportBehavior::Number),
+                &tauri_ts,
+            )
+            .expect("failed to export tauri TypeScript bindings");
+        prepend_ts_nocheck_if_needed(&tauri_ts);
+    }
 
     tauri::Builder::default()
         .plugin(

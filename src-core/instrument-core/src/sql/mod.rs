@@ -39,19 +39,18 @@ pub struct SqlFormatInput {
 #[ts(export)]
 pub struct SqlFormatOutput {
     pub result: String,
-    pub line_count: usize,
-    pub char_count: usize,
+    pub line_count: u32,
+    pub char_count: u32,
     /// Human-readable error if formatting failed (rare with sqlformat).
     pub error: Option<String>,
 }
 
 fn make_output(result: String, error: Option<String>) -> SqlFormatOutput {
-    let char_count = result.chars().count();
+    let char_count = u32::try_from(result.chars().count()).unwrap_or(u32::MAX);
     let line_count = if result.is_empty() {
-        0
+        0u32
     } else {
-        // Count newline boundaries; at least one line when non-empty.
-        result.lines().count()
+        u32::try_from(result.lines().count()).unwrap_or(u32::MAX)
     };
     SqlFormatOutput {
         result,

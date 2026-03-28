@@ -39,13 +39,17 @@ pub enum EscapeTarget {
     Csv,
 }
 
+fn change_count_u32(n: usize) -> u32 {
+    u32::try_from(n).unwrap_or(u32::MAX)
+}
+
 /// Output: result string, number of replacements, optional error.
 #[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct StringEscaperOutput {
     pub result: String,
-    pub changes: usize,
+    pub changes: u32,
     pub error: Option<String>,
 }
 
@@ -146,7 +150,7 @@ fn json_escape(s: &str) -> StringEscaperOutput {
     }
     StringEscaperOutput {
         result: out,
-        changes,
+        changes: change_count_u32(changes),
         error: None,
     }
 }
@@ -195,7 +199,7 @@ fn json_unescape(s: &str) -> StringEscaperOutput {
                 if hex.len() != 4 || !hex.chars().all(|c| c.is_ascii_hexdigit()) {
                     return StringEscaperOutput {
                         result: out,
-                        changes,
+                        changes: change_count_u32(changes),
                         error: Some(format!("Invalid \\u escape sequence: \\u{}", hex)),
                     };
                 }
@@ -207,7 +211,7 @@ fn json_unescape(s: &str) -> StringEscaperOutput {
                 } else {
                     return StringEscaperOutput {
                         result: out,
-                        changes,
+                        changes: change_count_u32(changes),
                         error: Some(format!("Invalid \\u{} code point", hex)),
                     };
                 }
@@ -215,14 +219,14 @@ fn json_unescape(s: &str) -> StringEscaperOutput {
             Some(other) => {
                 return StringEscaperOutput {
                     result: out,
-                    changes,
+                    changes: change_count_u32(changes),
                     error: Some(format!("Invalid escape sequence: \\{}", other)),
                 };
             }
             None => {
                 return StringEscaperOutput {
                     result: out,
-                    changes,
+                    changes: change_count_u32(changes),
                     error: Some("Backslash at end of string".to_string()),
                 };
             }
@@ -230,7 +234,7 @@ fn json_unescape(s: &str) -> StringEscaperOutput {
     }
     StringEscaperOutput {
         result: out,
-        changes,
+        changes: change_count_u32(changes),
         error: None,
     }
 }
@@ -252,7 +256,7 @@ fn regex_escape(s: &str) -> StringEscaperOutput {
     }
     StringEscaperOutput {
         result: out,
-        changes,
+        changes: change_count_u32(changes),
         error: None,
     }
 }
@@ -280,7 +284,7 @@ fn regex_unescape(s: &str) -> StringEscaperOutput {
     }
     StringEscaperOutput {
         result: out,
-        changes,
+        changes: change_count_u32(changes),
         error: None,
     }
 }
@@ -316,7 +320,7 @@ fn html_escape(s: &str) -> StringEscaperOutput {
     }
     StringEscaperOutput {
         result: out,
-        changes,
+        changes: change_count_u32(changes),
         error: None,
     }
 }
@@ -392,7 +396,7 @@ fn html_unescape(s: &str) -> StringEscaperOutput {
     }
     StringEscaperOutput {
         result: out,
-        changes,
+        changes: change_count_u32(changes),
         error: None,
     }
 }
@@ -403,7 +407,7 @@ fn sql_escape(s: &str) -> StringEscaperOutput {
     let result = s.replace('\'', "''");
     StringEscaperOutput {
         result,
-        changes,
+        changes: change_count_u32(changes),
         error: None,
     }
 }
@@ -427,7 +431,7 @@ fn sql_unescape(s: &str) -> StringEscaperOutput {
     }
     StringEscaperOutput {
         result: out,
-        changes,
+        changes: change_count_u32(changes),
         error: None,
     }
 }
@@ -448,7 +452,7 @@ fn shell_escape(s: &str) -> StringEscaperOutput {
     out.push('\'');
     StringEscaperOutput {
         result: out,
-        changes,
+        changes: change_count_u32(changes),
         error: None,
     }
 }
@@ -475,7 +479,7 @@ fn shell_unescape(s: &str) -> StringEscaperOutput {
         }
         return StringEscaperOutput {
             result: out,
-            changes,
+            changes: change_count_u32(changes),
             error: None,
         };
     }
@@ -502,7 +506,7 @@ fn csv_escape(s: &str) -> StringEscaperOutput {
     let result = format!("\"{}\"", escaped);
     StringEscaperOutput {
         result,
-        changes,
+        changes: change_count_u32(changes),
         error: None,
     }
 }
@@ -515,7 +519,7 @@ fn csv_unescape(s: &str) -> StringEscaperOutput {
         let changes = inner.matches("\"\"").count();
         return StringEscaperOutput {
             result,
-            changes,
+            changes: change_count_u32(changes),
             error: None,
         };
     }

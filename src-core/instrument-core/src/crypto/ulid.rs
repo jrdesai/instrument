@@ -39,7 +39,7 @@ pub struct UlidInspectOutput {
 #[ts(export)]
 pub struct UlidInput {
     /// Number of ULIDs to generate (1–100).
-    pub count: usize,
+    pub count: u32,
     /// If true, return ULIDs in uppercase (default ULID form); otherwise lowercase.
     pub uppercase: bool,
 }
@@ -81,7 +81,7 @@ pub fn process(input: UlidInput) -> UlidOutput {
         };
     }
 
-    let mut ulids = Vec::with_capacity(input.count);
+    let mut ulids = Vec::with_capacity(input.count as usize);
     let mut gen = Generator::new();
     for _ in 0..input.count {
         let ulid = gen.generate().unwrap_or_else(|_| Ulid::new());

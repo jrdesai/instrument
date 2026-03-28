@@ -13,8 +13,8 @@ pub struct RegexRequest {
 #[derive(Debug, Serialize, Type)]
 #[serde(rename_all = "camelCase")]
 pub struct MatchResult {
-    pub start: usize,
-    pub end: usize,
+    pub start: u32,
+    pub end: u32,
     pub value: String,
     pub groups: Vec<Option<String>>,
 }
@@ -25,7 +25,7 @@ pub struct ExplainToken {
     pub kind: String,
     pub label: String,
     pub description: String,
-    pub depth: usize,
+    pub depth: u32,
 }
 
 #[derive(Debug, Deserialize, Serialize, Type)]

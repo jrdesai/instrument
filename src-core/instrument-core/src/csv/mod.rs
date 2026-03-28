@@ -40,9 +40,9 @@ pub struct CsvToJsonOutput {
     /// Pretty-printed JSON string.
     pub result: String,
     /// Number of data rows (excluding header when has_headers == true).
-    pub row_count: usize,
+    pub row_count: u32,
     /// Number of columns detected (max across rows / headers).
-    pub column_count: usize,
+    pub column_count: u32,
     /// Error message if parsing failed.
     pub error: Option<String>,
 }
@@ -171,8 +171,8 @@ fn process_as_objects<R: std::io::Read>(
 
         return CsvToJsonOutput {
             result,
-            row_count,
-            column_count,
+            row_count: u32::try_from(row_count).unwrap_or(u32::MAX),
+            column_count: u32::try_from(column_count).unwrap_or(u32::MAX),
             error: None,
         };
     }
@@ -215,8 +215,8 @@ fn process_as_objects<R: std::io::Read>(
 
     CsvToJsonOutput {
         result,
-        row_count,
-        column_count,
+        row_count: u32::try_from(row_count).unwrap_or(u32::MAX),
+        column_count: u32::try_from(column_count).unwrap_or(u32::MAX),
         error: None,
     }
 }
@@ -258,8 +258,8 @@ fn process_as_arrays<R: std::io::Read>(rdr: &mut csv::Reader<R>) -> CsvToJsonOut
 
     CsvToJsonOutput {
         result,
-        row_count,
-        column_count,
+        row_count: u32::try_from(row_count).unwrap_or(u32::MAX),
+        column_count: u32::try_from(column_count).unwrap_or(u32::MAX),
         error: None,
     }
 }

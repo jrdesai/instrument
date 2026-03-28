@@ -46,8 +46,8 @@ pub struct JsonConvertOutput {
     pub error: Option<String>,
     /// Non-fatal warnings about lossy transforms, etc.
     pub warning: Option<String>,
-    pub line_count: usize,
-    pub char_count: usize,
+    pub line_count: u32,
+    pub char_count: u32,
 }
 
 /// Convert JSON to another format (YAML, TypeScript, CSV, XML).
@@ -102,8 +102,8 @@ pub fn process(input: JsonConvertInput) -> JsonConvertOutput {
 
     match result {
         Ok(output) => {
-            let line_count = output.lines().count();
-            let char_count = output.chars().count();
+            let line_count = u32::try_from(output.lines().count()).unwrap_or(u32::MAX);
+            let char_count = u32::try_from(output.chars().count()).unwrap_or(u32::MAX);
             JsonConvertOutput {
                 result: output,
                 is_valid_json: true,

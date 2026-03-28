@@ -30,9 +30,9 @@ pub struct FindReplaceInput {
 #[ts(export)]
 pub struct FindReplaceOutput {
     pub result: String,
-    pub match_count: usize,
-    pub replaced_count: usize,
-    pub match_ranges: Vec<[usize; 2]>,
+    pub match_count: u32,
+    pub replaced_count: u32,
+    pub match_ranges: Vec<[u32; 2]>,
     pub error: Option<String>,
 }
 
@@ -105,11 +105,14 @@ pub fn process(input: FindReplaceInput) -> FindReplaceOutput {
         }
     };
 
-    let mut match_ranges: Vec<[usize; 2]> = Vec::new();
+    let mut match_ranges: Vec<[u32; 2]> = Vec::new();
     for m in re.find_iter(&input.text) {
-        match_ranges.push([m.start(), m.end()]);
+        match_ranges.push([
+            u32::try_from(m.start()).unwrap_or(u32::MAX),
+            u32::try_from(m.end()).unwrap_or(u32::MAX),
+        ]);
     }
-    let match_count = match_ranges.len();
+    let match_count = u32::try_from(match_ranges.len()).unwrap_or(u32::MAX);
 
     let result = if input.replace_all {
         re.replace_all(&input.text, NoExpand(&input.replace))

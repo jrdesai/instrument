@@ -15,6 +15,7 @@ pub struct TextDiffInput {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[specta(rename = "TextDiffLineAnnotation")]
 #[ts(export, export_to = "TextDiffLineAnnotation.ts")]
 pub enum LineAnnotation {
     Unchanged,
@@ -24,6 +25,7 @@ pub enum LineAnnotation {
 
 #[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[specta(rename = "TextDiffAnnotatedLine")]
 #[ts(export, export_to = "TextDiffAnnotatedLine.ts")]
 pub struct AnnotatedLine {
     pub line_number: u32,

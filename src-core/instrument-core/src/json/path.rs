@@ -45,7 +45,7 @@ pub struct JsonPathMatch {
     /// JSON value type: "string", "number", "boolean", "null", "object", "array".
     pub value_type: String,
     /// 0-based match index.
-    pub index: usize,
+    pub index: u32,
 }
 
 /// Output from the JSONPath tool.
@@ -56,7 +56,7 @@ pub struct JsonPathOutput {
     pub is_valid_json: bool,
     pub is_valid_query: bool,
     pub matches: Vec<JsonPathMatch>,
-    pub match_count: usize,
+    pub match_count: u32,
     pub error: Option<String>,
     /// Pretty-printed full JSON document (no inline annotations yet).
     pub annotated_document: Option<String>,
@@ -157,7 +157,7 @@ pub fn process(input: JsonPathInput) -> JsonPathOutput {
                     path: path_str,
                     value: value_json,
                     value_type,
-                    index,
+                    index: u32::try_from(index).unwrap_or(u32::MAX),
                 });
             }
             JsonPathValue::NewValue(v) => {
@@ -167,7 +167,7 @@ pub fn process(input: JsonPathInput) -> JsonPathOutput {
                     path: String::new(),
                     value: value_json,
                     value_type,
-                    index,
+                    index: u32::try_from(index).unwrap_or(u32::MAX),
                 });
             }
             JsonPathValue::NoValue => {
@@ -176,7 +176,7 @@ pub fn process(input: JsonPathInput) -> JsonPathOutput {
         }
     }
 
-    let match_count = matches.len();
+    let match_count = u32::try_from(matches.len()).unwrap_or(u32::MAX);
     let annotated_document = serde_json::to_string_pretty(&parsed).ok();
 
     JsonPathOutput {

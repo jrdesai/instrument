@@ -13,7 +13,7 @@ use std::str::FromStr;
 pub struct CronInput {
     pub expression: String,
     /// How many upcoming run times to return (default 5, max 10).
-    pub count: Option<usize>,
+    pub count: Option<u32>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
@@ -246,7 +246,7 @@ pub fn process(input: CronInput) -> CronOutput {
         };
     }
 
-    let count = input.count.unwrap_or(5).clamp(1, 10);
+    let count = input.count.unwrap_or(5).clamp(1, 10) as usize;
     let schedule_src = normalized_for_schedule(expr);
 
     match Schedule::from_str(&schedule_src) {

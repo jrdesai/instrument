@@ -3,4 +3,8 @@
 /**
  * Output from the JSON formatter.
  */
-export type JsonFormatOutput = { result: string, isValid: boolean, lineCount: number, charCount: number, sizeBytes: number, sizeOriginalBytes: number, compressionRatio: number | null, error: string | null, errorLine: number | null, errorColumn: number | null, };
+export type JsonFormatOutput = { result: string, isValid: boolean, 
+/**
+ * `u32` (not `usize`) so tauri-specta avoids bigint in TS export.
+ */
+lineCount: number, charCount: number, sizeBytes: number, sizeOriginalBytes: number, compressionRatio: number | null, error: string | null, errorLine: number | null, errorColumn: number | null, };

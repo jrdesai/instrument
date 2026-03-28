@@ -27,7 +27,7 @@ pub struct Md5Output {
     /// 32-character hex hash.
     pub hash: String,
     /// Always 32 for MD5.
-    pub length: usize,
+    pub length: u32,
     /// Set when hashing fails (e.g. invalid UTF-8); normally None.
     pub error: Option<String>,
 }

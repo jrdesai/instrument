@@ -55,7 +55,7 @@ pub struct BaseConverterOutput {
     pub octal: String,
     pub base32: String,
     pub base36: String,
-    pub bit_length: usize,
+    pub bit_length: u32,
     pub is_negative: bool,
     pub error: Option<String>,
 }
@@ -344,7 +344,7 @@ pub fn process(input: BaseConverterInput) -> BaseConverterOutput {
         octal,
         base32,
         base36,
-        bit_length: bits,
+        bit_length: u32::try_from(bits).unwrap_or(u32::MAX),
         is_negative,
         error: None,
     }

@@ -34,7 +34,7 @@ pub fn run(req: &ExplainRequest) -> Result<Vec<ExplainToken>, String> {
     Ok(tokens)
 }
 
-fn walk_hir(hir: &Hir, depth: usize, tokens: &mut Vec<ExplainToken>) {
+fn walk_hir(hir: &Hir, depth: u32, tokens: &mut Vec<ExplainToken>) {
     match hir.kind() {
         HirKind::Empty => {
             tokens.push(ExplainToken {
@@ -95,7 +95,7 @@ fn walk_hir(hir: &Hir, depth: usize, tokens: &mut Vec<ExplainToken>) {
                 description,
                 depth,
             });
-            walk_hir(&cap.sub, depth + 1, tokens);
+            walk_hir(&cap.sub, depth.saturating_add(1), tokens);
             tokens.push(ExplainToken {
                 kind: "group_end".into(),
                 label: ")".into(),
@@ -126,7 +126,7 @@ fn walk_hir(hir: &Hir, depth: usize, tokens: &mut Vec<ExplainToken>) {
                         depth,
                     });
                 }
-                walk_hir(h, depth + 1, tokens);
+                walk_hir(h, depth.saturating_add(1), tokens);
             }
         }
     }

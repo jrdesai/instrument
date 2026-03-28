@@ -31,8 +31,8 @@ pub enum Base64Mode {
 #[ts(export)]
 pub struct Base64Output {
     pub result: String,
-    pub byte_count: usize,
-    pub char_count: usize,
+    pub byte_count: u32,
+    pub char_count: u32,
     pub error: Option<String>,
 }
 
@@ -70,8 +70,8 @@ fn encode(input: Base64Input) -> Base64Output {
     };
     Base64Output {
         result: encoded.clone(),
-        byte_count: bytes.len(),
-        char_count: encoded.chars().count(),
+        byte_count: u32::try_from(bytes.len()).unwrap_or(u32::MAX),
+        char_count: u32::try_from(encoded.chars().count()).unwrap_or(u32::MAX),
         error: None,
     }
 }
@@ -85,7 +85,7 @@ fn decode(input: Base64Input) -> Base64Output {
     };
     match decoded {
         Ok(bytes) => {
-            let byte_count = bytes.len();
+            let byte_count = u32::try_from(bytes.len()).unwrap_or(u32::MAX);
             let result = match String::from_utf8(bytes) {
                 Ok(s) => s,
                 Err(_) => {
@@ -98,7 +98,7 @@ fn decode(input: Base64Input) -> Base64Output {
                 }
             };
             Base64Output {
-                char_count: trimmed.chars().count(),
+                char_count: u32::try_from(trimmed.chars().count()).unwrap_or(u32::MAX),
                 byte_count,
                 result,
                 error: None,
@@ -107,7 +107,7 @@ fn decode(input: Base64Input) -> Base64Output {
         Err(e) => Base64Output {
             result: String::new(),
             byte_count: 0,
-            char_count: trimmed.chars().count(),
+            char_count: u32::try_from(trimmed.chars().count()).unwrap_or(u32::MAX),
             error: Some(format!(
                 "Invalid Base64: {}. Check padding and alphabet (standard vs URL-safe).",
                 e

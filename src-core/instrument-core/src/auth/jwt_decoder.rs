@@ -79,7 +79,7 @@ pub struct JwtDecodeOutput {
     pub signature_valid: Option<bool>,
     pub signature_note: String,
 
-    pub part_count: usize,
+    pub part_count: u32,
     pub is_well_formed: bool,
 
     pub error: Option<String>,
@@ -256,7 +256,7 @@ pub fn process(input: JwtDecodeInput) -> JwtDecodeOutput {
     let part_count = parts.len();
     if part_count != 3 {
         let mut out = default_output();
-        out.part_count = part_count;
+        out.part_count = u32::try_from(part_count).unwrap_or(u32::MAX);
         out.is_well_formed = false;
         out.error = Some(format!(
             "Token must have exactly 3 parts (header.payload.signature), got {}",

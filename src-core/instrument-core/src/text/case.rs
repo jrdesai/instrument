@@ -30,7 +30,7 @@ pub struct CaseOutput {
     pub lower_case: String,
     pub dot_case: String,
     pub path_case: String,
-    pub word_count: usize,
+    pub word_count: u32,
     pub error: Option<String>,
 }
 
@@ -191,7 +191,7 @@ pub fn process(input: CaseInput) -> CaseOutput {
         lower_case: joined_space.to_lowercase(),
         dot_case: dot,
         path_case: path,
-        word_count,
+        word_count: u32::try_from(word_count).unwrap_or(u32::MAX),
         error: None,
     }
 }

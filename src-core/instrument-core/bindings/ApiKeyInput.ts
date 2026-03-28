@@ -5,4 +5,8 @@ import type { ApiKeyFormat } from "./ApiKeyFormat";
 /**
  * Input for the API Key Generator tool.
  */
-export type ApiKeyInput = { count: number, length: number, prefix: string, format: ApiKeyFormat, charset: ApiKeyCharset, };
+export type ApiKeyInput = { 
+/**
+ * `u32` so tauri-specta TS export avoids bigint (forbidden for IPC).
+ */
+count: number, length: number, prefix: string, format: ApiKeyFormat, charset: ApiKeyCharset, };

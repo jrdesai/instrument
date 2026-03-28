@@ -22,15 +22,15 @@ pub struct WordCounterInput {
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct WordCounterOutput {
-    pub words: usize,
-    pub characters_with_spaces: usize,
-    pub characters_without_spaces: usize,
-    pub lines: usize,
-    pub sentences: usize,
-    pub paragraphs: usize,
-    pub unique_words: usize,
+    pub words: u32,
+    pub characters_with_spaces: u32,
+    pub characters_without_spaces: u32,
+    pub lines: u32,
+    pub sentences: u32,
+    pub paragraphs: u32,
+    pub unique_words: u32,
     pub avg_word_length: f64,
-    pub reading_time_seconds: usize,
+    pub reading_time_seconds: u32,
     pub error: Option<String>,
 }
 
@@ -121,20 +121,20 @@ pub fn process(input: WordCounterInput) -> WordCounterOutput {
 
     // 200 words per minute → reading_time_seconds = (words / 200) * 60 = words * 0.3
     let reading_time_seconds = if word_count == 0 {
-        0
+        0u32
     } else {
         let secs = (word_count as f64 / 200.0) * 60.0;
-        secs.ceil().max(1.0) as usize
+        secs.ceil().max(1.0) as u32
     };
 
     WordCounterOutput {
-        words: word_count,
-        characters_with_spaces,
-        characters_without_spaces,
-        lines: lines_count,
-        sentences,
-        paragraphs: paragraphs_count,
-        unique_words,
+        words: u32::try_from(word_count).unwrap_or(u32::MAX),
+        characters_with_spaces: u32::try_from(characters_with_spaces).unwrap_or(u32::MAX),
+        characters_without_spaces: u32::try_from(characters_without_spaces).unwrap_or(u32::MAX),
+        lines: u32::try_from(lines_count).unwrap_or(u32::MAX),
+        sentences: u32::try_from(sentences).unwrap_or(u32::MAX),
+        paragraphs: u32::try_from(paragraphs_count).unwrap_or(u32::MAX),
+        unique_words: u32::try_from(unique_words).unwrap_or(u32::MAX),
         avg_word_length,
         reading_time_seconds,
         error: None,

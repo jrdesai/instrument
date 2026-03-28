@@ -13,7 +13,7 @@ use ts_rs::TS;
 #[ts(export)]
 pub struct LoremIpsumInput {
     pub output_type: LoremOutputType,
-    pub count: usize,
+    pub count: u32,
     pub start_with_classic: bool,
 }
 
@@ -33,9 +33,9 @@ pub enum LoremOutputType {
 #[ts(export)]
 pub struct LoremIpsumOutput {
     pub result: String,
-    pub word_count: usize,
-    pub paragraph_count: usize,
-    pub sentence_count: usize,
+    pub word_count: u32,
+    pub paragraph_count: u32,
+    pub sentence_count: u32,
     pub error: Option<String>,
 }
 
@@ -122,15 +122,16 @@ pub fn process(input: LoremIpsumInput) -> LoremIpsumOutput {
         };
     }
 
+    let count = input.count as usize;
     let result = match input.output_type {
-        LoremOutputType::Paragraphs => generate_paragraphs(input.count, input.start_with_classic),
-        LoremOutputType::Sentences => generate_sentences(input.count, input.start_with_classic),
-        LoremOutputType::Words => generate_words(input.count, input.start_with_classic),
+        LoremOutputType::Paragraphs => generate_paragraphs(count, input.start_with_classic),
+        LoremOutputType::Sentences => generate_sentences(count, input.start_with_classic),
+        LoremOutputType::Words => generate_words(count, input.start_with_classic),
     };
 
-    let word_count = count_words(&result);
-    let sentence_count = count_sentences(&result);
-    let paragraph_count = count_paragraphs(&result);
+    let word_count = u32::try_from(count_words(&result)).unwrap_or(u32::MAX);
+    let sentence_count = u32::try_from(count_sentences(&result)).unwrap_or(u32::MAX);
+    let paragraph_count = u32::try_from(count_paragraphs(&result)).unwrap_or(u32::MAX);
 
     LoremIpsumOutput {
         result,
@@ -300,7 +301,7 @@ mod tests {
             start_with_classic: true,
         });
         assert!(out.error.is_none());
-        let actual_words = out.result.split_whitespace().count();
+        let actual_words = out.result.split_whitespace().count() as u32;
         assert_eq!(out.word_count, actual_words);
     }
 }

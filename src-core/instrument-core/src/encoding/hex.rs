@@ -57,7 +57,7 @@ pub enum HexSeparator {
 #[ts(export)]
 pub struct HexOutput {
     pub result: String,
-    pub byte_count: usize,
+    pub byte_count: u32,
     pub error: Option<String>,
 }
 
@@ -93,7 +93,7 @@ fn text_to_hex(input: HexInput) -> HexOutput {
 
     HexOutput {
         result: out,
-        byte_count: bytes.len(),
+        byte_count: u32::try_from(bytes.len()).unwrap_or(u32::MAX),
         error: None,
     }
 }
@@ -171,7 +171,7 @@ fn hex_to_text(input: HexInput) -> HexOutput {
 
     match String::from_utf8(bytes) {
         Ok(s) => {
-            let byte_count = s.len();
+            let byte_count = u32::try_from(s.len()).unwrap_or(u32::MAX);
             HexOutput {
                 result: s,
                 byte_count,

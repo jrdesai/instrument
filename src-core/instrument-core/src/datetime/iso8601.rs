@@ -31,8 +31,8 @@ pub struct Iso8601Output {
     pub offset: Option<String>,
     pub utc_equivalent: Option<String>,
     pub week_number: Option<String>,
-    pub day_of_year: Option<usize>,
-    pub quarter: Option<usize>,
+    pub day_of_year: Option<u32>,
+    pub quarter: Option<u32>,
     pub day_of_week: Option<String>,
     pub as_date_only: Option<String>,
     pub as_week_date: Option<String>,
@@ -82,7 +82,7 @@ fn err_output(msg: String) -> Iso8601Output {
     }
 }
 
-fn quarter(month: u32) -> usize {
+fn quarter(month: u32) -> u32 {
     match month {
         1..=3 => 1,
         4..=6 => 2,
@@ -200,7 +200,7 @@ fn fill_from_naive_date(
     let iso = d.iso_week();
     out.date = Some(d.format("%Y-%m-%d").to_string());
     out.week_number = Some(format!("W{:02}", iso.week()));
-    out.day_of_year = Some(d.ordinal() as usize);
+    out.day_of_year = Some(d.ordinal());
     out.quarter = Some(quarter(d.month()));
     out.day_of_week = Some(d.format("%A").to_string());
     out.as_date_only = Some(d.format("%Y-%m-%d").to_string());

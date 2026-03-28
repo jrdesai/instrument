@@ -33,8 +33,9 @@ pub enum ApiKeyCharset {
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct ApiKeyInput {
-    pub count: usize,
-    pub length: usize,
+    /// `u32` so tauri-specta TS export avoids bigint (forbidden for IPC).
+    pub count: u32,
+    pub length: u32,
     pub prefix: String,
     pub format: ApiKeyFormat,
     pub charset: ApiKeyCharset,
@@ -98,17 +99,17 @@ pub fn process(input: ApiKeyInput) -> ApiKeyOutput {
         };
     }
 
-    let mut keys = Vec::with_capacity(input.count);
+    let mut keys = Vec::with_capacity(input.count as usize);
 
     // Effective length for the raw key portion.
     let base_len = if input.format == ApiKeyFormat::Grouped {
         if input.length.is_multiple_of(4) {
-            input.length
+            input.length as usize
         } else {
-            input.length.div_ceil(4) * 4
+            input.length.div_ceil(4) as usize * 4
         }
     } else {
-        input.length
+        input.length as usize
     };
 
     for _ in 0..input.count {

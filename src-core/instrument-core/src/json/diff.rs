@@ -61,6 +61,7 @@ pub struct DiffChange {
 /// Annotation for a single line in the diff view.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[specta(rename = "JsonDiffLineAnnotation")]
 #[ts(export, export_to = "JsonDiffLineAnnotation.ts")]
 pub enum LineAnnotation {
     /// Line unchanged between left and right.
@@ -76,6 +77,7 @@ pub enum LineAnnotation {
 /// A single line in the annotated diff output.
 #[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
+#[specta(rename = "JsonDiffAnnotatedLine")]
 #[ts(export, export_to = "JsonDiffAnnotatedLine.ts")]
 pub struct AnnotatedLine {
     /// `u32` (not `usize`) so tauri-specta TypeScript export avoids bigint, which IPC forbids.

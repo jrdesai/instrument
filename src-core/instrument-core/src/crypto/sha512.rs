@@ -29,7 +29,7 @@ pub struct Sha512Output {
     /// 128-character hex hash, or empty when input is empty and hash_empty is false.
     pub hash: String,
     /// 128 when a hash is returned, 0 when empty.
-    pub length: usize,
+    pub length: u32,
     /// Set when hashing fails; normally None.
     pub error: Option<String>,
 }

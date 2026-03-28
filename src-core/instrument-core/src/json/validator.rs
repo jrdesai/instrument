@@ -49,51 +49,51 @@ struct Stats {
 pub struct JsonValidateOutput {
     pub is_valid: bool,
     pub error: Option<String>,
-    pub error_line: Option<usize>,
-    pub error_column: Option<usize>,
+    pub error_line: Option<u32>,
+    pub error_column: Option<u32>,
     pub error_context: Option<String>,
     pub root_type: Option<String>,
-    pub depth: Option<usize>,
-    pub key_count: Option<usize>,
-    pub value_count: Option<usize>,
-    pub array_count: Option<usize>,
-    pub object_count: Option<usize>,
-    pub string_count: Option<usize>,
-    pub number_count: Option<usize>,
-    pub boolean_count: Option<usize>,
-    pub null_count: Option<usize>,
-    pub max_array_length: Option<usize>,
+    pub depth: Option<u32>,
+    pub key_count: Option<u32>,
+    pub value_count: Option<u32>,
+    pub array_count: Option<u32>,
+    pub object_count: Option<u32>,
+    pub string_count: Option<u32>,
+    pub number_count: Option<u32>,
+    pub boolean_count: Option<u32>,
+    pub null_count: Option<u32>,
+    pub max_array_length: Option<u32>,
     pub has_duplicate_keys: bool,
     pub formatted: Option<String>,
 }
 
-fn parse_error_line_column(err: &serde_json::Error) -> (Option<usize>, Option<usize>) {
+fn parse_error_line_column(err: &serde_json::Error) -> (Option<u32>, Option<u32>) {
     let s = err.to_string();
     let mut line = None;
     let mut column = None;
     if let Some(pos) = s.find("line ") {
         let rest = &s[pos + 5..];
         if let Some(end) = rest.find(' ') {
-            if let Ok(n) = rest[..end].parse::<usize>() {
+            if let Ok(n) = rest[..end].parse::<u32>() {
                 line = Some(n);
             }
-        } else if let Ok(n) = rest.trim().parse::<usize>() {
+        } else if let Ok(n) = rest.trim().parse::<u32>() {
             line = Some(n);
         }
     }
     if let Some(pos) = s.find("column ") {
         let rest = &s[pos + 7..];
         let end = rest.find(|c: char| !c.is_ascii_digit()).unwrap_or(rest.len());
-        if let Ok(n) = rest[..end].parse::<usize>() {
+        if let Ok(n) = rest[..end].parse::<u32>() {
             column = Some(n);
         }
     }
     (line, column)
 }
 
-fn error_context(input: &str, error_line: usize) -> Option<String> {
+fn error_context(input: &str, error_line: u32) -> Option<String> {
     let lines: Vec<&str> = input.lines().collect();
-    let line_index = error_line.checked_sub(1)?;
+    let line_index = (error_line as usize).checked_sub(1)?;
     let line = lines.get(line_index)?;
     let trimmed = line.trim();
     if trimmed.len() > 80 {
@@ -264,16 +264,16 @@ pub fn process(input: JsonValidateInput) -> JsonValidateOutput {
         error_column: None,
         error_context: None,
         root_type,
-        depth: Some(stats.depth),
-        key_count: Some(stats.key_count),
-        value_count: Some(stats.value_count),
-        array_count: Some(stats.array_count),
-        object_count: Some(stats.object_count),
-        string_count: Some(stats.string_count),
-        number_count: Some(stats.number_count),
-        boolean_count: Some(stats.boolean_count),
-        null_count: Some(stats.null_count),
-        max_array_length: Some(stats.max_array_length),
+        depth: Some(u32::try_from(stats.depth).unwrap_or(u32::MAX)),
+        key_count: Some(u32::try_from(stats.key_count).unwrap_or(u32::MAX)),
+        value_count: Some(u32::try_from(stats.value_count).unwrap_or(u32::MAX)),
+        array_count: Some(u32::try_from(stats.array_count).unwrap_or(u32::MAX)),
+        object_count: Some(u32::try_from(stats.object_count).unwrap_or(u32::MAX)),
+        string_count: Some(u32::try_from(stats.string_count).unwrap_or(u32::MAX)),
+        number_count: Some(u32::try_from(stats.number_count).unwrap_or(u32::MAX)),
+        boolean_count: Some(u32::try_from(stats.boolean_count).unwrap_or(u32::MAX)),
+        null_count: Some(u32::try_from(stats.null_count).unwrap_or(u32::MAX)),
+        max_array_length: Some(u32::try_from(stats.max_array_length).unwrap_or(u32::MAX)),
         has_duplicate_keys,
         formatted,
     }

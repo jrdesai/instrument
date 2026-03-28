@@ -69,14 +69,15 @@ pub enum JsonFormatMode {
 pub struct JsonFormatOutput {
     pub result: String,
     pub is_valid: bool,
-    pub line_count: usize,
-    pub char_count: usize,
-    pub size_bytes: usize,
-    pub size_original_bytes: usize,
+    /// `u32` (not `usize`) so tauri-specta avoids bigint in TS export.
+    pub line_count: u32,
+    pub char_count: u32,
+    pub size_bytes: u32,
+    pub size_original_bytes: u32,
     pub compression_ratio: Option<f64>,
     pub error: Option<String>,
-    pub error_line: Option<usize>,
-    pub error_column: Option<usize>,
+    pub error_line: Option<u32>,
+    pub error_column: Option<u32>,
 }
 
 fn default_output(original_len: usize) -> JsonFormatOutput {
@@ -86,7 +87,7 @@ fn default_output(original_len: usize) -> JsonFormatOutput {
         line_count: 0,
         char_count: 0,
         size_bytes: 0,
-        size_original_bytes: original_len,
+        size_original_bytes: u32::try_from(original_len).unwrap_or(u32::MAX),
         compression_ratio: None,
         error: None,
         error_line: None,
@@ -94,24 +95,24 @@ fn default_output(original_len: usize) -> JsonFormatOutput {
     }
 }
 
-fn parse_error_line_column(err: &serde_json::Error) -> (Option<usize>, Option<usize>) {
+fn parse_error_line_column(err: &serde_json::Error) -> (Option<u32>, Option<u32>) {
     let s = err.to_string();
     let mut line = None;
     let mut column = None;
     if let Some(pos) = s.find("line ") {
         let rest = &s[pos + 5..];
         if let Some(end) = rest.find(' ') {
-            if let Ok(n) = rest[..end].parse::<usize>() {
+            if let Ok(n) = rest[..end].parse::<u32>() {
                 line = Some(n);
             }
-        } else if let Ok(n) = rest.trim().parse::<usize>() {
+        } else if let Ok(n) = rest.trim().parse::<u32>() {
             line = Some(n);
         }
     }
     if let Some(pos) = s.find("column ") {
         let rest = &s[pos + 7..];
         let end = rest.find(|c: char| !c.is_ascii_digit()).unwrap_or(rest.len());
-        if let Ok(n) = rest[..end].parse::<usize>() {
+        if let Ok(n) = rest[..end].parse::<u32>() {
             column = Some(n);
         }
     }
@@ -181,7 +182,7 @@ pub fn process(input: JsonFormatInput) -> JsonFormatOutput {
                 line_count: 0,
                 char_count: 0,
                 size_bytes: 0,
-                size_original_bytes: original_len,
+                size_original_bytes: u32::try_from(original_len).unwrap_or(u32::MAX),
                 compression_ratio: None,
                 error: Some(e.to_string()),
                 error_line,
@@ -210,9 +211,10 @@ pub fn process(input: JsonFormatInput) -> JsonFormatOutput {
         }
     };
 
-    let line_count = result.lines().count();
-    let char_count = result.chars().count();
-    let size_bytes = result.len();
+    let line_count = u32::try_from(result.lines().count()).unwrap_or(u32::MAX);
+    let char_count = u32::try_from(result.chars().count()).unwrap_or(u32::MAX);
+    let size_bytes = u32::try_from(result.len()).unwrap_or(u32::MAX);
+    let size_original_bytes = u32::try_from(original_len).unwrap_or(u32::MAX);
     let compression_ratio = match input.mode {
         JsonFormatMode::Minify if size_bytes > 0 => {
             Some(original_len as f64 / size_bytes as f64)
@@ -226,7 +228,7 @@ pub fn process(input: JsonFormatInput) -> JsonFormatOutput {
         line_count,
         char_count,
         size_bytes,
-        size_original_bytes: original_len,
+        size_original_bytes,
         compression_ratio,
         error: None,
         error_line: None,

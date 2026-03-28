@@ -27,7 +27,7 @@ pub struct UuidInput {
     /// UUID version to generate (V4 random, V7 time-ordered).
     pub version: UuidVersion,
     /// Number of UUIDs to generate (1–100).
-    pub count: usize,
+    pub count: u32,
     /// If true, return UUIDs in uppercase; otherwise lowercase.
     pub uppercase: bool,
 }
@@ -70,7 +70,7 @@ pub fn process(input: UuidInput) -> UuidOutput {
         };
     }
 
-    let mut uuids = Vec::with_capacity(input.count);
+    let mut uuids = Vec::with_capacity(input.count as usize);
     for _ in 0..input.count {
         let uuid = match input.version {
             // V1: we use a v4 UUID and set version/variant bits to produce a valid v1-shaped UUID
@@ -113,7 +113,7 @@ pub struct UuidInspectInput {
 #[ts(export)]
 pub struct UuidInspectOutput {
     pub is_valid: bool,
-    pub version: Option<usize>,
+    pub version: Option<u32>,
     pub version_name: Option<String>,
     pub variant: Option<String>,
     pub v1_timestamp: Option<String>,
@@ -146,8 +146,8 @@ fn variant_name(v: uuid::Variant) -> &'static str {
     }
 }
 
-fn version_num(ver: uuid::Version) -> usize {
-    ver as u8 as usize
+fn version_num(ver: uuid::Version) -> u32 {
+    ver as u8 as u32
 }
 
 fn version_name(ver: uuid::Version) -> &'static str {
@@ -217,13 +217,13 @@ pub fn inspect(input: UuidInspectInput) -> UuidInspectOutput {
         .map(|v| version_name(v).to_string());
     let variant = Some(variant_name(parsed.get_variant()).to_string());
 
-    let (v1_timestamp, v1_clock_seq, v1_node) = if version == Some(1) {
+    let (v1_timestamp, v1_clock_seq, v1_node) = if version == Some(1u32) {
         let ts_str = parsed.get_timestamp().and_then(|ts| {
             let (secs, nsecs) = ts.to_unix();
             chrono::DateTime::from_timestamp(secs as i64, nsecs)
                 .map(|dt| format!("{} UTC", dt.format("%Y-%m-%d %H:%M:%S")))
         });
-        let clock_seq = if version == Some(1) {
+        let clock_seq = if version == Some(1u32) {
             let b = parsed.as_bytes();
             Some(((b[8] & 0x3f) as u16) << 8 | (b[9] as u16))
         } else {
@@ -240,7 +240,7 @@ pub fn inspect(input: UuidInspectInput) -> UuidInspectOutput {
         (None, None, None)
     };
 
-    let v7_timestamp = if version == Some(7) {
+    let v7_timestamp = if version == Some(7u32) {
         let b = parsed.as_bytes();
         let ms = (b[0] as u64) << 40
             | (b[1] as u64) << 32
