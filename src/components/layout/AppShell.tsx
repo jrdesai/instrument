@@ -88,13 +88,6 @@ export function AppShell() {
             </NavLink>
           ))}
         </nav>
-        <div className="flex flex-col items-center gap-2 border-t border-slate-200 pt-2 dark:border-border-dark">
-          <span
-            className="h-2 w-2 animate-pulse rounded-full bg-emerald-500"
-            title="Engine online"
-            aria-hidden
-          />
-        </div>
       </aside>
 
       <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
