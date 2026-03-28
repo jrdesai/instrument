@@ -20,11 +20,9 @@ export async function callToolDesktop(
   toolId: string,
   input: unknown
 ): Promise<unknown> {
-  // Module is emitted by tauri-specta when running the desktop shell (`pnpm tauri dev`); see temp/polish-bridge-wiring.md.
-  // @vite-ignore tells Rollup to skip resolving this at build time — it only exists after a desktop dev run.
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment -- optional file: present only after a debug desktop run
-  // @ts-ignore TS2307
-  const { commands } = (await import(/* @vite-ignore */ "../bindings/tauri")) as {
+  // A committed stub at src/bindings/tauri.ts satisfies the build.
+  // tauri-specta overwrites it with the real typed commands on each `pnpm tauri dev`.
+  const { commands } = (await import("../bindings/tauri")) as {
     commands: Record<string, (input: unknown) => Promise<unknown>>;
   };
 

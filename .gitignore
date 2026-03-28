@@ -1,5 +1,8 @@
 # ── Generated TypeScript (ts-rs + tauri-specta) ───────
-src/bindings/
+# Ignore contents but not the directory — allows !tauri.ts exception below to work
+src/bindings/*
+# Stub kept so the web/CI build can resolve the import; overwritten by tauri-specta on `pnpm tauri dev`
+!src/bindings/tauri.ts
 
 # ── Node ────────────────────────────────────────────
 node_modules/
