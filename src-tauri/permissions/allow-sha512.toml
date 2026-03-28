@@ -1,5 +1,0 @@
-# Allow the SHA-512 Hash tool command to be invoked from the frontend.
-[[permission]]
-identifier = "allow-sha512"
-description = "Enables the sha512_process command."
-commands.allow = ["sha512_process"]

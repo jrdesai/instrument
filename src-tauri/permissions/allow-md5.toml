@@ -1,5 +1,0 @@
-# Allow the MD5 Hash tool command to be invoked from the frontend.
-[[permission]]
-identifier = "allow-md5"
-description = "Enables the md5_process command."
-commands.allow = ["md5_process"]

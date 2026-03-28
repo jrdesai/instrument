@@ -25,9 +25,7 @@ pub fn run() {
     let mut builder = Builder::<tauri::Wry>::new().commands(collect_commands![
         instrument_desktop::commands::auth::tool_jwt_decode,
         instrument_desktop::commands::auth::tool_jwt_build,
-        instrument_desktop::commands::crypto::md5_process,
-        instrument_desktop::commands::crypto::sha256_process,
-        instrument_desktop::commands::crypto::sha512_process,
+        instrument_desktop::commands::crypto::hash_process,
         instrument_desktop::commands::crypto::ulid_process,
         instrument_desktop::commands::crypto::ulid_inspect,
         instrument_desktop::commands::crypto::uuid_process,

@@ -1,0 +1,5 @@
+# Allow the combined Hash tool command to be invoked from the frontend.
+[[permission]]
+identifier = "allow-hash"
+description = "Enables the hash_process command."
+commands.allow = ["hash_process"]

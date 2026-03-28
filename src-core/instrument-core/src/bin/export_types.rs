@@ -19,14 +19,12 @@ fn main() {
     instrument_core::crypto::api_key::ApiKeyFormat::export_all_to(&out).unwrap();
     instrument_core::crypto::api_key::ApiKeyInput::export_all_to(&out).unwrap();
     instrument_core::crypto::api_key::ApiKeyOutput::export_all_to(&out).unwrap();
-    instrument_core::crypto::md5::Md5Input::export_all_to(&out).unwrap();
-    instrument_core::crypto::md5::Md5Output::export_all_to(&out).unwrap();
+    instrument_core::crypto::hash::HashInput::export_all_to(&out).unwrap();
+    instrument_core::crypto::hash::HashOutput::export_all_to(&out).unwrap();
+    instrument_core::crypto::hash::HashOutputFormat::export_all_to(&out).unwrap();
+    instrument_core::crypto::hash::HashResult::export_all_to(&out).unwrap();
     instrument_core::crypto::nanoid::NanoIdInput::export_all_to(&out).unwrap();
     instrument_core::crypto::nanoid::NanoIdOutput::export_all_to(&out).unwrap();
-    instrument_core::crypto::sha256::Sha256Input::export_all_to(&out).unwrap();
-    instrument_core::crypto::sha256::Sha256Output::export_all_to(&out).unwrap();
-    instrument_core::crypto::sha512::Sha512Input::export_all_to(&out).unwrap();
-    instrument_core::crypto::sha512::Sha512Output::export_all_to(&out).unwrap();
     instrument_core::crypto::ulid::UlidInput::export_all_to(&out).unwrap();
     instrument_core::crypto::ulid::UlidInspectInput::export_all_to(&out).unwrap();
     instrument_core::crypto::ulid::UlidInspectOutput::export_all_to(&out).unwrap();

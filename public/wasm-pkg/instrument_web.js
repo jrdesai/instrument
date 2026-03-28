@@ -118,6 +118,19 @@ export function find_replace_process(js_input) {
 }
 
 /**
+ * Combined hash. Receives HashInput (camelCase) and returns HashOutput (camelCase).
+ * @param {any} js_input
+ * @returns {any}
+ */
+export function hash_process(js_input) {
+    const ret = wasm.hash_process(js_input);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
  * Hex encode/decode. Receives HexInput (camelCase) and returns HexOutput (camelCase).
  * @param {any} js_input
  * @returns {any}
@@ -170,19 +183,6 @@ export function lorem_ipsum_process(js_input) {
 }
 
 /**
- * MD5 hash. Receives Md5Input (camelCase) and returns Md5Output (camelCase).
- * @param {any} js_input
- * @returns {any}
- */
-export function md5_process(js_input) {
-    const ret = wasm.md5_process(js_input);
-    if (ret[2]) {
-        throw takeFromExternrefTable0(ret[1]);
-    }
-    return takeFromExternrefTable0(ret[0]);
-}
-
-/**
  * Nano ID generation. Receives NanoIdInput (camelCase) and returns NanoIdOutput (camelCase).
  * @param {any} js_input
  * @returns {any}
@@ -215,32 +215,6 @@ export function regex_explain(js_input) {
  */
 export function regex_match(js_input) {
     const ret = wasm.regex_match(js_input);
-    if (ret[2]) {
-        throw takeFromExternrefTable0(ret[1]);
-    }
-    return takeFromExternrefTable0(ret[0]);
-}
-
-/**
- * SHA-256 hash. Receives Sha256Input (camelCase) and returns Sha256Output (camelCase).
- * @param {any} js_input
- * @returns {any}
- */
-export function sha256_process(js_input) {
-    const ret = wasm.sha256_process(js_input);
-    if (ret[2]) {
-        throw takeFromExternrefTable0(ret[1]);
-    }
-    return takeFromExternrefTable0(ret[0]);
-}
-
-/**
- * SHA-512 hash. Receives Sha512Input (camelCase) and returns Sha512Output (camelCase).
- * @param {any} js_input
- * @returns {any}
- */
-export function sha512_process(js_input) {
-    const ret = wasm.sha512_process(js_input);
     if (ret[2]) {
         throw takeFromExternrefTable0(ret[1]);
     }

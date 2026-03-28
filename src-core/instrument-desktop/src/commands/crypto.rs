@@ -1,14 +1,8 @@
-//! Tauri commands for crypto tools (MD5, SHA-256, SHA-512, AES-GCM, UUID, ULID, API keys, etc.).
+//! Tauri commands for crypto tools (combined hash, AES-GCM, UUID, ULID, API keys, etc.).
 
 use std::time::Instant;
 
-use instrument_core::crypto::md5::{process, Md5Input, Md5Output};
-use instrument_core::crypto::sha256::{
-    process as sha256_process_core, Sha256Input, Sha256Output,
-};
-use instrument_core::crypto::sha512::{
-    process as sha512_process_core, Sha512Input, Sha512Output,
-};
+use instrument_core::crypto::hash::{process as hash_process_core, HashInput, HashOutput};
 use instrument_core::crypto::uuid_gen::{
     inspect as uuid_inspect_core, process as uuid_process_core,
     UuidInspectInput, UuidInspectOutput, UuidInput, UuidOutput,
@@ -25,33 +19,13 @@ use instrument_core::crypto::nanoid::{
 
 use crate::command_log::finish_ok;
 
-/// Runs MD5 hash via instrument-core.
+/// Runs combined hash (MD5, SHA-1/256/512, SHA3-256/512) via instrument-core.
 #[tauri::command]
 #[specta::specta]
-pub fn md5_process(input: Md5Input) -> Md5Output {
+pub fn hash_process(input: HashInput) -> HashOutput {
     let start = Instant::now();
-    let output = process(input);
-    finish_ok("md5_process", start);
-    output
-}
-
-/// Runs SHA-256 hash via instrument-core.
-#[tauri::command]
-#[specta::specta]
-pub fn sha256_process(input: Sha256Input) -> Sha256Output {
-    let start = Instant::now();
-    let output = sha256_process_core(input);
-    finish_ok("sha256_process", start);
-    output
-}
-
-/// Runs SHA-512 hash via instrument-core.
-#[tauri::command]
-#[specta::specta]
-pub fn sha512_process(input: Sha512Input) -> Sha512Output {
-    let start = Instant::now();
-    let output = sha512_process_core(input);
-    finish_ok("sha512_process", start);
+    let output = hash_process_core(input);
+    finish_ok("hash_process", start);
     output
 }
 

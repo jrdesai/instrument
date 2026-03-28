@@ -1,12 +1,6 @@
 //! WASM bindings for Instrument tools. Each export mirrors a Tauri command or shared core API.
 
-use instrument_core::crypto::md5::{process as md5_process_core, Md5Input, Md5Output};
-use instrument_core::crypto::sha256::{
-    process as sha256_process_core, Sha256Input, Sha256Output,
-};
-use instrument_core::crypto::sha512::{
-    process as sha512_process_core, Sha512Input, Sha512Output,
-};
+use instrument_core::crypto::hash::{process as hash_process_core, HashInput, HashOutput};
 use instrument_core::crypto::uuid_gen::{
     inspect as uuid_inspect_core, process as uuid_process_core,
     UuidInspectInput, UuidInspectOutput, UuidInput, UuidOutput,
@@ -189,30 +183,12 @@ pub fn color_convert_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
     to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
 }
 
-/// MD5 hash. Receives Md5Input (camelCase) and returns Md5Output (camelCase).
-#[wasm_bindgen(js_name = md5_process)]
-pub fn md5_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: Md5Input =
+/// Combined hash. Receives HashInput (camelCase) and returns HashOutput (camelCase).
+#[wasm_bindgen(js_name = hash_process)]
+pub fn hash_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
+    let input: HashInput =
         from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
-    let output: Md5Output = md5_process_core(input);
-    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
-}
-
-/// SHA-256 hash. Receives Sha256Input (camelCase) and returns Sha256Output (camelCase).
-#[wasm_bindgen(js_name = sha256_process)]
-pub fn sha256_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: Sha256Input =
-        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
-    let output: Sha256Output = sha256_process_core(input);
-    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
-}
-
-/// SHA-512 hash. Receives Sha512Input (camelCase) and returns Sha512Output (camelCase).
-#[wasm_bindgen(js_name = sha512_process)]
-pub fn sha512_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: Sha512Input =
-        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
-    let output: Sha512Output = sha512_process_core(input);
+    let output: HashOutput = hash_process_core(input);
     to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
 }
 

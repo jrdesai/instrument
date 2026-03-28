@@ -47,6 +47,11 @@ export function cron_process(js_input: any): any;
 export function find_replace_process(js_input: any): any;
 
 /**
+ * Combined hash. Receives HashInput (camelCase) and returns HashOutput (camelCase).
+ */
+export function hash_process(js_input: any): any;
+
+/**
  * Hex encode/decode. Receives HexInput (camelCase) and returns HexOutput (camelCase).
  */
 export function hex_process(js_input: any): any;
@@ -67,11 +72,6 @@ export function iso8601_process(js_input: any): any;
 export function lorem_ipsum_process(js_input: any): any;
 
 /**
- * MD5 hash. Receives Md5Input (camelCase) and returns Md5Output (camelCase).
- */
-export function md5_process(js_input: any): any;
-
-/**
  * Nano ID generation. Receives NanoIdInput (camelCase) and returns NanoIdOutput (camelCase).
  */
 export function nanoid_process(js_input: any): any;
@@ -85,16 +85,6 @@ export function regex_explain(js_input: any): any;
  * Regex matcher. Receives RegexRequest (camelCase) and returns Vec<MatchResult> (camelCase).
  */
 export function regex_match(js_input: any): any;
-
-/**
- * SHA-256 hash. Receives Sha256Input (camelCase) and returns Sha256Output (camelCase).
- */
-export function sha256_process(js_input: any): any;
-
-/**
- * SHA-512 hash. Receives Sha512Input (camelCase) and returns Sha512Output (camelCase).
- */
-export function sha512_process(js_input: any): any;
 
 /**
  * String escaper. Receives StringEscaperInput (camelCase) and returns StringEscaperOutput (camelCase).
@@ -219,16 +209,14 @@ export interface InitOutput {
     readonly color_convert: (a: any) => [number, number, number];
     readonly cron_process: (a: any) => [number, number, number];
     readonly find_replace_process: (a: any) => [number, number, number];
+    readonly hash_process: (a: any) => [number, number, number];
     readonly hex_process: (a: any) => [number, number, number];
     readonly html_entity_process: (a: any) => [number, number, number];
     readonly iso8601_process: (a: any) => [number, number, number];
     readonly lorem_ipsum_process: (a: any) => [number, number, number];
-    readonly md5_process: (a: any) => [number, number, number];
     readonly nanoid_process: (a: any) => [number, number, number];
     readonly regex_explain: (a: any) => [number, number, number];
     readonly regex_match: (a: any) => [number, number, number];
-    readonly sha256_process: (a: any) => [number, number, number];
-    readonly sha512_process: (a: any) => [number, number, number];
     readonly string_escaper_process: (a: any) => [number, number, number];
     readonly text_diff_process: (a: any) => [number, number, number];
     readonly timestamp_process: (a: any) => [number, number, number];

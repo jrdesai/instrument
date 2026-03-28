@@ -18,9 +18,12 @@ authors = ["you"]
 serde = { version = "1", features = ["derive"] }
 thiserror = "2"
 base64 = "0.22"
+sha1 = "0.10"
 sha2 = "0.10"
+sha3 = "0.10"
 hmac = "0.12"
 md-5 = "0.10"
+digest = "0.10"
 uuid = { version = "1", features = ["v1", "v4", "v7", "js"] }
 percent-encoding = "2"
 
