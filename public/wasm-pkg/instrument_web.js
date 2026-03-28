@@ -300,6 +300,19 @@ export function timezone_process(js_input) {
 }
 
 /**
+ * Config converter (JSON ↔ YAML ↔ TOML). Receives ConfigConvertInput and returns ConfigConvertOutput (camelCase).
+ * @param {any} js_input
+ * @returns {any}
+ */
+export function tool_config_convert(js_input) {
+    const ret = wasm.tool_config_convert(js_input);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
  * CSV → JSON converter. Receives CsvToJsonInput (camelCase) and returns CsvToJsonOutput (camelCase).
  * @param {any} js_input
  * @returns {any}
@@ -436,19 +449,6 @@ export function tool_sql_format(js_input) {
  */
 export function tool_url_parse(js_input) {
     const ret = wasm.tool_url_parse(js_input);
-    if (ret[2]) {
-        throw takeFromExternrefTable0(ret[1]);
-    }
-    return takeFromExternrefTable0(ret[0]);
-}
-
-/**
- * YAML to JSON converter. Receives YamlToJsonInput (camelCase) and returns YamlToJsonOutput (camelCase).
- * @param {any} js_input
- * @returns {any}
- */
-export function tool_yaml_to_json(js_input) {
-    const ret = wasm.tool_yaml_to_json(js_input);
     if (ret[2]) {
         throw takeFromExternrefTable0(ret[1]);
     }

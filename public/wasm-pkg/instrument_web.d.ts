@@ -117,6 +117,11 @@ export function timestamp_process(js_input: any): any;
 export function timezone_process(js_input: any): any;
 
 /**
+ * Config converter (JSON ↔ YAML ↔ TOML). Receives ConfigConvertInput and returns ConfigConvertOutput (camelCase).
+ */
+export function tool_config_convert(js_input: any): any;
+
+/**
  * CSV → JSON converter. Receives CsvToJsonInput (camelCase) and returns CsvToJsonOutput (camelCase).
  */
 export function tool_csv_to_json(js_input: any): any;
@@ -170,11 +175,6 @@ export function tool_sql_format(js_input: any): any;
  * URL parser. Receives UrlParseInput (camelCase) and returns UrlParseOutput (camelCase).
  */
 export function tool_url_parse(js_input: any): any;
-
-/**
- * YAML to JSON converter. Receives YamlToJsonInput (camelCase) and returns YamlToJsonOutput (camelCase).
- */
-export function tool_yaml_to_json(js_input: any): any;
 
 /**
  * ULID inspection. Receives UlidInspectInput (camelCase) and returns UlidInspectOutput (camelCase).
@@ -233,6 +233,7 @@ export interface InitOutput {
     readonly text_diff_process: (a: any) => [number, number, number];
     readonly timestamp_process: (a: any) => [number, number, number];
     readonly timezone_process: (a: any) => [number, number, number];
+    readonly tool_config_convert: (a: any) => [number, number, number];
     readonly tool_csv_to_json: (a: any) => [number, number, number];
     readonly tool_expression_eval: (a: any) => [number, number, number];
     readonly tool_json_convert: (a: any) => [number, number, number];
@@ -244,7 +245,6 @@ export interface InitOutput {
     readonly tool_jwt_decode: (a: any) => [number, number, number];
     readonly tool_sql_format: (a: any) => [number, number, number];
     readonly tool_url_parse: (a: any) => [number, number, number];
-    readonly tool_yaml_to_json: (a: any) => [number, number, number];
     readonly ulid_inspect: (a: any) => [number, number, number];
     readonly ulid_process: (a: any) => [number, number, number];
     readonly url_encode_process: (a: any) => [number, number, number];

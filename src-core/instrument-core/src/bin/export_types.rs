@@ -90,8 +90,9 @@ fn main() {
     instrument_core::json::path::JsonPathOutput::export_all_to(&out).unwrap();
     instrument_core::json::validator::JsonValidateInput::export_all_to(&out).unwrap();
     instrument_core::json::validator::JsonValidateOutput::export_all_to(&out).unwrap();
-    instrument_core::json::yaml_to_json::YamlToJsonInput::export_all_to(&out).unwrap();
-    instrument_core::json::yaml_to_json::YamlToJsonOutput::export_all_to(&out).unwrap();
+    instrument_core::json::config_converter::ConfigConvertInput::export_all_to(&out).unwrap();
+    instrument_core::json::config_converter::ConfigConvertOutput::export_all_to(&out).unwrap();
+    instrument_core::json::config_converter::ConfigFormat::export_all_to(&out).unwrap();
     instrument_core::network::QueryParam::export_all_to(&out).unwrap();
     instrument_core::network::UrlParseInput::export_all_to(&out).unwrap();
     instrument_core::network::UrlParseOutput::export_all_to(&out).unwrap();

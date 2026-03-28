@@ -73,6 +73,12 @@ async passwordProcess(input: PasswordInput) : Promise<PasswordOutput> {
     return await TAURI_INVOKE("password_process", { input });
 },
 /**
+ * Runs Passphrase generation via instrument-core.
+ */
+async passphraseProcess(input: PassphraseInput) : Promise<PassphraseOutput> {
+    return await TAURI_INVOKE("passphrase_process", { input });
+},
+/**
  * Runs case conversion via instrument-core.
  */
 async caseProcess(input: CaseInput) : Promise<CaseOutput> {
@@ -193,10 +199,10 @@ async toolJsonConvert(input: JsonConvertInput) : Promise<JsonConvertOutput> {
     return await TAURI_INVOKE("tool_json_convert", { input });
 },
 /**
- * Converts YAML input into formatted JSON via instrument-core.
+ * Converts between JSON, YAML, and TOML via instrument-core.
  */
-async toolYamlToJson(input: YamlToJsonInput) : Promise<YamlToJsonOutput> {
-    return await TAURI_INVOKE("tool_yaml_to_json", { input });
+async toolConfigConvert(input: ConfigConvertInput) : Promise<ConfigConvertOutput> {
+    return await TAURI_INVOKE("tool_config_convert", { input });
 },
 async toolUrlParse(input: UrlParseInput) : Promise<UrlParseOutput> {
     return await TAURI_INVOKE("tool_url_parse", { input });
@@ -865,6 +871,42 @@ error: string | null }
  */
 export type NumberBase = "decimal" | "hexadecimal" | "binary" | "octal" | "base32" | "base36"
 /**
+ * Input for the Passphrase Generator tool.
+ */
+export type PassphraseInput = { 
+/**
+ * Number of words per passphrase. Clamped to 3–12.
+ */
+wordCount: number; 
+/**
+ * Number of passphrases to generate. Clamped to 1–20.
+ */
+count: number; separator: PassphraseSeparator; 
+/**
+ * Capitalise the first letter of each word.
+ */
+capitalize: boolean; 
+/**
+ * Append a random digit (0–9) at the end.
+ */
+includeNumber: boolean; 
+/**
+ * Append a random symbol from `!@#$%&*?` at the end.
+ */
+includeSymbol: boolean }
+/**
+ * Output from the Passphrase Generator tool.
+ */
+export type PassphraseOutput = { passphrases: string[]; 
+/**
+ * Shannon entropy in bits (log2(wordlist) * words, + extras).
+ */
+entropyBits: number; wordCount: number; wordlistSize: number; error: string | null }
+/**
+ * Word separator style.
+ */
+export type PassphraseSeparator = "Hyphen" | "Space" | "Dot" | "Underscore" | "None"
+/**
  * Input for the Password Generator tool.
  */
 export type PasswordInput = { 
@@ -1163,8 +1205,9 @@ export type WordCounterInput = { text: string }
  * Output for the Word Counter tool: all stats in one struct.
  */
 export type WordCounterOutput = { words: number; charactersWithSpaces: number; charactersWithoutSpaces: number; lines: number; sentences: number; paragraphs: number; uniqueWords: number; avgWordLength: number; readingTimeSeconds: number; error: string | null }
-export type YamlToJsonInput = { value: string; indent: number; sortKeys: boolean }
-export type YamlToJsonOutput = { result: string; isValidYaml: boolean; error: string | null; errorLine: number | null; errorColumn: number | null; lineCount: number; charCount: number }
+export type ConfigFormat = "Json" | "Yaml" | "Toml"
+export type ConfigConvertInput = { value: string; from: ConfigFormat; to: ConfigFormat; indent: number; sortKeys: boolean }
+export type ConfigConvertOutput = { result: string; isValidInput: boolean; error: string | null; errorLine: number | null; errorColumn: number | null; lineCount: number; charCount: number }
 
 /** tauri-specta globals **/
 

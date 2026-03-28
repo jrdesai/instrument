@@ -57,8 +57,8 @@ use instrument_core::json::path::{
 use instrument_core::json::converter::{
     process as json_convert_process_core, JsonConvertInput, JsonConvertOutput,
 };
-use instrument_core::json::yaml_to_json::{
-    process as yaml_to_json_process_core, YamlToJsonInput, YamlToJsonOutput,
+use instrument_core::json::config_converter::{
+    process as config_convert_core, ConfigConvertInput, ConfigConvertOutput,
 };
 use instrument_core::datetime::timestamp::{
     process as timestamp_process_core, TimestampInput, TimestampOutput,
@@ -348,12 +348,12 @@ pub fn tool_json_convert_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
     to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
 }
 
-/// YAML to JSON converter. Receives YamlToJsonInput (camelCase) and returns YamlToJsonOutput (camelCase).
-#[wasm_bindgen(js_name = tool_yaml_to_json)]
-pub fn tool_yaml_to_json_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: YamlToJsonInput =
+/// Config converter (JSON ↔ YAML ↔ TOML). Receives ConfigConvertInput and returns ConfigConvertOutput (camelCase).
+#[wasm_bindgen(js_name = tool_config_convert)]
+pub fn tool_config_convert_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
+    let input: ConfigConvertInput =
         from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
-    let output: YamlToJsonOutput = yaml_to_json_process_core(input);
+    let output: ConfigConvertOutput = config_convert_core(input);
     to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
 }
 

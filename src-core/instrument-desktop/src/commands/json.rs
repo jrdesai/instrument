@@ -14,8 +14,8 @@ use instrument_core::json::path::{
 use instrument_core::json::converter::{
     process as json_convert_process_core, JsonConvertInput, JsonConvertOutput,
 };
-use instrument_core::json::yaml_to_json::{
-    process as yaml_to_json_process_core, YamlToJsonInput, YamlToJsonOutput,
+use instrument_core::json::config_converter::{
+    process as config_convert_core, ConfigConvertInput, ConfigConvertOutput,
 };
 use instrument_core::json::validator::{
     process as json_validate_process_core, JsonValidateInput, JsonValidateOutput,
@@ -73,12 +73,12 @@ pub fn tool_json_convert(input: JsonConvertInput) -> JsonConvertOutput {
     output
 }
 
-/// Converts YAML input into formatted JSON via instrument-core.
+/// Converts between JSON, YAML, and TOML via instrument-core.
 #[tauri::command]
 #[specta::specta]
-pub fn tool_yaml_to_json(input: YamlToJsonInput) -> YamlToJsonOutput {
+pub fn tool_config_convert(input: ConfigConvertInput) -> ConfigConvertOutput {
     let start = Instant::now();
-    let output = yaml_to_json_process_core(input);
-    finish_ok("tool_yaml_to_json", start);
+    let output = config_convert_core(input);
+    finish_ok("tool_config_convert", start);
     output
 }

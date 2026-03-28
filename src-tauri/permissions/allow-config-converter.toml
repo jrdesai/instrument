@@ -1,0 +1,5 @@
+# Allow the Config Converter tool command to be invoked from the frontend.
+[[permission]]
+identifier = "allow-config-converter"
+description = "Enables the tool_config_convert command."
+commands.allow = ["tool_config_convert"]

@@ -2174,6 +2174,7 @@ dependencies = [
  "specta",
  "sqlformat",
  "thiserror 2.0.18",
+ "toml 0.8.2",
  "ts-rs",
  "ulid",
  "url",

@@ -9,6 +9,7 @@ import "prismjs/components/prism-typescript";
 import "prismjs/components/prism-yaml";
 import "prismjs/components/prism-sql";
 import "prismjs/components/prism-markup";
+import "prismjs/components/prism-toml";
 import "prismjs/components/prism-bash";
 import "prismjs/components/prism-css";
 import "prismjs/components/prism-markdown";
@@ -60,7 +61,16 @@ function injectPrismTheme() {
 
 export interface CodeBlockProps {
   code: string;
-  language: "json" | "typescript" | "yaml" | "sql" | "markup" | "bash" | "css" | "markdown";
+  language:
+    | "json"
+    | "typescript"
+    | "yaml"
+    | "toml"
+    | "sql"
+    | "markup"
+    | "bash"
+    | "css"
+    | "markdown";
   maxHeight?: string;
   showCopyButton?: boolean;
   showLineNumbers?: boolean;

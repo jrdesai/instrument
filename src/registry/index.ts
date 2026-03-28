@@ -479,20 +479,22 @@ export const tools: Tool[] = [
     implemented: true,
   },
   {
-    id: "yaml-to-json",
-    name: "YAML to JSON",
-    description: "Convert YAML to JSON.",
+    id: "config-converter",
+    name: "Config Converter",
+    description:
+      "Convert between JSON, YAML, and TOML. All six directions supported.",
     category: "json",
     displayCategory: "JSON Tools",
     displayCategoryIcon: "data_object",
-    roles: ["backend", "data", "general"],
-    icon: "code",
+    roles: ["backend", "devops", "general"],
+    icon: "swap_horiz",
     platforms: ["desktop", "web"],
-    rustCommand: "tool_yaml_to_json",
-    keywords: ["yaml", "json", "convert"],
+    rustCommand: "tool_config_convert",
+    sensitive: false,
+    keywords: ["json", "yaml", "toml", "convert", "config", "cargo"],
     component: React.lazy(
       () =>
-        import("../tools/yaml-to-json") as Promise<{
+        import("../tools/config-converter/ConfigConverterTool") as Promise<{
           default: React.ComponentType<unknown>;
         }>
     ),
