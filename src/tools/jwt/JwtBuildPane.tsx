@@ -4,7 +4,6 @@ import {
   useRef,
   useState,
 } from "react";
-import { useNavigate } from "react-router-dom";
 import { callTool } from "../../bridge";
 import type { JwtAlgorithm } from "../../bindings/JwtAlgorithm";
 import type { JwtBuildInput } from "../../bindings/JwtBuildInput";
@@ -16,6 +15,10 @@ const PENDING_DECODE_KEY = "instrument:jwt:pendingDecode";
 const TRUNCATE_LEN = 20;
 
 type ExpUnit = "minutes" | "hours" | "days";
+
+export type JwtBuildPaneProps = {
+  onOpenInDecodeTab: () => void;
+};
 
 function truncate(s: string, len: number): string {
   if (s.length <= len) return s;
@@ -35,8 +38,7 @@ function expSecondsFromValue(value: number, unit: ExpUnit): number {
   }
 }
 
-function JwtBuilderTool() {
-  const navigate = useNavigate();
+export function JwtBuildPane({ onOpenInDecodeTab }: JwtBuildPaneProps) {
   const [algorithm, setAlgorithm] = useState<JwtAlgorithm>("HS256");
   const [secret, setSecret] = useState("");
   const [secretEncoding, setSecretEncoding] = useState<SecretEncoding>("utf8");
@@ -111,13 +113,12 @@ function JwtBuilderTool() {
         payloadJson,
         includeIat: iatEnabled,
         includeExp: expEnabled,
-        expSeconds: BigInt(expSecondsFromValue(expValue, expUnit)),
+        expSeconds: expSecondsFromValue(expValue, expUnit),
         extraHeaders: extraHeaders.trim(),
       };
-      const result = (await callTool(
-        RUST_COMMAND,
-        input
-      )) as JwtBuildOutput;
+      const result = (await callTool(RUST_COMMAND, input, {
+        skipHistory: true,
+      })) as JwtBuildOutput;
       setOutput(result);
     } catch (e) {
       const message =
@@ -213,11 +214,11 @@ function JwtBuilderTool() {
     if (!output?.token) return;
     try {
       sessionStorage.setItem(PENDING_DECODE_KEY, output.token);
-      navigate("/tools/jwt-decoder");
+      onOpenInDecodeTab();
     } catch {
       // ignore
     }
-  }, [output?.token, navigate]);
+  }, [output?.token, onOpenInDecodeTab]);
 
   const generateJti = useCallback(() => {
     try {
@@ -640,5 +641,3 @@ function JwtBuilderTool() {
     </div>
   );
 }
-
-export default JwtBuilderTool;

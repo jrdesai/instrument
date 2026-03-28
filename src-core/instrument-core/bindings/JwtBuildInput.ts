@@ -13,7 +13,7 @@ payloadJson: string, includeIat: boolean, includeExp: boolean,
 /**
  * Seconds from now for exp when include_exp is true.
  */
-expSeconds: bigint, 
+expSeconds: number, 
 /**
  * Optional extra header claims as JSON, e.g. {"kid": "my-key-id"}.
  */

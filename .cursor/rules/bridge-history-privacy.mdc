@@ -39,13 +39,17 @@ Do not implement your own history trimming in tool components.
 Any tool that processes secrets, credentials, or private keys must have `sensitive: true`
 in its registry entry:
 ```ts
-{ id: "jwt-decoder", ..., sensitive: true }
+{ id: "jwt", ..., sensitive: true }
 ```
 The bridge automatically applies `skipHistory: true` for sensitive tools — their
 input/output is never recorded in history regardless of how `callTool` is called.
 
-Sensitive tools: jwt-decoder, jwt-builder, api-key-generator, and any future tool
+Sensitive tools: jwt, api-key-generator, and any future tool
 handling passwords, tokens, private keys, or PII.
+
+The **JWT** tool’s registry `rustCommand` is `tool_jwt_decode`; the Build pane also calls
+`tool_jwt_build`. Both panes pass `{ skipHistory: true }` so neither command is recorded
+when the combined entry’s `sensitive` flag would not resolve `tool_jwt_build` by name.
 
 ---
 

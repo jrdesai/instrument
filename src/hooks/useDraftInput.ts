@@ -7,7 +7,7 @@ import { useToolStore } from "../store";
  * Pair with {@link useRestoreStringDraft} or {@link useRestoreDraft} on mount
  * so persisted values apply after localStorage hydration.
  *
- * Do NOT use for sensitive tools (jwt-decoder, jwt-builder, api-key-generator).
+ * Do NOT use for sensitive tools (jwt, api-key-generator).
  */
 export function useDraftInput(toolId: string) {
   const setDraftInput = useToolStore((s) => s.setDraftInput);

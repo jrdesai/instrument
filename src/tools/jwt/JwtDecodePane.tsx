@@ -43,7 +43,7 @@ function relativeTimeUntil(nowSec: number, expSec: number): string {
   return `Expires in ${value} ${unit}${plural}`;
 }
 
-function JwtDecoderTool() {
+export function JwtDecodePane() {
   const [token, setToken] = useState("");
   const [secret, setSecret] = useState("");
   const [secretEncoding, setSecretEncoding] = useState<SecretEncoding>("utf8");
@@ -135,10 +135,9 @@ function JwtDecoderTool() {
           secret: currentSecret.trim(),
           secretEncoding: currentEncoding,
         };
-        const result = (await callTool(
-          RUST_COMMAND,
-          payload
-        )) as JwtDecodeOutput;
+        const result = (await callTool(RUST_COMMAND, payload, {
+          skipHistory: true,
+        })) as JwtDecodeOutput;
         setOutput(result);
       } catch (e) {
         const message =
@@ -715,5 +714,3 @@ function JwtDecoderTool() {
     </div>
   );
 }
-
-export default JwtDecoderTool;

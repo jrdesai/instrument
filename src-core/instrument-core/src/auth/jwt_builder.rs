@@ -27,6 +27,7 @@ pub struct JwtBuildInput {
     pub include_iat: bool,
     pub include_exp: bool,
     /// Seconds from now for exp when include_exp is true.
+    #[ts(type = "number")]
     pub exp_seconds: i64,
     /// Optional extra header claims as JSON, e.g. {"kid": "my-key-id"}.
     pub extra_headers: String,

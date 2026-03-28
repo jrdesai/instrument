@@ -278,9 +278,10 @@ export const tools: Tool[] = [
     implemented: true,
   },
   {
-    id: "jwt-decoder",
-    name: "JWT Decoder",
-    description: "Decode and inspect JWT tokens including expiry status and lifetime.",
+    id: "jwt",
+    name: "JWT",
+    description:
+      "Decode and inspect JWT tokens, or build and sign new ones with HMAC.",
     category: "auth",
     displayCategory: "Auth",
     displayCategoryIcon: "token",
@@ -288,27 +289,19 @@ export const tools: Tool[] = [
     icon: "token",
     platforms: ["desktop", "web"],
     rustCommand: "tool_jwt_decode",
-    keywords: ["jwt", "decode", "token", "auth"],
+    keywords: [
+      "jwt",
+      "decode",
+      "encode",
+      "build",
+      "sign",
+      "token",
+      "auth",
+      "hmac",
+      "bearer",
+    ],
     component: React.lazy(() =>
-      import("../tools/jwt-decoder").then((m) => ({ default: m.default }))
-    ),
-    implemented: true,
-    sensitive: true,
-  },
-  {
-    id: "jwt-builder",
-    name: "JWT Builder",
-    description: "Build and sign JWTs.",
-    category: "auth",
-    displayCategory: "Auth",
-    displayCategoryIcon: "token",
-    roles: ["backend", "security"],
-    icon: "token",
-    platforms: ["desktop", "web"],
-    rustCommand: "tool_jwt_build",
-    keywords: ["jwt", "build", "sign", "token"],
-    component: React.lazy(() =>
-      import("../tools/jwt-builder").then((m) => ({ default: m.default }))
+      import("../tools/jwt/JwtTool").then((m) => ({ default: m.default }))
     ),
     implemented: true,
     sensitive: true,
