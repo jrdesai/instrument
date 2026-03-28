@@ -188,28 +188,27 @@ export function LibraryPage() {
             {filteredTools.map((tool) => (
               <div
                 key={tool.id}
-                role="button"
-                tabIndex={tool.implemented ? 0 : -1}
-                aria-disabled={!tool.implemented}
-                onClick={() => handleToolClick(tool)}
-                onKeyDown={(e) => {
-                  if (tool.implemented && (e.key === "Enter" || e.key === " ")) {
-                    e.preventDefault();
-                    handleToolClick(tool);
-                  }
-                }}
                 className={`group relative flex flex-col p-4 rounded-lg border border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark text-left transition-all ${
                   tool.implemented
                     ? "hover:border-primary/40 hover:bg-panel-light dark:hover:bg-panel-dark cursor-pointer"
                     : "opacity-50 cursor-not-allowed"
                 }`}
               >
+                {/* Stretched primary action button — covers the whole card */}
+                {tool.implemented && (
+                  <button
+                    type="button"
+                    onClick={() => handleToolClick(tool)}
+                    aria-label={tool.name}
+                    className="absolute inset-0 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                  />
+                )}
                 {tool.implemented && (
                   <button
                     type="button"
                     onClick={(e) => { e.stopPropagation(); toggleFavourite(tool); }}
                     aria-label={favouriteToolIds.includes(tool.id) ? "Remove from favourites" : "Add to favourites"}
-                    className={`absolute top-2 right-2 transition-opacity hover:text-amber-400 dark:hover:text-amber-400 ${favouriteToolIds.includes(tool.id) ? "opacity-100 text-amber-400" : "opacity-20 group-hover:opacity-100 focus-visible:opacity-100 text-slate-400 dark:text-slate-500"}`}
+                    className={`absolute top-2 right-2 z-10 transition-opacity hover:text-amber-400 dark:hover:text-amber-400 ${favouriteToolIds.includes(tool.id) ? "opacity-100 text-amber-400" : "opacity-20 group-hover:opacity-100 focus-visible:opacity-100 text-slate-400 dark:text-slate-500"}`}
                   >
                     <span
                       className="material-symbols-outlined text-[18px]"

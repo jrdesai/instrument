@@ -23,27 +23,25 @@ function ToolCard({
 }) {
   return (
     <div
-      role="button"
-      tabIndex={disabled ? -1 : 0}
-      aria-disabled={disabled}
-      onClick={disabled ? undefined : onClick}
-      onKeyDown={(e) => {
-        if (!disabled && (e.key === "Enter" || e.key === " ")) {
-          e.preventDefault();
-          onClick();
-        }
-      }}
       className={`group relative flex flex-col p-3 rounded-lg border border-border-light dark:border-border-dark bg-white dark:bg-panel-dark text-left transition-colors min-w-[180px] ${
         disabled
           ? "opacity-60 cursor-not-allowed"
           : "hover:border-primary/40 cursor-pointer"
       }`}
     >
+      {/* Stretched primary action button — covers the whole card */}
+      <button
+        type="button"
+        onClick={disabled ? undefined : onClick}
+        disabled={disabled}
+        aria-label={tool.name}
+        className="absolute inset-0 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+      />
       <button
         type="button"
         onClick={onToggleFavourite}
         aria-label={isFavourite ? "Remove from favourites" : "Add to favourites"}
-        className={`absolute top-2 right-2 transition-opacity hover:text-amber-400 dark:hover:text-amber-400 ${isFavourite ? "opacity-100 text-amber-400" : "opacity-20 group-hover:opacity-100 focus-visible:opacity-100 text-slate-400 dark:text-slate-500"}`}
+        className={`absolute top-2 right-2 z-10 transition-opacity hover:text-amber-400 dark:hover:text-amber-400 ${isFavourite ? "opacity-100 text-amber-400" : "opacity-20 group-hover:opacity-100 focus-visible:opacity-100 text-slate-400 dark:text-slate-500"}`}
       >
         <span
           className="material-symbols-outlined text-[18px]"
@@ -155,41 +153,34 @@ export function DashboardPage() {
             </h2>
             <div className="flex flex-wrap gap-2">
               {favouriteTools.map((tool) => (
-                <button
+                <div
                   key={tool.id}
-                  type="button"
-                  onClick={() => handleOpenTool(tool)}
-                  className="group flex items-center gap-1.5 h-8 pl-2.5 pr-1.5 rounded-full border border-border-light dark:border-border-dark bg-white dark:bg-panel-dark hover:border-primary/40 hover:bg-primary/5 transition-colors text-sm text-slate-700 dark:text-slate-300"
+                  className="group flex items-center h-8 rounded-full border border-border-light dark:border-border-dark bg-white dark:bg-panel-dark hover:border-primary/40 hover:bg-primary/5 transition-colors"
                 >
-                  <span
-                    className="material-symbols-outlined text-[14px] text-primary/70 shrink-0"
-                    aria-hidden
+                  <button
+                    type="button"
+                    onClick={() => handleOpenTool(tool)}
+                    className="flex items-center gap-1.5 pl-2.5 pr-1 h-full text-sm text-slate-700 dark:text-slate-300"
                   >
-                    {tool.icon}
-                  </span>
-                  <span className="text-xs font-medium">{tool.name}</span>
-                  <span
-                    role="button"
-                    tabIndex={0}
+                    <span
+                      className="material-symbols-outlined text-[14px] text-primary/70 shrink-0"
+                      aria-hidden
+                    >
+                      {tool.icon}
+                    </span>
+                    <span className="text-xs font-medium">{tool.name}</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => toggleFavourite(tool)}
                     aria-label={`Remove ${tool.name} from favourites`}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      toggleFavourite(tool);
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" || e.key === " ") {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        toggleFavourite(tool);
-                      }
-                    }}
-                    className="ml-0.5 flex items-center justify-center size-4 rounded-full text-slate-300 dark:text-slate-600 hover:text-red-400 dark:hover:text-red-400 transition-colors"
+                    className="flex items-center justify-center size-4 rounded-full mr-1.5 text-slate-300 dark:text-slate-600 hover:text-red-400 dark:hover:text-red-400 transition-colors"
                   >
                     <span className="material-symbols-outlined text-[12px]" aria-hidden>
                       close
                     </span>
-                  </span>
-                </button>
+                  </button>
+                </div>
               ))}
             </div>
           </section>
