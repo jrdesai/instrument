@@ -136,7 +136,7 @@ export function SearchModal({
         aria-hidden
       />
       <div
-        className="relative w-full max-w-lg mx-4 bg-panel-light dark:bg-panel-dark rounded-xl shadow-2xl border border-slate-200 dark:border-border-dark overflow-hidden"
+        className="relative w-full max-w-lg mx-4 bg-panel-light dark:bg-panel-dark rounded-xl shadow-2xl border border-border-light dark:border-border-dark overflow-hidden"
         onKeyDown={handleKeyDown}
         role="dialog"
         aria-modal

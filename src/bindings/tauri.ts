@@ -374,6 +374,34 @@ export type ColorInput = { value: string }
  * Output — all four colour formats plus an optional CSS name.
  */
 export type ColorOutput = { hex: string; rgb: string; hsl: string; hsb: string; name: string | null; error: string | null }
+/**
+ * Input for the Config Converter tool.
+ */
+export type ConfigConvertInput = { value: string; from: ConfigFormat; to: ConfigFormat; 
+/**
+ * JSON/YAML output indent (2 or 4). Ignored when output is TOML.
+ */
+indent: number; 
+/**
+ * Sort keys alphabetically. Only applies to JSON output.
+ */
+sortKeys: boolean }
+/**
+ * Output from the Config Converter tool.
+ */
+export type ConfigConvertOutput = { result: string; isValidInput: boolean; error: string | null; 
+/**
+ * Line number of parse error (1-based), if available.
+ */
+errorLine: number | null; 
+/**
+ * Column number of parse error (1-based), if available.
+ */
+errorColumn: number | null; lineCount: number; charCount: number }
+/**
+ * Supported configuration formats.
+ */
+export type ConfigFormat = "Json" | "Yaml" | "Toml"
 export type ConversionTarget = "yaml" | "typeScript" | "csv" | "xml"
 export type CronInput = { expression: string; 
 /**
@@ -1205,9 +1233,6 @@ export type WordCounterInput = { text: string }
  * Output for the Word Counter tool: all stats in one struct.
  */
 export type WordCounterOutput = { words: number; charactersWithSpaces: number; charactersWithoutSpaces: number; lines: number; sentences: number; paragraphs: number; uniqueWords: number; avgWordLength: number; readingTimeSeconds: number; error: string | null }
-export type ConfigFormat = "Json" | "Yaml" | "Toml"
-export type ConfigConvertInput = { value: string; from: ConfigFormat; to: ConfigFormat; indent: number; sortKeys: boolean }
-export type ConfigConvertOutput = { result: string; isValidInput: boolean; error: string | null; errorLine: number | null; errorColumn: number | null; lineCount: number; charCount: number }
 
 /** tauri-specta globals **/
 

@@ -4,7 +4,6 @@ import { getToolById } from "./registry";
 import { AppShell } from "./components/layout/AppShell";
 import { DashboardPage } from "./components/layout/DashboardPage";
 import { LibraryPage } from "./components/layout/LibraryPage";
-import { ChainsPage } from "./components/layout/ChainsPage";
 import { HistoryPage } from "./components/layout/HistoryPage";
 import { SettingsPage } from "./components/layout/SettingsPage";
 import { ToolHeader } from "./components/layout/ToolHeader";
@@ -57,7 +56,6 @@ function App() {
           <Route element={<AppShell />}>
             <Route path="/" element={<DashboardPage />} />
             <Route path="/library" element={<LibraryPage />} />
-            <Route path="/chains" element={<ChainsPage />} />
             <Route path="/history" element={<HistoryPage />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="/tools/:toolId" element={<ToolPage />} />

@@ -11,7 +11,7 @@ export default function JwtTool() {
 
   return (
     <div className="flex h-full flex-col bg-background-light dark:bg-background-dark">
-      <div className="flex shrink-0 gap-1 border-b border-slate-200 dark:border-border-dark px-4 pt-3">
+      <div className="flex shrink-0 gap-1 border-b border-border-light dark:border-border-dark px-4 pt-3">
         {(["decode", "build"] as const).map((t) => (
           <button
             key={t}

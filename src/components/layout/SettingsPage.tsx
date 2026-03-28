@@ -14,7 +14,7 @@ export function SettingsPage() {
   return (
     <div className="flex flex-col h-full w-full overflow-hidden bg-background-light dark:bg-background-dark">
       {/* Header */}
-      <header className="shrink-0 px-8 py-6 border-b border-slate-200 dark:border-border-dark bg-background-light dark:bg-background-dark">
+      <header className="shrink-0 px-8 py-6 border-b border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark">
         <h1 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
           Settings
         </h1>
@@ -77,7 +77,7 @@ export function SettingsPage() {
               Data
             </h2>
 
-            <div className="flex flex-col divide-y divide-slate-100 dark:divide-border-dark rounded-lg border border-slate-200 dark:border-border-dark overflow-hidden">
+            <div className="flex flex-col divide-y divide-slate-100 dark:divide-border-dark rounded-lg border border-border-light dark:border-border-dark overflow-hidden">
               {/* Clear Recents */}
               <div className="flex items-center justify-between px-4 py-3 bg-panel-light dark:bg-panel-dark">
                 <div>
@@ -180,7 +180,7 @@ export function SettingsPage() {
               About
             </h2>
 
-            <div className="flex flex-col divide-y divide-slate-100 dark:divide-border-dark rounded-lg border border-slate-200 dark:border-border-dark overflow-hidden">
+            <div className="flex flex-col divide-y divide-slate-100 dark:divide-border-dark rounded-lg border border-border-light dark:border-border-dark overflow-hidden">
               <div className="flex items-center justify-between px-4 py-3 bg-panel-light dark:bg-panel-dark">
                 <p className="text-sm text-slate-700 dark:text-slate-300">Version</p>
                 <span className="text-sm font-mono text-slate-500 dark:text-slate-400">

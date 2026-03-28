@@ -46,7 +46,7 @@ export function HistoryPage() {
   return (
     <div className="flex flex-col h-full w-full overflow-hidden bg-background-light dark:bg-background-dark">
       {/* Header */}
-      <header className="shrink-0 px-8 py-6 border-b border-slate-200 dark:border-border-dark bg-background-light dark:bg-background-dark flex items-center justify-between">
+      <header className="shrink-0 px-8 py-6 border-b border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark flex items-center justify-between">
         <div>
           <h1 className="text-sm font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
             History

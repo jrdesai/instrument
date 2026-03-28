@@ -99,7 +99,7 @@ const ConfigConverterTool: React.FC = () => {
       }
       timeout = window.setTimeout(() => {
         void runProcess(nextInput, payload, true);
-      }, 200);
+      }, 150);
     };
   }, [runProcess]);
 
@@ -180,7 +180,7 @@ const ConfigConverterTool: React.FC = () => {
   const inputPlaceholder = `Paste ${formatLabel(from)} here…`;
 
   return (
-    <div className="flex flex-col h-full w-full bg-background-light dark:bg-background-dark">
+    <div className="flex flex-col h-full w-full bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
       <div className="flex-1 flex flex-col min-h-0 border border-border-light dark:border-border-dark rounded-lg overflow-hidden bg-panel-light/60 dark:bg-panel-dark/60">
       {/* Two-panel row */}
       <div className="flex-1 flex flex-row min-h-0">

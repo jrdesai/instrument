@@ -33,7 +33,7 @@ function ToolCard({
           onClick();
         }
       }}
-      className={`group relative flex flex-col p-3 rounded-lg border border-slate-200 dark:border-border-dark bg-white dark:bg-panel-dark text-left transition-colors min-w-[180px] ${
+      className={`group relative flex flex-col p-3 rounded-lg border border-border-light dark:border-border-dark bg-white dark:bg-panel-dark text-left transition-colors min-w-[180px] ${
         disabled
           ? "opacity-60 cursor-not-allowed"
           : "hover:border-primary/40 cursor-pointer"
@@ -159,7 +159,7 @@ export function DashboardPage() {
                   key={tool.id}
                   type="button"
                   onClick={() => handleOpenTool(tool)}
-                  className="group flex items-center gap-1.5 h-8 pl-2.5 pr-1.5 rounded-full border border-slate-200 dark:border-border-dark bg-white dark:bg-panel-dark hover:border-primary/40 hover:bg-primary/5 transition-colors text-sm text-slate-700 dark:text-slate-300"
+                  className="group flex items-center gap-1.5 h-8 pl-2.5 pr-1.5 rounded-full border border-border-light dark:border-border-dark bg-white dark:bg-panel-dark hover:border-primary/40 hover:bg-primary/5 transition-colors text-sm text-slate-700 dark:text-slate-300"
                 >
                   <span
                     className="material-symbols-outlined text-[14px] text-primary/70 shrink-0"
@@ -249,8 +249,8 @@ export function DashboardPage() {
       </header>
 
       {/* Footer: fixed at bottom */}
-      <footer className="shrink-0 px-8 py-3 border-t border-slate-200 dark:border-border-dark bg-background-light dark:bg-background-dark">
-        <div className="w-full px-4 py-3 rounded-lg border border-slate-200 dark:border-border-dark bg-white dark:bg-panel-dark flex items-center gap-6 text-xs text-slate-500 dark:text-slate-400">
+      <footer className="shrink-0 px-8 py-3 border-t border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark">
+        <div className="w-full px-4 py-3 rounded-lg border border-border-light dark:border-border-dark bg-white dark:bg-panel-dark flex items-center gap-6 text-xs text-slate-500 dark:text-slate-400">
           <span className="font-mono">
             {totalImplemented}{" "}
             {totalImplemented === 1 ? "Tool" : "Tools"} available
