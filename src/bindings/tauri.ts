@@ -67,6 +67,12 @@ async aesProcess(input: AesInput) : Promise<AesOutput> {
     return await TAURI_INVOKE("aes_process", { input });
 },
 /**
+ * Runs Password generation via instrument-core.
+ */
+async passwordProcess(input: PasswordInput) : Promise<PasswordOutput> {
+    return await TAURI_INVOKE("password_process", { input });
+},
+/**
  * Runs case conversion via instrument-core.
  */
 async caseProcess(input: CaseInput) : Promise<CaseOutput> {
@@ -858,6 +864,43 @@ error: string | null }
  * Input base for the number string.
  */
 export type NumberBase = "decimal" | "hexadecimal" | "binary" | "octal" | "base32" | "base36"
+/**
+ * Input for the Password Generator tool.
+ */
+export type PasswordInput = { 
+/**
+ * Password length. Clamped to 4–256.
+ */
+length: number; 
+/**
+ * Number of passwords to generate. Clamped to 1–50.
+ */
+count: number; includeUppercase: boolean; includeLowercase: boolean; includeNumbers: boolean; includeSymbols: boolean; 
+/**
+ * When true, removes visually ambiguous chars: 0, O, o, 1, I, l.
+ */
+excludeAmbiguous: boolean; 
+/**
+ * Symbol set to use when include_symbols is true.
+ * Defaults to "!@#$%^&*()-_=+[]{}|;:,.<>?" if empty.
+ */
+symbols: string }
+/**
+ * Output from the Password Generator tool.
+ */
+export type PasswordOutput = { passwords: string[]; strength: PasswordStrength; 
+/**
+ * Shannon entropy: length × log₂(alphabet_size). 0.0 when alphabet is empty.
+ */
+entropyBits: number; 
+/**
+ * Size of the effective alphabet used for generation.
+ */
+alphabetSize: number; error: string | null }
+/**
+ * Strength tier based on Shannon entropy of the generated password.
+ */
+export type PasswordStrength = "Weak" | "Fair" | "Strong" | "VeryStrong"
 /**
  * One query string key-value pair (decoded for display).
  */
