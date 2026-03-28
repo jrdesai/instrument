@@ -102,7 +102,9 @@ jobs:
             ${{ runner.os }}-cargo-
 
       - name: Clippy
-        run: cargo clippy --manifest-path src-core/Cargo.toml --all-targets -- -D warnings
+        # Scope to pure crates only — instrument-desktop pulls in Tauri/glib which
+        # requires system libraries (libglib2.0-dev) not present on the runner.
+        run: cargo clippy --manifest-path src-core/Cargo.toml -p instrument-core -p regex-core --all-targets -- -D warnings
 
   web:
     name: Web — Vite build
