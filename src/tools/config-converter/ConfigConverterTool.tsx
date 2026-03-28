@@ -181,7 +181,9 @@ const ConfigConverterTool: React.FC = () => {
 
   return (
     <div className="flex flex-col h-full w-full bg-background-light dark:bg-background-dark">
-      <div className="flex-1 flex flex-row min-h-0 border border-border-light dark:border-border-dark rounded-lg overflow-hidden bg-panel-light/60 dark:bg-panel-dark/60">
+      <div className="flex-1 flex flex-col min-h-0 border border-border-light dark:border-border-dark rounded-lg overflow-hidden bg-panel-light/60 dark:bg-panel-dark/60">
+      {/* Two-panel row */}
+      <div className="flex-1 flex flex-row min-h-0">
         <div className="flex flex-col w-1/2 border-r border-border-light dark:border-border-dark bg-panel-light/60 dark:bg-panel-dark/60">
           <div className="flex items-center justify-between gap-2 px-4 py-2 border-b border-border-light dark:border-border-dark bg-panel-light/80 dark:bg-panel-dark/80">
             <div className="flex items-center gap-2 min-w-0">
@@ -309,9 +311,10 @@ const ConfigConverterTool: React.FC = () => {
             </p>
           </div>
         </div>
-      </div>
+      </div>{/* end two-panel row */}
 
-      <div className="mt-3 flex flex-wrap items-center gap-4 text-xs text-slate-400">
+      {/* Footer toolbar — inside the bordered container, no dead space */}
+      <div className="shrink-0 flex flex-wrap items-center gap-4 text-xs text-slate-400 border-t border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark px-4 py-2">
         <button
           type="button"
           onClick={handleSwap}
@@ -381,7 +384,8 @@ const ConfigConverterTool: React.FC = () => {
             Clear
           </button>
         </div>
-      </div>
+      </div>{/* end footer toolbar */}
+      </div>{/* end bordered container */}
     </div>
   );
 };
