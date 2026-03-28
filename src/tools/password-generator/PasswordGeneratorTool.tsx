@@ -257,7 +257,7 @@ function PasswordGeneratorTool() {
         <div className="border-t border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark px-4 py-3 space-y-3">
         {/* Length row */}
         <div className="flex items-center gap-3">
-          <span className="text-xs text-slate-600 dark:text-slate-400 uppercase tracking-wider w-14 shrink-0">
+          <span className="text-xs text-slate-600 dark:text-slate-400 uppercase tracking-wider w-20 shrink-0">
             Length
           </span>
           <input
@@ -323,7 +323,7 @@ function PasswordGeneratorTool() {
         {/* Symbols input — only shown when symbols enabled */}
         {includeSymbols && (
           <div className="flex items-center gap-2">
-            <span className="text-xs text-slate-600 dark:text-slate-400 uppercase tracking-wider w-14 shrink-0">
+            <span className="text-xs text-slate-600 dark:text-slate-400 uppercase tracking-wider w-20 shrink-0">
               Symbols
             </span>
             <input
@@ -339,7 +339,7 @@ function PasswordGeneratorTool() {
 
         {/* Count row */}
         <div className="flex items-center gap-2">
-          <span className="text-xs text-slate-600 dark:text-slate-400 uppercase tracking-wider w-14 shrink-0">
+          <span className="text-xs text-slate-600 dark:text-slate-400 uppercase tracking-wider w-20 shrink-0">
             Count
           </span>
           <button
@@ -371,7 +371,7 @@ function PasswordGeneratorTool() {
 
         {/* Strength bar */}
         <div className="flex items-center gap-3">
-          <span className="text-xs text-slate-600 dark:text-slate-400 uppercase tracking-wider w-14 shrink-0">
+          <span className="text-xs text-slate-600 dark:text-slate-400 uppercase tracking-wider w-20 shrink-0">
             Strength
           </span>
           <div className="flex gap-1" aria-label={`Password strength: ${strengthLabel(strength)}`}>
