@@ -52,12 +52,6 @@ export interface Tool {
    */
   wasmExport?: string;
 
-  /**
-   * Override for the Tauri invoke payload key when it differs from "input".
-   * Example: regex commands use "req" instead of "input".
-   * Defaults to "input" if omitted.
-   */
-  desktopPayloadKey?: string;
 }
 
 /** Placeholder lazy component for future tools (currently unused). */
@@ -94,7 +88,6 @@ export const tools: Tool[] = [
     icon: "find_in_page",
     platforms: ["desktop", "web"],
     rustCommand: "tool_regex_test",
-    desktopPayloadKey: "req",
     keywords: ["regex", "regular expression", "match", "pattern"],
     component: React.lazy(
       () =>
@@ -117,7 +110,6 @@ export const tools: Tool[] = [
     platforms: ["desktop", "web"],
     rustCommand: "tool_regex_explain",
     wasmExport: "regex_explain",
-    desktopPayloadKey: "req",
     keywords: ["regex", "explain", "pattern"],
     component: React.lazy(
       () =>
