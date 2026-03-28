@@ -205,7 +205,7 @@ Build tools in the order of the table in §2 to reuse patterns and contain risk.
 
 ---
 
-## 5. Current status (as of v0.4.0)
+## 5. Current status (as of v0.5.0)
 
 Phases 1–5 are complete. All 38 tools are implemented, tested, and available on both
 desktop and web. The web version is deployed to Cloudflare Pages.
