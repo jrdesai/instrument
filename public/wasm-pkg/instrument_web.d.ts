@@ -77,6 +77,11 @@ export function lorem_ipsum_process(js_input: any): any;
 export function nanoid_process(js_input: any): any;
 
 /**
+ * Passphrase generation. Receives PassphraseInput (camelCase) and returns PassphraseOutput (camelCase).
+ */
+export function passphrase_process(js_input: any): any;
+
+/**
  * Password generation. Receives PasswordInput (camelCase) and returns PasswordOutput (camelCase).
  */
 export function password_process(js_input: any): any;
@@ -220,6 +225,7 @@ export interface InitOutput {
     readonly iso8601_process: (a: any) => [number, number, number];
     readonly lorem_ipsum_process: (a: any) => [number, number, number];
     readonly nanoid_process: (a: any) => [number, number, number];
+    readonly passphrase_process: (a: any) => [number, number, number];
     readonly password_process: (a: any) => [number, number, number];
     readonly regex_explain: (a: any) => [number, number, number];
     readonly regex_match: (a: any) => [number, number, number];

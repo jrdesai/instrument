@@ -16,6 +16,7 @@ export const html_entity_process: (a: any) => [number, number, number];
 export const iso8601_process: (a: any) => [number, number, number];
 export const lorem_ipsum_process: (a: any) => [number, number, number];
 export const nanoid_process: (a: any) => [number, number, number];
+export const passphrase_process: (a: any) => [number, number, number];
 export const password_process: (a: any) => [number, number, number];
 export const regex_explain: (a: any) => [number, number, number];
 export const regex_match: (a: any) => [number, number, number];

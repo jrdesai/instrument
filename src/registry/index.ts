@@ -337,6 +337,34 @@ export const tools: Tool[] = [
     implemented: true,
   },
   {
+    id: "passphrase-generator",
+    name: "Passphrase Generator",
+    description:
+      "Generate memorable passphrases from a wordlist with configurable word count, separator, and extras.",
+    category: "crypto",
+    displayCategory: "Security",
+    displayCategoryIcon: "security",
+    roles: ["backend", "security", "general"],
+    icon: "abc",
+    platforms: ["desktop", "web"],
+    rustCommand: "passphrase_process",
+    sensitive: false,
+    keywords: [
+      "passphrase",
+      "password",
+      "words",
+      "diceware",
+      "memorable",
+      "entropy",
+    ],
+    component: React.lazy(() =>
+      import("../tools/passphrase-generator/PassphraseGeneratorTool").then((m) => ({
+        default: m.default,
+      }))
+    ),
+    implemented: true,
+  },
+  {
     id: "aes-encrypt-decrypt",
     name: "AES Encrypt / Decrypt",
     description:

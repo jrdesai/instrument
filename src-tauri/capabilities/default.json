@@ -43,6 +43,7 @@
     "allow-cron",
     "allow-expression-eval",
     "allow-nanoid",
-    "allow-password"
+    "allow-password",
+    "allow-passphrase"
   ]
 }

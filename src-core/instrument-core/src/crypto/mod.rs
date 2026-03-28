@@ -7,3 +7,4 @@ pub mod ulid;
 pub mod api_key;
 pub mod nanoid;
 pub mod password;
+pub mod passphrase;

@@ -1,0 +1,5 @@
+# Allow the Passphrase Generator tool command to be invoked from the frontend.
+[[permission]]
+identifier = "allow-passphrase"
+description = "Enables the passphrase_process command."
+commands.allow = ["passphrase_process"]

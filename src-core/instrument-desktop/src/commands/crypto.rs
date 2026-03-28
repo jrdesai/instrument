@@ -16,6 +16,9 @@ use instrument_core::crypto::api_key::{process as api_key_process_core, ApiKeyIn
 use instrument_core::crypto::nanoid::{
     process as nanoid_process_core, NanoIdInput, NanoIdOutput,
 };
+use instrument_core::crypto::passphrase::{
+    process as passphrase_process_core, PassphraseInput, PassphraseOutput,
+};
 use instrument_core::crypto::password::{process as password_process_core, PasswordInput, PasswordOutput};
 
 use crate::command_log::finish_ok;
@@ -97,6 +100,16 @@ pub fn password_process(input: PasswordInput) -> PasswordOutput {
     let start = Instant::now();
     let output = password_process_core(input);
     finish_ok("password_process", start);
+    output
+}
+
+/// Runs Passphrase generation via instrument-core.
+#[tauri::command]
+#[specta::specta]
+pub fn passphrase_process(input: PassphraseInput) -> PassphraseOutput {
+    let start = Instant::now();
+    let output = passphrase_process_core(input);
+    finish_ok("passphrase_process", start);
     output
 }
 

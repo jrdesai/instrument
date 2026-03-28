@@ -28,6 +28,9 @@ fn main() {
     instrument_core::crypto::password::PasswordInput::export_all_to(&out).unwrap();
     instrument_core::crypto::password::PasswordOutput::export_all_to(&out).unwrap();
     instrument_core::crypto::password::PasswordStrength::export_all_to(&out).unwrap();
+    instrument_core::crypto::passphrase::PassphraseInput::export_all_to(&out).unwrap();
+    instrument_core::crypto::passphrase::PassphraseOutput::export_all_to(&out).unwrap();
+    instrument_core::crypto::passphrase::PassphraseSeparator::export_all_to(&out).unwrap();
     instrument_core::crypto::ulid::UlidInput::export_all_to(&out).unwrap();
     instrument_core::crypto::ulid::UlidInspectInput::export_all_to(&out).unwrap();
     instrument_core::crypto::ulid::UlidInspectOutput::export_all_to(&out).unwrap();

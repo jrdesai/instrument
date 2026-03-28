@@ -196,6 +196,19 @@ export function nanoid_process(js_input) {
 }
 
 /**
+ * Passphrase generation. Receives PassphraseInput (camelCase) and returns PassphraseOutput (camelCase).
+ * @param {any} js_input
+ * @returns {any}
+ */
+export function passphrase_process(js_input) {
+    const ret = wasm.passphrase_process(js_input);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
  * Password generation. Receives PasswordInput (camelCase) and returns PasswordOutput (camelCase).
  * @param {any} js_input
  * @returns {any}
