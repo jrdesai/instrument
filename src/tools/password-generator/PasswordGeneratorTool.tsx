@@ -219,42 +219,42 @@ function PasswordGeneratorTool() {
         </div>
       </div>
 
-      {/* Password list */}
-      <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar p-4 space-y-2">
-        {hasError ? (
-          <div className="text-red-600 dark:text-red-400 text-sm font-mono whitespace-pre-wrap px-3 py-2 border border-red-300 dark:border-red-700 rounded-lg bg-red-50 dark:bg-red-900/20">
-            {output?.error}
-          </div>
-        ) : passwords.length === 0 ? (
-          <p className="text-slate-500 text-sm italic">
-            Generating…
-          </p>
-        ) : (
-          <ul className="space-y-2">
-            {passwords.map((pw, index) => (
-              <li
-                key={index}
-                className="flex items-center justify-between gap-3 px-3 py-2 border border-border-light dark:border-border-dark rounded-lg bg-panel-light dark:bg-panel-dark"
-              >
-                <span className="font-mono text-sm text-slate-700 dark:text-slate-300 break-all select-all">
-                  {pw}
-                </span>
-                <button
-                  type="button"
-                  aria-label={`Copy password ${index + 1}`}
-                  onClick={() => handleCopyLine(index)}
-                  className="px-3 py-1 text-xs font-medium bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors shrink-0"
+      {/* Scrollable body: passwords + controls together */}
+      <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar">
+        {/* Password list */}
+        <div className="p-4 space-y-2">
+          {hasError ? (
+            <div className="text-red-600 dark:text-red-400 text-sm font-mono whitespace-pre-wrap px-3 py-2 border border-red-300 dark:border-red-700 rounded-lg bg-red-50 dark:bg-red-900/20">
+              {output?.error}
+            </div>
+          ) : passwords.length === 0 ? (
+            <p className="text-slate-500 text-sm italic">Generating…</p>
+          ) : (
+            <ul className="space-y-2">
+              {passwords.map((pw, index) => (
+                <li
+                  key={index}
+                  className="flex items-center justify-between gap-3 px-3 py-2 border border-border-light dark:border-border-dark rounded-lg bg-panel-light dark:bg-panel-dark"
                 >
-                  {copiedIndex === index ? "Copied" : "Copy"}
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+                  <span className="font-mono text-sm text-slate-700 dark:text-slate-300 break-all select-all">
+                    {pw}
+                  </span>
+                  <button
+                    type="button"
+                    aria-label={`Copy password ${index + 1}`}
+                    onClick={() => handleCopyLine(index)}
+                    className="px-3 py-1 text-xs font-medium bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors shrink-0"
+                  >
+                    {copiedIndex === index ? "Copied" : "Copy"}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
 
-      {/* Controls */}
-      <div className="shrink-0 border-t border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark px-4 py-3 space-y-3">
+        {/* Controls — directly below passwords, no dead space */}
+        <div className="border-t border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark px-4 py-3 space-y-3">
         {/* Length row */}
         <div className="flex items-center gap-3">
           <span className="text-xs text-slate-600 dark:text-slate-400 uppercase tracking-wider w-14 shrink-0">
@@ -393,7 +393,8 @@ function PasswordGeneratorTool() {
             · {entropyBits.toFixed(1)} bits · {alphabetSize} chars
           </span>
         </div>
-      </div>
+        </div> {/* end controls */}
+      </div> {/* end scrollable body */}
     </div>
   );
 }
