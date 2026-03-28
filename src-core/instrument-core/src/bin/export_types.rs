@@ -25,6 +25,9 @@ fn main() {
     instrument_core::crypto::hash::HashResult::export_all_to(&out).unwrap();
     instrument_core::crypto::nanoid::NanoIdInput::export_all_to(&out).unwrap();
     instrument_core::crypto::nanoid::NanoIdOutput::export_all_to(&out).unwrap();
+    instrument_core::crypto::password::PasswordInput::export_all_to(&out).unwrap();
+    instrument_core::crypto::password::PasswordOutput::export_all_to(&out).unwrap();
+    instrument_core::crypto::password::PasswordStrength::export_all_to(&out).unwrap();
     instrument_core::crypto::ulid::UlidInput::export_all_to(&out).unwrap();
     instrument_core::crypto::ulid::UlidInspectInput::export_all_to(&out).unwrap();
     instrument_core::crypto::ulid::UlidInspectOutput::export_all_to(&out).unwrap();
