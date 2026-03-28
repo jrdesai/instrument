@@ -317,6 +317,26 @@ export const tools: Tool[] = [
     sensitive: true,
   },
   {
+    id: "password-generator",
+    name: "Password Generator",
+    description: "Generate secure random passwords with configurable length, character sets, and strength indicator.",
+    category: "crypto",
+    displayCategory: "Security",
+    displayCategoryIcon: "security",
+    roles: ["backend", "security", "general"],
+    icon: "password",
+    platforms: ["desktop", "web"],
+    rustCommand: "password_process",
+    sensitive: false,
+    keywords: ["password", "generate", "random", "secure", "entropy", "strength"],
+    component: React.lazy(() =>
+      import("../tools/password-generator/PasswordGeneratorTool").then((m) => ({
+        default: m.default,
+      }))
+    ),
+    implemented: true,
+  },
+  {
     id: "aes-encrypt-decrypt",
     name: "AES Encrypt / Decrypt",
     description:

@@ -16,6 +16,7 @@ use instrument_core::crypto::api_key::{process as api_key_process_core, ApiKeyIn
 use instrument_core::crypto::nanoid::{
     process as nanoid_process_core, NanoIdInput, NanoIdOutput,
 };
+use instrument_core::crypto::password::{process as password_process_core, PasswordInput, PasswordOutput};
 
 use crate::command_log::finish_ok;
 
@@ -86,6 +87,16 @@ pub fn nanoid_process(input: NanoIdInput) -> NanoIdOutput {
     let start = Instant::now();
     let output = nanoid_process_core(input);
     finish_ok("nanoid_process", start);
+    output
+}
+
+/// Runs Password generation via instrument-core.
+#[tauri::command]
+#[specta::specta]
+pub fn password_process(input: PasswordInput) -> PasswordOutput {
+    let start = Instant::now();
+    let output = password_process_core(input);
+    finish_ok("password_process", start);
     output
 }
 

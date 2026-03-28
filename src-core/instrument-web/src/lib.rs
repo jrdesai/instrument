@@ -28,6 +28,7 @@ use instrument_core::text::word_counter::{
 use instrument_core::crypto::api_key::{
     process as api_key_process_core, ApiKeyInput, ApiKeyOutput,
 };
+use instrument_core::crypto::password::{process as password_process_core, PasswordInput, PasswordOutput};
 use instrument_core::crypto::nanoid::{
     process as nanoid_process_core, NanoIdInput, NanoIdOutput,
 };
@@ -243,6 +244,14 @@ pub fn api_key_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
     let input: ApiKeyInput =
         from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
     let output: ApiKeyOutput = api_key_process_core(input);
+    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
+}
+
+/// Password generation. Receives PasswordInput (camelCase) and returns PasswordOutput (camelCase).
+#[wasm_bindgen(js_name = password_process)]
+pub fn password_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
+    let input: PasswordInput = from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let output: PasswordOutput = password_process_core(input);
     to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
 }
 

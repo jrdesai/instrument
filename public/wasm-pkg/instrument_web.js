@@ -196,6 +196,19 @@ export function nanoid_process(js_input) {
 }
 
 /**
+ * Password generation. Receives PasswordInput (camelCase) and returns PasswordOutput (camelCase).
+ * @param {any} js_input
+ * @returns {any}
+ */
+export function password_process(js_input) {
+    const ret = wasm.password_process(js_input);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
  * Regex pattern explanation (HIR tokens). Receives ExplainRequest and returns Vec<ExplainToken>.
  * @param {any} js_input
  * @returns {any}

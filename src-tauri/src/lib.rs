@@ -33,6 +33,7 @@ pub fn run() {
         instrument_desktop::commands::crypto::api_key_process,
         instrument_desktop::commands::crypto::nanoid_process,
         instrument_desktop::commands::crypto::aes_process,
+        instrument_desktop::commands::crypto::password_process,
         instrument_desktop::commands::text::case_process,
         instrument_desktop::commands::text::word_counter_process,
         instrument_desktop::commands::text::string_escaper_process,

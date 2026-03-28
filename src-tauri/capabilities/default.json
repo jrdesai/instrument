@@ -42,6 +42,7 @@
     "allow-csv-to-json",
     "allow-cron",
     "allow-expression-eval",
-    "allow-nanoid"
+    "allow-nanoid",
+    "allow-password"
   ]
 }
