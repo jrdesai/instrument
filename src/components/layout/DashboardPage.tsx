@@ -131,6 +131,34 @@ export function DashboardPage() {
   return (
     <div className="flex flex-col h-full w-full overflow-hidden bg-background-light dark:bg-background-dark">
       <header className="shrink-0 px-8 pt-6 pb-4 bg-background-light dark:bg-background-dark">
+        {/* Hero banner */}
+        <div className="mb-6 p-4 rounded-xl border border-border-light dark:border-border-dark bg-white dark:bg-panel-dark flex items-center gap-4">
+          <div className="shrink-0 size-10 rounded-lg bg-primary/10 flex items-center justify-center">
+            <span className="material-symbols-outlined text-primary text-[22px]" aria-hidden>
+              construction
+            </span>
+          </div>
+          <div className="min-w-0">
+            <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+              Privacy-first developer toolkit
+            </p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              {totalImplemented} tools for encoding, formatting, hashing, JWT, regex, and more —
+              all running locally. Nothing leaves your device.
+            </p>
+          </div>
+          <a
+            href="https://github.com/jrdesai/instrument"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="shrink-0 hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border-light dark:border-border-dark text-xs text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:border-primary/40 transition-colors"
+          >
+            <span className="material-symbols-outlined text-[14px]" aria-hidden>
+              code
+            </span>
+            Source
+          </a>
+        </div>
         <h1 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
           Dashboard
         </h1>

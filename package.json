@@ -23,7 +23,8 @@
     "lint": "eslint src/",
     "gen:types": "cargo run --manifest-path src-core/Cargo.toml -p instrument-core --bin export_types --features ts-export",
     "typecheck": "pnpm run gen:types && tsc --noEmit",
-    "check:pure": "grep -r 'std::fs\\|tauri\\|tokio' src-core/instrument-core/src/ && echo 'PURITY VIOLATION' || echo 'instrument-core is pure'"
+    "check:pure": "grep -r 'std::fs\\|tauri\\|tokio' src-core/instrument-core/src/ && echo 'PURITY VIOLATION' || echo 'instrument-core is pure'",
+    "gen:og-image": "node scripts/generate-og-image.mjs"
   },
   "dependencies": {
     "@tauri-apps/api": "^2",
@@ -54,6 +55,7 @@
     "@vitejs/plugin-react": "^4.6.0",
     "eslint": "^10.0.2",
     "jsdom": "^25.0.0",
+    "sharp": "^0.34.5",
     "tailwindcss": "^4.0.0",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.56.1",
