@@ -4,6 +4,7 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { CopyButton, PillButton, ToolbarFooter } from "../../components/tool";
 import { callTool } from "../../bridge";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useHistoryStore } from "../../store";
@@ -15,7 +16,6 @@ const RUST_COMMAND = "base64_process";
 const TOOL_ID = "base64-encoder";
 const DEBOUNCE_MS = 150;
 const HISTORY_DEBOUNCE_MS = 1500;
-const COPIED_DURATION_MS = 1500;
 
 function Base64Tool() {
   const { setDraft } = useDraftInput(TOOL_ID);
@@ -27,7 +27,6 @@ function Base64Tool() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [leftPanelPercent, setLeftPanelPercent] = useState(50);
-  const [copyLabel, setCopyLabel] = useState("Copy output");
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
@@ -115,18 +114,6 @@ function Base64Tool() {
     setError(null);
   }, [setDraft]);
 
-  const handleCopy = useCallback(async () => {
-    if (!output) return;
-    try {
-      await navigator.clipboard.writeText(output);
-      setCopyLabel("Copied");
-      setTimeout(() => setCopyLabel("Copy output"), COPIED_DURATION_MS);
-    } catch {
-      setCopyLabel("Copy failed");
-      setTimeout(() => setCopyLabel("Copy output"), COPIED_DURATION_MS);
-    }
-  }, [output]);
-
   const lines = input.split("\n").length;
   const charCount = input.length;
   const byteCount = new TextEncoder().encode(input).length;
@@ -206,99 +193,77 @@ function Base64Tool() {
         </div>
       </div>
 
-      {/* Footer */}
-      <footer className="flex items-end gap-2 px-4 py-3 border-t border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0">
-        {/* Mode */}
-        <div className="flex flex-col gap-1" role="group" aria-label="Mode">
-          <span className="text-slate-600 text-xs uppercase tracking-wider">
-            Mode
-          </span>
-          <div className="flex gap-1">
-            <button
-              type="button"
-              aria-label="Encode mode"
-              onClick={() => setMode("encode")}
-              className={`px-3 py-1 text-sm font-medium rounded-lg transition-colors ${
-                mode === "encode"
-                  ? "bg-primary text-white"
-                  : "text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
-              }`}
-            >
-              Encode
-            </button>
-            <button
-              type="button"
-              aria-label="Decode mode"
-              onClick={() => setMode("decode")}
-              className={`px-3 py-1 text-sm font-medium rounded-lg transition-colors ${
-                mode === "decode"
-                  ? "bg-primary text-white"
-                  : "text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
-              }`}
-            >
-              Decode
-            </button>
-          </div>
-        </div>
-
-        <div className="w-px h-6 bg-border-light dark:bg-border-dark self-center mx-3" />
-
-        {/* Options */}
-        <div className="flex flex-col gap-1" role="group" aria-label="Options">
-          <span className="text-slate-600 text-xs uppercase tracking-wider">
-            Options
-          </span>
-          <div className="flex gap-1">
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                aria-label="Use URL-safe Base64 alphabet"
-                checked={urlSafe}
-                onChange={(e) => setUrlSafe(e.target.checked)}
-                className="rounded border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark text-primary focus:ring-primary"
-              />
-              <span className="text-sm text-slate-700 dark:text-slate-300">URL Safe</span>
-            </label>
-          </div>
-        </div>
-
-        <div className="w-px h-6 bg-border-light dark:bg-border-dark self-center mx-3" />
-
-        {/* Actions */}
-        <div
-          className="flex flex-col gap-1 ml-auto"
-          role="group"
-          aria-label="Actions"
-        >
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              aria-label="Swap input and output"
-              onClick={handleSwap}
-              className="px-3 py-1 text-sm text-slate-700 dark:text-slate-300 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
-            >
-              Swap
-            </button>
-            <button
-              type="button"
-              aria-label="Copy output to clipboard"
-              onClick={handleCopy}
-              disabled={!output}
-              className="px-3 py-1 text-sm font-medium bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              {copyLabel}
-            </button>
-            <button
-              type="button"
-              aria-label="Clear input and output"
-              onClick={handleClear}
-              className="px-3 py-1 text-sm text-slate-700 dark:text-slate-300 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
-            >
-              Clear
-            </button>
-          </div>
-        </div>
-      </footer>
+      <ToolbarFooter
+        groups={[
+          {
+            label: "Mode",
+            children: (
+              <>
+                {(["encode", "decode"] as const).map((m) => (
+                  <PillButton
+                    key={m}
+                    active={mode === m}
+                    onClick={() => setMode(m)}
+                    aria-label={
+                      m === "encode" ? "Encode mode" : "Decode mode"
+                    }
+                  >
+                    {m.charAt(0).toUpperCase() + m.slice(1)}
+                  </PillButton>
+                ))}
+              </>
+            ),
+          },
+          {
+            label: "Options",
+            children: (
+              <label className="flex cursor-pointer items-center gap-2">
+                <input
+                  type="checkbox"
+                  aria-label="Use URL-safe Base64 alphabet"
+                  checked={urlSafe}
+                  onChange={(e) => setUrlSafe(e.target.checked)}
+                  className="rounded border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark text-primary focus:ring-primary"
+                />
+                <span className="text-sm text-slate-700 dark:text-slate-300">
+                  URL Safe
+                </span>
+              </label>
+            ),
+          },
+          {
+            end: true,
+            label: "Actions",
+            children: (
+              <>
+                <button
+                  type="button"
+                  aria-label="Swap input and output"
+                  onClick={handleSwap}
+                  className="rounded-lg px-3 py-1 text-sm text-slate-700 transition-colors hover:bg-slate-100 hover:text-primary dark:text-slate-300 dark:hover:bg-slate-700"
+                >
+                  Swap
+                </button>
+                <CopyButton
+                  value={output || undefined}
+                  label="Copy"
+                  variant="primary"
+                  className="py-1"
+                  aria-label="Copy output to clipboard"
+                />
+                <button
+                  type="button"
+                  aria-label="Clear input and output"
+                  onClick={handleClear}
+                  className="rounded-lg px-3 py-1 text-sm text-slate-700 transition-colors hover:bg-slate-100 hover:text-primary dark:text-slate-300 dark:hover:bg-slate-700"
+                >
+                  Clear
+                </button>
+              </>
+            ),
+          },
+        ]}
+      />
     </div>
   );
 }

@@ -1,9 +1,11 @@
 import {
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
+import { CopyButton } from "../../components/tool";
 import { callTool } from "../../bridge";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useHistoryStore } from "../../store";
@@ -41,7 +43,6 @@ function HashTool() {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [rowCopyLabel, setRowCopyLabel] = useState<string | null>(null);
-  const [allCopyLabel, setAllCopyLabel] = useState("Copy all");
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
@@ -142,18 +143,10 @@ function HashTool() {
     }
   }, []);
 
-  const copyAll = useCallback(async () => {
+  const copyAllValue = useMemo(() => {
     const lines = results.filter((r) => r.value);
-    if (lines.length === 0) return;
-    const text = copyAllText(lines);
-    try {
-      await navigator.clipboard.writeText(text);
-      setAllCopyLabel("Copied");
-      setTimeout(() => setAllCopyLabel("Copy all"), COPIED_DURATION_MS);
-    } catch {
-      setAllCopyLabel("Copy failed");
-      setTimeout(() => setAllCopyLabel("Copy all"), COPIED_DURATION_MS);
-    }
+    if (lines.length === 0) return "";
+    return copyAllText(lines);
   }, [results]);
 
   const lines = input.split("\n").length;
@@ -309,14 +302,14 @@ function HashTool() {
         >
           Clear
         </button>
-        <button
-          type="button"
-          onClick={copyAll}
-          disabled={!results.some((r) => r.value)}
-          className="ml-auto px-3 py-1 text-sm font-medium bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-        >
-          {allCopyLabel}
-        </button>
+        <div className="ml-auto">
+          <CopyButton
+            value={copyAllValue || undefined}
+            label="Copy all"
+            variant="primary"
+            className="py-1 text-sm"
+          />
+        </div>
       </footer>
     </div>
   );

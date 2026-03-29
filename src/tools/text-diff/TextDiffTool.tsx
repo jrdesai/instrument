@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { CopyButton, PanelHeader, ToolbarFooter } from "../../components/tool";
 import { callTool } from "../../bridge";
 import { useDraftInput, useRestoreDraft } from "../../hooks/useDraftInput";
 import { useHistoryStore } from "../../store";
@@ -154,14 +155,6 @@ function TextDiffTool() {
     setError(null);
   }, [setDraft]);
 
-  const copyLeft = useCallback(async () => {
-    if (leftInput) await navigator.clipboard.writeText(leftInput);
-  }, [leftInput]);
-
-  const copyRight = useCallback(async () => {
-    if (rightInput) await navigator.clipboard.writeText(rightInput);
-  }, [rightInput]);
-
   const isEmpty = leftInput.trim() === "" && rightInput.trim() === "";
   const bothHaveContent = leftInput.trim() !== "" && rightInput.trim() !== "";
   const hasResult = output != null;
@@ -173,14 +166,10 @@ function TextDiffTool() {
         style={{ height: "35%" }}
       >
         <div className="flex flex-col flex-1 min-w-0 border-r border-border-light dark:border-border-dark">
-          <div className="flex items-center justify-between px-4 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0">
-            <span className="text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider">
-              LEFT
-            </span>
-            <span className="text-slate-600 text-xs">
-              {leftInput.length.toLocaleString()} chars
-            </span>
-          </div>
+          <PanelHeader
+            label="Left"
+            meta={`${leftInput.length.toLocaleString()} chars`}
+          />
           <textarea
             aria-label="Left text"
             className="flex-1 w-full min-h-0 p-4 font-mono text-xs text-slate-700 dark:text-slate-300 bg-transparent resize-none border-none focus:outline-none leading-relaxed placeholder:text-slate-500"
@@ -194,14 +183,10 @@ function TextDiffTool() {
           />
         </div>
         <div className="flex flex-col flex-1 min-w-0">
-          <div className="flex items-center justify-between px-4 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0">
-            <span className="text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider">
-              RIGHT
-            </span>
-            <span className="text-slate-600 text-xs">
-              {rightInput.length.toLocaleString()} chars
-            </span>
-          </div>
+          <PanelHeader
+            label="Right"
+            meta={`${rightInput.length.toLocaleString()} chars`}
+          />
           <textarea
             aria-label="Right text"
             className="flex-1 w-full min-h-0 p-4 font-mono text-xs text-slate-700 dark:text-slate-300 bg-transparent resize-none border-none focus:outline-none leading-relaxed placeholder:text-slate-500"
@@ -302,36 +287,49 @@ function TextDiffTool() {
         )}
       </div>
 
-      <footer className="flex items-center justify-end gap-2 px-4 py-3 border-t border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0">
-        <button
-          type="button"
-          onClick={copyLeft}
-          className="px-3 py-2 text-xs font-medium bg-panel-light dark:bg-panel-dark text-slate-700 dark:text-slate-300 border border-border-light dark:border-border-dark rounded-lg hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
-        >
-          Copy Left
-        </button>
-        <button
-          type="button"
-          onClick={copyRight}
-          className="px-3 py-2 text-xs font-medium bg-panel-light dark:bg-panel-dark text-slate-700 dark:text-slate-300 border border-border-light dark:border-border-dark rounded-lg hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
-        >
-          Copy Right
-        </button>
-        <button
-          type="button"
-          onClick={handleSwap}
-          className="px-3 py-2 text-xs font-medium bg-panel-light dark:bg-panel-dark text-slate-700 dark:text-slate-300 border border-border-light dark:border-border-dark rounded-lg hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
-        >
-          Swap
-        </button>
-        <button
-          type="button"
-          onClick={handleClear}
-          className="px-4 py-2 text-sm bg-panel-light dark:bg-panel-dark text-slate-500 dark:text-slate-400 border border-border-light dark:border-border-dark rounded-lg hover:text-slate-800 dark:hover:text-slate-200 hover:border-slate-400 dark:hover:border-slate-500 transition-colors"
-        >
-          Clear
-        </button>
-      </footer>
+      <ToolbarFooter
+        className="items-center justify-end gap-2"
+        groups={[
+          {
+            children: (
+              <>
+                <CopyButton
+                  value={leftInput || undefined}
+                  label="Copy Left"
+                  variant="outline"
+                  className="px-3 py-2"
+                />
+                <CopyButton
+                  value={rightInput || undefined}
+                  label="Copy Right"
+                  variant="outline"
+                  className="px-3 py-2"
+                />
+              </>
+            ),
+          },
+          {
+            children: (
+              <>
+                <button
+                  type="button"
+                  onClick={handleSwap}
+                  className="rounded-lg border border-border-light bg-panel-light px-3 py-2 text-xs font-medium text-slate-700 transition-colors hover:bg-slate-100 hover:text-primary dark:border-border-dark dark:bg-panel-dark dark:text-slate-300 dark:hover:bg-slate-700"
+                >
+                  Swap
+                </button>
+                <button
+                  type="button"
+                  onClick={handleClear}
+                  className="rounded-lg border border-border-light bg-panel-light px-4 py-2 text-sm text-slate-500 transition-colors hover:border-slate-400 hover:text-slate-800 dark:border-border-dark dark:bg-panel-dark dark:text-slate-400 dark:hover:border-slate-500 dark:hover:text-slate-200"
+                >
+                  Clear
+                </button>
+              </>
+            ),
+          },
+        ]}
+      />
     </div>
   );
 }

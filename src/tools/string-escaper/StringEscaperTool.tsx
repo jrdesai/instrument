@@ -4,6 +4,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { CopyButton, PillButton, ToolbarFooter } from "../../components/tool";
 import { callTool } from "../../bridge";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useHistoryStore } from "../../store";
@@ -16,7 +17,6 @@ const RUST_COMMAND = "string_escaper_process";
 const TOOL_ID = "string-escaper";
 const DEBOUNCE_MS = 150;
 const HISTORY_DEBOUNCE_MS = 1500;
-const COPIED_DURATION_MS = 1500;
 
 const TARGETS: { value: EscapeTarget; label: string }[] = [
   { value: "json", label: "JSON" },
@@ -37,7 +37,6 @@ function StringEscaperTool() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [leftPanelPercent, setLeftPanelPercent] = useState(50);
-  const [copyLabel, setCopyLabel] = useState("Copy output");
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
@@ -133,19 +132,6 @@ function StringEscaperTool() {
     setError(null);
   }, [setDraft]);
 
-  const handleCopy = useCallback(async () => {
-    const text = output?.result ?? "";
-    if (!text) return;
-    try {
-      await navigator.clipboard.writeText(text);
-      setCopyLabel("Copied");
-      setTimeout(() => setCopyLabel("Copy output"), COPIED_DURATION_MS);
-    } catch {
-      setCopyLabel("Copy failed");
-      setTimeout(() => setCopyLabel("Copy output"), COPIED_DURATION_MS);
-    }
-  }, [output?.result]);
-
   const lines = input.split("\n").length;
   const charCount = input.length;
   const changes = output?.changes ?? 0;
@@ -240,104 +226,79 @@ function StringEscaperTool() {
         </div>
       </div>
 
-      {/* Footer */}
-      <footer className="flex items-end gap-2 px-4 py-3 border-t border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0">
-        {/* Mode */}
-        <div className="flex flex-col gap-1" role="group" aria-label="Mode">
-          <span className="text-slate-600 text-xs uppercase tracking-wider">
-            Mode
-          </span>
-          <div className="flex gap-1">
-            <button
-              type="button"
-              aria-label="Escape mode"
-              onClick={() => setMode("escape")}
-              className={`px-3 py-1 text-sm font-medium rounded-lg transition-colors ${
-                mode === "escape"
-                  ? "bg-primary text-white"
-                  : "text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
-              }`}
-            >
-              Escape
-            </button>
-            <button
-              type="button"
-              aria-label="Unescape mode"
-              onClick={() => setMode("unescape")}
-              className={`px-3 py-1 text-sm font-medium rounded-lg transition-colors ${
-                mode === "unescape"
-                  ? "bg-primary text-white"
-                  : "text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
-              }`}
-            >
-              Unescape
-            </button>
-          </div>
-        </div>
-
-        <div className="w-px h-6 bg-border-light dark:bg-border-dark self-center mx-3" />
-
-        {/* Target */}
-        <div className="flex flex-col gap-1" role="group" aria-label="Target">
-          <span className="text-slate-600 text-xs uppercase tracking-wider">
-            Target
-          </span>
-          <div className="flex items-center gap-1 flex-wrap">
-            {TARGETS.map(({ value: t, label }) => (
-              <button
-                key={t}
-                type="button"
-                aria-label={`Target: ${label}`}
-                onClick={() => setTarget(t)}
-                className={`px-3 py-1 text-sm font-medium rounded-lg transition-colors ${
-                  target === t
-                    ? "bg-primary text-white"
-                    : "text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
-                }`}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className="w-px h-6 bg-border-light dark:bg-border-dark self-center mx-3" />
-
-        {/* Actions */}
-        <div
-          className="flex flex-col gap-1 ml-auto"
-          role="group"
-          aria-label="Actions"
-        >
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              aria-label="Swap input and output"
-              onClick={handleSwap}
-              className="px-3 py-1 text-sm text-slate-700 dark:text-slate-300 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
-            >
-              Swap
-            </button>
-            <button
-              type="button"
-              aria-label="Clear input and output"
-              onClick={handleClear}
-              className="px-3 py-1 text-sm text-slate-700 dark:text-slate-300 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
-            >
-              Clear
-            </button>
-            <button
-              type="button"
-              aria-label="Copy output to clipboard"
-              onClick={handleCopy}
-              disabled={!resultText}
-              className="px-3 py-1 text-sm font-medium bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              {copyLabel}
-            </button>
-          </div>
-        </div>
-      </footer>
+      <ToolbarFooter
+        groups={[
+          {
+            label: "Mode",
+            children: (
+              <>
+                <PillButton
+                  active={mode === "escape"}
+                  onClick={() => setMode("escape")}
+                  aria-label="Escape mode"
+                >
+                  Escape
+                </PillButton>
+                <PillButton
+                  active={mode === "unescape"}
+                  onClick={() => setMode("unescape")}
+                  aria-label="Unescape mode"
+                >
+                  Unescape
+                </PillButton>
+              </>
+            ),
+          },
+          {
+            label: "Target",
+            children: (
+              <div className="flex flex-wrap items-center gap-1.5">
+                {TARGETS.map(({ value: t, label }) => (
+                  <PillButton
+                    key={t}
+                    active={target === t}
+                    onClick={() => setTarget(t)}
+                    aria-label={`Target: ${label}`}
+                  >
+                    {label}
+                  </PillButton>
+                ))}
+              </div>
+            ),
+          },
+          {
+            end: true,
+            label: "Actions",
+            children: (
+              <>
+                <button
+                  type="button"
+                  aria-label="Swap input and output"
+                  onClick={handleSwap}
+                  className="rounded-lg px-3 py-1 text-sm text-slate-700 transition-colors hover:bg-slate-100 hover:text-primary dark:text-slate-300 dark:hover:bg-slate-700"
+                >
+                  Swap
+                </button>
+                <button
+                  type="button"
+                  aria-label="Clear input and output"
+                  onClick={handleClear}
+                  className="rounded-lg px-3 py-1 text-sm text-slate-700 transition-colors hover:bg-slate-100 hover:text-primary dark:text-slate-300 dark:hover:bg-slate-700"
+                >
+                  Clear
+                </button>
+                <CopyButton
+                  value={resultText || undefined}
+                  label="Copy"
+                  variant="primary"
+                  className="py-1"
+                  aria-label="Copy output to clipboard"
+                />
+              </>
+            ),
+          },
+        ]}
+      />
     </div>
   );
 }

@@ -4,6 +4,7 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { CopyButton, PillButton, ToolbarFooter } from "../../components/tool";
 import { callTool } from "../../bridge";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useHistoryStore } from "../../store";
@@ -16,7 +17,6 @@ const RUST_COMMAND = "hex_process";
 const TOOL_ID = "hex-converter";
 const DEBOUNCE_MS = 150;
 const HISTORY_DEBOUNCE_MS = 1500;
-const COPIED_DURATION_MS = 1500;
 
 function HexConverterTool() {
   const { setDraft } = useDraftInput(TOOL_ID);
@@ -29,7 +29,6 @@ function HexConverterTool() {
   const [error, setError] = useState<string | null>(null);
   const [byteCount, setByteCount] = useState(0);
   const [leftPanelPercent, setLeftPanelPercent] = useState(50);
-  const [copyLabel, setCopyLabel] = useState("Copy output");
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
@@ -125,18 +124,6 @@ function HexConverterTool() {
     setByteCount(0);
   }, [setDraft]);
 
-  const handleCopy = useCallback(async () => {
-    if (!output) return;
-    try {
-      await navigator.clipboard.writeText(output);
-      setCopyLabel("Copied");
-      setTimeout(() => setCopyLabel("Copy output"), COPIED_DURATION_MS);
-    } catch {
-      setCopyLabel("Copy failed");
-      setTimeout(() => setCopyLabel("Copy output"), COPIED_DURATION_MS);
-    }
-  }, [output]);
-
   const lines = input.split("\n").length;
   const charCount = input.length;
 
@@ -223,149 +210,87 @@ function HexConverterTool() {
         </div>
       </div>
 
-      {/* Footer */}
-      <footer className="flex items-end gap-2 px-4 py-3 border-t border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0">
-        {/* Mode */}
-        <div className="flex flex-col gap-1" role="group" aria-label="Mode">
-          <span className="text-slate-600 text-xs uppercase tracking-wider">
-            Mode
-          </span>
-          <div className="flex gap-1">
-            <button
-              type="button"
-              aria-label="Text to Hex mode"
-              onClick={() => setMode("textToHex")}
-              className={`px-3 py-1 text-sm font-medium rounded-lg transition-colors ${
-                mode === "textToHex"
-                  ? "bg-primary text-white"
-                  : "text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
-              }`}
-            >
-              Text → Hex
-            </button>
-            <button
-              type="button"
-              aria-label="Hex to Text mode"
-              onClick={() => setMode("hexToText")}
-              className={`px-3 py-1 text-sm font-medium rounded-lg transition-colors ${
-                mode === "hexToText"
-                  ? "bg-primary text-white"
-                  : "text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
-              }`}
-            >
-              Hex → Text
-            </button>
-          </div>
-        </div>
-
-        <div className="w-px h-6 bg-border-light dark:bg-border-dark self-center mx-3" />
-
-        {/* Separator */}
-        <div className="flex flex-col gap-1" role="group" aria-label="Separator">
-          <span className="text-slate-600 text-xs uppercase tracking-wider">
-            Separator
-          </span>
-          <div className="flex gap-1">
-            <button
-              type="button"
-              aria-label="No separator"
-              onClick={() => setSeparator("none")}
-              disabled={separatorDisabled}
-              className={`px-3 py-1 text-sm font-medium rounded-lg transition-colors ${
-                separator === "none"
-                  ? "bg-primary text-white"
-                  : "text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
-              } ${
-                separatorDisabled ? "opacity-50 cursor-not-allowed" : ""
-              }`}
-            >
-              None
-            </button>
-            <button
-              type="button"
-              aria-label="Space separator"
-              onClick={() => setSeparator("space")}
-              disabled={separatorDisabled}
-              className={`px-3 py-1 text-sm font-medium rounded-lg transition-colors ${
-                separator === "space"
-                  ? "bg-primary text-white"
-                  : "text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
-              } ${
-                separatorDisabled ? "opacity-50 cursor-not-allowed" : ""
-              }`}
-            >
-              Space
-            </button>
-            <button
-              type="button"
-              aria-label="Colon separator"
-              onClick={() => setSeparator("colon")}
-              disabled={separatorDisabled}
-              className={`px-3 py-1 text-sm font-medium rounded-lg transition-colors ${
-                separator === "colon"
-                  ? "bg-primary text-white"
-                  : "text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
-              } ${
-                separatorDisabled ? "opacity-50 cursor-not-allowed" : ""
-              }`}
-            >
-              Colon
-            </button>
-            <button
-              type="button"
-              aria-label="Dash separator"
-              onClick={() => setSeparator("dash")}
-              disabled={separatorDisabled}
-              className={`px-3 py-1 text-sm font-medium rounded-lg transition-colors ${
-                separator === "dash"
-                  ? "bg-primary text-white"
-                  : "text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
-              } ${
-                separatorDisabled ? "opacity-50 cursor-not-allowed" : ""
-              }`}
-            >
-              Dash
-            </button>
-          </div>
-        </div>
-
-        <div className="w-px h-6 bg-border-light dark:bg-border-dark self-center mx-3" />
-
-        {/* Actions */}
-        <div
-          className="flex flex-col gap-1 ml-auto"
-          role="group"
-          aria-label="Actions"
-        >
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              aria-label="Swap input and output"
-              onClick={handleSwap}
-              className="px-3 py-1 text-sm text-slate-700 dark:text-slate-300 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
-            >
-              Swap
-            </button>
-            <button
-              type="button"
-              aria-label="Copy output to clipboard"
-              onClick={handleCopy}
-              disabled={!output}
-              className="px-3 py-1 text-sm font-medium bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              {copyLabel}
-            </button>
-            <button
-              type="button"
-              aria-label="Clear input and output"
-              onClick={handleClear}
-              className="px-3 py-1 text-sm text-slate-700 dark:text-slate-300 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
-            >
-              Clear
-            </button>
-          </div>
-        </div>
-      </footer>
+      <ToolbarFooter
+        groups={[
+          {
+            label: "Mode",
+            children: (
+              <>
+                <PillButton
+                  active={mode === "textToHex"}
+                  onClick={() => setMode("textToHex")}
+                  aria-label="Text to Hex mode"
+                >
+                  Text → Hex
+                </PillButton>
+                <PillButton
+                  active={mode === "hexToText"}
+                  onClick={() => setMode("hexToText")}
+                  aria-label="Hex to Text mode"
+                >
+                  Hex → Text
+                </PillButton>
+              </>
+            ),
+          },
+          {
+            label: "Separator",
+            children: (
+              <>
+                {(
+                  [
+                    ["none", "No separator", "None"] as const,
+                    ["space", "Space separator", "Space"] as const,
+                    ["colon", "Colon separator", "Colon"] as const,
+                    ["dash", "Dash separator", "Dash"] as const,
+                  ] as const
+                ).map(([id, aria, text]) => (
+                  <PillButton
+                    key={id}
+                    active={separator === id}
+                    onClick={() => setSeparator(id)}
+                    disabled={separatorDisabled}
+                    aria-label={aria}
+                  >
+                    {text}
+                  </PillButton>
+                ))}
+              </>
+            ),
+          },
+          {
+            end: true,
+            label: "Actions",
+            children: (
+              <>
+                <button
+                  type="button"
+                  aria-label="Swap input and output"
+                  onClick={handleSwap}
+                  className="rounded-lg px-3 py-1 text-sm text-slate-700 transition-colors hover:bg-slate-100 hover:text-primary dark:text-slate-300 dark:hover:bg-slate-700"
+                >
+                  Swap
+                </button>
+                <CopyButton
+                  value={output || undefined}
+                  label="Copy"
+                  variant="primary"
+                  className="py-1"
+                  aria-label="Copy output to clipboard"
+                />
+                <button
+                  type="button"
+                  aria-label="Clear input and output"
+                  onClick={handleClear}
+                  className="rounded-lg px-3 py-1 text-sm text-slate-700 transition-colors hover:bg-slate-100 hover:text-primary dark:text-slate-300 dark:hover:bg-slate-700"
+                >
+                  Clear
+                </button>
+              </>
+            ),
+          },
+        ]}
+      />
     </div>
   );
 }

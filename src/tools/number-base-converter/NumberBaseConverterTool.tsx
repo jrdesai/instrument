@@ -1,9 +1,11 @@
 import {
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
+import { CopyButton, PillButton, ToolbarFooter } from "../../components/tool";
 import { callTool } from "../../bridge";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useHistoryStore } from "../../store";
@@ -16,7 +18,6 @@ const RUST_COMMAND = "base_converter_process";
 const TOOL_ID = "number-base-converter";
 const DEBOUNCE_MS = 150;
 const HISTORY_DEBOUNCE_MS = 1500;
-const COPIED_DURATION_MS = 1500;
 
 const BASE_PILLS: { id: NumberBase; label: string }[] = [
   { id: "decimal", label: "Dec" },
@@ -67,7 +68,6 @@ function NumberBaseConverterTool() {
   const [uppercaseHex, setUppercaseHex] = useState(false);
   const [output, setOutput] = useState<BaseConverterOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [copyAllLabel, setCopyAllLabel] = useState("Copy All");
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
@@ -171,46 +171,35 @@ function NumberBaseConverterTool() {
     }
   }, []);
 
-  const handleCopyAll = useCallback(async () => {
-    if (!output || output.error) return;
-    const lines = OUTPUT_CARDS.map(({ id, label }) => {
-      const v = output[id];
-      const str = typeof v === "number" ? String(v) : String(v ?? "");
-      return `${label}: ${str}`;
-    });
-    try {
-      await navigator.clipboard.writeText(lines.join("\n"));
-      setCopyAllLabel("Copied");
-      setTimeout(() => setCopyAllLabel("Copy All"), COPIED_DURATION_MS);
-    } catch {
-      setCopyAllLabel("Copy failed");
-      setTimeout(() => setCopyAllLabel("Copy All"), COPIED_DURATION_MS);
-    }
-  }, [output]);
-
   const hasError = Boolean(output?.error);
   const displayOutput = hasError ? null : output;
   const inputBaseId = fromBase;
+
+  const copyAllValue = useMemo(() => {
+    if (!output || output.error) return "";
+    return OUTPUT_CARDS.map(({ id, label }) => {
+      const v = output[id];
+      const str = typeof v === "number" ? String(v) : String(v ?? "");
+      return `${label}: ${str}`;
+    }).join("\n");
+  }, [output]);
 
   return (
     <div className="flex flex-col h-full bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
       {/* Input row */}
       <div className="flex flex-col px-4 py-3 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark">
-        <div className="flex flex-wrap items-center gap-2 mb-2">
+        <div className="mb-2 flex flex-wrap items-center gap-2">
           {BASE_PILLS.map(({ id, label }) => (
-            <button
+            <PillButton
               key={id}
-              type="button"
-              aria-label={`Input base: ${label}`}
+              active={fromBase === id}
               onClick={() => setFromBase(id)}
-              className={`px-3 py-1 text-sm font-medium rounded-lg transition-colors ${
-                fromBase === id
-                  ? "bg-primary text-white"
-                  : "bg-panel-light dark:bg-panel-dark text-slate-500 dark:text-slate-400 border border-border-light dark:border-border-dark hover:text-slate-700 dark:hover:text-slate-200"
-              }`}
+              variant="outlined"
+              size="sm"
+              aria-label={`Input base: ${label}`}
             >
               {label}
-            </button>
+            </PillButton>
           ))}
         </div>
         <div className="flex items-center gap-2">
@@ -280,83 +269,71 @@ function NumberBaseConverterTool() {
         </div>
       </div>
 
-      {/* Footer: Bit Width | Options | Actions */}
-      <footer className="flex items-end gap-2 px-4 py-3 border-t border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0">
-        {/* Bit Width */}
-        <div className="flex flex-col gap-1" role="group" aria-label="Bit width">
-          <span className="text-slate-600 text-xs uppercase tracking-wider">
-            Bit Width
-          </span>
-          <div className="flex items-center gap-1">
-            {BIT_WIDTH_OPTIONS.map(({ id, label }) => (
+      <ToolbarFooter
+        groups={[
+          {
+            label: "Bit Width",
+            children: (
+              <>
+                {BIT_WIDTH_OPTIONS.map(({ id, label }) => (
+                  <PillButton
+                    key={id}
+                    active={bitWidth === id}
+                    onClick={() => setBitWidth(id)}
+                    variant="outlined"
+                    size="sm"
+                    className="rounded"
+                    aria-label={`Bit width ${label}`}
+                  >
+                    {label}
+                  </PillButton>
+                ))}
+              </>
+            ),
+          },
+          {
+            label: "Options",
+            children: (
               <button
-                key={id}
                 type="button"
-                aria-label={`Bit width ${label}`}
-                onClick={() => setBitWidth(id)}
-                className={`px-2 py-1 text-xs font-medium rounded transition-colors ${
-                  bitWidth === id
+                aria-pressed={uppercaseHex}
+                onClick={() => setUppercaseHex((v) => !v)}
+                className={`rounded px-2 py-1 text-xs font-medium transition-colors ${
+                  uppercaseHex
                     ? "bg-primary text-white"
-                    : "bg-panel-light dark:bg-panel-dark text-slate-500 dark:text-slate-400 border border-border-light dark:border-border-dark hover:text-slate-700 dark:hover:text-slate-200"
+                    : "border border-border-light bg-panel-light text-slate-500 hover:text-slate-700 dark:border-border-dark dark:bg-panel-dark dark:text-slate-400 dark:hover:text-slate-200"
                 }`}
               >
-                {label}
+                {uppercaseHex ? "On" : "Off"}
               </button>
-            ))}
-          </div>
-        </div>
-
-        <div className="w-px h-6 bg-border-light dark:bg-border-dark self-center mx-3" />
-
-        {/* Options */}
-        <div className="flex flex-col gap-1" role="group" aria-label="Options">
-          <span className="text-slate-600 text-xs uppercase tracking-wider">
-            Options
-          </span>
-          <button
-            type="button"
-            aria-pressed={uppercaseHex}
-            onClick={() => setUppercaseHex((v) => !v)}
-            className={`px-2 py-1 text-xs font-medium rounded transition-colors ${
-              uppercaseHex
-                ? "bg-primary text-white"
-                : "bg-panel-light dark:bg-panel-dark text-slate-500 dark:text-slate-400 border border-border-light dark:border-border-dark hover:text-slate-700 dark:hover:text-slate-200"
-            }`}
-          >
-            {uppercaseHex ? "On" : "Off"}
-          </button>
-        </div>
-
-        <div className="w-px h-6 bg-border-light dark:bg-border-dark self-center mx-3" />
-
-        {/* Actions (no label) */}
-        <div
-          className="flex flex-col gap-1 ml-auto"
-          role="group"
-          aria-label="Actions"
-        >
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={handleCopyAll}
-              disabled={!displayOutput}
-              className="px-3 py-2 text-xs font-medium bg-panel-light dark:bg-panel-dark text-slate-700 dark:text-slate-300 border border-border-light dark:border-border-dark rounded-lg hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              {copyAllLabel}
-            </button>
-            <button
-              type="button"
-              onClick={handleClear}
-              className="px-4 py-2 text-sm bg-panel-light dark:bg-panel-dark text-slate-500 dark:text-slate-400 border border-border-light dark:border-border-dark rounded-lg hover:text-slate-700 dark:hover:text-slate-200 hover:border-slate-400 dark:hover:border-slate-500 transition-colors"
-            >
-              Clear
-            </button>
-            {isLoading && (
-              <span className="text-xs text-primary">Processing…</span>
-            )}
-          </div>
-        </div>
-      </footer>
+            ),
+          },
+          {
+            end: true,
+            ariaLabel: "Actions",
+            children: (
+              <>
+                <CopyButton
+                  value={copyAllValue || undefined}
+                  label="Copy All"
+                  variant="outline"
+                  className="px-3 py-2"
+                />
+                <button
+                  type="button"
+                  onClick={handleClear}
+                  className="rounded-lg border border-border-light bg-panel-light px-4 py-2 text-sm text-slate-500 transition-colors hover:border-slate-400 hover:text-slate-700 dark:border-border-dark dark:bg-panel-dark dark:text-slate-400 dark:hover:border-slate-500 dark:hover:text-slate-200"
+                >
+                  Clear
+                </button>
+                {isLoading ? (
+                  <span className="text-xs text-primary">Processing…</span>
+                ) : null}
+              </>
+            ),
+          },
+        ]}
+      />
     </div>
   );
 }

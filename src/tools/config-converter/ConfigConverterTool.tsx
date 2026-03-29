@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { CopyButton, PanelHeader, ToolbarFooter } from "../../components/tool";
 import { CodeBlock } from "../../components/ui/CodeBlock";
 import { callTool } from "../../bridge";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
@@ -150,16 +151,6 @@ const ConfigConverterTool: React.FC = () => {
     setOutput(null);
   };
 
-  const handleCopy = async () => {
-    if (!output?.result) return;
-    try {
-      await navigator.clipboard.writeText(output.result);
-    } catch (err) {
-      // eslint-disable-next-line no-console
-      console.error("Copy failed", err);
-    }
-  };
-
   const effectiveOutput = output;
   const isValid = !!effectiveOutput && effectiveOutput.isValidInput;
 
@@ -185,26 +176,23 @@ const ConfigConverterTool: React.FC = () => {
       {/* Two-panel row */}
       <div className="flex-1 flex flex-row min-h-0">
         <div className="flex flex-col w-1/2 border-r border-border-light dark:border-border-dark bg-panel-light/60 dark:bg-panel-dark/60">
-          <div className="flex items-center justify-between gap-2 px-4 py-2 border-b border-border-light dark:border-border-dark bg-panel-light/80 dark:bg-panel-dark/80">
-            <div className="flex items-center gap-2 min-w-0">
-              <select
-                aria-label="Input format"
-                className={selectClass}
-                value={from}
-                onChange={handleFromChange}
-              >
-                <option value="Json">JSON</option>
-                <option value="Yaml">YAML</option>
-                <option value="Toml">TOML</option>
-              </select>
-              <span className="text-slate-500 dark:text-slate-400 text-xs font-semibold tracking-[0.16em] truncate">
-                INPUT
-              </span>
-            </div>
-            <span className="text-slate-600 text-xs tabular-nums shrink-0">
-              {input.length.toLocaleString()} chars
-            </span>
-          </div>
+          <PanelHeader
+            className="border-border-light/80 bg-panel-light/80 dark:border-border-dark dark:bg-panel-dark/80"
+            prependChildren
+            label="Input"
+            meta={`${input.length.toLocaleString()} chars`}
+          >
+            <select
+              aria-label="Input format"
+              className={selectClass}
+              value={from}
+              onChange={handleFromChange}
+            >
+              <option value="Json">JSON</option>
+              <option value="Yaml">YAML</option>
+              <option value="Toml">TOML</option>
+            </select>
+          </PanelHeader>
           <textarea
             className="flex-1 w-full resize-none border-none outline-none bg-transparent font-mono text-xs text-slate-700 dark:text-slate-300 p-4 leading-relaxed"
             placeholder={inputPlaceholder}
@@ -216,44 +204,40 @@ const ConfigConverterTool: React.FC = () => {
         </div>
 
         <div className="flex flex-col w-1/2 bg-panel-light/40 dark:bg-panel-dark/40">
-          <div className="flex items-center justify-between gap-2 px-4 py-2 border-b border-border-light dark:border-border-dark bg-panel-light/80 dark:bg-panel-dark/80">
-            <div className="flex items-center gap-2 min-w-0 flex-wrap">
-              <select
-                aria-label="Output format"
-                className={selectClass}
-                value={to}
-                onChange={handleToChange}
-              >
-                <option value="Json">JSON</option>
-                <option value="Yaml">YAML</option>
-                <option value="Toml">TOML</option>
-              </select>
-              <span className="text-slate-500 dark:text-slate-400 text-xs font-semibold tracking-[0.16em]">
-                OUTPUT
-              </span>
-              {hasInput && effectiveOutput && (
-                <span
-                  className={[
-                    "inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium",
-                    isValid
-                      ? "bg-emerald-500/10 text-emerald-400"
-                      : "bg-red-500/10 text-red-400",
-                  ].join(" ")}
-                >
-                  {validityLabel(from, isValid)}
-                </span>
-              )}
-              {isProcessing && (
-                <span className="text-slate-500 text-xs">Processing…</span>
-              )}
-            </div>
-            {isValid && effectiveOutput && (
-              <span className="text-slate-600 text-xs tabular-nums shrink-0">
-                {effectiveOutput.lineCount.toLocaleString()} lines ·{" "}
-                {effectiveOutput.charCount.toLocaleString()} chars
-              </span>
-            )}
-          </div>
+          <PanelHeader
+            className="border-border-light/80 bg-panel-light/80 dark:border-border-dark dark:bg-panel-dark/80"
+            prependChildren
+            label="Output"
+            meta={
+              isValid && effectiveOutput
+                ? `${effectiveOutput.lineCount.toLocaleString()} lines · ${effectiveOutput.charCount.toLocaleString()} chars`
+                : undefined
+            }
+            badge={
+              hasInput && effectiveOutput
+                ? {
+                    text: validityLabel(from, isValid),
+                    variant: isValid ? "success" : "error",
+                  }
+                : undefined
+            }
+            suffix={
+              isProcessing ? (
+                <span className="text-xs text-slate-500">Processing…</span>
+              ) : null
+            }
+          >
+            <select
+              aria-label="Output format"
+              className={selectClass}
+              value={to}
+              onChange={handleToChange}
+            >
+              <option value="Json">JSON</option>
+              <option value="Yaml">YAML</option>
+              <option value="Toml">TOML</option>
+            </select>
+          </PanelHeader>
 
           <div className="flex-1 min-h-0">
             {!hasInput && (
@@ -313,78 +297,87 @@ const ConfigConverterTool: React.FC = () => {
         </div>
       </div>{/* end two-panel row */}
 
-      {/* Footer toolbar — inside the bordered container, no dead space */}
-      <div className="shrink-0 flex flex-wrap items-center gap-4 text-xs text-slate-400 border-t border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark px-4 py-2">
-        <button
-          type="button"
-          onClick={handleSwap}
-          className="px-2 py-0.5 rounded-full text-xs border border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-panel-light/40 transition-colors"
-          title="Swap input/output formats (and move output text to input when valid)"
-        >
-          ⇄ Swap
-        </button>
-
-        {showJsonOptions && (
-          <>
-            <div className="flex items-center gap-2">
-              <span className="uppercase tracking-[0.16em] text-[10px] text-slate-500">
-                INDENT
-              </span>
+      <ToolbarFooter
+        className="items-center px-4 py-2 text-xs text-slate-400"
+        groups={[
+          {
+            children: (
               <button
                 type="button"
-                className={indentPillClass(2)}
-                onClick={() => setIndent(2)}
+                onClick={handleSwap}
+                className="rounded-full border border-border-light bg-panel-light px-2 py-0.5 text-xs text-slate-600 transition-colors hover:bg-slate-200 dark:border-border-dark dark:bg-panel-dark dark:text-slate-300 dark:hover:bg-panel-light/40"
+                title="Swap input/output formats (and move output text to input when valid)"
               >
-                2 spaces
+                ⇄ Swap
               </button>
-              <button
-                type="button"
-                className={indentPillClass(4)}
-                onClick={() => setIndent(4)}
-              >
-                4 spaces
-              </button>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <span className="uppercase tracking-[0.16em] text-[10px] text-slate-500">
-                OPTIONS
-              </span>
-              <button
-                type="button"
-                onClick={() => setSortKeys((v) => !v)}
-                className={[
-                  "px-2 py-0.5 rounded-full text-xs border transition-colors",
-                  sortKeys
-                    ? "bg-primary/10 text-primary border-primary/30"
-                    : "bg-panel-light dark:bg-panel-dark text-slate-500 dark:text-slate-400 border-border-light dark:border-border-dark hover:bg-slate-200 dark:hover:bg-panel-light/40",
-                ].join(" ")}
-              >
-                {sortKeys ? "Sort keys: on" : "Sort keys: off"}
-              </button>
-            </div>
-          </>
-        )}
-
-        <div className="ml-auto flex items-center gap-2">
-          {isValid && effectiveOutput?.result && (
-            <button
-              type="button"
-              onClick={handleCopy}
-              className="px-3 py-1 rounded-md bg-primary/90 text-white text-xs font-medium hover:bg-primary transition-colors"
-            >
-              Copy
-            </button>
-          )}
-          <button
-            type="button"
-            onClick={handleClear}
-            className="px-3 py-1 rounded-md bg-panel-light dark:bg-panel-dark text-slate-700 dark:text-slate-300 border border-border-light dark:border-border-dark text-xs hover:bg-slate-200 dark:hover:bg-panel-light/60 transition-colors"
-          >
-            Clear
-          </button>
-        </div>
-      </div>{/* end footer toolbar */}
+            ),
+          },
+          ...(showJsonOptions
+            ? [
+                {
+                  label: "Indent",
+                  children: (
+                    <>
+                      <button
+                        type="button"
+                        className={indentPillClass(2)}
+                        onClick={() => setIndent(2)}
+                      >
+                        2 spaces
+                      </button>
+                      <button
+                        type="button"
+                        className={indentPillClass(4)}
+                        onClick={() => setIndent(4)}
+                      >
+                        4 spaces
+                      </button>
+                    </>
+                  ),
+                },
+                {
+                  label: "Options",
+                  children: (
+                    <button
+                      type="button"
+                      onClick={() => setSortKeys((v) => !v)}
+                      className={[
+                        "rounded-full border px-2 py-0.5 text-xs transition-colors",
+                        sortKeys
+                          ? "border-primary/30 bg-primary/10 text-primary"
+                          : "border-border-light bg-panel-light text-slate-500 hover:bg-slate-200 dark:border-border-dark dark:bg-panel-dark dark:text-slate-400 dark:hover:bg-panel-light/40",
+                      ].join(" ")}
+                    >
+                      {sortKeys ? "Sort keys: on" : "Sort keys: off"}
+                    </button>
+                  ),
+                },
+              ]
+            : []),
+          {
+            end: true,
+            children: (
+              <>
+                {isValid && effectiveOutput?.result ? (
+                  <CopyButton
+                    value={effectiveOutput.result}
+                    label="Copy"
+                    variant="primary"
+                    className="rounded-md bg-primary/90 px-3 py-1 text-xs hover:bg-primary"
+                  />
+                ) : null}
+                <button
+                  type="button"
+                  onClick={handleClear}
+                  className="rounded-md border border-border-light bg-panel-light px-3 py-1 text-xs text-slate-700 transition-colors hover:bg-slate-200 dark:border-border-dark dark:bg-panel-dark dark:text-slate-300 dark:hover:bg-panel-light/60"
+                >
+                  Clear
+                </button>
+              </>
+            ),
+          },
+        ]}
+      />
       </div>{/* end bordered container */}
     </div>
   );

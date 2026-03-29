@@ -100,7 +100,7 @@ describe("Base64Tool", () => {
     expect(screen.getByLabelText(/base64 output/i)).toHaveTextContent(btoa("Hello"));
   });
 
-  it("copy button shows Copied then reverts after 1.5s", async () => {
+  it("copy button shows Copied! then reverts after 1.5s", async () => {
     const user = userEvent.setup();
     const writeText = vi.fn().mockResolvedValue(undefined);
     Object.defineProperty(navigator, "clipboard", {
@@ -113,10 +113,10 @@ describe("Base64Tool", () => {
     await waitForProcess();
     const copyBtn = screen.getByRole("button", { name: /copy output to clipboard/i });
     await user.click(copyBtn);
-    expect(copyBtn).toHaveTextContent("Copied");
+    expect(copyBtn).toHaveTextContent("Copied!");
     expect(writeText).toHaveBeenCalledWith(btoa("Hi"));
     await new Promise((r) => setTimeout(r, COPIED_DURATION_MS + 50));
-    expect(copyBtn).toHaveTextContent("Copy output");
+    expect(copyBtn).toHaveTextContent("Copy");
   });
 
   it("swap button swaps input and output AND flips the mode — output is decoded not re-encoded", async () => {

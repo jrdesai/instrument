@@ -4,6 +4,7 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { CopyButton, PillButton } from "../../components/tool";
 import { callTool } from "../../bridge";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useHistoryStore } from "../../store";
@@ -16,7 +17,6 @@ const RUST_COMMAND = "url_encode_process";
 const TOOL_ID = "url-encoder";
 const DEBOUNCE_MS = 150;
 const HISTORY_DEBOUNCE_MS = 1500;
-const COPIED_DURATION_MS = 1500;
 
 function UrlEncoderTool() {
   const { setDraft } = useDraftInput(TOOL_ID);
@@ -28,7 +28,6 @@ function UrlEncoderTool() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [leftPanelPercent, setLeftPanelPercent] = useState(50);
-  const [copyLabel, setCopyLabel] = useState("Copy output");
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
@@ -120,18 +119,6 @@ function UrlEncoderTool() {
     setError(null);
   }, [setDraft]);
 
-  const handleCopy = useCallback(async () => {
-    if (!output) return;
-    try {
-      await navigator.clipboard.writeText(output);
-      setCopyLabel("Copied");
-      setTimeout(() => setCopyLabel("Copy output"), COPIED_DURATION_MS);
-    } catch {
-      setCopyLabel("Copy failed");
-      setTimeout(() => setCopyLabel("Copy output"), COPIED_DURATION_MS);
-    }
-  }, [output]);
-
   const lines = input.split("\n").length;
   const charCount = input.length;
 
@@ -213,67 +200,50 @@ function UrlEncoderTool() {
         </div>
       </div>
 
-      {/* Footer */}
-      <footer className="flex items-center gap-4 px-4 py-2 border-t border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0">
-        <div className="flex items-center gap-1" role="group" aria-label="Encode or decode mode">
-          <button
-            type="button"
-            aria-label="Encode mode"
+      <footer className="flex shrink-0 items-center gap-4 border-t border-border-light bg-panel-light px-4 py-2 dark:border-border-dark dark:bg-panel-dark">
+        <div
+          className="flex items-center gap-1"
+          role="group"
+          aria-label="Encode or decode mode"
+        >
+          <PillButton
+            active={mode === "encode"}
             onClick={() => setMode("encode")}
-            className={`px-3 py-1 text-sm font-medium rounded-lg transition-colors ${
-              mode === "encode"
-                ? "bg-primary text-white"
-                : "text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
-            }`}
+            aria-label="Encode mode"
           >
             Encode
-          </button>
-          <button
-            type="button"
-            aria-label="Decode mode"
+          </PillButton>
+          <PillButton
+            active={mode === "decode"}
             onClick={() => setMode("decode")}
-            className={`px-3 py-1 text-sm font-medium rounded-lg transition-colors ${
-              mode === "decode"
-                ? "bg-primary text-white"
-                : "text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
-            }`}
+            aria-label="Decode mode"
           >
             Decode
-          </button>
+          </PillButton>
         </div>
 
         <div className="flex items-center gap-1" role="group" aria-label="Encode type">
-          <button
-            type="button"
-            aria-label="Full encoding (encodes / ? & =)"
+          <PillButton
+            active={encodeType === "full"}
             onClick={() => setEncodeType("full")}
-            className={`px-3 py-1 text-sm font-medium rounded-lg transition-colors ${
-              encodeType === "full"
-                ? "bg-primary text-white"
-                : "text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
-            }`}
+            aria-label="Full encoding (encodes / ? & =)"
           >
             Full
-          </button>
-          <button
-            type="button"
-            aria-label="Component encoding (preserves /)"
+          </PillButton>
+          <PillButton
+            active={encodeType === "component"}
             onClick={() => setEncodeType("component")}
-            className={`px-3 py-1 text-sm font-medium rounded-lg transition-colors ${
-              encodeType === "component"
-                ? "bg-primary text-white"
-                : "text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
-            }`}
+            aria-label="Component encoding (preserves /)"
           >
             Component
-          </button>
+          </PillButton>
         </div>
 
         <button
           type="button"
           aria-label="Swap input and output"
           onClick={handleSwap}
-          className="px-3 py-1 text-sm text-slate-700 dark:text-slate-300 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+          className="rounded-lg px-3 py-1 text-sm text-slate-700 transition-colors hover:bg-slate-100 hover:text-primary dark:text-slate-300 dark:hover:bg-slate-700"
         >
           Swap
         </button>
@@ -282,20 +252,20 @@ function UrlEncoderTool() {
           type="button"
           aria-label="Clear input and output"
           onClick={handleClear}
-          className="px-3 py-1 text-sm text-slate-700 dark:text-slate-300 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+          className="rounded-lg px-3 py-1 text-sm text-slate-700 transition-colors hover:bg-slate-100 hover:text-primary dark:text-slate-300 dark:hover:bg-slate-700"
         >
           Clear
         </button>
 
-        <button
-          type="button"
-          aria-label="Copy output to clipboard"
-          onClick={handleCopy}
-          disabled={!output}
-          className="ml-auto px-3 py-1 text-sm font-medium bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-        >
-          {copyLabel}
-        </button>
+        <div className="ml-auto">
+          <CopyButton
+            value={output || undefined}
+            label="Copy"
+            variant="primary"
+            className="py-1"
+            aria-label="Copy output to clipboard"
+          />
+        </div>
       </footer>
     </div>
   );

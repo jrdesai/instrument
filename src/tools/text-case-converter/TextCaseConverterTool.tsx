@@ -1,9 +1,11 @@
 import {
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
+import { CopyButton } from "../../components/tool";
 import { callTool } from "../../bridge";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useHistoryStore } from "../../store";
@@ -14,7 +16,6 @@ const RUST_COMMAND = "case_process";
 const TOOL_ID = "text-case-converter";
 const DEBOUNCE_MS = 150;
 const HISTORY_DEBOUNCE_MS = 1500;
-const COPIED_DURATION_MS = 1500;
 
 const CASES: {
   id: keyof Omit<CaseOutput, "wordCount" | "error">;
@@ -39,7 +40,6 @@ function TextCaseConverterTool() {
   const [output, setOutput] = useState<CaseOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [copyAllLabel, setCopyAllLabel] = useState("Copy all");
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
@@ -118,29 +118,12 @@ function TextCaseConverterTool() {
     setError(null);
   }, [setDraft]);
 
-  const handleCopyValue = useCallback(async (value: string) => {
-    if (!value) return;
-    try {
-      await navigator.clipboard.writeText(value);
-    } catch {
-      // ignore copy errors
-    }
-  }, []);
-
-  const handleCopyAll = useCallback(async () => {
-    if (!output) return;
-    const lines = CASES.map(({ id, label }) => {
-      const value = output[id] || "";
-      return `${label}: ${value}`;
-    });
-    try {
-      await navigator.clipboard.writeText(lines.join("\n"));
-      setCopyAllLabel("Copied");
-      setTimeout(() => setCopyAllLabel("Copy all"), COPIED_DURATION_MS);
-    } catch {
-      setCopyAllLabel("Copy failed");
-      setTimeout(() => setCopyAllLabel("Copy all"), COPIED_DURATION_MS);
-    }
+  const copyAllValue = useMemo(() => {
+    if (!output) return "";
+    return CASES.map(({ id, label }) => {
+      const v = output[id] || "";
+      return `${label}: ${v}`;
+    }).join("\n");
   }, [output]);
 
   const wordCount = output?.wordCount ?? 0;
@@ -187,14 +170,12 @@ function TextCaseConverterTool() {
                 >
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-xs text-slate-500 dark:text-slate-400">{label}</span>
-                    <button
-                      type="button"
-                      onClick={() => handleCopyValue(value)}
-                      disabled={!value}
-                      className="px-2 py-0.5 text-[10px] font-medium bg-background-light dark:bg-background-dark text-slate-700 dark:text-slate-300 border border-border-light dark:border-border-dark rounded-lg hover:text-primary hover:border-primary/60 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                    >
-                      Copy
-                    </button>
+                    <CopyButton
+                      value={value || undefined}
+                      label="Copy"
+                      variant="outline"
+                      className="px-2 py-0.5 text-[10px] font-medium"
+                    />
                   </div>
                   <pre className="font-mono text-sm text-slate-800 dark:text-slate-200 whitespace-pre-wrap break-all">
                     {display}
@@ -208,14 +189,12 @@ function TextCaseConverterTool() {
 
       {/* Footer */}
       <footer className="flex items-center gap-4 px-4 py-3 border-t border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0">
-        <button
-          type="button"
-          onClick={handleCopyAll}
-          disabled={!output}
-          className="px-3 py-2 text-xs font-medium bg-panel-light dark:bg-panel-dark text-slate-700 dark:text-slate-300 border border-border-light dark:border-border-dark rounded-lg hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-        >
-          {copyAllLabel}
-        </button>
+        <CopyButton
+          value={copyAllValue || undefined}
+          label="Copy all"
+          variant="outline"
+          className="px-3 py-2"
+        />
 
         <button
           type="button"

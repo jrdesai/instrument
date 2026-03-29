@@ -4,6 +4,7 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { CopyButton, PillButton, ToolbarFooter } from "../../components/tool";
 import { callTool } from "../../bridge";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useHistoryStore } from "../../store";
@@ -16,7 +17,6 @@ const RUST_COMMAND = "html_entity_process";
 const TOOL_ID = "html-entity";
 const DEBOUNCE_MS = 150;
 const HISTORY_DEBOUNCE_MS = 1500;
-const COPIED_DURATION_MS = 1500;
 
 function HtmlEntityTool() {
   const { setDraft } = useDraftInput(TOOL_ID);
@@ -29,7 +29,6 @@ function HtmlEntityTool() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [leftPanelPercent, setLeftPanelPercent] = useState(50);
-  const [copyLabel, setCopyLabel] = useState("Copy output");
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
@@ -125,18 +124,6 @@ function HtmlEntityTool() {
     setEntitiesFound(0);
   }, [setDraft]);
 
-  const handleCopy = useCallback(async () => {
-    if (!output) return;
-    try {
-      await navigator.clipboard.writeText(output);
-      setCopyLabel("Copied");
-      setTimeout(() => setCopyLabel("Copy output"), COPIED_DURATION_MS);
-    } catch {
-      setCopyLabel("Copy failed");
-      setTimeout(() => setCopyLabel("Copy output"), COPIED_DURATION_MS);
-    }
-  }, [output]);
-
   const lines = input.split("\n").length;
   const charCount = input.length;
 
@@ -225,90 +212,87 @@ function HtmlEntityTool() {
         </div>
       </div>
 
-      {/* Footer */}
-      <footer className="flex items-center gap-4 px-4 py-2 border-t border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0">
-        <div className="flex items-center gap-1" role="group" aria-label="Encode or decode mode">
-          <button
-            type="button"
-            aria-label="Encode mode"
-            onClick={() => setMode("encode")}
-            className={`px-3 py-1 text-sm font-medium rounded-lg transition-colors ${
-              mode === "encode"
-                ? "bg-primary text-white"
-                : "text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
-            }`}
-          >
-            Encode
-          </button>
-          <button
-            type="button"
-            aria-label="Decode mode"
-            onClick={() => setMode("decode")}
-            className={`px-3 py-1 text-sm font-medium rounded-lg transition-colors ${
-              mode === "decode"
-                ? "bg-primary text-white"
-                : "text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
-            }`}
-          >
-            Decode
-          </button>
-        </div>
-
-        <div className="flex items-center gap-1" role="group" aria-label="Encode type">
-          <button
-            type="button"
-            aria-label="Named entities (e.g. &amp;, &lt;)"
-            onClick={() => setEncodeType("named")}
-            className={`px-3 py-1 text-sm font-medium rounded-lg transition-colors ${
-              encodeType === "named"
-                ? "bg-primary text-white"
-                : "text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
-            }`}
-          >
-            Named
-          </button>
-          <button
-            type="button"
-            aria-label="Numeric entities (e.g. &#38;, &#60;)"
-            onClick={() => setEncodeType("numeric")}
-            className={`px-3 py-1 text-sm font-medium rounded-lg transition-colors ${
-              encodeType === "numeric"
-                ? "bg-primary text-white"
-                : "text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
-            }`}
-          >
-            Numeric
-          </button>
-        </div>
-
-        <button
-          type="button"
-          aria-label="Swap input and output"
-          onClick={handleSwap}
-          className="px-3 py-1 text-sm text-slate-700 dark:text-slate-300 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
-        >
-          Swap
-        </button>
-
-        <button
-          type="button"
-          aria-label="Clear input and output"
-          onClick={handleClear}
-          className="px-3 py-1 text-sm text-slate-700 dark:text-slate-300 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
-        >
-          Clear
-        </button>
-
-        <button
-          type="button"
-          aria-label="Copy output to clipboard"
-          onClick={handleCopy}
-          disabled={!output}
-          className="ml-auto px-3 py-1 text-sm font-medium bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-        >
-          {copyLabel}
-        </button>
-      </footer>
+      <ToolbarFooter
+        className="items-center py-2"
+        groups={[
+          {
+            ariaLabel: "Encode or decode mode",
+            children: (
+              <>
+                <PillButton
+                  active={mode === "encode"}
+                  onClick={() => setMode("encode")}
+                  aria-label="Encode mode"
+                >
+                  Encode
+                </PillButton>
+                <PillButton
+                  active={mode === "decode"}
+                  onClick={() => setMode("decode")}
+                  aria-label="Decode mode"
+                >
+                  Decode
+                </PillButton>
+              </>
+            ),
+          },
+          {
+            ariaLabel: "Encode type",
+            children: (
+              <>
+                <PillButton
+                  active={encodeType === "named"}
+                  onClick={() => setEncodeType("named")}
+                  aria-label="Named entities (e.g. &amp;, &lt;)"
+                >
+                  Named
+                </PillButton>
+                <PillButton
+                  active={encodeType === "numeric"}
+                  onClick={() => setEncodeType("numeric")}
+                  aria-label="Numeric entities (e.g. &#38;, &#60;)"
+                >
+                  Numeric
+                </PillButton>
+              </>
+            ),
+          },
+          {
+            children: (
+              <>
+                <button
+                  type="button"
+                  aria-label="Swap input and output"
+                  onClick={handleSwap}
+                  className="rounded-lg px-3 py-1 text-sm text-slate-700 transition-colors hover:bg-slate-100 hover:text-primary dark:text-slate-300 dark:hover:bg-slate-700"
+                >
+                  Swap
+                </button>
+                <button
+                  type="button"
+                  aria-label="Clear input and output"
+                  onClick={handleClear}
+                  className="rounded-lg px-3 py-1 text-sm text-slate-700 transition-colors hover:bg-slate-100 hover:text-primary dark:text-slate-300 dark:hover:bg-slate-700"
+                >
+                  Clear
+                </button>
+              </>
+            ),
+          },
+          {
+            end: true,
+            children: (
+              <CopyButton
+                value={output || undefined}
+                label="Copy"
+                variant="primary"
+                className="py-1"
+                aria-label="Copy output to clipboard"
+              />
+            ),
+          },
+        ]}
+      />
     </div>
   );
 }
