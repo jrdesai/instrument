@@ -5,6 +5,8 @@
   "windows": ["main"],
   "permissions": [
     "core:default",
+    "core:tray:default",
+    "allow-update-tray-menu",
     "opener:default",
     "allow-base64",
     "allow-url-encoder",

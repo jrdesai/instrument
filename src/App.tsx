@@ -1,6 +1,13 @@
 import { Suspense, useEffect, useRef } from "react";
-import { BrowserRouter, Routes, Route, useParams } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  useParams,
+  useNavigate,
+} from "react-router-dom";
 import { getToolById } from "./registry";
+import { onTrayNavigateToTool, updateTrayMenu } from "./bridge";
 import { AppShell } from "./components/layout/AppShell";
 import { DashboardPage } from "./components/layout/DashboardPage";
 import { LibraryPage } from "./components/layout/LibraryPage";
@@ -9,7 +16,7 @@ import { SettingsPage } from "./components/layout/SettingsPage";
 import { ToolHeader } from "./components/layout/ToolHeader";
 import { ToolErrorBoundary } from "./components/ui/ToolErrorBoundary";
 import { LoadingSpinner } from "./components/ui/LoadingSpinner";
-import { usePreferenceStore } from "./store";
+import { usePreferenceStore, useToolStore } from "./store";
 import "./App.css";
 
 function ToolPage() {
@@ -37,6 +44,46 @@ function ToolPage() {
   );
 }
 
+function RoutedLayout() {
+  const navigate = useNavigate();
+  const favouriteToolIds = useToolStore((s) => s.favouriteToolIds);
+  const setActiveTool = useToolStore((s) => s.setActiveTool);
+  const addToRecent = useToolStore((s) => s.addToRecent);
+
+  useEffect(() => {
+    const tools = favouriteToolIds
+      .map((id) => getToolById(id))
+      .filter((t): t is NonNullable<typeof t> => Boolean(t))
+      .map((t) => ({ id: t.id, name: t.name }));
+    void updateTrayMenu(tools);
+  }, [favouriteToolIds]);
+
+  useEffect(
+    () =>
+      onTrayNavigateToTool((toolId) => {
+        const tool = getToolById(toolId);
+        if (tool) {
+          setActiveTool(tool);
+          addToRecent(tool);
+          navigate(`/tools/${tool.id}`);
+        }
+      }),
+    [navigate, setActiveTool, addToRecent]
+  );
+
+  return (
+    <Routes>
+      <Route element={<AppShell />}>
+        <Route path="/" element={<DashboardPage />} />
+        <Route path="/library" element={<LibraryPage />} />
+        <Route path="/history" element={<HistoryPage />} />
+        <Route path="/settings" element={<SettingsPage />} />
+        <Route path="/tools/:toolId" element={<ToolPage />} />
+      </Route>
+    </Routes>
+  );
+}
+
 function App() {
   const theme = usePreferenceStore((s) => s.theme);
 
@@ -52,15 +99,7 @@ function App() {
   return (
     <div className="min-h-screen bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
       <BrowserRouter>
-        <Routes>
-          <Route element={<AppShell />}>
-            <Route path="/" element={<DashboardPage />} />
-            <Route path="/library" element={<LibraryPage />} />
-            <Route path="/history" element={<HistoryPage />} />
-            <Route path="/settings" element={<SettingsPage />} />
-            <Route path="/tools/:toolId" element={<ToolPage />} />
-          </Route>
-        </Routes>
+        <RoutedLayout />
       </BrowserRouter>
     </div>
   );

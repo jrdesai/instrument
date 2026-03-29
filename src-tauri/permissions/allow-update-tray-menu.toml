@@ -1,0 +1,5 @@
+# Tray menu refresh when favourites change (desktop).
+[[permission]]
+identifier = "allow-update-tray-menu"
+description = "Enables update_tray_menu to rebuild the system tray menu from favourited tools."
+commands.allow = ["update_tray_menu"]
