@@ -344,9 +344,6 @@ export type BitwiseResult = { decimal: string; hexadecimal: string; binary: stri
  * Bit width for all operations (determines integer type: u8, u16, u32, u64).
  */
 export type BitwiseWidth = "bit8" | "bit16" | "bit32" | "bit64"
-export type ChmodInput = { value: string }
-export type ChmodOutput = { octal: string; symbolic: string; decimal: number; chmodCommand: string; owner: PermissionClass; group: PermissionClass; others: PermissionClass; setuid: boolean; setgid: boolean; sticky: boolean; error: string | null }
-export type PermissionClass = { read: boolean; write: boolean; execute: boolean; label: string }
 /**
  * Input for the Text Case Converter tool.
  */
@@ -375,6 +372,14 @@ export type ChangeType =
  * Same key, different JSON type.
  */
 "typeChanged"
+/**
+ * Input — the raw permission string (octal "755", symbolic "rwxr-xr-x", etc.)
+ */
+export type ChmodInput = { value: string }
+/**
+ * Full output.
+ */
+export type ChmodOutput = { octal: string; symbolic: string; decimal: number; chmodCommand: string; owner: PermissionClass; group: PermissionClass; others: PermissionClass; setuid: boolean; setgid: boolean; sticky: boolean; error: string | null }
 /**
  * Input for the colour converter.
  */
@@ -980,6 +985,10 @@ alphabetSize: number; error: string | null }
  * Strength tier based on Shannon entropy of the generated password.
  */
 export type PasswordStrength = "Weak" | "Fair" | "Strong" | "VeryStrong"
+/**
+ * Human-readable permissions for one class (owner / group / others).
+ */
+export type PermissionClass = { read: boolean; write: boolean; execute: boolean; label: string }
 /**
  * One query string key-value pair (decoded for display).
  */
