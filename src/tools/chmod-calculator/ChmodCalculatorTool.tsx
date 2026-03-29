@@ -190,17 +190,17 @@ export default function ChmodCalculatorTool() {
                     <span className="text-xs text-slate-500 sm:ml-auto w-full sm:w-auto">
                       {cls.label.split(": ")[1] ?? "No permissions"}
                       {special && (
-                        <span
-                          className="ml-1.5 text-amber-500 dark:text-amber-400 underline decoration-dotted underline-offset-2 cursor-help"
-                          title={
-                            special === "sticky"
+                        <span className="relative ml-1.5 inline-block group/tip">
+                          <span className="text-amber-500 dark:text-amber-400 underline decoration-dotted underline-offset-2 cursor-help">
+                            + {special}
+                          </span>
+                          <span className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 rounded-lg bg-slate-900 dark:bg-slate-700 px-3 py-2 text-xs text-slate-100 shadow-lg opacity-0 group-hover/tip:opacity-100 transition-opacity z-50">
+                            {special === "sticky"
                               ? "Only the file/directory owner can delete or rename entries. Commonly set on /tmp."
                               : special === "setuid"
                                 ? "Executable runs as the file's owner, not the user who launched it."
-                                : "Executable runs as the file's group. On directories, new files inherit the group."
-                          }
-                        >
-                          + {special}
+                                : "Executable runs as the file's group. On directories, new files inherit the group."}
+                          </span>
                         </span>
                       )}
                     </span>
