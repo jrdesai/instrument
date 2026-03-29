@@ -27,6 +27,7 @@
     "allow-iso8601",
     "allow-base-converter",
     "allow-bitwise",
+    "allow-chmod",
     "allow-jwt-decode",
     "allow-jwt-build",
     "allow-json-formatter",

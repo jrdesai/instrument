@@ -220,6 +220,12 @@ async bitwiseProcess(input: BitwiseInput) : Promise<BitwiseOutput> {
     return await TAURI_INVOKE("bitwise_process", { input });
 },
 /**
+ * Parses Unix permission strings (octal or symbolic) via instrument-core.
+ */
+async chmodProcess(input: ChmodInput) : Promise<ChmodOutput> {
+    return await TAURI_INVOKE("chmod_process", { input });
+},
+/**
  * Runs a regex test via regex-core for desktop (native) builds.
  */
 async toolRegexTest(req: RegexRequest) : Promise<Result<MatchResult[], string>> {
@@ -338,6 +344,9 @@ export type BitwiseResult = { decimal: string; hexadecimal: string; binary: stri
  * Bit width for all operations (determines integer type: u8, u16, u32, u64).
  */
 export type BitwiseWidth = "bit8" | "bit16" | "bit32" | "bit64"
+export type ChmodInput = { value: string }
+export type ChmodOutput = { octal: string; symbolic: string; decimal: number; chmodCommand: string; owner: PermissionClass; group: PermissionClass; others: PermissionClass; setuid: boolean; setgid: boolean; sticky: boolean; error: string | null }
+export type PermissionClass = { read: boolean; write: boolean; execute: boolean; label: string }
 /**
  * Input for the Text Case Converter tool.
  */

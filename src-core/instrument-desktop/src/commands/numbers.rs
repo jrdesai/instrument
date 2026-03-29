@@ -12,6 +12,11 @@ use instrument_core::numbers::bitwise::{
     BitwiseInput,
     BitwiseOutput,
 };
+use instrument_core::numbers::chmod::{
+    process as chmod_process_core,
+    ChmodInput,
+    ChmodOutput,
+};
 
 use crate::command_log::finish_ok;
 
@@ -32,5 +37,15 @@ pub fn bitwise_process(input: BitwiseInput) -> BitwiseOutput {
     let start = Instant::now();
     let output = bitwise_process_core(input);
     finish_ok("bitwise_process", start);
+    output
+}
+
+/// Parses Unix permission strings (octal or symbolic) via instrument-core.
+#[tauri::command]
+#[specta::specta]
+pub fn chmod_process(input: ChmodInput) -> ChmodOutput {
+    let start = Instant::now();
+    let output = chmod_process_core(input);
+    finish_ok("chmod_process", start);
     output
 }

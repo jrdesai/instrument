@@ -79,6 +79,19 @@ export function case_process(js_input) {
 }
 
 /**
+ * chmod / Unix permissions calculator. Receives ChmodInput and returns ChmodOutput (camelCase).
+ * @param {any} js_input
+ * @returns {any}
+ */
+export function chmod_process(js_input) {
+    const ret = wasm.chmod_process(js_input);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
  * Colour converter. Receives ColorInput (camelCase) and returns ColorOutput (camelCase).
  * @param {any} js_input
  * @returns {any}

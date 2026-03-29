@@ -78,6 +78,9 @@ use instrument_core::numbers::base_converter::{
 use instrument_core::numbers::bitwise::{
     process as bitwise_process_core, BitwiseInput, BitwiseOutput,
 };
+use instrument_core::numbers::chmod::{
+    process as chmod_process_core, ChmodInput, ChmodOutput,
+};
 use instrument_core::encoding::base64::{process, Base64Input};
 use instrument_core::encoding::color::{process as color_process_core, ColorInput};
 use instrument_core::encoding::hex::{
@@ -408,6 +411,15 @@ pub fn bitwise_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
     let input: BitwiseInput =
         from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
     let output: BitwiseOutput = bitwise_process_core(input);
+    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
+}
+
+/// chmod / Unix permissions calculator. Receives ChmodInput and returns ChmodOutput (camelCase).
+#[wasm_bindgen(js_name = chmod_process)]
+pub fn chmod_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
+    let input: ChmodInput =
+        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let output: ChmodOutput = chmod_process_core(input);
     to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
 }
 

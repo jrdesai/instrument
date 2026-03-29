@@ -32,6 +32,11 @@ export function bitwise_process(js_input: any): any;
 export function case_process(js_input: any): any;
 
 /**
+ * chmod / Unix permissions calculator. Receives ChmodInput and returns ChmodOutput (camelCase).
+ */
+export function chmod_process(js_input: any): any;
+
+/**
  * Colour converter. Receives ColorInput (camelCase) and returns ColorOutput (camelCase).
  */
 export function color_convert(js_input: any): any;
@@ -216,6 +221,7 @@ export interface InitOutput {
     readonly base_converter_process: (a: any) => [number, number, number];
     readonly bitwise_process: (a: any) => [number, number, number];
     readonly case_process: (a: any) => [number, number, number];
+    readonly chmod_process: (a: any) => [number, number, number];
     readonly color_convert: (a: any) => [number, number, number];
     readonly cron_process: (a: any) => [number, number, number];
     readonly find_replace_process: (a: any) => [number, number, number];

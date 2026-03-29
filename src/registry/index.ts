@@ -746,6 +746,36 @@ export const tools: Tool[] = [
     implemented: true,
   },
   {
+    id: "chmod-calculator",
+    name: "chmod Calculator",
+    description:
+      "Parse Unix permission strings (755, rwxr-xr-x) and see all representations with a plain-English breakdown.",
+    category: "numbers",
+    displayCategory: "Numbers",
+    displayCategoryIcon: "numbers",
+    roles: ["backend", "devops"],
+    icon: "lock_open",
+    platforms: ["desktop", "web"],
+    rustCommand: "chmod_process",
+    sensitive: false,
+    keywords: [
+      "chmod",
+      "permissions",
+      "unix",
+      "linux",
+      "octal",
+      "symbolic",
+      "rwx",
+    ],
+    component: React.lazy(
+      () =>
+        import("../tools/chmod-calculator/ChmodCalculatorTool") as Promise<{
+          default: React.ComponentType<unknown>;
+        }>
+    ),
+    implemented: true,
+  },
+  {
     id: "expression-evaluator",
     name: "Expression Evaluator",
     description: "Safely evaluate numeric or logical expressions.",

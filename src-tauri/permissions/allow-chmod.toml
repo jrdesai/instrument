@@ -1,0 +1,4 @@
+[[permission]]
+identifier = "allow-chmod"
+description = "Enables the chmod_process command."
+commands.allow = ["chmod_process"]
