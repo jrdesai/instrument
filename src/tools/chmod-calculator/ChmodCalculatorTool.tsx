@@ -151,10 +151,10 @@ export default function ChmodCalculatorTool() {
               </h2>
               <div className="space-y-2">
                 {[
-                  { cls: output.owner, who: "Owner", icon: "person" },
-                  { cls: output.group, who: "Group", icon: "group" },
-                  { cls: output.others, who: "Others", icon: "public" },
-                ].map(({ cls, who, icon }) => (
+                  { cls: output.owner,  who: "Owner",  icon: "person", special: output.setuid ? "setuid" : undefined },
+                  { cls: output.group,  who: "Group",  icon: "group",  special: output.setgid ? "setgid" : undefined },
+                  { cls: output.others, who: "Others", icon: "public", special: output.sticky ? "sticky" : undefined },
+                ].map(({ cls, who, icon, special }) => (
                   <div
                     key={who}
                     className="flex flex-wrap items-center gap-3 sm:gap-4 px-4 py-3 rounded-lg border border-border-light dark:border-border-dark bg-white dark:bg-panel-dark"
@@ -189,6 +189,11 @@ export default function ChmodCalculatorTool() {
                     </div>
                     <span className="text-xs text-slate-500 sm:ml-auto w-full sm:w-auto">
                       {cls.label.split(": ")[1] ?? "No permissions"}
+                      {special && (
+                        <span className="ml-1.5 text-amber-500 dark:text-amber-400">
+                          + {special}
+                        </span>
+                      )}
                     </span>
                   </div>
                 ))}
