@@ -1,6 +1,7 @@
 import {
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -23,6 +24,39 @@ export type JwtBuildPaneProps = {
 function truncate(s: string, len: number): string {
   if (s.length <= len) return s;
   return s.slice(0, len) + "…";
+}
+
+/** Entropy estimate for a UTF-8 text secret: length × log₂(unique code points). */
+function secretEntropyBits(secret: string): number {
+  if (!secret) return 0;
+  const chars = [...secret];
+  const unique = new Set(chars).size;
+  return chars.length * Math.log2(unique);
+}
+
+function secretStrengthStyle(bits: number): {
+  label: string;
+  fillClass: string;
+  labelClass: string;
+} {
+  if (bits < 40) {
+    return { label: "Weak", fillClass: "bg-red-500", labelClass: "text-red-500" };
+  }
+  if (bits < 80) {
+    return {
+      label: "Fair",
+      fillClass: "bg-amber-500",
+      labelClass: "text-amber-500",
+    };
+  }
+  if (bits < 128) {
+    return { label: "Good", fillClass: "bg-blue-500", labelClass: "text-blue-500" };
+  }
+  return {
+    label: "Strong",
+    fillClass: "bg-emerald-500",
+    labelClass: "text-emerald-500",
+  };
 }
 
 function expSecondsFromValue(value: number, unit: ExpUnit): number {
@@ -220,6 +254,13 @@ export function JwtBuildPane({ onOpenInDecodeTab }: JwtBuildPaneProps) {
     }
   }, [output?.token, onOpenInDecodeTab]);
 
+  const secretEntropy = useMemo(() => secretEntropyBits(secret), [secret]);
+  const secretStrengthMeta = useMemo(
+    () => secretStrengthStyle(secretEntropy),
+    [secretEntropy]
+  );
+  const secretBarPct = Math.min(100, (secretEntropy / 128) * 100);
+
   const generateJti = useCallback(() => {
     try {
       setJtiValue(crypto.randomUUID());
@@ -272,43 +313,56 @@ export function JwtBuildPane({ onOpenInDecodeTab }: JwtBuildPaneProps) {
                   <label className="block text-slate-500 text-xs uppercase tracking-wider">
                     Secret
                   </label>
-                  <div className="flex items-center gap-2">
-                    <div className="relative flex-1 min-w-0">
-                      <input
-                        type={showSecret ? "text" : "password"}
-                        aria-label="Signing secret"
-                        className="w-full px-3 py-2 bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-mono text-sm border border-border-light dark:border-border-dark rounded-lg outline-none focus:ring-1 focus:ring-primary placeholder:text-slate-500"
-                        placeholder="Enter signing secret..."
-                        value={secret}
-                        onChange={(e) => setSecret(e.target.value)}
+                  <div className="relative flex-1 min-w-0">
+                    <input
+                      type={showSecret ? "text" : "password"}
+                      aria-label="Signing secret"
+                      className="w-full px-3 py-2 bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-mono text-sm border border-border-light dark:border-border-dark rounded-lg outline-none focus:ring-1 focus:ring-primary placeholder:text-slate-500"
+                      placeholder="Enter signing secret..."
+                      value={secret}
+                      onChange={(e) => setSecret(e.target.value)}
+                    />
+                    <button
+                      type="button"
+                      aria-label={showSecret ? "Hide secret" : "Show secret"}
+                      onClick={() => setShowSecret((s) => !s)}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"
+                    >
+                      <span className="material-symbols-outlined text-[18px]">
+                        {showSecret ? "visibility_off" : "visibility"}
+                      </span>
+                    </button>
+                  </div>
+                  <div className="space-y-1.5" aria-live="polite">
+                    <div className="h-1 w-full rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
+                      <div
+                        className={`h-full rounded-full transition-all ${secretStrengthMeta.fillClass}`}
+                        style={{ width: `${secretBarPct}%` }}
                       />
+                    </div>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                      <span className={`font-medium ${secretStrengthMeta.labelClass}`}>
+                        {secretStrengthMeta.label}
+                      </span>
+                      {" · "}
+                      {Math.round(secretEntropy)} bits
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap gap-1">
+                    {(["utf8", "base64", "hex"] as const).map((enc) => (
                       <button
+                        key={enc}
                         type="button"
-                        aria-label={showSecret ? "Hide secret" : "Show secret"}
-                        onClick={() => setShowSecret((s) => !s)}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"
+                        onClick={() => setSecretEncoding(enc)}
+                        className={`px-2 py-1 text-xs font-medium rounded-lg transition-colors ${
+                          secretEncoding === enc
+                            ? "bg-primary text-white"
+                            : "text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
+                        }`}
                       >
-                        <span className="material-symbols-outlined text-[18px]">
-                          {showSecret ? "visibility_off" : "visibility"}
-                        </span>
+                        {enc === "utf8" ? "UTF-8" : enc === "base64" ? "Base64" : "Hex"}
                       </button>
-                    </div>
-                    <div className="flex gap-1">
-                      {(["utf8", "base64", "hex"] as const).map((enc) => (
-                        <button
-                          key={enc}
-                          type="button"
-                          onClick={() => setSecretEncoding(enc)}
-                          className={`px-2 py-1 text-xs font-medium rounded-lg transition-colors ${
-                            secretEncoding === enc
-                              ? "bg-primary text-white"
-                              : "text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
-                          }`}
-                        >
-                          {enc === "utf8" ? "UTF-8" : enc === "base64" ? "Base64" : "Hex"}
-                        </button>
-                      ))}
-                    </div>
+                    ))}
                   </div>
                 </div>
               )}

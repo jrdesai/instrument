@@ -5,10 +5,12 @@ import {
   useState,
 } from "react";
 import { CodeBlock } from "../../components/ui/CodeBlock";
+import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import type { CodeLanguage } from "./prettier-format";
 import { formatCode } from "./prettier-format";
 import { detectLanguage } from "./detect-language";
 
+const TOOL_ID = "code-formatter";
 const DEBOUNCE_MS = 300;
 const COPIED_DURATION_MS = 1500;
 
@@ -41,7 +43,9 @@ function codeLanguageToPrism(
 }
 
 function CodeFormatterTool() {
+  const { setDraft } = useDraftInput(TOOL_ID);
   const [input, setInput] = useState("");
+  useRestoreStringDraft(TOOL_ID, setInput);
   const [language, setLanguage] = useState<CodeLanguage>("javascript");
   const [tabWidth, setTabWidth] = useState<TabWidthOption>(2);
   const [output, setOutput] = useState("");
@@ -124,10 +128,11 @@ function CodeFormatterTool() {
 
   const handleClear = useCallback(() => {
     setInput("");
+    setDraft("");
     setOutput("");
     setError(null);
     setUserOverrodeLang(false);
-  }, []);
+  }, [setDraft]);
 
   const handleFormatNow = useCallback(() => {
     if (debounceRef.current) {
@@ -164,7 +169,11 @@ function CodeFormatterTool() {
             className="flex-1 w-full min-h-0 p-4 font-mono text-xs text-slate-700 dark:text-slate-300 bg-transparent resize-none border-none focus:outline-none leading-relaxed placeholder:text-slate-500"
             placeholder="Paste code here..."
             value={input}
-            onChange={(e) => setInput(e.target.value)}
+            onChange={(e) => {
+              const v = e.target.value;
+              setInput(v);
+              setDraft(v);
+            }}
           />
         </div>
 

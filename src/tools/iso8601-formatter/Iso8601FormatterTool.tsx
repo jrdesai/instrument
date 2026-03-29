@@ -6,6 +6,7 @@ import {
 } from "react";
 import { callTool } from "../../bridge";
 import { FormatHint } from "../../components/ui/FormatHint";
+import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useHistoryStore } from "../../store";
 import type { Iso8601Input } from "../../bindings/Iso8601Input";
 import type { Iso8601Output } from "../../bindings/Iso8601Output";
@@ -58,7 +59,9 @@ const QUICK_REF_EXAMPLES: { label: string; value: string }[] = [
 ];
 
 function Iso8601FormatterTool() {
+  const { setDraft } = useDraftInput(TOOL_ID);
   const [value, setValue] = useState("");
+  useRestoreStringDraft(TOOL_ID, setValue);
   const [output, setOutput] = useState<Iso8601Output | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [copyAllLabel, setCopyAllLabel] = useState("Copy All");
@@ -150,8 +153,9 @@ function Iso8601FormatterTool() {
 
   const handleClear = useCallback(() => {
     setValue("");
+    setDraft("");
     setOutput(null);
-  }, []);
+  }, [setDraft]);
 
   const handleCopyValue = useCallback(async (text: string) => {
     if (!text) return;
@@ -187,9 +191,13 @@ function Iso8601FormatterTool() {
     }
   }, [output]);
 
-  const fillExample = useCallback((exampleValue: string) => {
-    setValue(exampleValue);
-  }, []);
+  const fillExample = useCallback(
+    (exampleValue: string) => {
+      setValue(exampleValue);
+      setDraft(exampleValue);
+    },
+    [setDraft]
+  );
 
   const isEmpty = value.trim() === "";
   const isValid = output?.isValid ?? false;
@@ -211,7 +219,11 @@ function Iso8601FormatterTool() {
               className="flex-1 min-w-0 px-3 py-2 bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-mono text-sm outline-none focus:ring-1 focus:ring-primary border border-border-light dark:border-border-dark rounded-lg"
               placeholder="Enter ISO 8601 string (e.g. 2024-03-04T12:00:00Z)"
               value={value}
-              onChange={(e) => setValue(e.target.value)}
+              onChange={(e) => {
+                const v = e.target.value;
+                setValue(v);
+                setDraft(v);
+              }}
             />
             <FormatHint
               formats={[
@@ -224,6 +236,7 @@ function Iso8601FormatterTool() {
               ]}
               onSelect={(example) => {
                 setValue(example);
+                setDraft(example);
                 runProcess(example);
               }}
             />

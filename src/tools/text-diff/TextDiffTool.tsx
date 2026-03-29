@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { callTool } from "../../bridge";
+import { useDraftInput, useRestoreDraft } from "../../hooks/useDraftInput";
 import { useHistoryStore } from "../../store";
 import type { AnnotatedLine } from "../../bindings/TextDiffAnnotatedLine";
 import type { TextDiffInput } from "../../bindings/TextDiffInput";
@@ -35,8 +36,14 @@ function prefix(annotation: LineAnnotation, side: "left" | "right"): string {
 }
 
 function TextDiffTool() {
+  const { setDraft } = useDraftInput(TOOL_ID);
   const [leftInput, setLeftInput] = useState("");
   const [rightInput, setRightInput] = useState("");
+  useRestoreDraft(TOOL_ID, (raw) => {
+    const v = raw as { left?: string; right?: string };
+    if (typeof v?.left === "string") setLeftInput(v.left);
+    if (typeof v?.right === "string") setRightInput(v.right);
+  });
   const [output, setOutput] = useState<TextDiffOutput | null>(null);
   const [error, setError] = useState<string | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -135,15 +142,17 @@ function TextDiffTool() {
     const newRight = leftInput;
     setLeftInput(newLeft);
     setRightInput(newRight);
+    setDraft({ left: newLeft, right: newRight });
     runProcess(newLeft, newRight);
-  }, [leftInput, rightInput, runProcess]);
+  }, [leftInput, rightInput, runProcess, setDraft]);
 
   const handleClear = useCallback(() => {
     setLeftInput("");
     setRightInput("");
+    setDraft({ left: "", right: "" });
     setOutput(null);
     setError(null);
-  }, []);
+  }, [setDraft]);
 
   const copyLeft = useCallback(async () => {
     if (leftInput) await navigator.clipboard.writeText(leftInput);
@@ -177,7 +186,11 @@ function TextDiffTool() {
             className="flex-1 w-full min-h-0 p-4 font-mono text-xs text-slate-700 dark:text-slate-300 bg-transparent resize-none border-none focus:outline-none leading-relaxed placeholder:text-slate-500"
             placeholder="Paste first text..."
             value={leftInput}
-            onChange={(e) => setLeftInput(e.target.value)}
+            onChange={(e) => {
+              const value = e.target.value;
+              setLeftInput(value);
+              setDraft({ left: value, right: rightInput });
+            }}
           />
         </div>
         <div className="flex flex-col flex-1 min-w-0">
@@ -194,7 +207,11 @@ function TextDiffTool() {
             className="flex-1 w-full min-h-0 p-4 font-mono text-xs text-slate-700 dark:text-slate-300 bg-transparent resize-none border-none focus:outline-none leading-relaxed placeholder:text-slate-500"
             placeholder="Paste second text..."
             value={rightInput}
-            onChange={(e) => setRightInput(e.target.value)}
+            onChange={(e) => {
+              const value = e.target.value;
+              setRightInput(value);
+              setDraft({ left: leftInput, right: value });
+            }}
           />
         </div>
       </div>

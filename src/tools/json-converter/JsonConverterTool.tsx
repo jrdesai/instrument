@@ -6,12 +6,14 @@ import {
 } from "react";
 import { callTool } from "../../bridge";
 import { CodeBlock } from "../../components/ui/CodeBlock";
+import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 
 import type { ConversionTarget } from "../../bindings/ConversionTarget";
 import type { JsonConvertInput } from "../../bindings/JsonConvertInput";
 import type { JsonConvertOutput } from "../../bindings/JsonConvertOutput";
 
 const RUST_COMMAND = "tool_json_convert";
+const TOOL_ID = "json-converter";
 const DEBOUNCE_MS = 200;
 
 function targetLabel(target: ConversionTarget): string {
@@ -41,7 +43,9 @@ function targetLanguage(target: ConversionTarget): "yaml" | "typescript" | "bash
 }
 
 function JsonConverterTool() {
+  const { setDraft } = useDraftInput(TOOL_ID);
   const [inputValue, setInputValue] = useState("");
+  useRestoreStringDraft(TOOL_ID, setInputValue);
   const [target, setTarget] = useState<ConversionTarget>("yaml");
   const [tsRootName, setTsRootName] = useState("Root");
   const [tsExport, setTsExport] = useState(true);
@@ -124,8 +128,9 @@ function JsonConverterTool() {
 
   const handleClear = useCallback(() => {
     setInputValue("");
+    setDraft("");
     setOutput(null);
-  }, []);
+  }, [setDraft]);
 
   const handleCopy = useCallback(async () => {
     if (!output?.result) return;
@@ -159,7 +164,11 @@ function JsonConverterTool() {
             className="flex-1 w-full min-h-0 p-4 font-mono text-xs text-slate-700 dark:text-slate-300 bg-transparent resize-none border-none focus:outline-none leading-relaxed placeholder:text-slate-500"
             placeholder="Paste JSON to convert..."
             value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
+            onChange={(e) => {
+              const v = e.target.value;
+              setInputValue(v);
+              setDraft(v);
+            }}
           />
         </div>
 

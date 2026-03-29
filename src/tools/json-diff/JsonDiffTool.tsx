@@ -5,11 +5,13 @@ import {
   useState,
 } from "react";
 import { callTool } from "../../bridge";
+import { useDraftInput, useRestoreDraft } from "../../hooks/useDraftInput";
 import type { AnnotatedLine } from "../../bindings/JsonDiffAnnotatedLine";
 import type { JsonDiffOutput } from "../../bindings/JsonDiffOutput";
 import type { LineAnnotation } from "../../bindings/JsonDiffLineAnnotation";
 
 const RUST_COMMAND = "tool_json_diff";
+const TOOL_ID = "json-diff";
 const DEBOUNCE_MS = 300;
 const TRUNCATE_LEN = 40;
 
@@ -44,8 +46,14 @@ function lineClassForAnnotation(annotation: LineAnnotation, side: "left" | "righ
 }
 
 function JsonDiffTool() {
+  const { setDraft } = useDraftInput(TOOL_ID);
   const [leftInput, setLeftInput] = useState("");
   const [rightInput, setRightInput] = useState("");
+  useRestoreDraft(TOOL_ID, (raw) => {
+    const v = raw as { left?: string; right?: string };
+    if (typeof v?.left === "string") setLeftInput(v.left);
+    if (typeof v?.right === "string") setRightInput(v.right);
+  });
   const [output, setOutput] = useState<JsonDiffOutput | null>(null);
   const [changesOpen, setChangesOpen] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -122,14 +130,16 @@ function JsonDiffTool() {
     const newRight = leftInput;
     setLeftInput(newLeft);
     setRightInput(newRight);
+    setDraft({ left: newLeft, right: newRight });
     runProcess(newLeft, newRight);
-  }, [leftInput, rightInput, runProcess]);
+  }, [leftInput, rightInput, runProcess, setDraft]);
 
   const handleClear = useCallback(() => {
     setLeftInput("");
     setRightInput("");
+    setDraft({ left: "", right: "" });
     setOutput(null);
-  }, []);
+  }, [setDraft]);
 
   const copyLeft = useCallback(async () => {
     if (leftInput) await navigator.clipboard.writeText(leftInput);
@@ -165,7 +175,11 @@ function JsonDiffTool() {
             className="flex-1 w-full min-h-0 p-4 font-mono text-xs text-slate-700 dark:text-slate-300 bg-transparent resize-none border-none focus:outline-none leading-relaxed placeholder:text-slate-500"
             placeholder="Paste first JSON..."
             value={leftInput}
-            onChange={(e) => setLeftInput(e.target.value)}
+            onChange={(e) => {
+              const value = e.target.value;
+              setLeftInput(value);
+              setDraft({ left: value, right: rightInput });
+            }}
           />
         </div>
         <div className="flex flex-col flex-1 min-w-0">
@@ -182,7 +196,11 @@ function JsonDiffTool() {
             className="flex-1 w-full min-h-0 p-4 font-mono text-xs text-slate-700 dark:text-slate-300 bg-transparent resize-none border-none focus:outline-none leading-relaxed placeholder:text-slate-500"
             placeholder="Paste second JSON..."
             value={rightInput}
-            onChange={(e) => setRightInput(e.target.value)}
+            onChange={(e) => {
+              const value = e.target.value;
+              setRightInput(value);
+              setDraft({ left: leftInput, right: value });
+            }}
           />
         </div>
       </div>
