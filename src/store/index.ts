@@ -274,8 +274,11 @@ type ActiveRole = Role | "general";
 interface PreferenceState {
   theme: Theme;
   activeRole: ActiveRole;
+  /** Whether the user has dismissed the home screen welcome card. */
+  welcomeDismissed: boolean;
   setTheme: (theme: Theme) => void;
   setRole: (role: ActiveRole) => void;
+  setWelcomeDismissed: (dismissed: boolean) => void;
 }
 
 /**
@@ -286,6 +289,7 @@ const preferenceStoreImpl = persist(
   immer<PreferenceState>((set) => ({
     theme: "dark",
     activeRole: "general",
+    welcomeDismissed: false,
 
     setTheme: (theme) =>
       set((state) => {
@@ -295,6 +299,11 @@ const preferenceStoreImpl = persist(
     setRole: (role) =>
       set((state) => {
         state.activeRole = role;
+      }),
+
+    setWelcomeDismissed: (dismissed) =>
+      set((state) => {
+        state.welcomeDismissed = dismissed;
       }),
   })),
   { name: "instrument-preferences" }

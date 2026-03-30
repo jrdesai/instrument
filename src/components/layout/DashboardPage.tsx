@@ -9,7 +9,7 @@ import {
   getToolsByDisplayCategory,
   tools,
 } from "../../registry";
-import { useToolStore } from "../../store";
+import { usePreferenceStore, useToolStore } from "../../store";
 import { APP_VERSION } from "../../version";
 
 const MAX_RECENT = 8;
@@ -27,6 +27,81 @@ function getGreeting(): string {
   if (h < 12) return "Good morning";
   if (h < 17) return "Good afternoon";
   return "Good evening";
+}
+
+function WelcomeCard({ onDismiss }: { onDismiss: () => void }) {
+  return (
+    <div className="relative rounded-xl border border-primary/20 bg-primary/5 px-6 py-6 dark:border-primary/15 dark:bg-primary/10">
+      <button
+        type="button"
+        onClick={onDismiss}
+        aria-label="Dismiss welcome card"
+        className="absolute right-3 top-3 flex size-6 items-center justify-center rounded-md text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-300"
+      >
+        <span className="material-symbols-outlined text-[18px]" aria-hidden>
+          close
+        </span>
+      </button>
+
+      <div className="mb-4 text-center">
+        <p className="text-lg font-bold text-slate-800 dark:text-slate-100">
+          Welcome to Instrument
+        </p>
+        <p className="mx-auto mt-1.5 max-w-md text-sm leading-relaxed text-slate-500 dark:text-slate-400">
+          A privacy-first developer toolkit. Every tool runs locally — no data ever
+          leaves your device.
+        </p>
+      </div>
+
+      <div className="mb-4 flex flex-wrap justify-center gap-2">
+        {[
+          { icon: "lock", label: "Privacy-first" },
+          { icon: "offline_bolt", label: "Works offline" },
+          { icon: "devices", label: "Web + Desktop" },
+        ].map(({ icon, label }) => (
+          <span
+            key={label}
+            className="flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-xs font-medium text-slate-600 shadow-sm ring-1 ring-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:ring-slate-700"
+          >
+            <span
+              className="material-symbols-outlined text-[14px] text-primary"
+              aria-hidden
+            >
+              {icon}
+            </span>
+            {label}
+          </span>
+        ))}
+      </div>
+
+      <div className="flex flex-wrap items-center justify-center gap-2.5">
+        {isWeb && (
+          <a
+            href="https://github.com/jrdesai/instrument/releases/latest"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary/90"
+          >
+            <span className="material-symbols-outlined text-[16px]" aria-hidden>
+              download
+            </span>
+            Download Desktop App
+          </a>
+        )}
+        <a
+          href="https://github.com/jrdesai/instrument"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-1.5 rounded-lg bg-white px-4 py-2 text-sm font-medium text-slate-600 ring-1 ring-slate-200 transition-colors hover:ring-slate-300 dark:bg-slate-800 dark:text-slate-300 dark:ring-slate-700 dark:hover:ring-slate-600"
+        >
+          <span className="material-symbols-outlined text-[16px]" aria-hidden>
+            open_in_new
+          </span>
+          View on GitHub
+        </a>
+      </div>
+    </div>
+  );
 }
 
 function ToolGridCard({
@@ -90,6 +165,8 @@ function ToolGridCard({
 export function DashboardPage() {
   const [view, setView] = useState<HomeView>({ type: "categories" });
   const [activeRole, setActiveRole] = useState<RoleFilter>("All");
+  const welcomeDismissed = usePreferenceStore((s) => s.welcomeDismissed);
+  const setWelcomeDismissed = usePreferenceStore((s) => s.setWelcomeDismissed);
 
   const platformTools = useMemo(
     () => tools.filter((t) => !isWeb || t.platforms.includes("web")),
@@ -174,6 +251,12 @@ export function DashboardPage() {
             Privacy-first developer toolkit · {totalImplemented} tools, all running locally
           </p>
         </div>
+
+        {!welcomeDismissed && (
+          <div className="mb-4">
+            <WelcomeCard onDismiss={() => setWelcomeDismissed(true)} />
+          </div>
+        )}
 
         {/* Favourites — amber icon dock */}
         {favouriteTools.length > 0 && (

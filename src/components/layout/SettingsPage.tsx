@@ -1,3 +1,4 @@
+import { isWeb } from "../../bridge";
 import { useHistoryStore, usePreferenceStore, useToolStore } from "../../store";
 import { APP_VERSION } from "../../version";
 import { ConfirmButton } from "../ui/ConfirmButton";
@@ -5,6 +6,8 @@ import { ConfirmButton } from "../ui/ConfirmButton";
 export function SettingsPage() {
   const theme = usePreferenceStore((s) => s.theme);
   const setTheme = usePreferenceStore((s) => s.setTheme);
+  const welcomeDismissed = usePreferenceStore((s) => s.welcomeDismissed);
+  const setWelcomeDismissed = usePreferenceStore((s) => s.setWelcomeDismissed);
 
   const clearRecents = useToolStore((s) => s.clearRecents);
   const clearFavourites = useToolStore((s) => s.clearFavourites);
@@ -179,6 +182,27 @@ export function SettingsPage() {
                   v{APP_VERSION}
                 </span>
               </div>
+              {isWeb && (
+                <div className="flex items-center justify-between px-4 py-3 bg-panel-light dark:bg-panel-dark border-t border-border-light dark:border-border-dark">
+                  <div>
+                    <p className="text-sm text-slate-700 dark:text-slate-300">Desktop App</p>
+                    <p className="mt-0.5 text-xs text-slate-400 dark:text-slate-500">
+                      Download the native app for faster, fully offline use
+                    </p>
+                  </div>
+                  <a
+                    href="https://github.com/jrdesai/instrument/releases/latest"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="ml-4 flex shrink-0 items-center gap-1 text-xs text-primary hover:underline"
+                  >
+                    <span className="material-symbols-outlined text-[14px]" aria-hidden>
+                      download
+                    </span>
+                    Download
+                  </a>
+                </div>
+              )}
               <div className="flex items-center justify-between px-4 py-3 bg-panel-light dark:bg-panel-dark border-t border-border-light dark:border-border-dark">
                 <p className="text-sm text-slate-700 dark:text-slate-300">Source</p>
                 <a
@@ -193,6 +217,23 @@ export function SettingsPage() {
                   GitHub
                 </a>
               </div>
+              {welcomeDismissed && (
+                <div className="flex items-center justify-between px-4 py-3 bg-panel-light dark:bg-panel-dark border-t border-border-light dark:border-border-dark">
+                  <div>
+                    <p className="text-sm text-slate-700 dark:text-slate-300">Welcome card</p>
+                    <p className="mt-0.5 text-xs text-slate-400 dark:text-slate-500">
+                      Show the welcome card on the home screen again
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setWelcomeDismissed(false)}
+                    className="ml-4 shrink-0 rounded-md bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-600 transition-colors hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700"
+                  >
+                    Show again
+                  </button>
+                </div>
+              )}
             </div>
           </section>
 
