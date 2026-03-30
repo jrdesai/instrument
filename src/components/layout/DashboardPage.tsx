@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { isWeb } from "../../bridge";
 import { categorySubtitles } from "../../constants/library";
-import type { Tool } from "../../registry";
+import type { Role, Tool } from "../../registry";
 import {
   getDisplayCategories,
   getToolById,
@@ -13,6 +13,9 @@ import { useToolStore } from "../../store";
 import { APP_VERSION } from "../../version";
 
 const MAX_RECENT = 8;
+
+const ROLES = ["All", "Frontend", "Backend", "DevOps", "Security", "Data"] as const;
+type RoleFilter = (typeof ROLES)[number];
 
 type HomeView =
   | { type: "categories" }
@@ -26,7 +29,7 @@ function getGreeting(): string {
   return "Good evening";
 }
 
-function ToolListCard({
+function ToolGridCard({
   tool,
   isFavourite,
   onClick,
@@ -38,61 +41,70 @@ function ToolListCard({
   onToggleFavourite: (e: React.MouseEvent) => void;
 }) {
   return (
-    <div className="group relative flex items-center gap-3 rounded-lg border border-border-light bg-white px-4 py-3 transition-colors hover:border-primary/40 dark:border-border-dark dark:bg-panel-dark">
+    <div className="group relative flex flex-col gap-2 rounded-xl border border-border-light bg-white p-4 transition-colors hover:border-primary/40 hover:bg-primary/5 dark:border-border-dark dark:bg-panel-dark">
       <button
         type="button"
         onClick={onClick}
         aria-label={tool.name}
-        className="absolute inset-0 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+        className="absolute inset-0 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
       />
-      <div className="size-8 shrink-0 rounded-lg bg-slate-100 text-slate-500 transition-colors group-hover:bg-primary/10 group-hover:text-primary dark:bg-slate-800 dark:text-slate-400">
-        <span
-          className="material-symbols-outlined flex size-full items-center justify-center text-[18px]"
-          aria-hidden
+
+      <div className="flex items-start justify-between">
+        <div className="flex size-9 items-center justify-center rounded-lg bg-slate-100 text-slate-500 transition-colors group-hover:bg-primary/10 group-hover:text-primary dark:bg-slate-800 dark:text-slate-400">
+          <span className="material-symbols-outlined text-[20px]" aria-hidden>
+            {tool.icon}
+          </span>
+        </div>
+        <button
+          type="button"
+          onClick={onToggleFavourite}
+          aria-label={isFavourite ? "Remove from favourites" : "Add to favourites"}
+          className={`relative z-10 shrink-0 transition-all hover:text-amber-400 ${
+            isFavourite
+              ? "opacity-100 text-amber-400"
+              : "opacity-0 text-slate-400 group-hover:opacity-60 dark:text-slate-500"
+          }`}
         >
-          {tool.icon}
-        </span>
+          <span
+            className="material-symbols-outlined text-[18px]"
+            aria-hidden
+            style={{ fontVariationSettings: isFavourite ? "'FILL' 1" : "'FILL' 0" }}
+          >
+            star
+          </span>
+        </button>
       </div>
-      <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-medium text-slate-800 dark:text-slate-200">
+
+      <div>
+        <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">
           {tool.name}
         </p>
-        <p className="mt-0.5 truncate text-xs text-slate-500 dark:text-slate-400">
+        <p className="mt-0.5 line-clamp-2 text-xs leading-snug text-slate-500 dark:text-slate-400">
           {tool.description}
         </p>
       </div>
-      <button
-        type="button"
-        onClick={onToggleFavourite}
-        aria-label={isFavourite ? "Remove from favourites" : "Add to favourites"}
-        className={`relative z-10 shrink-0 transition-all hover:text-amber-400 ${
-          isFavourite
-            ? "opacity-100 text-amber-400"
-            : "text-slate-400 opacity-0 group-hover:opacity-60 dark:text-slate-500"
-        }`}
-      >
-        <span
-          className="material-symbols-outlined text-[18px]"
-          aria-hidden
-          style={{ fontVariationSettings: isFavourite ? "'FILL' 1" : "'FILL' 0" }}
-        >
-          star
-        </span>
-      </button>
     </div>
   );
 }
 
 export function DashboardPage() {
   const [view, setView] = useState<HomeView>({ type: "categories" });
+  const [activeRole, setActiveRole] = useState<RoleFilter>("All");
 
   const platformTools = useMemo(
     () => tools.filter((t) => !isWeb || t.platforms.includes("web")),
     []
   );
   const implementedTools = useMemo(
-    () => platformTools.filter((t) => t.implemented),
-    [platformTools]
+    () =>
+      platformTools
+        .filter((t) => t.implemented)
+        .filter(
+          (t) =>
+            activeRole === "All" ||
+            t.roles.includes(activeRole.toLowerCase() as Role)
+        ),
+    [platformTools, activeRole]
   );
   const displayCategories = useMemo(() => getDisplayCategories(), []);
   const totalImplemented = implementedTools.length;
@@ -100,10 +112,14 @@ export function DashboardPage() {
 
   const filteredTools = useMemo(() => {
     if (view.type !== "category") return [];
-    return getToolsByDisplayCategory(view.name).filter(
-      (t) => !isWeb || t.platforms.includes("web")
-    );
-  }, [view]);
+    return getToolsByDisplayCategory(view.name)
+      .filter((t) => !isWeb || t.platforms.includes("web"))
+      .filter(
+        (t) =>
+          activeRole === "All" ||
+          t.roles.includes(activeRole.toLowerCase() as Role)
+      );
+  }, [view, activeRole]);
 
   const navigate = useNavigate();
   const recentToolIds = useToolStore((s) => s.recentToolIds);
@@ -132,6 +148,13 @@ export function DashboardPage() {
   );
 
   const displayedRecent = recentTools.slice(0, MAX_RECENT);
+
+  const handleRoleChange = (role: RoleFilter) => {
+    setActiveRole(role);
+    // Drill-down may show zero tools for the new role — always reset to categories.
+    // "All tools" view can refilter in place, so leave it alone.
+    if (view.type === "category") setView({ type: "categories" });
+  };
 
   const handleOpenTool = (tool: Tool) => {
     setActiveTool(tool);
@@ -227,14 +250,41 @@ export function DashboardPage() {
         )}
       </header>
 
+      {/* Role filter pills — persistent across all views */}
+      <div className="shrink-0 border-b border-border-light px-6 py-2.5 dark:border-border-dark">
+        <div className="flex flex-wrap gap-1.5">
+          {ROLES.map((role) => (
+            <button
+              key={role}
+              type="button"
+              onClick={() => handleRoleChange(role)}
+              className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+                activeRole === role
+                  ? "bg-primary text-white"
+                  : "bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-700 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-200"
+              }`}
+            >
+              {role}
+            </button>
+          ))}
+        </div>
+      </div>
+
       <div className="min-h-0 flex-1 overflow-y-auto">
         {view.type === "categories" && (
           <div className="px-6 py-5">
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
               {displayCategories.map((cat) => {
-                const catTools = getToolsByDisplayCategory(cat.name).filter(
-                  (t) => !isWeb || t.platforms.includes("web")
-                );
+                const catTools = getToolsByDisplayCategory(cat.name)
+                  .filter((t) => !isWeb || t.platforms.includes("web"))
+                  .filter(
+                    (t) =>
+                      activeRole === "All" ||
+                      t.roles.includes(activeRole.toLowerCase() as Role)
+                  );
+
+                if (catTools.length === 0) return null;
+
                 const preview = catTools.slice(0, 3).map((t) => t.name);
                 const subtitle = categorySubtitles[cat.name] ?? "";
                 return (
@@ -287,6 +337,20 @@ export function DashboardPage() {
               })}
             </div>
 
+            {displayCategories.every((cat) => {
+              const catTools = getToolsByDisplayCategory(cat.name)
+                .filter((t) => !isWeb || t.platforms.includes("web"))
+                .filter((t) =>
+                  activeRole === "All" ||
+                  t.roles.includes(activeRole.toLowerCase() as Role)
+                );
+              return catTools.length === 0;
+            }) && (
+              <p className="py-12 text-center text-sm text-slate-400 dark:text-slate-500">
+                No tools found for the {activeRole} role.
+              </p>
+            )}
+
             <div className="mt-5 flex justify-center">
               <button
                 type="button"
@@ -327,15 +391,18 @@ export function DashboardPage() {
                   {view.name}
                 </span>
                 <span className="ml-auto font-mono text-xs text-slate-400 dark:text-slate-500">
-                  {filteredTools.length} tools
+                  {filteredTools.length} {filteredTools.length === 1 ? "tool" : "tools"}
+                  {activeRole !== "All" && (
+                    <span className="ml-1.5 text-primary">· {activeRole}</span>
+                  )}
                 </span>
               </div>
             </div>
 
             <div className="min-h-0 flex-1 overflow-y-auto px-6 py-4">
-              <div className="flex flex-col gap-2">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {filteredTools.map((tool) => (
-                  <ToolListCard
+                  <ToolGridCard
                     key={tool.id}
                     tool={tool}
                     isFavourite={favouriteToolIds.includes(tool.id)}
@@ -373,15 +440,18 @@ export function DashboardPage() {
                   All tools
                 </span>
                 <span className="ml-auto font-mono text-xs text-slate-400 dark:text-slate-500">
-                  {totalImplemented} tools
+                  {totalImplemented} {totalImplemented === 1 ? "tool" : "tools"}
+                  {activeRole !== "All" && (
+                    <span className="ml-1.5 text-primary">· {activeRole}</span>
+                  )}
                 </span>
               </div>
             </div>
 
             <div className="min-h-0 flex-1 overflow-y-auto px-6 py-4">
-              <div className="flex flex-col gap-2">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {implementedTools.map((tool) => (
-                  <ToolListCard
+                  <ToolGridCard
                     key={tool.id}
                     tool={tool}
                     isFavourite={favouriteToolIds.includes(tool.id)}
