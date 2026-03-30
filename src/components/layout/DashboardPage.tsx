@@ -184,10 +184,6 @@ export function DashboardPage() {
             <div className="flex flex-wrap gap-2">
               {favouriteTools.map((tool) => (
                 <div key={tool.id} className="group/fav relative shrink-0">
-                  {/* Tooltip */}
-                  <span className="pointer-events-none absolute bottom-full left-1/2 z-50 mb-1.5 -translate-x-1/2 whitespace-nowrap rounded-md bg-slate-900 px-2 py-1 text-xs text-slate-100 opacity-0 transition-opacity group-hover/fav:opacity-100 dark:bg-slate-700">
-                    {tool.name}
-                  </span>
                   {/* Icon button */}
                   <button
                     type="button"
@@ -199,12 +195,16 @@ export function DashboardPage() {
                       {tool.icon}
                     </span>
                   </button>
-                  {/* Remove button — appears on hover */}
+                  {/* Tooltip — below the icon, left-aligned to avoid edge clipping */}
+                  <span className="pointer-events-none absolute left-0 top-full z-50 mt-1.5 whitespace-nowrap rounded-md bg-slate-900 px-2 py-1 text-xs text-slate-100 opacity-0 transition-opacity group-hover/fav:opacity-100 dark:bg-slate-700">
+                    {tool.name}
+                  </span>
+                  {/* Remove button — only on hover */}
                   <button
                     type="button"
                     onClick={() => toggleFavourite(tool)}
                     aria-label={`Remove ${tool.name} from favourites`}
-                    className="absolute -right-1 -top-1 z-10 flex size-4 items-center justify-center rounded-full bg-slate-400 text-white opacity-0 transition-all hover:bg-red-500 group-hover/fav:opacity-100 dark:bg-slate-600 dark:hover:bg-red-500"
+                    className="absolute -right-1 -top-1 z-10 flex size-4 items-center justify-center rounded-full bg-slate-500 text-white opacity-0 transition-opacity hover:bg-red-500 group-hover/fav:opacity-100 dark:bg-slate-600 dark:hover:bg-red-500"
                   >
                     <span className="material-symbols-outlined text-[10px]" aria-hidden>
                       close
