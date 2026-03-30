@@ -261,17 +261,6 @@ async toolCsvToJson(input: CsvToJsonInput) : Promise<CsvToJsonOutput> {
 },
 async toolExpressionEval(input: ExprEvalInput) : Promise<ExprEvalOutput> {
     return await TAURI_INVOKE("tool_expression_eval", { input });
-},
-/**
- * Called from the frontend whenever the favourites list changes.
- */
-async updateTrayMenu(tools: TrayToolItem[]) : Promise<Result<null, string>> {
-    try {
-    return { status: "ok", data: await TAURI_INVOKE("update_tray_menu", { tools }) };
-} catch (e) {
-    if(e instanceof Error) throw e;
-    else return { status: "error", error: e  as any };
-}
 }
 }
 
@@ -1137,10 +1126,6 @@ resultIso: string; fromOffset: string; toOffset: string; fromAbbr: string; toAbb
  * e.g. "+5 hours", "-5 hours", "+5:30 hours", "0 hours (same zone)".
  */
 difference: string; error: string | null }
-/**
- * A single tool entry for the tray menu — id and display name from the frontend.
- */
-export type TrayToolItem = { id: string; name: string }
 /**
  * Input for the ULID Generator tool.
  */

@@ -43,7 +43,7 @@ export interface Chain {
 }
 
 /** Theme preference. */
-export type Theme = "dark" | "light";
+export type Theme = "dark" | "light" | "system";
 
 // ---------------------------------------------------------------------------
 // Tool store

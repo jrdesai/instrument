@@ -8,11 +8,12 @@
  */
 
 import { useMemo } from "react";
-import type { TrayToolItem } from "../bindings/tauri";
 import { getToolByRustCommand } from "../registry";
 import { useHistoryStore } from "../store";
 
-export type { TrayToolItem };
+// tray-icon temporarily disabled — TrayToolItem removed from bindings
+// import type { TrayToolItem } from "../bindings/tauri";
+// export type { TrayToolItem };
 
 /** Current runtime platform. */
 export type Platform = "desktop" | "web";
@@ -103,38 +104,20 @@ export function usePlatform(): { isDesktop: boolean; isWeb: boolean } {
   );
 }
 
-/**
- * Rebuilds the system tray menu from favourited tools. No-op on web.
- * Ignored when the tray is unavailable (e.g. some Linux setups).
- */
-export async function updateTrayMenu(tools: TrayToolItem[]): Promise<void> {
-  if (!isDesktop) return;
-  const { invoke } = await import("@tauri-apps/api/core");
-  await invoke("update_tray_menu", { tools }).catch(() => {
-    // tray / IPC may be unavailable
-  });
-}
-
-/**
- * Subscribe to tray "open this tool" actions. Returns an unsubscribe function.
- * No-op on web.
- */
-export function onTrayNavigateToTool(
-  handler: (toolId: string) => void
-): () => void {
-  if (!isDesktop) return () => {};
-  let cancelled = false;
-  let unlisten: (() => void) | undefined;
-  void import("@tauri-apps/api/event").then(({ listen }) => {
-    if (cancelled) return;
-    void listen<string>("navigate-to-tool", (event) => {
-      handler(event.payload);
-    }).then((fn) => {
-      if (!cancelled) unlisten = fn;
-    });
-  });
-  return () => {
-    cancelled = true;
-    unlisten?.();
-  };
-}
+// tray-icon temporarily disabled — re-enable by uncommenting below
+// export async function updateTrayMenu(tools: TrayToolItem[]): Promise<void> {
+//   if (!isDesktop) return;
+//   const { invoke } = await import("@tauri-apps/api/core");
+//   await invoke("update_tray_menu", { tools }).catch(() => {});
+// }
+// export function onTrayNavigateToTool(handler: (toolId: string) => void): () => void {
+//   if (!isDesktop) return () => {};
+//   let cancelled = false;
+//   let unlisten: (() => void) | undefined;
+//   void import("@tauri-apps/api/event").then(({ listen }) => {
+//     if (cancelled) return;
+//     void listen<string>("navigate-to-tool", (event) => { handler(event.payload); })
+//       .then((fn) => { if (!cancelled) unlisten = fn; });
+//   });
+//   return () => { cancelled = true; unlisten?.(); };
+// }

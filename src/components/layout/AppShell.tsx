@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { getToolById } from "../../registry";
 import { SearchModal } from "../ui/SearchModal";
 
 const SIDEBAR_WIDTH = 48;
@@ -12,10 +13,9 @@ const MOD = isMac ? "⌘" : "Ctrl+";
 
 const navItems: { to: string; icon: string; label: string; shortcut: string }[] =
   [
-    { to: "/", icon: "home", label: "Dashboard", shortcut: `${MOD}1` },
-    { to: "/library", icon: "grid_view", label: "Library", shortcut: `${MOD}2` },
-    { to: "/history", icon: "history", label: "History", shortcut: `${MOD}3` },
-    { to: "/settings", icon: "settings", label: "Settings", shortcut: `${MOD}4` },
+    { to: "/", icon: "home", label: "Home", shortcut: `${MOD}1` },
+    { to: "/history", icon: "history", label: "History", shortcut: `${MOD}2` },
+    { to: "/settings", icon: "settings", label: "Settings", shortcut: `${MOD}3` },
   ];
 
 function LogoMark({ className }: { className?: string }) {
@@ -32,6 +32,9 @@ function LogoMark({ className }: { className?: string }) {
 export function AppShell() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  const toolIdMatch = location.pathname.match(/^\/tools\/(.+)$/);
+  const activeTool = toolIdMatch ? getToolById(toolIdMatch[1]) : null;
 
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
@@ -46,13 +49,9 @@ export function AppShell() {
       }
       if (mod && e.key === "2") {
         e.preventDefault();
-        navigate("/library");
-      }
-      if (mod && e.key === "3") {
-        e.preventDefault();
         navigate("/history");
       }
-      if (mod && e.key === "4") {
+      if (mod && e.key === "3") {
         e.preventDefault();
         navigate("/settings");
       }
@@ -101,9 +100,19 @@ export function AppShell() {
           <div className="flex shrink-0 items-center justify-center md:hidden" title="Instrument">
             <LogoMark className="h-8 w-8" />
           </div>
-          <span className="hidden min-w-0 select-none text-sm font-semibold tracking-tight text-slate-700 dark:text-slate-300 md:inline">
-            Instrument
-          </span>
+          <div className="hidden min-w-0 items-center gap-1.5 md:flex">
+            <span className="select-none text-sm font-semibold tracking-tight text-slate-700 dark:text-slate-300">
+              Instrument
+            </span>
+            {activeTool && (
+              <>
+                <span className="text-slate-300 dark:text-slate-600">/</span>
+                <span className="truncate text-sm text-slate-500 dark:text-slate-400">
+                  {activeTool.name}
+                </span>
+              </>
+            )}
+          </div>
           <button
             type="button"
             onClick={() => setIsSearchOpen(true)}

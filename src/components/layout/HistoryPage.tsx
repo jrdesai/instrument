@@ -122,17 +122,14 @@ export function HistoryPage() {
               return (
                 <div
                   key={idx}
-                  role="button"
-                  tabIndex={0}
-                  onClick={() => navigate(`/tools/${tool.id}`)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      e.preventDefault();
-                      navigate(`/tools/${tool.id}`);
-                    }
-                  }}
-                  className="group flex items-start gap-4 p-4 rounded-lg border border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark transition-colors hover:border-primary/40 cursor-pointer"
+                  className="group relative flex items-start gap-4 p-4 rounded-lg border border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark transition-colors hover:border-primary/40"
                 >
+                  <button
+                    type="button"
+                    onClick={() => navigate(`/tools/${tool.id}`)}
+                    aria-label={`Open ${tool.name}`}
+                    className="absolute inset-0 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                  />
                   {/* Tool icon */}
                   <div className="size-8 rounded bg-slate-100 dark:bg-slate-800 flex items-center justify-center shrink-0 text-slate-500 dark:text-slate-400 group-hover:bg-primary/20 group-hover:text-primary transition-colors mt-0.5">
                     <span className="material-symbols-outlined text-[18px]" aria-hidden>

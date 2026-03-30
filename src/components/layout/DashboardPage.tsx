@@ -1,47 +1,75 @@
-import { useMemo } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { isWeb } from "../../bridge";
+import { categorySubtitles } from "../../constants/library";
 import type { Tool } from "../../registry";
-import { tools, getToolById } from "../../registry";
+import {
+  getDisplayCategories,
+  getToolById,
+  getToolsByDisplayCategory,
+  tools,
+} from "../../registry";
 import { useToolStore } from "../../store";
 import { APP_VERSION } from "../../version";
 
-const MAX_RECENT = 6;
+const MAX_RECENT = 8;
 
-function ToolCard({
+type HomeView =
+  | { type: "categories" }
+  | { type: "category"; name: string }
+  | { type: "all" };
+
+function getGreeting(): string {
+  const h = new Date().getHours();
+  if (h < 12) return "Good morning";
+  if (h < 17) return "Good afternoon";
+  return "Good evening";
+}
+
+function ToolListCard({
   tool,
-  onClick,
-  disabled,
   isFavourite,
+  onClick,
   onToggleFavourite,
 }: {
   tool: Tool;
-  onClick: () => void;
-  disabled?: boolean;
   isFavourite: boolean;
+  onClick: () => void;
   onToggleFavourite: (e: React.MouseEvent) => void;
 }) {
   return (
-    <div
-      className={`group relative flex flex-col p-3 rounded-lg border border-border-light dark:border-border-dark bg-white dark:bg-panel-dark text-left transition-colors min-w-[180px] ${
-        disabled
-          ? "opacity-60 cursor-not-allowed"
-          : "hover:border-primary/40 cursor-pointer"
-      }`}
-    >
-      {/* Stretched primary action button — covers the whole card */}
+    <div className="group relative flex items-center gap-3 rounded-lg border border-border-light bg-white px-4 py-3 transition-colors hover:border-primary/40 dark:border-border-dark dark:bg-panel-dark">
       <button
         type="button"
-        onClick={disabled ? undefined : onClick}
-        disabled={disabled}
+        onClick={onClick}
         aria-label={tool.name}
         className="absolute inset-0 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
       />
+      <div className="size-8 shrink-0 rounded-lg bg-slate-100 text-slate-500 transition-colors group-hover:bg-primary/10 group-hover:text-primary dark:bg-slate-800 dark:text-slate-400">
+        <span
+          className="material-symbols-outlined flex size-full items-center justify-center text-[18px]"
+          aria-hidden
+        >
+          {tool.icon}
+        </span>
+      </div>
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-sm font-medium text-slate-800 dark:text-slate-200">
+          {tool.name}
+        </p>
+        <p className="mt-0.5 truncate text-xs text-slate-500 dark:text-slate-400">
+          {tool.description}
+        </p>
+      </div>
       <button
         type="button"
         onClick={onToggleFavourite}
         aria-label={isFavourite ? "Remove from favourites" : "Add to favourites"}
-        className={`absolute top-2 right-2 z-10 transition-opacity hover:text-amber-400 dark:hover:text-amber-400 ${isFavourite ? "opacity-100 text-amber-400" : "opacity-20 group-hover:opacity-100 focus-visible:opacity-100 text-slate-400 dark:text-slate-500"}`}
+        className={`relative z-10 shrink-0 transition-all hover:text-amber-400 ${
+          isFavourite
+            ? "opacity-100 text-amber-400"
+            : "text-slate-400 opacity-0 group-hover:opacity-60 dark:text-slate-500"
+        }`}
       >
         <span
           className="material-symbols-outlined text-[18px]"
@@ -51,26 +79,31 @@ function ToolCard({
           star
         </span>
       </button>
-      <div className="size-8 rounded bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-2 text-slate-500 dark:text-slate-400 group-hover:bg-primary/20 group-hover:text-primary transition-colors">
-        <span className="material-symbols-outlined text-[20px]" aria-hidden>
-          {tool.icon}
-        </span>
-      </div>
-      <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-1 line-clamp-1">
-        {tool.name}
-      </h3>
-      <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-semibold uppercase tracking-wider mt-1 w-fit">
-        {tool.displayCategory}
-      </span>
     </div>
   );
 }
 
 export function DashboardPage() {
+  const [view, setView] = useState<HomeView>({ type: "categories" });
+
   const platformTools = useMemo(
-    () => tools.filter((tool) => !isWeb || tool.platforms.includes("web")),
+    () => tools.filter((t) => !isWeb || t.platforms.includes("web")),
     []
   );
+  const implementedTools = useMemo(
+    () => platformTools.filter((t) => t.implemented),
+    [platformTools]
+  );
+  const displayCategories = useMemo(() => getDisplayCategories(), []);
+  const totalImplemented = implementedTools.length;
+  const categoriesWithTools = displayCategories.length;
+
+  const filteredTools = useMemo(() => {
+    if (view.type !== "category") return [];
+    return getToolsByDisplayCategory(view.name).filter(
+      (t) => !isWeb || t.platforms.includes("web")
+    );
+  }, [view]);
 
   const navigate = useNavigate();
   const recentToolIds = useToolStore((s) => s.recentToolIds);
@@ -80,7 +113,7 @@ export function DashboardPage() {
   const toggleFavourite = useToolStore((s) => s.toggleFavourite);
   const clearRecents = useToolStore((s) => s.clearRecents);
 
-  const recentTools: Tool[] = useMemo(
+  const recentTools = useMemo(
     () =>
       recentToolIds
         .map((id) => getToolById(id))
@@ -89,7 +122,7 @@ export function DashboardPage() {
     [recentToolIds]
   );
 
-  const favouriteTools: Tool[] = useMemo(
+  const favouriteTools = useMemo(
     () =>
       favouriteToolIds
         .map((id) => getToolById(id))
@@ -98,20 +131,7 @@ export function DashboardPage() {
     [favouriteToolIds]
   );
 
-  const implementedTools = useMemo(
-    () => platformTools.filter((t) => t.implemented),
-    [platformTools]
-  );
-
-  const totalImplemented = implementedTools.length;
-  const categoriesWithTools = useMemo(
-    () => new Set(implementedTools.map((t) => t.displayCategory)).size,
-    [implementedTools]
-  );
-
-  const handleSeeAllRecent = () => {
-    navigate("/library");
-  };
+  const displayedRecent = recentTools.slice(0, MAX_RECENT);
 
   const handleOpenTool = (tool: Tool) => {
     setActiveTool(tool);
@@ -119,92 +139,51 @@ export function DashboardPage() {
     navigate(`/tools/${tool.id}`);
   };
 
-  const displayedRecent = recentTools.slice(0, MAX_RECENT);
-
-  function getGreeting(): string {
-    const h = new Date().getHours();
-    if (h < 12) return "Good morning";
-    if (h < 17) return "Good afternoon";
-    return "Good evening";
-  }
-
   return (
-    <div className="flex flex-col h-full w-full overflow-hidden bg-background-light dark:bg-background-dark">
-      <header className="shrink-0 px-8 pt-6 pb-4 bg-background-light dark:bg-background-dark">
-        {/* Hero banner */}
-        <div className="mb-6 p-4 rounded-xl border border-border-light dark:border-border-dark bg-white dark:bg-panel-dark flex items-center gap-4">
-          <div className="shrink-0 size-10 rounded-lg bg-primary/10 flex items-center justify-center">
-            <span className="material-symbols-outlined text-primary text-[22px]" aria-hidden>
-              construction
-            </span>
-          </div>
-          <div className="min-w-0">
-            <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">
-              Privacy-first developer toolkit
-            </p>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-              {totalImplemented} tools for encoding, formatting, hashing, JWT, regex, and more —
-              all running locally. Nothing leaves your device.
-            </p>
-          </div>
-          <a
-            href="https://github.com/jrdesai/instrument"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="shrink-0 hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border-light dark:border-border-dark text-xs text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:border-primary/40 transition-colors"
-          >
-            <span className="material-symbols-outlined text-[14px]" aria-hidden>
-              code
-            </span>
-            Source
-          </a>
+    <div className="flex h-full flex-col overflow-hidden bg-background-light font-display text-slate-900 dark:bg-background-dark dark:text-slate-100">
+      <header className="shrink-0 border-b border-border-light px-6 pb-4 pt-6 dark:border-border-dark">
+        {/* Centered greeting + tagline */}
+        <div className="mb-4 text-center">
+          <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">
+            {getGreeting()}
+          </h1>
+          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+            Privacy-first developer toolkit · {totalImplemented} tools, all running locally
+          </p>
         </div>
-        <h1 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
-          Dashboard
-        </h1>
-        <p className="text-sm text-slate-400 dark:text-slate-500 mt-0.5">
-          {getGreeting()} · {totalImplemented} tools · {favouriteTools.length}{" "}
-          favourited
-        </p>
 
+        {/* Favourites — amber icon dock */}
         {favouriteTools.length > 0 && (
-          <section className="mt-4">
-            <h2 className="text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5 mb-2">
-              <span
-                className="material-symbols-outlined text-[14px] text-amber-400"
-                aria-hidden
-                style={{ fontVariationSettings: "'FILL' 1" }}
-              >
-                star
-              </span>
+          <section className="mb-3" aria-label="Favourites">
+            <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
               Favourites
-            </h2>
+            </p>
             <div className="flex flex-wrap gap-2">
               {favouriteTools.map((tool) => (
-                <div
-                  key={tool.id}
-                  className="group flex items-center h-8 rounded-full border border-border-light dark:border-border-dark bg-white dark:bg-panel-dark hover:border-primary/40 hover:bg-primary/5 transition-colors"
-                >
+                <div key={tool.id} className="group/fav relative shrink-0">
+                  {/* Tooltip */}
+                  <span className="pointer-events-none absolute bottom-full left-1/2 z-50 mb-1.5 -translate-x-1/2 whitespace-nowrap rounded-md bg-slate-900 px-2 py-1 text-xs text-slate-100 opacity-0 transition-opacity group-hover/fav:opacity-100 dark:bg-slate-700">
+                    {tool.name}
+                  </span>
+                  {/* Icon button */}
                   <button
                     type="button"
                     onClick={() => handleOpenTool(tool)}
-                    className="flex items-center gap-1.5 pl-2.5 pr-1 h-full text-sm text-slate-700 dark:text-slate-300"
+                    aria-label={tool.name}
+                    className="flex size-9 items-center justify-center rounded-lg border border-amber-200 bg-amber-50 text-amber-500 transition-colors hover:border-amber-300 hover:bg-amber-100 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-400 dark:hover:bg-amber-900/40"
                   >
-                    <span
-                      className="material-symbols-outlined text-[14px] text-primary/70 shrink-0"
-                      aria-hidden
-                    >
+                    <span className="material-symbols-outlined text-[18px]" aria-hidden>
                       {tool.icon}
                     </span>
-                    <span className="text-xs font-medium">{tool.name}</span>
                   </button>
+                  {/* Remove button — appears on hover */}
                   <button
                     type="button"
                     onClick={() => toggleFavourite(tool)}
                     aria-label={`Remove ${tool.name} from favourites`}
-                    className="flex items-center justify-center size-4 rounded-full mr-1.5 text-slate-300 dark:text-slate-600 hover:text-red-400 dark:hover:text-red-400 transition-colors"
+                    className="absolute -right-1 -top-1 z-10 flex size-4 items-center justify-center rounded-full bg-slate-400 text-white opacity-0 transition-all hover:bg-red-500 group-hover/fav:opacity-100 dark:bg-slate-600 dark:hover:bg-red-500"
                   >
-                    <span className="material-symbols-outlined text-[12px]" aria-hidden>
+                    <span className="material-symbols-outlined text-[10px]" aria-hidden>
                       close
                     </span>
                   </button>
@@ -214,74 +193,223 @@ export function DashboardPage() {
           </section>
         )}
 
-        <section className="mt-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-2">
-              <span className="material-symbols-outlined text-[18px]" aria-hidden>
-                history
-              </span>
-              Recent
-            </h2>
-            <div className="flex items-center gap-3">
-              {displayedRecent.length > 0 && (
-                <button
-                  type="button"
-                  onClick={clearRecents}
-                  className="text-xs text-slate-400 dark:text-slate-500 hover:text-red-500 dark:hover:text-red-400 transition-colors"
-                >
-                  Clear
-                </button>
-              )}
+        {/* Recents */}
+        {displayedRecent.length > 0 && (
+          <section aria-label="Recent tools">
+            <div className="mb-1.5 flex items-center justify-between">
+              <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                Recent
+              </p>
               <button
                 type="button"
-                onClick={handleSeeAllRecent}
-                className="text-primary text-xs hover:text-primary/80 transition-colors"
+                onClick={clearRecents}
+                className="text-[10px] text-slate-400 transition-colors hover:text-red-500 dark:text-slate-500 dark:hover:text-red-400"
               >
-                See all →
+                Clear
+              </button>
+            </div>
+            <div className="flex items-center gap-1.5 overflow-x-auto">
+              {displayedRecent.map((tool) => (
+                <button
+                  key={tool.id}
+                  type="button"
+                  onClick={() => handleOpenTool(tool)}
+                  className="flex h-7 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border border-border-light bg-white px-2.5 text-xs text-slate-600 transition-colors hover:border-primary/40 hover:text-primary dark:border-border-dark dark:bg-panel-dark dark:text-slate-400"
+                >
+                  <span className="material-symbols-outlined text-[12px]" aria-hidden>
+                    {tool.icon}
+                  </span>
+                  {tool.name}
+                </button>
+              ))}
+            </div>
+          </section>
+        )}
+      </header>
+
+      <div className="min-h-0 flex-1 overflow-y-auto">
+        {view.type === "categories" && (
+          <div className="px-6 py-5">
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+              {displayCategories.map((cat) => {
+                const catTools = getToolsByDisplayCategory(cat.name).filter(
+                  (t) => !isWeb || t.platforms.includes("web")
+                );
+                const preview = catTools.slice(0, 3).map((t) => t.name);
+                const subtitle = categorySubtitles[cat.name] ?? "";
+                return (
+                  <button
+                    key={cat.name}
+                    type="button"
+                    onClick={() => setView({ type: "category", name: cat.name })}
+                    className="group flex flex-col items-start gap-2 rounded-xl border border-border-light bg-white p-4 text-left transition-colors hover:border-primary/40 hover:bg-primary/5 dark:border-border-dark dark:bg-panel-dark"
+                  >
+                    <div className="flex w-full items-center justify-between">
+                      <div className="flex size-8 items-center justify-center rounded-lg bg-slate-100 text-slate-500 transition-colors group-hover:bg-primary/10 group-hover:text-primary dark:bg-slate-800 dark:text-slate-400">
+                        <span
+                          className="material-symbols-outlined text-[18px]"
+                          aria-hidden
+                        >
+                          {cat.icon}
+                        </span>
+                      </div>
+                      <span className="font-mono text-xs text-slate-400 dark:text-slate-500">
+                        {catTools.length}
+                      </span>
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">
+                        {cat.name}
+                      </p>
+                      <p className="mt-0.5 line-clamp-2 text-[11px] leading-snug text-slate-500 dark:text-slate-400">
+                        {subtitle}
+                      </p>
+                    </div>
+                    {preview.length > 0 && (
+                      <div className="mt-auto flex flex-wrap gap-1 pt-1">
+                        {preview.map((name) => (
+                          <span
+                            key={name}
+                            className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] text-slate-500 dark:bg-slate-800 dark:text-slate-400"
+                          >
+                            {name}
+                          </span>
+                        ))}
+                        {catTools.length > 3 && (
+                          <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] text-slate-400 dark:bg-slate-800 dark:text-slate-500">
+                            +{catTools.length - 3} more
+                          </span>
+                        )}
+                      </div>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="mt-5 flex justify-center">
+              <button
+                type="button"
+                onClick={() => setView({ type: "all" })}
+                className="flex items-center gap-1.5 text-xs text-slate-500 transition-colors hover:text-primary dark:text-slate-400"
+              >
+                <span
+                  className="material-symbols-outlined text-[14px]"
+                  aria-hidden
+                >
+                  grid_view
+                </span>
+                View all {totalImplemented} tools
               </button>
             </div>
           </div>
-          {displayedRecent.length === 0 ? (
-            <p className="text-sm text-slate-400 dark:text-slate-500">
-              No recent tools yet.{" "}
-              <Link to="/library" className="text-primary hover:underline">
-                Open a tool from the Library.
-              </Link>
-            </p>
-          ) : (
-            <div className="flex flex-wrap gap-4">
-              {displayedRecent.map((tool) => (
-                <ToolCard
-                  key={tool.id}
-                  tool={tool}
-                  onClick={() => handleOpenTool(tool)}
-                  isFavourite={favouriteToolIds.includes(tool.id)}
-                  onToggleFavourite={(e) => {
-                    e.stopPropagation();
-                    toggleFavourite(tool);
-                  }}
-                />
-              ))}
-            </div>
-          )}
-        </section>
-      </header>
+        )}
 
-      {/* Footer: fixed at bottom */}
-      <footer className="shrink-0 px-8 py-3 border-t border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark">
-        <div className="w-full px-4 py-3 rounded-lg border border-border-light dark:border-border-dark bg-white dark:bg-panel-dark flex items-center gap-6 text-xs text-slate-500 dark:text-slate-400">
-          <span className="font-mono">
-            {totalImplemented}{" "}
-            {totalImplemented === 1 ? "Tool" : "Tools"} available
+        {view.type === "category" && (
+          <div className="flex min-h-0 flex-col">
+            <div className="shrink-0 border-b border-border-light px-6 py-3 dark:border-border-dark">
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => setView({ type: "categories" })}
+                  className="flex items-center gap-1.5 text-xs text-slate-500 transition-colors hover:text-primary dark:text-slate-400"
+                >
+                  <span
+                    className="material-symbols-outlined text-[16px]"
+                    aria-hidden
+                  >
+                    arrow_back
+                  </span>
+                  Categories
+                </button>
+                <span className="text-slate-300 dark:text-slate-600">/</span>
+                <span className="text-sm font-medium text-slate-800 dark:text-slate-200">
+                  {view.name}
+                </span>
+                <span className="ml-auto font-mono text-xs text-slate-400 dark:text-slate-500">
+                  {filteredTools.length} tools
+                </span>
+              </div>
+            </div>
+
+            <div className="min-h-0 flex-1 overflow-y-auto px-6 py-4">
+              <div className="flex flex-col gap-2">
+                {filteredTools.map((tool) => (
+                  <ToolListCard
+                    key={tool.id}
+                    tool={tool}
+                    isFavourite={favouriteToolIds.includes(tool.id)}
+                    onClick={() => handleOpenTool(tool)}
+                    onToggleFavourite={(e) => {
+                      e.stopPropagation();
+                      toggleFavourite(tool);
+                    }}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {view.type === "all" && (
+          <div className="flex min-h-0 flex-col">
+            <div className="shrink-0 border-b border-border-light px-6 py-3 dark:border-border-dark">
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => setView({ type: "categories" })}
+                  className="flex items-center gap-1.5 text-xs text-slate-500 transition-colors hover:text-primary dark:text-slate-400"
+                >
+                  <span
+                    className="material-symbols-outlined text-[16px]"
+                    aria-hidden
+                  >
+                    arrow_back
+                  </span>
+                  Categories
+                </button>
+                <span className="text-slate-300 dark:text-slate-600">/</span>
+                <span className="text-sm font-medium text-slate-800 dark:text-slate-200">
+                  All tools
+                </span>
+                <span className="ml-auto font-mono text-xs text-slate-400 dark:text-slate-500">
+                  {totalImplemented} tools
+                </span>
+              </div>
+            </div>
+
+            <div className="min-h-0 flex-1 overflow-y-auto px-6 py-4">
+              <div className="flex flex-col gap-2">
+                {implementedTools.map((tool) => (
+                  <ToolListCard
+                    key={tool.id}
+                    tool={tool}
+                    isFavourite={favouriteToolIds.includes(tool.id)}
+                    onClick={() => handleOpenTool(tool)}
+                    onToggleFavourite={(e) => {
+                      e.stopPropagation();
+                      toggleFavourite(tool);
+                    }}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <footer className="shrink-0 border-t border-border-light px-6 py-3 dark:border-border-dark">
+        <div className="flex items-center gap-4 font-mono text-xs text-slate-500 dark:text-slate-400">
+          <span>
+            {totalImplemented} {totalImplemented === 1 ? "Tool" : "Tools"}
           </span>
-          <span className="font-mono">
+          <span>
             {categoriesWithTools}{" "}
             {categoriesWithTools === 1 ? "Category" : "Categories"}
           </span>
-          <span className="font-mono ml-auto">v{APP_VERSION}</span>
+          <span className="ml-auto">v{APP_VERSION}</span>
         </div>
       </footer>
     </div>
   );
 }
-

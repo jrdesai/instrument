@@ -4,19 +4,16 @@ import {
   Routes,
   Route,
   useParams,
-  useNavigate,
 } from "react-router-dom";
 import { getToolById } from "./registry";
-import { onTrayNavigateToTool, updateTrayMenu } from "./bridge";
 import { AppShell } from "./components/layout/AppShell";
 import { DashboardPage } from "./components/layout/DashboardPage";
-import { LibraryPage } from "./components/layout/LibraryPage";
 import { HistoryPage } from "./components/layout/HistoryPage";
 import { SettingsPage } from "./components/layout/SettingsPage";
 import { ToolHeader } from "./components/layout/ToolHeader";
 import { ToolErrorBoundary } from "./components/ui/ToolErrorBoundary";
 import { LoadingSpinner } from "./components/ui/LoadingSpinner";
-import { usePreferenceStore, useToolStore } from "./store";
+import { usePreferenceStore } from "./store";
 import "./App.css";
 
 function ToolPage() {
@@ -45,37 +42,10 @@ function ToolPage() {
 }
 
 function RoutedLayout() {
-  const navigate = useNavigate();
-  const favouriteToolIds = useToolStore((s) => s.favouriteToolIds);
-  const setActiveTool = useToolStore((s) => s.setActiveTool);
-  const addToRecent = useToolStore((s) => s.addToRecent);
-
-  useEffect(() => {
-    const tools = favouriteToolIds
-      .map((id) => getToolById(id))
-      .filter((t): t is NonNullable<typeof t> => Boolean(t))
-      .map((t) => ({ id: t.id, name: t.name }));
-    void updateTrayMenu(tools);
-  }, [favouriteToolIds]);
-
-  useEffect(
-    () =>
-      onTrayNavigateToTool((toolId) => {
-        const tool = getToolById(toolId);
-        if (tool) {
-          setActiveTool(tool);
-          addToRecent(tool);
-          navigate(`/tools/${tool.id}`);
-        }
-      }),
-    [navigate, setActiveTool, addToRecent]
-  );
-
   return (
     <Routes>
       <Route element={<AppShell />}>
         <Route path="/" element={<DashboardPage />} />
-        <Route path="/library" element={<LibraryPage />} />
         <Route path="/history" element={<HistoryPage />} />
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="/tools/:toolId" element={<ToolPage />} />
@@ -89,11 +59,16 @@ function App() {
 
   useEffect(() => {
     const root = document.documentElement;
-    if (theme === "dark") {
-      root.classList.add("dark");
-    } else {
-      root.classList.remove("dark");
+    if (theme === "system") {
+      const mq = window.matchMedia("(prefers-color-scheme: dark)");
+      root.classList.toggle("dark", mq.matches);
+      const handler = (e: MediaQueryListEvent) => {
+        root.classList.toggle("dark", e.matches);
+      };
+      mq.addEventListener("change", handler);
+      return () => mq.removeEventListener("change", handler);
     }
+    root.classList.toggle("dark", theme === "dark");
   }, [theme]);
 
   return (

@@ -39,28 +39,20 @@ export function SettingsPage() {
             <div className="flex flex-col gap-1.5">
               <span className="text-sm text-slate-700 dark:text-slate-300">Theme</span>
               <div className="flex gap-2">
-                <button
-                  type="button"
-                  onClick={() => setTheme("light")}
-                  className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-                    theme === "light"
-                      ? "bg-primary text-white"
-                      : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
-                  }`}
-                >
-                  Light
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setTheme("dark")}
-                  className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-                    theme === "dark"
-                      ? "bg-primary text-white"
-                      : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
-                  }`}
-                >
-                  Dark
-                </button>
+                {(["light", "dark", "system"] as const).map((t) => (
+                  <button
+                    key={t}
+                    type="button"
+                    onClick={() => setTheme(t)}
+                    className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                      theme === t
+                        ? "bg-primary text-white"
+                        : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
+                    }`}
+                  >
+                    {t.charAt(0).toUpperCase() + t.slice(1)}
+                  </button>
+                ))}
               </div>
             </div>
           </section>
@@ -186,6 +178,20 @@ export function SettingsPage() {
                 <span className="text-sm font-mono text-slate-500 dark:text-slate-400">
                   v{APP_VERSION}
                 </span>
+              </div>
+              <div className="flex items-center justify-between px-4 py-3 bg-panel-light dark:bg-panel-dark border-t border-border-light dark:border-border-dark">
+                <p className="text-sm text-slate-700 dark:text-slate-300">Source</p>
+                <a
+                  href="https://github.com/jrdesai/instrument"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs text-primary hover:underline flex items-center gap-1"
+                >
+                  <span className="material-symbols-outlined text-[14px]" aria-hidden>
+                    open_in_new
+                  </span>
+                  GitHub
+                </a>
               </div>
             </div>
           </section>
