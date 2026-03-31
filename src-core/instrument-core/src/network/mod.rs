@@ -2,6 +2,8 @@
 //!
 //! Uses the `url` crate. All parsing happens in Rust; no browser URL API.
 
+pub mod cidr;
+
 use serde::{Deserialize, Serialize};
 use specta::Type;
 use ts_rs::TS;

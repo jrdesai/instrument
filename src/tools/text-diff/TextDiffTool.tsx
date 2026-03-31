@@ -133,7 +133,6 @@ function TextDiffTool() {
           { skipHistory: true }
         )) as TextDiffOutput;
         setOutput(result);
-        console.log("[diff]", JSON.stringify(result, null, 2));
         setError(null);
 
         if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);

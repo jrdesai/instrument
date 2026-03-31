@@ -32,9 +32,19 @@ export function bitwise_process(js_input: any): any;
 export function case_process(js_input: any): any;
 
 /**
+ * X.509 / PEM certificate decoder.
+ */
+export function cert_decode(js_input: any): any;
+
+/**
  * chmod / Unix permissions calculator. Receives ChmodInput and returns ChmodOutput (camelCase).
  */
 export function chmod_process(js_input: any): any;
+
+/**
+ * CIDR calculator. Receives CidrInput and returns CidrOutput.
+ */
+export function cidr_calculate(js_input: any): any;
 
 /**
  * Colour converter. Receives ColorInput (camelCase) and returns ColorOutput (camelCase).
@@ -45,6 +55,11 @@ export function color_convert(js_input: any): any;
  * Cron expression parser. Receives CronInput (camelCase) and returns CronOutput (camelCase).
  */
 export function cron_process(js_input: any): any;
+
+/**
+ * .env parser and validator.
+ */
+export function env_parse(js_input: any): any;
 
 /**
  * Find & replace. Receives FindReplaceInput (camelCase) and returns FindReplaceOutput (camelCase).
@@ -72,6 +87,11 @@ export function html_entity_process(js_input: any): any;
 export function iso8601_process(js_input: any): any;
 
 /**
+ * Line-level text operations.
+ */
+export function line_tools_process(js_input: any): any;
+
+/**
  * Lorem ipsum generator. Receives LoremIpsumInput (camelCase) and returns LoremIpsumOutput (camelCase).
  */
 export function lorem_ipsum_process(js_input: any): any;
@@ -90,6 +110,11 @@ export function passphrase_process(js_input: any): any;
  * Password generation. Receives PasswordInput (camelCase) and returns PasswordOutput (camelCase).
  */
 export function password_process(js_input: any): any;
+
+/**
+ * QR code generator.
+ */
+export function qr_generate(js_input: any): any;
 
 /**
  * Regex pattern explanation (HIR tokens). Receives ExplainRequest and returns Vec<ExplainToken>.
@@ -221,18 +246,23 @@ export interface InitOutput {
     readonly base_converter_process: (a: any) => [number, number, number];
     readonly bitwise_process: (a: any) => [number, number, number];
     readonly case_process: (a: any) => [number, number, number];
+    readonly cert_decode: (a: any) => [number, number, number];
     readonly chmod_process: (a: any) => [number, number, number];
+    readonly cidr_calculate: (a: any) => [number, number, number];
     readonly color_convert: (a: any) => [number, number, number];
     readonly cron_process: (a: any) => [number, number, number];
+    readonly env_parse: (a: any) => [number, number, number];
     readonly find_replace_process: (a: any) => [number, number, number];
     readonly hash_process: (a: any) => [number, number, number];
     readonly hex_process: (a: any) => [number, number, number];
     readonly html_entity_process: (a: any) => [number, number, number];
     readonly iso8601_process: (a: any) => [number, number, number];
+    readonly line_tools_process: (a: any) => [number, number, number];
     readonly lorem_ipsum_process: (a: any) => [number, number, number];
     readonly nanoid_process: (a: any) => [number, number, number];
     readonly passphrase_process: (a: any) => [number, number, number];
     readonly password_process: (a: any) => [number, number, number];
+    readonly qr_generate: (a: any) => [number, number, number];
     readonly regex_explain: (a: any) => [number, number, number];
     readonly regex_match: (a: any) => [number, number, number];
     readonly string_escaper_process: (a: any) => [number, number, number];

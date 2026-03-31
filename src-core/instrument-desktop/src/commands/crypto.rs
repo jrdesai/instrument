@@ -13,6 +13,7 @@ use instrument_core::crypto::ulid::{
 };
 use instrument_core::crypto::aes::{process as aes_process_core, AesInput, AesOutput};
 use instrument_core::crypto::api_key::{process as api_key_process_core, ApiKeyInput, ApiKeyOutput};
+use instrument_core::crypto::cert::{process as cert_decode_core, CertDecodeInput, CertDecodeOutput};
 use instrument_core::crypto::nanoid::{
     process as nanoid_process_core, NanoIdInput, NanoIdOutput,
 };
@@ -120,5 +121,15 @@ pub fn aes_process(input: AesInput) -> AesOutput {
     let start = Instant::now();
     let output = aes_process_core(input);
     finish_ok("aes_process", start);
+    output
+}
+
+/// Decodes X.509 / PEM certificates via instrument-core.
+#[tauri::command]
+#[specta::specta]
+pub fn cert_decode(input: CertDecodeInput) -> CertDecodeOutput {
+    let start = Instant::now();
+    let output = cert_decode_core(input);
+    finish_ok("cert_decode", start);
     output
 }

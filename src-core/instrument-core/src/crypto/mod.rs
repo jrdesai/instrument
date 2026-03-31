@@ -1,6 +1,7 @@
 //! Cryptographic hashing and related utilities (combined hash, UUID, ULID, API keys, etc.).
 
 pub mod aes;
+pub mod cert;
 pub mod hash;
 pub mod uuid_gen;
 pub mod ulid;

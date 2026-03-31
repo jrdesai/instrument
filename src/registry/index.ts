@@ -188,6 +188,23 @@ export const tools: Tool[] = [
     implemented: true,
   },
   {
+    id: "qr-code",
+    name: "QR Code Generator",
+    description: "Generate QR codes locally from any text, URL, or data.",
+    category: "encoding",
+    displayCategory: "Encoding",
+    displayCategoryIcon: "data_array",
+    roles: ["frontend", "backend", "general"],
+    icon: "qr_code",
+    platforms: ["desktop", "web"],
+    rustCommand: "qr_generate",
+    keywords: ["qr", "qrcode", "barcode", "url", "encode", "scan"],
+    component: React.lazy(() =>
+      import("../tools/qr-code").then((m) => ({ default: m.default }))
+    ),
+    implemented: true,
+  },
+  {
     id: "hash",
     name: "Hash",
     description:
@@ -214,6 +231,25 @@ export const tools: Tool[] = [
     ],
     component: React.lazy(() =>
       import("../tools/hash/HashTool").then((m) => ({ default: m.default }))
+    ),
+    implemented: true,
+  },
+  {
+    id: "cert-decoder",
+    name: "Certificate Decoder",
+    description:
+      "Decode X.509 / PEM certificates - subject, SANs, validity, and key info.",
+    category: "crypto",
+    displayCategory: "Security",
+    displayCategoryIcon: "security",
+    roles: ["devops", "security"],
+    icon: "verified",
+    platforms: ["desktop", "web"],
+    rustCommand: "cert_decode",
+    sensitive: true,
+    keywords: ["certificate", "x509", "pem", "tls", "ssl", "cert", "san"],
+    component: React.lazy(() =>
+      import("../tools/cert-decoder").then((m) => ({ default: m.default }))
     ),
     implemented: true,
   },
@@ -535,6 +571,69 @@ export const tools: Tool[] = [
       import("../tools/url-parser/UrlParserTool").then((m) => ({
         default: m.default,
       }))
+    ),
+    implemented: true,
+  },
+  {
+    id: "cidr-calculator",
+    name: "CIDR Calculator",
+    description:
+      "Calculate network address, broadcast, host range and mask from a CIDR.",
+    category: "network",
+    displayCategory: "Network",
+    displayCategoryIcon: "router",
+    roles: ["devops", "backend"],
+    icon: "lan",
+    platforms: ["desktop", "web"],
+    rustCommand: "cidr_calculate",
+    keywords: [
+      "cidr",
+      "subnet",
+      "network",
+      "ip",
+      "mask",
+      "broadcast",
+      "ipv4",
+      "ipv6",
+    ],
+    component: React.lazy(() =>
+      import("../tools/cidr-calculator").then((m) => ({ default: m.default }))
+    ),
+    implemented: true,
+  },
+  {
+    id: "env-parser",
+    name: "Config Parser",
+    description:
+      "Parse and validate .env, .properties, and .ini config files. Spot duplicates, empty values, and syntax errors.",
+    category: "text",
+    displayCategory: "Code",
+    displayCategoryIcon: "code",
+    roles: ["frontend", "backend", "devops"],
+    icon: "settings_applications",
+    platforms: ["desktop", "web"],
+    rustCommand: "env_parse",
+    sensitive: true,
+    keywords: ["env", "dotenv", "properties", "ini", "config", "environment", "variables", "parse"],
+    component: React.lazy(() =>
+      import("../tools/env-parser").then((m) => ({ default: m.default }))
+    ),
+    implemented: true,
+  },
+  {
+    id: "line-tools",
+    name: "Line Tools",
+    description: "Sort, deduplicate, reverse, and clean lines of text.",
+    category: "text",
+    displayCategory: "Formatting",
+    displayCategoryIcon: "format_align_left",
+    roles: ["frontend", "backend", "general"],
+    icon: "sort",
+    platforms: ["desktop", "web"],
+    rustCommand: "line_tools_process",
+    keywords: ["sort", "deduplicate", "reverse", "lines", "trim", "clean", "text"],
+    component: React.lazy(() =>
+      import("../tools/line-tools").then((m) => ({ default: m.default }))
     ),
     implemented: true,
   },

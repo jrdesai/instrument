@@ -8,6 +8,7 @@ use instrument_core::encoding::html_entity::{
     process as html_entity_process_core, HtmlEntityInput, HtmlEntityOutput,
 };
 use instrument_core::encoding::hex::{process as hex_process_core, HexInput, HexOutput};
+use instrument_core::encoding::qrcode::{process as qr_process_core, QrCodeInput, QrCodeOutput};
 use instrument_core::encoding::url::{process as url_process, UrlEncodeInput, UrlEncodeOutput};
 
 use crate::command_log::finish_ok;
@@ -59,5 +60,15 @@ pub fn color_convert(input: ColorInput) -> ColorOutput {
     let start = Instant::now();
     let output = color_process_core(input);
     finish_ok("color_convert", start);
+    output
+}
+
+/// Generates a QR code SVG from input text.
+#[tauri::command]
+#[specta::specta]
+pub fn qr_generate(input: QrCodeInput) -> QrCodeOutput {
+    let start = Instant::now();
+    let output = qr_process_core(input);
+    finish_ok("qr_generate", start);
     output
 }

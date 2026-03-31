@@ -13,6 +13,12 @@ use instrument_core::text::case::{process as case_process_core, CaseInput, CaseO
 use instrument_core::text::find_replace::{
     process as find_replace_process_core, FindReplaceInput, FindReplaceOutput,
 };
+use instrument_core::text::env_parser::{
+    process as env_parse_process_core, EnvParseInput, EnvParseOutput,
+};
+use instrument_core::text::line_tools::{
+    process as line_tools_process_core, LineToolsInput, LineToolsOutput,
+};
 use instrument_core::text::diff::{
     process as text_diff_process_core, TextDiffInput, TextDiffOutput,
 };
@@ -27,6 +33,9 @@ use instrument_core::text::word_counter::{
 };
 use instrument_core::crypto::api_key::{
     process as api_key_process_core, ApiKeyInput, ApiKeyOutput,
+};
+use instrument_core::crypto::cert::{
+    process as cert_decode_core, CertDecodeInput, CertDecodeOutput,
 };
 use instrument_core::crypto::passphrase::{
     process as passphrase_process_core, PassphraseInput, PassphraseOutput,
@@ -86,6 +95,9 @@ use instrument_core::encoding::color::{process as color_process_core, ColorInput
 use instrument_core::encoding::hex::{
     process as hex_process_core, HexInput, HexOutput,
 };
+use instrument_core::encoding::qrcode::{
+    process as qr_process_core, QrCodeInput, QrCodeOutput,
+};
 use instrument_core::encoding::html_entity::{
     process as html_entity_process_core, HtmlEntityInput, HtmlEntityOutput,
 };
@@ -93,6 +105,7 @@ use instrument_core::encoding::url::{process as url_process, UrlEncodeInput, Url
 use instrument_core::network::{
     process as url_parse_process, UrlParseInput, UrlParseOutput,
 };
+use instrument_core::network::cidr::{process as cidr_process_core, CidrInput, CidrOutput};
 use instrument_core::csv::{
     process as csv_to_json_process_core, CsvToJsonInput, CsvToJsonOutput,
 };
@@ -133,6 +146,14 @@ pub fn tool_url_parse_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
     let input: UrlParseInput =
         from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
     let output: UrlParseOutput = url_parse_process(input);
+    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
+}
+
+/// CIDR calculator. Receives CidrInput and returns CidrOutput.
+#[wasm_bindgen(js_name = cidr_calculate)]
+pub fn cidr_calculate_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
+    let input: CidrInput = from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let output: CidrOutput = cidr_process_core(input);
     to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
 }
 
@@ -187,6 +208,15 @@ pub fn color_convert_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
     let input: ColorInput =
         from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
     let output = color_process_core(input);
+    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
+}
+
+/// QR code generator.
+#[wasm_bindgen(js_name = qr_generate)]
+pub fn qr_generate_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
+    let input: QrCodeInput =
+        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let output: QrCodeOutput = qr_process_core(input);
     to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
 }
 
@@ -250,6 +280,15 @@ pub fn api_key_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
     let input: ApiKeyInput =
         from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
     let output: ApiKeyOutput = api_key_process_core(input);
+    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
+}
+
+/// X.509 / PEM certificate decoder.
+#[wasm_bindgen(js_name = cert_decode)]
+pub fn cert_decode_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
+    let input: CertDecodeInput =
+        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let output: CertDecodeOutput = cert_decode_core(input);
     to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
 }
 
@@ -456,6 +495,24 @@ pub fn text_diff_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
     let input: TextDiffInput =
         from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
     let output: TextDiffOutput = text_diff_process_core(input);
+    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
+}
+
+/// Line-level text operations.
+#[wasm_bindgen(js_name = line_tools_process)]
+pub fn line_tools_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
+    let input: LineToolsInput =
+        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let output: LineToolsOutput = line_tools_process_core(input);
+    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
+}
+
+/// .env parser and validator.
+#[wasm_bindgen(js_name = env_parse)]
+pub fn env_parse_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
+    let input: EnvParseInput =
+        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let output: EnvParseOutput = env_parse_process_core(input);
     to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
 }
 

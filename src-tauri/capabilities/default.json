@@ -45,6 +45,11 @@
     "allow-expression-eval",
     "allow-nanoid",
     "allow-password",
-    "allow-passphrase"
+    "allow-passphrase",
+    "allow-line-tools",
+    "allow-cert-decoder",
+    "allow-cidr-calculator",
+    "allow-env-parser",
+    "allow-qr-code"
   ]
 }

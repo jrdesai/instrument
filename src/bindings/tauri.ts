@@ -61,6 +61,12 @@ async nanoidProcess(input: NanoIdInput) : Promise<NanoIdOutput> {
     return await TAURI_INVOKE("nanoid_process", { input });
 },
 /**
+ * Decodes X.509 / PEM certificates via instrument-core.
+ */
+async certDecode(input: CertDecodeInput) : Promise<CertDecodeOutput> {
+    return await TAURI_INVOKE("cert_decode", { input });
+},
+/**
  * Runs AES-256-GCM encrypt/decrypt via instrument-core.
  */
 async aesProcess(input: AesInput) : Promise<AesOutput> {
@@ -113,6 +119,18 @@ async loremIpsumProcess(input: LoremIpsumInput) : Promise<LoremIpsumOutput> {
  */
 async textDiffProcess(input: TextDiffInput) : Promise<TextDiffOutput> {
     return await TAURI_INVOKE("text_diff_process", { input });
+},
+/**
+ * Runs line-level text tools via instrument-core.
+ */
+async lineToolsProcess(input: LineToolsInput) : Promise<LineToolsOutput> {
+    return await TAURI_INVOKE("line_tools_process", { input });
+},
+/**
+ * Parses and validates .env content via instrument-core.
+ */
+async envParse(input: EnvParseInput) : Promise<EnvParseOutput> {
+    return await TAURI_INVOKE("env_parse", { input });
 },
 /**
  * Runs timestamp conversion via instrument-core.
@@ -169,6 +187,12 @@ async colorConvert(input: ColorInput) : Promise<ColorOutput> {
     return await TAURI_INVOKE("color_convert", { input });
 },
 /**
+ * Generates a QR code SVG from input text.
+ */
+async qrGenerate(input: QrCodeInput) : Promise<QrCodeOutput> {
+    return await TAURI_INVOKE("qr_generate", { input });
+},
+/**
  * Runs JSON format/minify via instrument-core.
  */
 async toolJsonFormat(input: JsonFormatInput) : Promise<JsonFormatOutput> {
@@ -206,6 +230,9 @@ async toolConfigConvert(input: ConfigConvertInput) : Promise<ConfigConvertOutput
 },
 async toolUrlParse(input: UrlParseInput) : Promise<UrlParseOutput> {
     return await TAURI_INVOKE("tool_url_parse", { input });
+},
+async cidrCalculate(input: CidrInput) : Promise<CidrOutput> {
+    return await TAURI_INVOKE("cidr_calculate", { input });
 },
 /**
  * Runs base conversion via instrument-core.
@@ -352,6 +379,13 @@ export type CaseInput = { text: string }
  * Output for the Text Case Converter tool: all case variants at once.
  */
 export type CaseOutput = { camelCase: string; pascalCase: string; snakeCase: string; screamingCase: string; kebabCase: string; titleCase: string; upperCase: string; lowerCase: string; dotCase: string; pathCase: string; wordCount: number; error: string | null }
+export type CertDecodeInput = { 
+/**
+ * PEM-encoded certificate (one or chain).
+ */
+pem: string }
+export type CertDecodeOutput = { certificates: CertInfo[]; error: string | null }
+export type CertInfo = { subject: string; subjectFields: DnField[]; issuer: string; issuerFields: DnField[]; serialNumber: string; notBefore: string; notAfter: string; isExpired: boolean; expiryWarning: boolean; daysUntilExpiry: number; signatureAlgorithm: string; publicKeyAlgorithm: string; publicKeySize: number | null; sans: string[]; isCa: boolean; keyUsages: string[]; extendedKeyUsages: string[]; fingerprintSha256: string; version: number }
 /**
  * Type of change between left and right.
  */
@@ -380,6 +414,28 @@ export type ChmodInput = { value: string }
  * Full output.
  */
 export type ChmodOutput = { octal: string; symbolic: string; decimal: number; chmodCommand: string; owner: PermissionClass; group: PermissionClass; others: PermissionClass; setuid: boolean; setgid: boolean; sticky: boolean; error: string | null }
+export type CidrInput = { cidr: string }
+export type CidrOutput = { networkAddress: string; broadcastAddress: string | null; subnetMask: string; wildcardMask: string; firstHost: string | null; lastHost: string | null; totalHosts: number; usableHosts: number; prefixLength: number; ipVersion: number; ipClass: string | null; isPrivate: boolean; isLoopback: boolean; binaryMask: string; 
+/**
+ * Number of host bits.
+ */
+hostBits: number; 
+/**
+ * Number of wildcard bits.
+ */
+wildcardBits: number; 
+/**
+ * IPv6 scope classification.
+ */
+ipv6Scope: string | null; 
+/**
+ * Human-readable note for special prefix lengths.
+ */
+specialNote: string | null; 
+/**
+ * Subnet split preview.
+ */
+subnetSplit: SubnetSplit | null; error: string | null }
 /**
  * Input for the colour converter.
  */
@@ -487,6 +543,52 @@ leftValue: string | null;
  */
 rightValue: string | null }
 export type DiffGranularity = "line" | "word" | "char"
+export type DnField = { label: string; value: string }
+export type EnvEntry = { key: string; value: string; rawValue: string; lineNumber: number; isEmptyValue: boolean; isComment: boolean; isQuoted: boolean; 
+/**
+ * For .ini files: the section this key belongs to. None for .env/.properties.
+ */
+section: string | null; 
+/**
+ * True if this entry is a section header.
+ */
+isSection: boolean }
+export type EnvFileFormat = 
+/**
+ * Auto-detect from content.
+ */
+"auto" | 
+/**
+ * KEY=VALUE, # comments, quoted values.
+ */
+"env" | 
+/**
+ * KEY=VALUE or KEY: VALUE, # and ! comments, trimmed values.
+ */
+"properties" | 
+/**
+ * [Section] headers, KEY=VALUE, # and ; comments.
+ */
+"ini"
+export type EnvIssue = { lineNumber: number; kind: string; severity: string; message: string; key: string | null }
+export type EnvParseInput = { content: string; format?: EnvFileFormat; 
+/**
+ * If true, mask values that look like secrets.
+ */
+maskValues?: boolean }
+export type EnvParseOutput = { entries: EnvEntry[]; issues: EnvIssue[]; totalVars: number; emptyVars: number; duplicateKeys: string[]; 
+/**
+ * Entries serialized as JSON object (key -> value, comments/sections/empty excluded).
+ */
+asJson: string; 
+/**
+ * Entries normalized to KEY=VALUE format (comments/sections excluded).
+ */
+normalizedEnv: string; 
+/**
+ * The format that was actually used (useful when Auto was selected).
+ */
+detectedFormat: EnvFileFormat }
 /**
  * Escape or unescape.
  */
@@ -868,6 +970,25 @@ nbfActive: boolean | null;
  * Full payload claims as pretty JSON.
  */
 allClaims: string; signatureValid: boolean | null; signatureNote: string; partCount: number; isWellFormed: boolean; error: string | null }
+export type LineOperation = "sortAsc" | "sortDesc" | "sortNaturalAsc" | "sortNaturalDesc" | "deduplicate" | "reverse" | "trimWhitespace" | "removeEmpty"
+export type LineToolsInput = { text: string; 
+/**
+ * Ordered list of operations applied left-to-right.
+ */
+operations: LineOperation[]; 
+/**
+ * For Deduplicate: keep first occurrence (true) or last (false).
+ */
+keepFirst?: boolean; 
+/**
+ * For Sort/Deduplicate: case-insensitive comparison.
+ */
+caseInsensitive?: boolean }
+export type LineToolsOutput = { result: string; inputLineCount: number; outputLineCount: number; changedCount: number; 
+/**
+ * Line ending style detected in input: "lf" | "crlf"
+ */
+lineEnding: string }
 /**
  * Input for the Lorem Ipsum generator.
  */
@@ -990,6 +1111,45 @@ export type PasswordStrength = "Weak" | "Fair" | "Strong" | "VeryStrong"
  * Human-readable permissions for one class (owner / group / others).
  */
 export type PermissionClass = { read: boolean; write: boolean; execute: boolean; label: string }
+export type QrCodeInput = { text: string; ecLevel?: QrEcLevel; 
+/**
+ * Size of each module in the SVG.
+ */
+moduleSize?: number; 
+/**
+ * Foreground colour as CSS hex string.
+ */
+fgColor?: string; 
+/**
+ * Background colour as CSS hex string.
+ */
+bgColor?: string; 
+/**
+ * Quiet zone size in modules.
+ */
+margin?: number }
+export type QrCodeOutput = { 
+/**
+ * Complete SVG string, ready to embed or display.
+ */
+svg: string; 
+/**
+ * Side length of the QR code in modules (excluding quiet zone).
+ */
+size: number; 
+/**
+ * QR version number (1-40).
+ */
+qrVersion: number; 
+/**
+ * Approximate max byte capacity for current version + EC level.
+ */
+maxBytes: number; 
+/**
+ * Input length in UTF-8 bytes.
+ */
+inputBytes: number; error: string | null }
+export type QrEcLevel = "low" | "medium" | "quartile" | "high"
 /**
  * One query string key-value pair (decoded for display).
  */
@@ -1027,6 +1187,7 @@ export type StringEscaperInput = { text: string; mode: EscapeMode; target: Escap
  * Output: result string, number of replacements, optional error.
  */
 export type StringEscaperOutput = { result: string; changes: number; error: string | null }
+export type SubnetSplit = { subPrefix: number; count: number; examples: string[] }
 export type TextDiffAnnotatedLine = { lineNumber: number; content: string; annotation: TextDiffLineAnnotation; 
 /**
  * Inline spans for word/char granularity on changed lines.

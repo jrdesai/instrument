@@ -1,0 +1,5 @@
+# Allow the Certificate Decoder command to be invoked from the frontend.
+[[permission]]
+identifier = "allow-cert-decoder"
+description = "Enables the cert_decode command."
+commands.allow = ["cert_decode"]

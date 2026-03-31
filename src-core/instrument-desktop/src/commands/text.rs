@@ -9,6 +9,12 @@ use instrument_core::text::find_replace::{
 use instrument_core::text::diff::{
     process as text_diff_process_core, TextDiffInput, TextDiffOutput,
 };
+use instrument_core::text::env_parser::{
+    process as env_parse_process_core, EnvParseInput, EnvParseOutput,
+};
+use instrument_core::text::line_tools::{
+    process as line_tools_process_core, LineToolsInput, LineToolsOutput,
+};
 use instrument_core::text::string_escaper::{
     process as string_escaper_process_core, StringEscaperInput, StringEscaperOutput,
 };
@@ -78,5 +84,25 @@ pub fn text_diff_process(input: TextDiffInput) -> TextDiffOutput {
     let start = Instant::now();
     let output = text_diff_process_core(input);
     finish_ok("text_diff_process", start);
+    output
+}
+
+/// Runs line-level text tools via instrument-core.
+#[tauri::command]
+#[specta::specta]
+pub fn line_tools_process(input: LineToolsInput) -> LineToolsOutput {
+    let start = Instant::now();
+    let output = line_tools_process_core(input);
+    finish_ok("line_tools_process", start);
+    output
+}
+
+/// Parses and validates .env content via instrument-core.
+#[tauri::command]
+#[specta::specta]
+pub fn env_parse(input: EnvParseInput) -> EnvParseOutput {
+    let start = Instant::now();
+    let output = env_parse_process_core(input);
+    finish_ok("env_parse", start);
     output
 }

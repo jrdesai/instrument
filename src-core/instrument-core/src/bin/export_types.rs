@@ -19,6 +19,9 @@ fn main() {
     instrument_core::crypto::api_key::ApiKeyFormat::export_all_to(&out).unwrap();
     instrument_core::crypto::api_key::ApiKeyInput::export_all_to(&out).unwrap();
     instrument_core::crypto::api_key::ApiKeyOutput::export_all_to(&out).unwrap();
+    instrument_core::crypto::cert::CertDecodeInput::export_all_to(&out).unwrap();
+    instrument_core::crypto::cert::CertDecodeOutput::export_all_to(&out).unwrap();
+    instrument_core::crypto::cert::CertInfo::export_all_to(&out).unwrap();
     instrument_core::crypto::hash::HashInput::export_all_to(&out).unwrap();
     instrument_core::crypto::hash::HashOutput::export_all_to(&out).unwrap();
     instrument_core::crypto::hash::HashOutputFormat::export_all_to(&out).unwrap();
@@ -66,6 +69,9 @@ fn main() {
     instrument_core::encoding::html_entity::HtmlEntityInput::export_all_to(&out).unwrap();
     instrument_core::encoding::html_entity::HtmlEntityMode::export_all_to(&out).unwrap();
     instrument_core::encoding::html_entity::HtmlEntityOutput::export_all_to(&out).unwrap();
+    instrument_core::encoding::qrcode::QrCodeInput::export_all_to(&out).unwrap();
+    instrument_core::encoding::qrcode::QrCodeOutput::export_all_to(&out).unwrap();
+    instrument_core::encoding::qrcode::QrEcLevel::export_all_to(&out).unwrap();
     instrument_core::encoding::url::UrlEncodeInput::export_all_to(&out).unwrap();
     instrument_core::encoding::url::UrlEncodeMode::export_all_to(&out).unwrap();
     instrument_core::encoding::url::UrlEncodeOutput::export_all_to(&out).unwrap();
@@ -96,6 +102,8 @@ fn main() {
     instrument_core::network::QueryParam::export_all_to(&out).unwrap();
     instrument_core::network::UrlParseInput::export_all_to(&out).unwrap();
     instrument_core::network::UrlParseOutput::export_all_to(&out).unwrap();
+    instrument_core::network::cidr::CidrInput::export_all_to(&out).unwrap();
+    instrument_core::network::cidr::CidrOutput::export_all_to(&out).unwrap();
     instrument_core::numbers::base_converter::BaseConverterInput::export_all_to(&out).unwrap();
     instrument_core::numbers::base_converter::BaseConverterOutput::export_all_to(&out).unwrap();
     instrument_core::numbers::base_converter::BitWidth::export_all_to(&out).unwrap();
@@ -118,8 +126,15 @@ fn main() {
     instrument_core::text::diff::LineAnnotation::export_all_to(&out).unwrap();
     instrument_core::text::diff::TextDiffInput::export_all_to(&out).unwrap();
     instrument_core::text::diff::TextDiffOutput::export_all_to(&out).unwrap();
+    instrument_core::text::env_parser::EnvEntry::export_all_to(&out).unwrap();
+    instrument_core::text::env_parser::EnvIssue::export_all_to(&out).unwrap();
+    instrument_core::text::env_parser::EnvParseInput::export_all_to(&out).unwrap();
+    instrument_core::text::env_parser::EnvParseOutput::export_all_to(&out).unwrap();
     instrument_core::text::find_replace::FindReplaceInput::export_all_to(&out).unwrap();
     instrument_core::text::find_replace::FindReplaceOutput::export_all_to(&out).unwrap();
+    instrument_core::text::line_tools::LineOperation::export_all_to(&out).unwrap();
+    instrument_core::text::line_tools::LineToolsInput::export_all_to(&out).unwrap();
+    instrument_core::text::line_tools::LineToolsOutput::export_all_to(&out).unwrap();
     instrument_core::text::lorem_ipsum::LoremIpsumInput::export_all_to(&out).unwrap();
     instrument_core::text::lorem_ipsum::LoremIpsumOutput::export_all_to(&out).unwrap();
     instrument_core::text::lorem_ipsum::LoremOutputType::export_all_to(&out).unwrap();

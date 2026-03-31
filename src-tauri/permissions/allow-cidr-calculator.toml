@@ -1,0 +1,5 @@
+# Allow the CIDR Calculator command to be invoked from the frontend.
+[[permission]]
+identifier = "allow-cidr-calculator"
+description = "Enables the cidr_calculate command."
+commands.allow = ["cidr_calculate"]

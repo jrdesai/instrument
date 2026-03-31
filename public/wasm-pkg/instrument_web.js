@@ -79,12 +79,38 @@ export function case_process(js_input) {
 }
 
 /**
+ * X.509 / PEM certificate decoder.
+ * @param {any} js_input
+ * @returns {any}
+ */
+export function cert_decode(js_input) {
+    const ret = wasm.cert_decode(js_input);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
  * chmod / Unix permissions calculator. Receives ChmodInput and returns ChmodOutput (camelCase).
  * @param {any} js_input
  * @returns {any}
  */
 export function chmod_process(js_input) {
     const ret = wasm.chmod_process(js_input);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
+ * CIDR calculator. Receives CidrInput and returns CidrOutput.
+ * @param {any} js_input
+ * @returns {any}
+ */
+export function cidr_calculate(js_input) {
+    const ret = wasm.cidr_calculate(js_input);
     if (ret[2]) {
         throw takeFromExternrefTable0(ret[1]);
     }
@@ -111,6 +137,19 @@ export function color_convert(js_input) {
  */
 export function cron_process(js_input) {
     const ret = wasm.cron_process(js_input);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
+ * .env parser and validator.
+ * @param {any} js_input
+ * @returns {any}
+ */
+export function env_parse(js_input) {
+    const ret = wasm.env_parse(js_input);
     if (ret[2]) {
         throw takeFromExternrefTable0(ret[1]);
     }
@@ -183,6 +222,19 @@ export function iso8601_process(js_input) {
 }
 
 /**
+ * Line-level text operations.
+ * @param {any} js_input
+ * @returns {any}
+ */
+export function line_tools_process(js_input) {
+    const ret = wasm.line_tools_process(js_input);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
  * Lorem ipsum generator. Receives LoremIpsumInput (camelCase) and returns LoremIpsumOutput (camelCase).
  * @param {any} js_input
  * @returns {any}
@@ -228,6 +280,19 @@ export function passphrase_process(js_input) {
  */
 export function password_process(js_input) {
     const ret = wasm.password_process(js_input);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
+ * QR code generator.
+ * @param {any} js_input
+ * @returns {any}
+ */
+export function qr_generate(js_input) {
+    const ret = wasm.qr_generate(js_input);
     if (ret[2]) {
         throw takeFromExternrefTable0(ret[1]);
     }
@@ -636,8 +701,16 @@ function __wbg_get_imports() {
             const ret = arg0.call(arg1, arg2);
             return ret;
         }, arguments); },
+        __wbg_call_e133b57c9155d22c: function() { return handleError(function (arg0, arg1) {
+            const ret = arg0.call(arg1);
+            return ret;
+        }, arguments); },
         __wbg_crypto_38df2bab126b63dc: function(arg0) {
             const ret = arg0.crypto;
+            return ret;
+        },
+        __wbg_done_08ce71ee07e3bd17: function(arg0) {
+            const ret = arg0.done;
             return ret;
         },
         __wbg_entries_e8a20ff8c9757101: function(arg0) {
@@ -657,7 +730,15 @@ function __wbg_get_imports() {
             const ret = arg0.getTime();
             return ret;
         },
+        __wbg_get_326e41e095fb2575: function() { return handleError(function (arg0, arg1) {
+            const ret = Reflect.get(arg0, arg1);
+            return ret;
+        }, arguments); },
         __wbg_get_a8ee5c45dabc1b3b: function(arg0, arg1) {
+            const ret = arg0[arg1 >>> 0];
+            return ret;
+        },
+        __wbg_get_unchecked_329cfe50afab7352: function(arg0, arg1) {
             const ret = arg0[arg1 >>> 0];
             return ret;
         },
@@ -685,8 +766,16 @@ function __wbg_get_imports() {
             const ret = result;
             return ret;
         },
+        __wbg_isArray_33b91feb269ff46e: function(arg0) {
+            const ret = Array.isArray(arg0);
+            return ret;
+        },
         __wbg_isSafeInteger_ecd6a7f9c3e053cd: function(arg0) {
             const ret = Number.isSafeInteger(arg0);
+            return ret;
+        },
+        __wbg_iterator_d8f549ec8fb061b1: function() {
+            const ret = Symbol.iterator;
             return ret;
         },
         __wbg_length_b3416cf66a5452c8: function(arg0) {
@@ -719,6 +808,14 @@ function __wbg_get_imports() {
         },
         __wbg_new_with_length_825018a1616e9e55: function(arg0) {
             const ret = new Uint8Array(arg0 >>> 0);
+            return ret;
+        },
+        __wbg_next_11b99ee6237339e3: function() { return handleError(function (arg0) {
+            const ret = arg0.next();
+            return ret;
+        }, arguments); },
+        __wbg_next_e01a967809d1aa68: function(arg0) {
+            const ret = arg0.next;
             return ret;
         },
         __wbg_node_84ea875411254db1: function(arg0) {
@@ -773,6 +870,10 @@ function __wbg_get_imports() {
             const ret = arg0.subarray(arg1 >>> 0, arg2 >>> 0);
             return ret;
         },
+        __wbg_value_21fc78aab0322612: function(arg0) {
+            const ret = arg0.value;
+            return ret;
+        },
         __wbg_versions_276b2795b1c6a219: function(arg0) {
             const ret = arg0.versions;
             return ret;
@@ -795,6 +896,11 @@ function __wbg_get_imports() {
         __wbindgen_cast_0000000000000004: function(arg0, arg1) {
             // Cast intrinsic for `Ref(String) -> Externref`.
             const ret = getStringFromWasm0(arg0, arg1);
+            return ret;
+        },
+        __wbindgen_cast_0000000000000005: function(arg0) {
+            // Cast intrinsic for `U64 -> Externref`.
+            const ret = BigInt.asUintN(64, arg0);
             return ret;
         },
         __wbindgen_init_externref_table: function() {
