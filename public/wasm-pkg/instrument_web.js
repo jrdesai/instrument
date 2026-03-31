@@ -326,6 +326,19 @@ export function regex_match(js_input) {
 }
 
 /**
+ * Semantic versioning: parse, compare, range check, next major/minor/patch.
+ * @param {any} js_input
+ * @returns {any}
+ */
+export function semver_process(js_input) {
+    const ret = wasm.semver_process(js_input);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
  * String escaper. Receives StringEscaperInput (camelCase) and returns StringEscaperOutput (camelCase).
  * @param {any} js_input
  * @returns {any}

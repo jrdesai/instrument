@@ -253,6 +253,12 @@ async chmodProcess(input: ChmodInput) : Promise<ChmodOutput> {
     return await TAURI_INVOKE("chmod_process", { input });
 },
 /**
+ * Parse semver, compare versions, check version ranges, and bump major/minor/patch.
+ */
+async semverProcess(input: SemverInput) : Promise<SemverOutput> {
+    return await TAURI_INVOKE("semver_process", { input });
+},
+/**
  * Runs a regex test via regex-core for desktop (native) builds.
  */
 async toolRegexTest(req: RegexRequest) : Promise<Result<MatchResult[], string>> {
@@ -1159,6 +1165,34 @@ export type RegexRequest = { pattern: string; text: string; engine: string; flag
  * How the verification secret is encoded.
  */
 export type SecretEncoding = "utf8" | "base64" | "hex"
+/**
+ * How the primary version relates to `compare_with`.
+ */
+export type SemverCompareResult = "lessThan" | "equal" | "greaterThan"
+/**
+ * Input for the Semver tool.
+ */
+export type SemverInput = { 
+/**
+ * Version string (optional leading `v` is stripped).
+ */
+version: string; 
+/**
+ * Optional second version to compare (`Ordering` in `compare_result`).
+ */
+compareWith: string | null; 
+/**
+ * Optional requirement string (e.g. `^1.0.0`, `>=1.2.3 <2.0.0`).
+ */
+range: string | null }
+/**
+ * Output from Semver processing.
+ */
+export type SemverOutput = { major: number | null; minor: number | null; patch: number | null; prerelease: string; buildMetadata: string; 
+/**
+ * Normalized semver string for the parsed version.
+ */
+canonical: string; compareResult: SemverCompareResult | null; compareError: string | null; rangeSatisfied: boolean | null; rangeError: string | null; bumpedMajor: string | null; bumpedMinor: string | null; bumpedPatch: string | null; error: string | null }
 export type SqlFormatInput = { 
 /**
  * Raw SQL string to format.

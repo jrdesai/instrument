@@ -26,6 +26,7 @@ export const password_process: (a: any) => [number, number, number];
 export const qr_generate: (a: any) => [number, number, number];
 export const regex_explain: (a: any) => [number, number, number];
 export const regex_match: (a: any) => [number, number, number];
+export const semver_process: (a: any) => [number, number, number];
 export const string_escaper_process: (a: any) => [number, number, number];
 export const text_diff_process: (a: any) => [number, number, number];
 export const timestamp_process: (a: any) => [number, number, number];

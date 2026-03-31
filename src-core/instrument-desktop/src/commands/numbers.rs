@@ -17,6 +17,9 @@ use instrument_core::numbers::chmod::{
     ChmodInput,
     ChmodOutput,
 };
+use instrument_core::numbers::semver::{
+    process as semver_process_core, SemverInput, SemverOutput,
+};
 
 use crate::command_log::finish_ok;
 
@@ -47,5 +50,15 @@ pub fn chmod_process(input: ChmodInput) -> ChmodOutput {
     let start = Instant::now();
     let output = chmod_process_core(input);
     finish_ok("chmod_process", start);
+    output
+}
+
+/// Parse semver, compare versions, check version ranges, and bump major/minor/patch.
+#[tauri::command]
+#[specta::specta]
+pub fn semver_process(input: SemverInput) -> SemverOutput {
+    let start = Instant::now();
+    let output = semver_process_core(input);
+    finish_ok("semver_process", start);
     output
 }

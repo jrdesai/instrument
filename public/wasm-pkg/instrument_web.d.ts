@@ -127,6 +127,11 @@ export function regex_explain(js_input: any): any;
 export function regex_match(js_input: any): any;
 
 /**
+ * Semantic versioning: parse, compare, range check, next major/minor/patch.
+ */
+export function semver_process(js_input: any): any;
+
+/**
  * String escaper. Receives StringEscaperInput (camelCase) and returns StringEscaperOutput (camelCase).
  */
 export function string_escaper_process(js_input: any): any;
@@ -265,6 +270,7 @@ export interface InitOutput {
     readonly qr_generate: (a: any) => [number, number, number];
     readonly regex_explain: (a: any) => [number, number, number];
     readonly regex_match: (a: any) => [number, number, number];
+    readonly semver_process: (a: any) => [number, number, number];
     readonly string_escaper_process: (a: any) => [number, number, number];
     readonly text_diff_process: (a: any) => [number, number, number];
     readonly timestamp_process: (a: any) => [number, number, number];

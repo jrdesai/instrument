@@ -173,10 +173,15 @@ function AesEncryptDecryptTool() {
         </div>
       </div>
 
-      <footer className="flex flex-col gap-3 px-4 py-3 border-t border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0">
-        <div className="flex flex-wrap items-end gap-4">
-          <div className="flex flex-col gap-1" role="group" aria-label="Mode">
-            <span className="text-slate-600 dark:text-slate-400 text-xs uppercase tracking-wider">
+      <footer className="shrink-0 border-t border-border-light bg-panel-light px-4 py-3 dark:border-border-dark dark:bg-panel-dark">
+        {/* Three aligned columns: label row, control row, helper row (spacers mirror passphrase helper height). */}
+        <div className="flex flex-col gap-3 sm:flex-row sm:flex-nowrap sm:items-stretch sm:gap-4">
+          <div
+            className="flex flex-col gap-1 border-border-light pb-2 sm:border-r sm:pr-4 dark:border-border-dark sm:pb-0"
+            role="group"
+            aria-label="Mode"
+          >
+            <span className="h-4 text-xs font-medium uppercase leading-4 tracking-wider text-slate-600 dark:text-slate-400">
               Mode
             </span>
             <div className="flex gap-1">
@@ -184,10 +189,10 @@ function AesEncryptDecryptTool() {
                 type="button"
                 aria-label="Encrypt mode"
                 onClick={() => setMode("encrypt")}
-                className={`px-3 py-1 text-sm font-medium rounded-lg transition-colors ${
+                className={`rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
                   mode === "encrypt"
                     ? "bg-primary text-white"
-                    : "text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
+                    : "text-slate-500 hover:bg-slate-200 dark:text-slate-400 dark:hover:bg-slate-700"
                 }`}
               >
                 Encrypt
@@ -196,23 +201,24 @@ function AesEncryptDecryptTool() {
                 type="button"
                 aria-label="Decrypt mode"
                 onClick={() => setMode("decrypt")}
-                className={`px-3 py-1 text-sm font-medium rounded-lg transition-colors ${
+                className={`rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
                   mode === "decrypt"
                     ? "bg-primary text-white"
-                    : "text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
+                    : "text-slate-500 hover:bg-slate-200 dark:text-slate-400 dark:hover:bg-slate-700"
                 }`}
               >
                 Decrypt
               </button>
             </div>
+            <p className="pointer-events-none select-none text-[11px] leading-snug text-transparent" aria-hidden>
+              Your passphrase and data never leave this device.
+            </p>
           </div>
 
-          <div className="w-px h-10 bg-border-light dark:bg-border-dark self-end hidden sm:block" />
-
-          <div className="flex flex-col gap-1 flex-1 min-w-[200px]">
+          <div className="flex min-w-0 flex-1 flex-col gap-1">
             <label
               htmlFor="aes-passphrase"
-              className="text-slate-600 dark:text-slate-400 text-xs uppercase tracking-wider"
+              className="h-4 text-xs font-medium uppercase leading-4 tracking-wider text-slate-600 dark:text-slate-400"
             >
               Passphrase
             </label>
@@ -220,28 +226,31 @@ function AesEncryptDecryptTool() {
               id="aes-passphrase"
               type="password"
               autoComplete="off"
-              className="w-full px-3 py-2 text-sm bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 border border-border-light dark:border-border-dark rounded-lg focus:outline-none focus:ring-1 focus:ring-primary"
+              className="w-full rounded-lg border border-border-light bg-background-light px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-primary dark:border-border-dark dark:bg-background-dark dark:text-slate-100"
               placeholder="Enter passphrase…"
               value={passphrase}
               onChange={(e) => setPassphrase(e.target.value)}
             />
-            <p className="text-[11px] text-slate-500 dark:text-slate-500 leading-snug">
+            <p className="text-[11px] leading-snug text-slate-500 dark:text-slate-500">
               Your passphrase and data never leave this device.
             </p>
           </div>
 
           <div
-            className="flex flex-col gap-1 justify-end ml-auto"
+            className="flex flex-col gap-1 sm:ml-0 sm:shrink-0"
             role="group"
             aria-label="Actions"
           >
-            <div className="flex items-center gap-2">
+            <span className="h-4 text-xs font-medium uppercase leading-4 tracking-wider text-slate-600 dark:text-slate-400">
+              Actions
+            </span>
+            <div className="flex flex-wrap items-center gap-2">
               <button
                 type="button"
                 aria-label="Copy output to clipboard"
                 onClick={handleCopy}
                 disabled={!output}
-                className="px-3 py-2 text-sm font-medium bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="rounded-lg bg-primary px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {copyLabel}
               </button>
@@ -249,11 +258,14 @@ function AesEncryptDecryptTool() {
                 type="button"
                 aria-label="Clear all fields"
                 onClick={handleClear}
-                className="px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                className="rounded-lg px-3 py-2 text-sm text-slate-700 transition-colors hover:bg-slate-100 hover:text-primary dark:text-slate-300 dark:hover:bg-slate-700"
               >
                 Clear
               </button>
             </div>
+            <p className="pointer-events-none select-none text-[11px] leading-snug text-transparent" aria-hidden>
+              Your passphrase and data never leave this device.
+            </p>
           </div>
         </div>
       </footer>

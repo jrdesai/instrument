@@ -90,6 +90,9 @@ use instrument_core::numbers::bitwise::{
 use instrument_core::numbers::chmod::{
     process as chmod_process_core, ChmodInput, ChmodOutput,
 };
+use instrument_core::numbers::semver::{
+    process as semver_process_core, SemverInput, SemverOutput,
+};
 use instrument_core::encoding::base64::{process, Base64Input};
 use instrument_core::encoding::color::{process as color_process_core, ColorInput};
 use instrument_core::encoding::hex::{
@@ -459,6 +462,15 @@ pub fn chmod_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
     let input: ChmodInput =
         from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
     let output: ChmodOutput = chmod_process_core(input);
+    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
+}
+
+/// Semantic versioning: parse, compare, range check, next major/minor/patch.
+#[wasm_bindgen(js_name = semver_process)]
+pub fn semver_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
+    let input: SemverInput =
+        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let output: SemverOutput = semver_process_core(input);
     to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
 }
 

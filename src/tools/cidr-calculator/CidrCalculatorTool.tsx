@@ -11,16 +11,6 @@ const RUST_COMMAND = "cidr_calculate";
 const DEBOUNCE_MS = 150;
 const HISTORY_DEBOUNCE_MS = 1500;
 
-function Row({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="grid grid-cols-[180px,1fr,auto] items-center gap-3 border-b border-border-light px-4 py-2 text-xs dark:border-border-dark">
-      <span className="text-slate-500 dark:text-slate-400">{label}</span>
-      <span className="break-all font-mono text-slate-200">{value || "—"}</span>
-      <CopyButton value={value || undefined} label="Copy" variant="outline" className="px-2 py-1" />
-    </div>
-  );
-}
-
 function CidrCalculatorTool() {
   const { setDraft } = useDraftInput(TOOL_ID);
   const [cidr, setCidr] = useState("");
@@ -97,22 +87,46 @@ function CidrCalculatorTool() {
         )}
         {output?.error && <div className="p-6 text-sm text-red-400">{output.error}</div>}
         {output && !output.error && (
-          <div className="border-t border-border-light dark:border-border-dark">
-            <Row label="Network Address" value={output.networkAddress} />
-            <Row label="Broadcast Address" value={output.broadcastAddress ?? ""} />
-            <Row label="Subnet Mask" value={output.subnetMask} />
-            <Row label="Wildcard Mask" value={output.wildcardMask} />
-            <Row label="First Host" value={output.firstHost ?? ""} />
-            <Row label="Last Host" value={output.lastHost ?? ""} />
-            <Row label="Total Hosts" value={String(output.totalHosts)} />
-            <Row label="Usable Hosts" value={String(output.usableHosts)} />
-            <Row label="Prefix Length" value={`/${output.prefixLength}`} />
-            <Row label="IP Version" value={`IPv${output.ipVersion}`} />
-            <Row label="IP Class" value={output.ipClass ?? ""} />
-            <Row label="Binary Mask" value={output.binaryMask} />
-            <Row label="Host Bits" value={String(output.hostBits)} />
-            <Row label="Wildcard Bits" value={String(output.wildcardBits)} />
-            <div className="px-4 py-3">
+          <div className="border-t border-border-light px-4 py-4 dark:border-border-dark">
+            <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+              {[
+                { label: "Network Address", value: output.networkAddress },
+                { label: "Broadcast Address", value: output.broadcastAddress ?? "" },
+                { label: "Subnet Mask", value: output.subnetMask },
+                { label: "Wildcard Mask", value: output.wildcardMask },
+                { label: "First Host", value: output.firstHost ?? "" },
+                { label: "Last Host", value: output.lastHost ?? "" },
+                { label: "Total Hosts", value: String(output.totalHosts) },
+                { label: "Usable Hosts", value: String(output.usableHosts) },
+                { label: "Prefix Length", value: `/${output.prefixLength}` },
+                { label: "IP Version", value: `IPv${output.ipVersion}` },
+                { label: "IP Class", value: output.ipClass ?? "" },
+                { label: "Binary Mask", value: output.binaryMask },
+                { label: "Host Bits", value: String(output.hostBits) },
+                { label: "Wildcard Bits", value: String(output.wildcardBits) },
+              ].map(({ label, value }) => (
+                <div
+                  key={label}
+                  className="relative rounded-lg border border-border-light bg-panel-light p-2 text-xs dark:border-border-dark dark:bg-panel-dark"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                      {label}
+                    </span>
+                    <CopyButton
+                      value={value || undefined}
+                      variant="icon"
+                      aria-label={`Copy ${label.toLowerCase()}`}
+                    />
+                  </div>
+                  <div className="mt-0.5 break-all font-mono text-sm leading-snug text-slate-200">
+                    {value || "—"}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-4">
               <div className="flex gap-2 text-xs">
                 {output.isPrivate && <span className="rounded bg-blue-500/20 px-2 py-1 text-blue-300">Private</span>}
                 {output.isLoopback && <span className="rounded bg-slate-500/20 px-2 py-1 text-slate-300">Loopback</span>}
@@ -139,7 +153,7 @@ function CidrCalculatorTool() {
               </div>
             )}
             {output.subnetSplit && (
-              <div className="border-t border-border-light px-4 py-3 dark:border-border-dark">
+              <div className="mt-2 border-t border-border-light px-4 py-3 dark:border-border-dark">
                 <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
                   Subnet Split Preview (/{output.subnetSplit.subPrefix} - {output.subnetSplit.count} subnets)
                 </p>
@@ -149,9 +163,8 @@ function CidrCalculatorTool() {
                       <span className="font-mono text-xs text-slate-300">{example}</span>
                       <CopyButton
                         value={example}
-                        label="Copy"
-                        variant="outline"
-                        className="px-2 py-0.5 text-[10px]"
+                        variant="icon"
+                        aria-label="Copy subnet CIDR"
                       />
                     </div>
                   ))}

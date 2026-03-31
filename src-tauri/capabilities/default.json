@@ -28,6 +28,7 @@
     "allow-base-converter",
     "allow-bitwise",
     "allow-chmod",
+    "allow-semver",
     "allow-jwt-decode",
     "allow-jwt-build",
     "allow-json-formatter",

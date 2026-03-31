@@ -1,0 +1,4 @@
+[[permission]]
+identifier = "allow-semver"
+description = "Enables the semver_process command."
+commands.allow = ["semver_process"]

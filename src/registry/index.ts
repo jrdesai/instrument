@@ -828,6 +828,24 @@ export const tools: Tool[] = [
     implemented: true,
   },
   {
+    id: "semver",
+    name: "Semver",
+    description:
+      "Parse semantic versions, compare ordering, check range requirements, and copy next major, minor, or patch versions.",
+    category: "numbers",
+    displayCategory: "Numbers",
+    displayCategoryIcon: "numbers",
+    roles: ["backend", "devops", "general"],
+    icon: "account_tree",
+    platforms: ["desktop", "web"],
+    rustCommand: "semver_process",
+    keywords: ["semver", "version", "semantic", "npm", "cargo", "release", "bump"],
+    component: React.lazy(() =>
+      import("../tools/semver").then((m) => ({ default: m.default }))
+    ),
+    implemented: true,
+  },
+  {
     id: "bitwise-calculator",
     name: "Bitwise Calculator",
     description: "AND, OR, XOR, NOT, shift operations.",
