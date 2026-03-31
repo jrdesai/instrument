@@ -18,7 +18,10 @@ interface ToolbarFooterProps {
 
 function Divider() {
   return (
-    <div className="mx-3 h-6 w-px shrink-0 self-center bg-border-light dark:bg-border-dark" />
+    <div
+      className="mx-3 w-px shrink-0 self-stretch bg-border-light dark:bg-border-dark"
+      aria-hidden
+    />
   );
 }
 
@@ -26,7 +29,7 @@ export function ToolbarFooter({ groups, className }: ToolbarFooterProps) {
   return (
     <footer
       className={twMerge(
-        "flex shrink-0 flex-wrap items-end gap-2 border-t border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark px-4 py-3",
+        "flex shrink-0 flex-wrap items-start gap-y-2 border-t border-border-light bg-panel-light px-4 py-3 dark:border-border-dark dark:bg-panel-dark",
         className
       )}
     >
@@ -35,18 +38,23 @@ export function ToolbarFooter({ groups, className }: ToolbarFooterProps) {
           {i > 0 && <Divider />}
           <div
             className={twMerge(
-              "flex flex-col gap-1",
+              "flex min-w-0 flex-col gap-1",
               group.end ? "ml-auto" : ""
             )}
             role="group"
             aria-label={group.ariaLabel ?? group.label}
           >
-            {group.label && (
-              <span className="text-xs uppercase tracking-wider text-slate-600 dark:text-slate-500">
-                {group.label}
-              </span>
-            )}
-            <div className="flex items-center gap-1.5">{group.children}</div>
+            <span
+              className={twMerge(
+                "block h-4 text-[10px] font-semibold uppercase leading-4 tracking-wider text-slate-600 dark:text-slate-500",
+                !group.label && "invisible select-none"
+              )}
+            >
+              {group.label ?? "\u00A0"}
+            </span>
+            <div className="flex min-h-[2.25rem] flex-wrap items-center gap-1.5">
+              {group.children}
+            </div>
           </div>
         </Fragment>
       ))}
