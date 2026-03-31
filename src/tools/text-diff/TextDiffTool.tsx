@@ -4,9 +4,11 @@ import { callTool } from "../../bridge";
 import { useDraftInput, useRestoreDraft } from "../../hooks/useDraftInput";
 import { useHistoryStore } from "../../store";
 import type { AnnotatedLine } from "../../bindings/TextDiffAnnotatedLine";
+import type { DiffGranularity } from "../../bindings/DiffGranularity";
 import type { TextDiffInput } from "../../bindings/TextDiffInput";
 import type { TextDiffOutput } from "../../bindings/TextDiffOutput";
 import type { LineAnnotation } from "../../bindings/TextDiffLineAnnotation";
+import type { InlineSpan } from "../../bindings/TextDiffSpan";
 
 const RUST_COMMAND = "text_diff_process";
 const TOOL_ID = "text-diff";
@@ -18,14 +20,20 @@ function toAnnotatedLines(value: unknown): AnnotatedLine[] {
   return [];
 }
 
-function lineClass(annotation: LineAnnotation, side: "left" | "right"): string {
+function lineClass(annotation: LineAnnotation, side: "left" | "right", hasSpans = false): string {
   const base = "flex min-w-0";
   if (annotation === "unchanged") return `${base} text-slate-400 hover:bg-white/3`;
   if (side === "left" && annotation === "removed") {
-    return `${base} bg-red-500/10 text-red-300 border-l-2 border-red-500/50 pl-3`;
+    // When inline spans are present, drop the full-line background so span
+    // highlights are clearly visible against the neutral background.
+    return hasSpans
+      ? `${base} text-slate-300 border-l-2 border-red-500/50 pl-3`
+      : `${base} bg-red-500/10 text-red-300 border-l-2 border-red-500/50 pl-3`;
   }
   if (side === "right" && annotation === "added") {
-    return `${base} bg-emerald-500/10 text-emerald-300 border-l-2 border-emerald-500/50 pl-3`;
+    return hasSpans
+      ? `${base} text-slate-300 border-l-2 border-emerald-500/50 pl-3`
+      : `${base} bg-emerald-500/10 text-emerald-300 border-l-2 border-emerald-500/50 pl-3`;
   }
   return `${base} text-slate-400`;
 }
@@ -36,10 +44,38 @@ function prefix(annotation: LineAnnotation, side: "left" | "right"): string {
   return annotation === "added" ? "+" : " ";
 }
 
+function InlineContent({
+  spans,
+  side,
+  fallback,
+}: {
+  spans: InlineSpan[];
+  side: "left" | "right";
+  fallback: boolean;
+}) {
+  if (spans.length === 0 || fallback) return null;
+
+  const highlightClass =
+    side === "left"
+      ? "bg-red-500/50 text-red-100 rounded-sm px-0.5"
+      : "bg-emerald-500/50 text-emerald-100 rounded-sm px-0.5";
+
+  return (
+    <>
+      {spans.map((span, i) => (
+        <span key={i} className={span.highlighted ? highlightClass : undefined}>
+          {span.text}
+        </span>
+      ))}
+    </>
+  );
+}
+
 function TextDiffTool() {
   const { setDraft } = useDraftInput(TOOL_ID);
   const [leftInput, setLeftInput] = useState("");
   const [rightInput, setRightInput] = useState("");
+  const [granularity, setGranularity] = useState<DiffGranularity>("word");
   useRestoreDraft(TOOL_ID, (raw) => {
     const v = raw as { left?: string; right?: string };
     if (typeof v?.left === "string") setLeftInput(v.left);
@@ -73,7 +109,11 @@ function TextDiffTool() {
   }, []);
 
   const runProcess = useCallback(
-    async (currentLeft: string, currentRight: string) => {
+    async (
+      currentLeft: string,
+      currentRight: string,
+      currentGranularity: DiffGranularity
+    ) => {
       const leftTrim = currentLeft.trim();
       const rightTrim = currentRight.trim();
       if (leftTrim === "" && rightTrim === "") {
@@ -85,6 +125,7 @@ function TextDiffTool() {
         const payload: TextDiffInput = {
           left: currentLeft,
           right: currentRight,
+          granularity: currentGranularity,
         };
         const result = (await callTool(
           RUST_COMMAND,
@@ -92,6 +133,7 @@ function TextDiffTool() {
           { skipHistory: true }
         )) as TextDiffOutput;
         setOutput(result);
+        console.log("[diff]", JSON.stringify(result, null, 2));
         setError(null);
 
         if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
@@ -124,13 +166,13 @@ function TextDiffTool() {
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
-      runProcess(leftInput, rightInput);
+      runProcess(leftInput, rightInput, granularity);
       debounceRef.current = null;
     }, DEBOUNCE_MS);
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
-  }, [leftInput, rightInput, runProcess]);
+  }, [leftInput, rightInput, granularity, runProcess]);
 
   useEffect(() => {
     return () => {
@@ -144,8 +186,8 @@ function TextDiffTool() {
     setLeftInput(newLeft);
     setRightInput(newRight);
     setDraft({ left: newLeft, right: newRight });
-    runProcess(newLeft, newRight);
-  }, [leftInput, rightInput, runProcess, setDraft]);
+    runProcess(newLeft, newRight, granularity);
+  }, [leftInput, rightInput, granularity, runProcess, setDraft]);
 
   const handleClear = useCallback(() => {
     setLeftInput("");
@@ -203,31 +245,77 @@ function TextDiffTool() {
 
       {bothHaveContent && hasResult && (
         <div className="flex items-center gap-3 px-4 py-2 border-t border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0 min-h-[40px]">
-          {error && <span className="text-red-400 text-xs">{error}</span>}
-          {output?.isIdentical && (
-            <span className="text-emerald-400 text-sm">
-              ✓ Identical — no differences found
+          <div className="flex items-center gap-2 flex-1 min-w-0">
+            {error && <span className="text-red-400 text-xs">{error}</span>}
+            {output?.isIdentical && (
+              <span className="text-emerald-400 text-sm">
+                ✓ Identical — no differences found
+              </span>
+            )}
+            {!output?.isIdentical && (
+              <>
+                {output?.addedCount > 0 && (
+                  <span className="bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded text-xs">
+                    + {output.addedCount} added
+                  </span>
+                )}
+                {output?.removedCount > 0 && (
+                  <span className="bg-red-500/10 text-red-400 px-2 py-0.5 rounded text-xs">
+                    - {output.removedCount} removed
+                  </span>
+                )}
+                {output?.unchangedCount > 0 && (
+                  <span className="bg-slate-500/10 text-slate-400 px-2 py-0.5 rounded text-xs">
+                    {output.unchangedCount} unchanged
+                  </span>
+                )}
+              </>
+            )}
+          </div>
+
+          <div className="flex items-center gap-1 shrink-0">
+            <span className="text-[10px] text-slate-500 dark:text-slate-400 mr-1 uppercase tracking-wide">
+              Granularity
             </span>
-          )}
-          {!output?.isIdentical && (
-            <>
-              {output?.addedCount > 0 && (
-                <span className="bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded text-xs">
-                  + {output.addedCount} added
-                </span>
-              )}
-              {output?.removedCount > 0 && (
-                <span className="bg-red-500/10 text-red-400 px-2 py-0.5 rounded text-xs">
-                  - {output.removedCount} removed
-                </span>
-              )}
-              {output?.unchangedCount > 0 && (
-                <span className="bg-slate-500/10 text-slate-400 px-2 py-0.5 rounded text-xs">
-                  {output.unchangedCount} unchanged
-                </span>
-              )}
-            </>
-          )}
+            {(["line", "word", "char"] as DiffGranularity[]).map((g) => {
+              const labels: Record<DiffGranularity, string> = {
+                line: "Line",
+                word: "Word",
+                char: "Char",
+              };
+              const isActive = granularity === g;
+              const showFallbackIndicator =
+                g === "char" && granularity === "char" && output?.hasFallback;
+
+              return (
+                <button
+                  key={g}
+                  type="button"
+                  onClick={() => setGranularity(g)}
+                  className={`relative flex items-center gap-0.5 rounded px-2.5 py-1 text-xs font-medium transition-colors ${
+                    isActive
+                      ? "bg-primary text-white"
+                      : "bg-slate-100 text-slate-500 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700"
+                  }`}
+                  title={
+                    showFallbackIndicator
+                      ? "Some lines have too many changes and are shown as full-line diffs"
+                      : undefined
+                  }
+                >
+                  {labels[g]}
+                  {showFallbackIndicator && (
+                    <span
+                      className="material-symbols-outlined text-[11px] opacity-80"
+                      aria-label="Some lines fell back to full-line highlight"
+                    >
+                      info
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
         </div>
       )}
 
@@ -249,14 +337,24 @@ function TextDiffTool() {
                   <span className="text-slate-500">—</span>
                 )}
                 {toAnnotatedLines(output?.leftAnnotated).map((line, i) => (
-                  <div key={i} className={lineClass(line.annotation, "left")}>
+                  <div key={i} className={lineClass(line.annotation, "left", line.spans.length > 0 && !line.fellBack)}>
                     <span className="select-none text-slate-700 w-8 text-right mr-3 flex-shrink-0 inline-block">
                       {line.lineNumber}
                     </span>
                     <span className="w-4 flex-shrink-0 inline-block mr-1">
                       {prefix(line.annotation, "left")}
                     </span>
-                    <span className="min-w-0 break-all">{line.content}</span>
+                    <span className="min-w-0 break-all">
+                      {line.spans.length > 0 && !line.fellBack ? (
+                        <InlineContent
+                          spans={line.spans}
+                          side="left"
+                          fallback={line.fellBack}
+                        />
+                      ) : (
+                        line.content
+                      )}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -271,14 +369,24 @@ function TextDiffTool() {
                   <span className="text-slate-500">—</span>
                 )}
                 {toAnnotatedLines(output?.rightAnnotated).map((line, i) => (
-                  <div key={i} className={lineClass(line.annotation, "right")}>
+                  <div key={i} className={lineClass(line.annotation, "right", line.spans.length > 0 && !line.fellBack)}>
                     <span className="select-none text-slate-700 w-8 text-right mr-3 flex-shrink-0 inline-block">
                       {line.lineNumber}
                     </span>
                     <span className="w-4 flex-shrink-0 inline-block mr-1">
                       {prefix(line.annotation, "right")}
                     </span>
-                    <span className="min-w-0 break-all">{line.content}</span>
+                    <span className="min-w-0 break-all">
+                      {line.spans.length > 0 && !line.fellBack ? (
+                        <InlineContent
+                          spans={line.spans}
+                          side="right"
+                          fallback={line.fellBack}
+                        />
+                      ) : (
+                        line.content
+                      )}
+                    </span>
                   </div>
                 ))}
               </div>

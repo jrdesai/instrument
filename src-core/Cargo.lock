@@ -1764,7 +1764,7 @@ dependencies = [
 
 [[package]]
 name = "instrument-core"
-version = "1.0.0"
+version = "1.1.0"
 dependencies = [
  "aes-gcm",
  "base64 0.22.1",
@@ -1804,7 +1804,7 @@ dependencies = [
 
 [[package]]
 name = "instrument-desktop"
-version = "1.0.0"
+version = "1.1.0"
 dependencies = [
  "instrument-core",
  "log",
@@ -1818,7 +1818,7 @@ dependencies = [
 
 [[package]]
 name = "instrument-web"
-version = "1.0.0"
+version = "1.1.0"
 dependencies = [
  "getrandom 0.3.4",
  "instrument-core",

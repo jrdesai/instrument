@@ -486,6 +486,7 @@ leftValue: string | null;
  * JSON-serialised value on the right (None for Removed).
  */
 rightValue: string | null }
+export type DiffGranularity = "line" | "word" | "char"
 /**
  * Escape or unescape.
  */
@@ -1026,10 +1027,32 @@ export type StringEscaperInput = { text: string; mode: EscapeMode; target: Escap
  * Output: result string, number of replacements, optional error.
  */
 export type StringEscaperOutput = { result: string; changes: number; error: string | null }
-export type TextDiffAnnotatedLine = { lineNumber: number; content: string; annotation: TextDiffLineAnnotation }
-export type TextDiffInput = { left: string; right: string }
+export type TextDiffAnnotatedLine = { lineNumber: number; content: string; annotation: TextDiffLineAnnotation; 
+/**
+ * Inline spans for word/char granularity on changed lines.
+ * Empty for unchanged lines or when granularity is Line.
+ */
+spans: TextDiffSpan[]; 
+/**
+ * true when char granularity fell back to full-line highlight.
+ */
+fellBack: boolean }
+export type TextDiffInput = { left: string; right: string; 
+/**
+ * Defaults to Word if omitted.
+ */
+granularity?: DiffGranularity }
 export type TextDiffLineAnnotation = "unchanged" | "added" | "removed"
-export type TextDiffOutput = { isIdentical: boolean; addedCount: number; removedCount: number; unchangedCount: number; leftAnnotated: TextDiffAnnotatedLine[]; rightAnnotated: TextDiffAnnotatedLine[] }
+export type TextDiffOutput = { isIdentical: boolean; addedCount: number; removedCount: number; unchangedCount: number; leftAnnotated: TextDiffAnnotatedLine[]; rightAnnotated: TextDiffAnnotatedLine[]; 
+/**
+ * true if any line fell back from char granularity to full-line highlight.
+ */
+hasFallback: boolean }
+export type TextDiffSpan = { text: string; 
+/**
+ * true = this segment is different (highlight it); false = unchanged
+ */
+highlighted: boolean }
 /**
  * Input for the timestamp converter.
  */
