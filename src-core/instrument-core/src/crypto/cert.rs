@@ -150,7 +150,7 @@ fn extract_cert_info(cert: &X509Certificate, raw: &[u8]) -> CertInfo {
     let now = ASN1Time::now();
     let is_expired = cert.validity().not_after < now;
     let days_until_expiry = (cert.validity().not_after.timestamp() - now.timestamp()) / 86_400;
-    let expiry_warning = !is_expired && days_until_expiry >= 0 && days_until_expiry <= 30;
+    let expiry_warning = !is_expired && (0..=30).contains(&days_until_expiry);
 
     let sig_alg = cert.signature_algorithm.algorithm.to_string();
     let (pk_alg, pk_size) = match cert.public_key().parsed() {

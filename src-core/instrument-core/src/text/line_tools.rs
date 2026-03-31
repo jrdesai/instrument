@@ -94,14 +94,14 @@ fn apply_operation(
     match op {
         LineOperation::SortAsc => {
             if case_insensitive {
-                lines.sort_by(|a, b| a.to_lowercase().cmp(&b.to_lowercase()));
+                lines.sort_by_key(|a| a.to_lowercase());
             } else {
                 lines.sort();
             }
         }
         LineOperation::SortDesc => {
             if case_insensitive {
-                lines.sort_by(|a, b| b.to_lowercase().cmp(&a.to_lowercase()));
+                lines.sort_by_key(|b| std::cmp::Reverse(b.to_lowercase()));
             } else {
                 lines.sort();
                 lines.reverse();
