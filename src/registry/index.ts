@@ -740,6 +740,32 @@ export const tools: Tool[] = [
     implemented: true,
   },
   {
+    id: "markdown-editor",
+    name: "Markdown Editor",
+    description:
+      "Write and preview Markdown with GFM, syntax highlighting, and live preview.",
+    category: "text",
+    displayCategory: "Formatting",
+    displayCategoryIcon: "format_align_left",
+    roles: ["frontend", "backend", "general"],
+    icon: "edit_note",
+    platforms: ["desktop", "web"],
+    keywords: [
+      "markdown",
+      "md",
+      "preview",
+      "editor",
+      "gfm",
+      "write",
+      "format",
+      "render",
+    ],
+    component: React.lazy(() =>
+      import("../tools/markdown-editor").then((m) => ({ default: m.default }))
+    ),
+    implemented: true,
+  },
+  {
     id: "timestamp-converter",
     name: "Timestamp Converter",
     description: "Convert Unix timestamps and human-readable dates.",
