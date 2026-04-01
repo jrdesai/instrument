@@ -573,6 +573,19 @@ export function ulid_process(js_input) {
 }
 
 /**
+ * Unit converter (data size, time, temperature, length, weight, speed).
+ * @param {any} js_input
+ * @returns {any}
+ */
+export function unit_convert(js_input) {
+    const ret = wasm.unit_convert(js_input);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
  * URL percent-encode/decode. Receives UrlEncodeInput (camelCase) and returns UrlEncodeOutput (camelCase).
  * @param {any} js_input
  * @returns {any}

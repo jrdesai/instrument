@@ -259,6 +259,12 @@ async semverProcess(input: SemverInput) : Promise<SemverOutput> {
     return await TAURI_INVOKE("semver_process", { input });
 },
 /**
+ * Converts a value between units in a given category.
+ */
+async unitConvert(input: UnitConverterInput) : Promise<UnitConverterOutput> {
+    return await TAURI_INVOKE("unit_convert", { input });
+},
+/**
  * Runs a regex test via regex-core for desktop (native) builds.
  */
 async toolRegexTest(req: RegexRequest) : Promise<Result<MatchResult[], string>> {
@@ -1380,6 +1386,30 @@ ulids: string[];
  * Optional error message when generation fails (e.g. invalid count).
  */
 error: string | null }
+export type UnitCategory = "dataSize" | "time" | "temperature" | "length" | "weight" | "speed" | "angle" | "frequency"
+export type UnitConverterInput = { value: number; 
+/**
+ * Short unit key, e.g. "km", "mb", "fahrenheit". See unit tables below.
+ */
+fromUnit: string; category: UnitCategory }
+export type UnitConverterOutput = { results: UnitResult[]; error: string | null }
+export type UnitResult = { 
+/**
+ * Short key, e.g. "km"
+ */
+unit: string; 
+/**
+ * Display label, e.g. "Kilometre (km)"
+ */
+label: string; 
+/**
+ * Numeric result
+ */
+value: number; 
+/**
+ * Pre-formatted string with appropriate precision
+ */
+formatted: string }
 /**
  * Input for the URL encode/decode tool.
  */

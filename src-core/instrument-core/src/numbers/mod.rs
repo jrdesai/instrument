@@ -4,3 +4,4 @@ pub mod base_converter;
 pub mod bitwise;
 pub mod chmod;
 pub mod semver;
+pub mod unit_converter;

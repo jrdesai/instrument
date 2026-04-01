@@ -20,6 +20,9 @@ use instrument_core::numbers::chmod::{
 use instrument_core::numbers::semver::{
     process as semver_process_core, SemverInput, SemverOutput,
 };
+use instrument_core::numbers::unit_converter::{
+    process as unit_convert_core, UnitConverterInput, UnitConverterOutput,
+};
 
 use crate::command_log::finish_ok;
 
@@ -60,5 +63,15 @@ pub fn semver_process(input: SemverInput) -> SemverOutput {
     let start = Instant::now();
     let output = semver_process_core(input);
     finish_ok("semver_process", start);
+    output
+}
+
+/// Converts a value between units in a given category.
+#[tauri::command]
+#[specta::specta]
+pub fn unit_convert(input: UnitConverterInput) -> UnitConverterOutput {
+    let start = Instant::now();
+    let output = unit_convert_core(input);
+    finish_ok("unit_convert", start);
     output
 }

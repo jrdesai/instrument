@@ -272,7 +272,7 @@ export function DashboardPage() {
                     type="button"
                     onClick={() => handleOpenTool(tool)}
                     aria-label={tool.name}
-                    className="flex size-9 items-center justify-center rounded-lg border border-amber-200 bg-amber-50 text-amber-500 transition-colors hover:border-amber-300 hover:bg-amber-100 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-400 dark:hover:bg-amber-900/40"
+                    className="flex size-9 items-center justify-center rounded-lg border border-amber-300 bg-amber-100 text-amber-600 transition-colors hover:border-amber-400 hover:bg-amber-200 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-400 dark:hover:bg-amber-900/40"
                   >
                     <span className="material-symbols-outlined text-[18px]" aria-hidden>
                       {tool.icon}

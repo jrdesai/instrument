@@ -45,6 +45,7 @@ export const tool_sql_format: (a: any) => [number, number, number];
 export const tool_url_parse: (a: any) => [number, number, number];
 export const ulid_inspect: (a: any) => [number, number, number];
 export const ulid_process: (a: any) => [number, number, number];
+export const unit_convert: (a: any) => [number, number, number];
 export const url_encode_process: (a: any) => [number, number, number];
 export const uuid_inspect: (a: any) => [number, number, number];
 export const uuid_process: (a: any) => [number, number, number];

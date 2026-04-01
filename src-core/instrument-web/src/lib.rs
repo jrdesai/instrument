@@ -93,6 +93,9 @@ use instrument_core::numbers::chmod::{
 use instrument_core::numbers::semver::{
     process as semver_process_core, SemverInput, SemverOutput,
 };
+use instrument_core::numbers::unit_converter::{
+    process as unit_convert_core, UnitConverterInput, UnitConverterOutput,
+};
 use instrument_core::encoding::base64::{process, Base64Input};
 use instrument_core::encoding::color::{process as color_process_core, ColorInput};
 use instrument_core::encoding::hex::{
@@ -471,6 +474,15 @@ pub fn semver_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
     let input: SemverInput =
         from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
     let output: SemverOutput = semver_process_core(input);
+    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
+}
+
+/// Unit converter (data size, time, temperature, length, weight, speed).
+#[wasm_bindgen(js_name = unit_convert)]
+pub fn unit_convert_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
+    let input: UnitConverterInput =
+        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let output: UnitConverterOutput = unit_convert_core(input);
     to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
 }
 

@@ -222,6 +222,11 @@ export function ulid_inspect(js_input: any): any;
 export function ulid_process(js_input: any): any;
 
 /**
+ * Unit converter (data size, time, temperature, length, weight, speed).
+ */
+export function unit_convert(js_input: any): any;
+
+/**
  * URL percent-encode/decode. Receives UrlEncodeInput (camelCase) and returns UrlEncodeOutput (camelCase).
  */
 export function url_encode_process(js_input: any): any;
@@ -289,6 +294,7 @@ export interface InitOutput {
     readonly tool_url_parse: (a: any) => [number, number, number];
     readonly ulid_inspect: (a: any) => [number, number, number];
     readonly ulid_process: (a: any) => [number, number, number];
+    readonly unit_convert: (a: any) => [number, number, number];
     readonly url_encode_process: (a: any) => [number, number, number];
     readonly uuid_inspect: (a: any) => [number, number, number];
     readonly uuid_process: (a: any) => [number, number, number];
