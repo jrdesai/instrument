@@ -46,7 +46,8 @@ instrument/
 
 ```bash
 pnpm tauri dev          # Run desktop app (hot reload)
-pnpm dev                # Run web version in browser (localhost:1420 via Vite)
+pnpm run dev:web        # Run web version in browser (localhost:1420 via Vite only — NOT tauri dev)
+pnpm dev                # Alias for tauri dev — do NOT use this to test web/WASM behaviour
 pnpm run build:wasm     # Compile Rust → WASM → public/wasm-pkg/ (must commit after)
 pnpm run build:web      # build:wasm + vite build --mode web
 pnpm run typecheck      # tsc --noEmit
@@ -72,6 +73,8 @@ git commit -m "chore: rebuild wasm-pkg ..."
 - `src/wasm-pkg/` is gitignored — ignore it
 - The CI `wasm-sync` job will fail if `public/wasm-pkg/` doesn't match the Rust source
 - After a version bump in `package.json` / `Cargo.toml`, also rebuild — the version is embedded in the WASM package.json
+- **Symptom of missing WASM in dev**: browser console shows `"text/html" is not a valid JavaScript MIME type`. This means `public/wasm-pkg/instrument_web.js` is missing — run `pnpm run build:wasm` to fix. Vite returns `index.html` for any unmatched path, masking the real 404.
+- **Vite 7 — never `import()` a `/public` path from source**: Vite 7 forbids loading anything under `public/` through the normal `import()` pipeline from app source (throws "This file is in /public … should not be imported from source code"). The WASM loader in `src/bridge/web.ts` works around this by building an absolute URL with `new URL(path, self.location.origin + '/')` and passing that string to `import()`. The browser fetch bypasses Vite's transform pipeline entirely. Do not revert this to a root-relative path like `/wasm-pkg/instrument_web.js`.
 
 ### 2. Bridge — never bypass it
 Components call `callTool(rustCommand, input)` from `src/bridge/index.ts` only.
