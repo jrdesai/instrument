@@ -97,9 +97,6 @@ fn fmt(v: f64) -> String {
     let abs = v.abs();
     if abs >= 1e15 || (abs < 1e-6 && abs > 0.0) {
         format!("{v:.6e}")
-    } else if abs >= 1000.0 {
-        let s = format!("{v:.6}");
-        s.trim_end_matches('0').trim_end_matches('.').to_string()
     } else if abs >= 1.0 {
         let s = format!("{v:.6}");
         s.trim_end_matches('0').trim_end_matches('.').to_string()
