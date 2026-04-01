@@ -3,6 +3,7 @@ import {
   useEffect,
   useRef,
   useState,
+  type ChangeEvent,
 } from "react";
 import {
   CopyButton,
@@ -46,6 +47,7 @@ function JsonFormatterTool() {
   const [indent, setIndent] = useState<IndentStyle>("spaces2");
   const [sortKeys, setSortKeys] = useState(false);
   const [output, setOutput] = useState<JsonFormatOutput | null>(null);
+  const [fileName, setFileName] = useState<string | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
@@ -126,9 +128,39 @@ function JsonFormatterTool() {
     };
   }, [inputValue, mode, indent, sortKeys, runProcess]);
 
+  const handleFileUpload = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      setFileName(file.name);
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const text = ev.target?.result;
+        if (typeof text === "string") {
+          setInputValue(text);
+          setDraft(text);
+        }
+      };
+      reader.readAsText(file);
+      e.target.value = "";
+    },
+    [setDraft]
+  );
+
+  const handleDownload = useCallback((content: string, downloadName: string, mime: string) => {
+    const blob = new Blob([content], { type: mime });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = downloadName;
+    a.click();
+    URL.revokeObjectURL(url);
+  }, []);
+
   const handleClear = useCallback(() => {
     setInputValue("");
     setDraft("");
+    setFileName(null);
     setOutput(null);
   }, [setDraft]);
 
@@ -156,11 +188,40 @@ function JsonFormatterTool() {
         {/* Left panel — input */}
         <div className="flex flex-col flex-1 min-w-0 border-r border-border-light dark:border-border-dark">
           <PanelHeader
-            label="Input"
+            label=""
             meta={
               !isEmpty
                 ? `${inputValue.length.toLocaleString()} chars`
                 : undefined
+            }
+            children={
+              <>
+                <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                  {fileName ?? "Input"}
+                </span>
+                {fileName ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setFileName(null);
+                      setInputValue("");
+                      setDraft("");
+                    }}
+                    className="text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+                  >
+                    ✕
+                  </button>
+                ) : null}
+                <label className="cursor-pointer rounded-lg border border-border-light bg-panel-light px-2.5 py-1 text-xs text-slate-500 transition-colors hover:text-slate-700 dark:border-border-dark dark:bg-panel-dark dark:text-slate-400 dark:hover:text-slate-200">
+                  Upload file
+                  <input
+                    type="file"
+                    className="sr-only"
+                    accept=".json,application/json"
+                    onChange={handleFileUpload}
+                  />
+                </label>
+              </>
             }
           />
           <textarea
@@ -300,12 +361,27 @@ function JsonFormatterTool() {
             children: (
               <>
                 {output?.isValid && output.result ? (
-                  <CopyButton
-                    value={output.result}
-                    label="Copy"
-                    variant="outline"
-                    className="px-3 py-2"
-                  />
+                  <>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        handleDownload(
+                          output.result,
+                          fileName ?? "formatted.json",
+                          "application/json"
+                        )
+                      }
+                      className="rounded-lg border border-border-light bg-panel-light px-3 py-2 text-xs text-slate-500 transition-colors hover:text-slate-700 dark:border-border-dark dark:bg-panel-dark dark:text-slate-400 dark:hover:text-slate-200"
+                    >
+                      Download
+                    </button>
+                    <CopyButton
+                      value={output.result}
+                      label="Copy"
+                      variant="outline"
+                      className="px-3 py-2"
+                    />
+                  </>
                 ) : null}
                 <button
                   type="button"

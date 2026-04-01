@@ -3,6 +3,7 @@ import {
   useEffect,
   useRef,
   useState,
+  type ChangeEvent,
 } from "react";
 import { callTool } from "../../bridge";
 import { CopyButton } from "../../components/tool";
@@ -29,6 +30,7 @@ function CsvToJsonTool() {
   const [delimiter, setDelimiter] = useState<"," | "\t" | "|" | ";">(",");
   const [outputFormat, setOutputFormat] = useState<CsvOutputFormat>("arrayOfObjects");
   const [output, setOutput] = useState<CsvToJsonOutput | null>(null);
+  const [fileName, setFileName] = useState<string | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const runConvert = useCallback(
@@ -87,9 +89,39 @@ function CsvToJsonTool() {
     };
   }, [inputValue, hasHeaders, delimiter, outputFormat, runConvert]);
 
+  const handleFileUpload = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      setFileName(file.name);
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const text = ev.target?.result;
+        if (typeof text === "string") {
+          setInputValue(text);
+          setDraft(text);
+        }
+      };
+      reader.readAsText(file);
+      e.target.value = "";
+    },
+    [setDraft]
+  );
+
+  const handleDownload = useCallback((content: string, downloadName: string, mime: string) => {
+    const blob = new Blob([content], { type: mime });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = downloadName;
+    a.click();
+    URL.revokeObjectURL(url);
+  }, []);
+
   const handleClear = useCallback(() => {
     setInputValue("");
     setDraft("");
+    setFileName(null);
     setOutput(null);
   }, [setDraft]);
 
@@ -108,12 +140,36 @@ function CsvToJsonTool() {
       <div className="flex flex-1 min-h-0 w-full">
         {/* Left panel — CSV input */}
         <div className="flex flex-col flex-1 min-w-0 border-r border-border-light dark:border-border-dark">
-          <div className="flex items-center justify-between px-4 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0">
-            <span className="text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider">
-              INPUT (CSV)
-            </span>
+          <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0">
+            <div className="flex min-w-0 flex-wrap items-center gap-2">
+              <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                {fileName ?? "Input"}
+              </span>
+              {fileName ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFileName(null);
+                    setInputValue("");
+                    setDraft("");
+                  }}
+                  className="text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+                >
+                  ✕
+                </button>
+              ) : null}
+              <label className="cursor-pointer rounded-lg border border-border-light bg-panel-light px-2.5 py-1 text-xs text-slate-500 transition-colors hover:text-slate-700 dark:border-border-dark dark:bg-panel-dark dark:text-slate-400 dark:hover:text-slate-200">
+                Upload file
+                <input
+                  type="file"
+                  className="sr-only"
+                  accept=".csv,text/csv"
+                  onChange={handleFileUpload}
+                />
+              </label>
+            </div>
             {!isEmpty && (
-              <span className="text-slate-600 text-xs">
+              <span className="text-slate-600 text-xs tabular-nums">
                 {inputValue.length.toLocaleString()} chars
               </span>
             )}
@@ -283,6 +339,23 @@ function CsvToJsonTool() {
             >
               Convert
             </button>
+            {output?.result && !output.error ? (
+              <button
+                type="button"
+                onClick={() =>
+                  handleDownload(
+                    output.result,
+                    fileName
+                      ? `${fileName.replace(/\.[^.]+$/, "")}.json`
+                      : "output.json",
+                    "application/json"
+                  )
+                }
+                className="rounded-lg border border-border-light bg-panel-light px-3 py-1.5 text-xs text-slate-500 transition-colors hover:text-slate-700 dark:border-border-dark dark:bg-panel-dark dark:text-slate-400 dark:hover:text-slate-200"
+              >
+                Download .json
+              </button>
+            ) : null}
             <CopyButton
               value={
                 output?.result && !output.error ? output.result : undefined

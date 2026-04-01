@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type ChangeEvent } from "react";
 import { callTool } from "../../bridge";
 import { CopyButton, PanelHeader, PillButton, ToolbarFooter } from "../../components/tool";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
@@ -25,6 +25,13 @@ const FORMAT_PLACEHOLDERS: Record<EnvFileFormat, string> = {
   env: "Paste .env content…",
   properties: "Paste .properties content…",
   ini: "Paste .ini content…",
+};
+
+const EXT_TO_FORMAT: Partial<Record<string, EnvFileFormat>> = {
+  env: "env",
+  properties: "properties",
+  ini: "ini",
+  cfg: "ini",
 };
 
 function SectionRow({ name }: { name: string }) {
@@ -91,6 +98,7 @@ function EntryRow({
 function EnvParserTool() {
   const { setDraft } = useDraftInput(TOOL_ID);
   const [content, setContent] = useState("");
+  const [fileName, setFileName] = useState<string | null>(null);
   const [format, setFormat] = useState<EnvFileFormat>("auto");
   const [maskValues, setMaskValues] = useState(true);
   const [severityFilter, setSeverityFilter] = useState<"all" | "error" | "warning">("all");
@@ -99,6 +107,30 @@ function EnvParserTool() {
   const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
   useRestoreStringDraft(TOOL_ID, setContent);
+
+  const handleFileUpload = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      setFileName(file.name);
+      const ext = file.name.startsWith(".")
+        ? file.name.slice(1).toLowerCase()
+        : (file.name.split(".").pop()?.toLowerCase() ?? "");
+      const detected = EXT_TO_FORMAT[ext];
+      if (detected) setFormat(detected);
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const text = ev.target?.result;
+        if (typeof text === "string") {
+          setContent(text);
+          setDraft(text);
+        }
+      };
+      reader.readAsText(file);
+      e.target.value = "";
+    },
+    [setDraft]
+  );
 
   const run = useCallback(
     async (currentContent: string, currentFormat: EnvFileFormat, currentMask: boolean) => {
@@ -162,7 +194,38 @@ function EnvParserTool() {
       <div className="flex min-h-0 flex-1">
         {/* Left — input */}
         <div className="flex min-w-0 flex-1 flex-col border-r border-border-light dark:border-border-dark">
-          <PanelHeader label="Input" />
+          <PanelHeader
+            label=""
+            children={
+              <>
+                <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                  {fileName ?? "Input"}
+                </span>
+                {fileName ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setFileName(null);
+                      setContent("");
+                      setDraft("");
+                    }}
+                    className="text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+                  >
+                    ✕
+                  </button>
+                ) : null}
+                <label className="cursor-pointer rounded-lg border border-border-light bg-panel-light px-2.5 py-1 text-xs text-slate-500 transition-colors hover:text-slate-700 dark:border-border-dark dark:bg-panel-dark dark:text-slate-400 dark:hover:text-slate-200">
+                  Upload file
+                  <input
+                    type="file"
+                    className="sr-only"
+                    accept=".env,.properties,.ini,.cfg"
+                    onChange={handleFileUpload}
+                  />
+                </label>
+              </>
+            }
+          />
           <textarea
             value={content}
             onChange={(e) => {
@@ -314,6 +377,7 @@ function EnvParserTool() {
                 type="button"
                 onClick={() => {
                   setContent("");
+                  setFileName(null);
                   setDraft("");
                   setOutput(null);
                 }}

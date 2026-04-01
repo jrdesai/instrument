@@ -3,6 +3,7 @@ import {
   useEffect,
   useRef,
   useState,
+  type ChangeEvent,
 } from "react";
 import { CopyButton } from "../../components/tool";
 import { CodeBlock } from "../../components/ui/CodeBlock";
@@ -23,6 +24,17 @@ const LANGUAGES: { id: CodeLanguage; label: string }[] = [
   { id: "css", label: "CSS" },
   { id: "markdown", label: "Markdown" },
 ];
+
+const EXT_TO_LANG: Record<string, CodeLanguage> = {
+  js: "javascript",
+  jsx: "javascript",
+  ts: "typescript",
+  tsx: "typescript",
+  html: "html",
+  css: "css",
+  md: "markdown",
+  mdx: "markdown",
+};
 
 function codeLanguageToPrism(
   lang: CodeLanguage
@@ -49,6 +61,7 @@ function CodeFormatterTool() {
   const [language, setLanguage] = useState<CodeLanguage>("javascript");
   const [tabWidth, setTabWidth] = useState<TabWidthOption>(2);
   const [output, setOutput] = useState("");
+  const [fileName, setFileName] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isFormatting, setIsFormatting] = useState(false);
   const [userOverrodeLang, setUserOverrodeLang] = useState(false);
@@ -114,11 +127,45 @@ function CodeFormatterTool() {
     runFormat(input, language, tabWidth);
   }, [language, tabWidth, runFormat]);
 
+  const handleDownload = useCallback((content: string, downloadName: string, mime: string) => {
+    const blob = new Blob([content], { type: mime });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = downloadName;
+    a.click();
+    URL.revokeObjectURL(url);
+  }, []);
+
+  const handleFileUpload = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      const ext = file.name.split(".").pop()?.toLowerCase() ?? "";
+      setFileName(file.name);
+      const detected = EXT_TO_LANG[ext];
+      if (detected) {
+        setLanguage(detected);
+        setUserOverrodeLang(true);
+      }
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const text = ev.target?.result as string;
+        setInput(text);
+        setDraft(text);
+      };
+      reader.readAsText(file);
+      e.target.value = "";
+    },
+    [setDraft]
+  );
+
   const handleClear = useCallback(() => {
     setInput("");
     setDraft("");
     setOutput("");
     setError(null);
+    setFileName(null);
     setUserOverrodeLang(false);
   }, [setDraft]);
 
@@ -142,12 +189,37 @@ function CodeFormatterTool() {
       <div className="flex flex-1 min-h-0 w-full">
         {/* Left panel — input */}
         <div className="flex flex-col flex-1 min-w-0 border-r border-border-light dark:border-border-dark">
-          <div className="flex items-center justify-between px-4 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0">
-            <span className="text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider">
-              INPUT
-            </span>
+          <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0">
+            <div className="flex min-w-0 flex-wrap items-center gap-2">
+              <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                {fileName ?? "Input"}
+              </span>
+              {fileName ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFileName(null);
+                    setInput("");
+                    setDraft("");
+                    setUserOverrodeLang(false);
+                  }}
+                  className="text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+                >
+                  ✕
+                </button>
+              ) : null}
+              <label className="cursor-pointer rounded-lg border border-border-light bg-panel-light px-2.5 py-1 text-xs text-slate-500 transition-colors hover:text-slate-700 dark:border-border-dark dark:bg-panel-dark dark:text-slate-400 dark:hover:text-slate-200">
+                Upload file
+                <input
+                  type="file"
+                  className="sr-only"
+                  accept=".js,.jsx,.ts,.tsx,.html,.css,.md,.mdx"
+                  onChange={handleFileUpload}
+                />
+              </label>
+            </div>
             {!isEmpty && (
-              <span className="text-slate-600 text-xs">
+              <span className="text-slate-600 text-xs tabular-nums">
                 {input.length.toLocaleString()} chars
               </span>
             )}
@@ -274,6 +346,17 @@ function CodeFormatterTool() {
             >
               Format
             </button>
+            {output && !error ? (
+              <button
+                type="button"
+                onClick={() =>
+                  handleDownload(output, fileName ?? "formatted-code.txt", "text/plain")
+                }
+                className="rounded-lg border border-border-light bg-panel-light px-3 py-1.5 text-xs text-slate-500 transition-colors hover:text-slate-700 dark:border-border-dark dark:bg-panel-dark dark:text-slate-400 dark:hover:text-slate-200"
+              >
+                Download
+              </button>
+            ) : null}
             <CopyButton
               value={output && !error ? output : undefined}
               label="Copy"

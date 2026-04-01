@@ -3,6 +3,7 @@ import React, {
   useEffect,
   useRef,
   useState,
+  type ChangeEvent,
 } from "react";
 import { CopyButton, PillButton, ToolbarFooter } from "../../components/tool";
 import { callTool } from "../../bridge";
@@ -26,6 +27,7 @@ function Base64Tool() {
   const [urlSafe, setUrlSafe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [fileName, setFileName] = useState<string | null>(null);
   const [leftPanelPercent, setLeftPanelPercent] = useState(50);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -97,6 +99,50 @@ function Base64Tool() {
     };
   }, []);
 
+  const handleFileUpload = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      setFileName(file.name);
+      if (mode === "encode") {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          const buffer = ev.target?.result as ArrayBuffer;
+          const bytes = new Uint8Array(buffer);
+          let binary = "";
+          bytes.forEach((b) => {
+            binary += String.fromCharCode(b);
+          });
+          setInput(binary);
+          setDraft(binary);
+        };
+        reader.readAsArrayBuffer(file);
+      } else {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          const text = (ev.target?.result as string).trim();
+          setInput(text);
+          setDraft(text);
+        };
+        reader.readAsText(file);
+      }
+      e.target.value = "";
+    },
+    [mode, setDraft]
+  );
+
+  const handleBinaryDownload = useCallback(() => {
+    if (!output || error) return;
+    const bytes = Uint8Array.from(output, (c) => c.charCodeAt(0));
+    const blob = new Blob([bytes]);
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = fileName ?? "decoded-file";
+    a.click();
+    URL.revokeObjectURL(url);
+  }, [output, error, fileName]);
+
   const handleSwap = useCallback(() => {
     const newInput = output;
     const newMode = mode === "encode" ? "decode" : "encode";
@@ -104,6 +150,7 @@ function Base64Tool() {
     setDraft(newInput);
     setOutput(input);
     setMode(newMode);
+    setFileName(null);
     runProcess(newInput, newMode, urlSafe);
   }, [input, output, mode, urlSafe, runProcess, setDraft]);
 
@@ -112,6 +159,7 @@ function Base64Tool() {
     setDraft("");
     setOutput("");
     setError(null);
+    setFileName(null);
   }, [setDraft]);
 
   const lines = input.split("\n").length;
@@ -148,10 +196,34 @@ function Base64Tool() {
           className="flex flex-col border-r border-border-light dark:border-border-dark shrink-0"
           style={{ width: `${leftPanelPercent}%` }}
         >
-          <div className="flex items-center justify-between px-3 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark text-xs text-slate-500 dark:text-slate-400 shrink-0">
-            <span>Lines: {lines}</span>
-            <span>Chars: {charCount}</span>
-            <span>Bytes: {byteCount}</span>
+          <div className="flex flex-wrap items-center justify-between gap-2 px-3 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark text-xs text-slate-500 dark:text-slate-400 shrink-0">
+            <div className="flex min-w-0 flex-wrap items-center gap-2">
+              <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                {fileName ?? "Input"}
+              </span>
+              {fileName ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFileName(null);
+                    setInput("");
+                    setDraft("");
+                  }}
+                  className="text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+                >
+                  ✕
+                </button>
+              ) : null}
+              <label className="cursor-pointer rounded-lg border border-border-light bg-panel-light px-2.5 py-1 text-xs text-slate-500 transition-colors hover:text-slate-700 dark:border-border-dark dark:bg-panel-dark dark:text-slate-400 dark:hover:text-slate-200">
+                Upload file
+                <input type="file" className="sr-only" onChange={handleFileUpload} />
+              </label>
+            </div>
+            <div className="flex flex-wrap items-center gap-3">
+              <span>Lines: {lines}</span>
+              <span>Chars: {charCount}</span>
+              <span>Bytes: {byteCount}</span>
+            </div>
           </div>
           <textarea
             aria-label="Base64 input text"
@@ -250,6 +322,15 @@ function Base64Tool() {
                   className="py-1"
                   aria-label="Copy output to clipboard"
                 />
+                {mode === "decode" && output && !error ? (
+                  <button
+                    type="button"
+                    onClick={handleBinaryDownload}
+                    className="rounded-lg border border-border-light bg-panel-light px-3 py-1 text-xs text-slate-500 transition-colors hover:text-slate-700 dark:border-border-dark dark:bg-panel-dark dark:text-slate-400 dark:hover:text-slate-200"
+                  >
+                    Download
+                  </button>
+                ) : null}
                 <button
                   type="button"
                   aria-label="Clear input and output"

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState, type ChangeEvent } from "react";
 import { CopyButton, PanelHeader, ToolbarFooter } from "../../components/tool";
 import { CodeBlock } from "../../components/ui/CodeBlock";
 import { callTool } from "../../bridge";
@@ -13,6 +13,25 @@ const RUST_COMMAND = "tool_config_convert";
 const DRAFT_TOOL_ID = "config-converter";
 
 const FORMAT_ORDER: ConfigFormat[] = ["Json", "Yaml", "Toml"];
+
+const EXT_TO_FORMAT: Record<string, ConfigFormat> = {
+  json: "Json",
+  yaml: "Yaml",
+  yml: "Yaml",
+  toml: "Toml",
+};
+
+const FORMAT_TO_EXT: Record<ConfigFormat, string> = {
+  Json: "json",
+  Yaml: "yaml",
+  Toml: "toml",
+};
+
+const FORMAT_TO_MIME: Record<ConfigFormat, string> = {
+  Json: "application/json",
+  Yaml: "text/yaml",
+  Toml: "text/plain",
+};
 
 function nextFormatAfter(f: ConfigFormat): ConfigFormat {
   const i = FORMAT_ORDER.indexOf(f);
@@ -46,6 +65,7 @@ const ConfigConverterTool: React.FC = () => {
   const [indent, setIndent] = useState<IndentOption>(2);
   const [sortKeys, setSortKeys] = useState(false);
   const [output, setOutput] = useState<ConfigConvertOutput | null>(null);
+  const [fileName, setFileName] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
   const hasInput = input.trim().length > 0;
@@ -108,6 +128,39 @@ const ConfigConverterTool: React.FC = () => {
     debouncedProcess(input, { from, to, indent, sortKeys });
   }, [input, from, to, indent, sortKeys, debouncedProcess]);
 
+  const handleDownload = useCallback((content: string, downloadName: string, mime: string) => {
+    const blob = new Blob([content], { type: mime });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = downloadName;
+    a.click();
+    URL.revokeObjectURL(url);
+  }, []);
+
+  const handleFileUpload = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      const ext = file.name.split(".").pop()?.toLowerCase() ?? "";
+      setFileName(file.name.replace(/\.[^.]+$/, ""));
+      const detected = EXT_TO_FORMAT[ext];
+      if (detected) {
+        setFrom(detected);
+        setTo((prevTo) => (prevTo === detected ? nextFormatAfter(detected) : prevTo));
+      }
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const text = ev.target?.result as string;
+        setInput(text);
+        setDraft(text);
+      };
+      reader.readAsText(file);
+      e.target.value = "";
+    },
+    [setDraft]
+  );
+
   const handleChangeInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const v = e.target.value;
     setInput(v);
@@ -148,6 +201,7 @@ const ConfigConverterTool: React.FC = () => {
   const handleClear = () => {
     setInput("");
     setDraft("");
+    setFileName(null);
     setOutput(null);
   };
 
@@ -179,7 +233,7 @@ const ConfigConverterTool: React.FC = () => {
           <PanelHeader
             className="border-border-light/80 bg-panel-light/80 dark:border-border-dark dark:bg-panel-dark/80"
             prependChildren
-            label="Input"
+            label={fileName ?? "Input"}
             meta={`${input.length.toLocaleString()} chars`}
           >
             <select
@@ -192,6 +246,28 @@ const ConfigConverterTool: React.FC = () => {
               <option value="Yaml">YAML</option>
               <option value="Toml">TOML</option>
             </select>
+            {fileName ? (
+              <button
+                type="button"
+                onClick={() => {
+                  setFileName(null);
+                  setInput("");
+                  setDraft("");
+                }}
+                className="text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+              >
+                ✕
+              </button>
+            ) : null}
+            <label className="cursor-pointer rounded-lg border border-border-light bg-panel-light px-2.5 py-1 text-xs text-slate-500 transition-colors hover:text-slate-700 dark:border-border-dark dark:bg-panel-dark dark:text-slate-400 dark:hover:text-slate-200">
+              Upload file
+              <input
+                type="file"
+                className="sr-only"
+                accept=".json,.yaml,.yml,.toml"
+                onChange={handleFileUpload}
+              />
+            </label>
           </PanelHeader>
           <textarea
             className="flex-1 w-full resize-none border-none outline-none bg-transparent font-mono text-xs text-slate-700 dark:text-slate-300 p-4 leading-relaxed"
@@ -359,12 +435,29 @@ const ConfigConverterTool: React.FC = () => {
             children: (
               <>
                 {isValid && effectiveOutput?.result ? (
-                  <CopyButton
-                    value={effectiveOutput.result}
-                    label="Copy"
-                    variant="primary"
-                    className="rounded-md bg-primary/90 px-3 py-1 text-xs hover:bg-primary"
-                  />
+                  <>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        handleDownload(
+                          effectiveOutput.result,
+                          fileName
+                            ? `${fileName}.${FORMAT_TO_EXT[to] ?? "txt"}`
+                            : `converted.${FORMAT_TO_EXT[to] ?? "txt"}`,
+                          FORMAT_TO_MIME[to] ?? "text/plain"
+                        )
+                      }
+                      className="rounded-lg border border-border-light bg-panel-light px-3 py-1 text-xs text-slate-500 transition-colors hover:text-slate-700 dark:border-border-dark dark:bg-panel-dark dark:text-slate-400 dark:hover:text-slate-200"
+                    >
+                      Download .{FORMAT_TO_EXT[to] ?? "txt"}
+                    </button>
+                    <CopyButton
+                      value={effectiveOutput.result}
+                      label="Copy"
+                      variant="primary"
+                      className="rounded-md bg-primary/90 px-3 py-1 text-xs hover:bg-primary"
+                    />
+                  </>
                 ) : null}
                 <button
                   type="button"

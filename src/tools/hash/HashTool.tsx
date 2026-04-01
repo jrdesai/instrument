@@ -4,6 +4,7 @@ import {
   useMemo,
   useRef,
   useState,
+  type ChangeEvent,
 } from "react";
 import { CopyButton } from "../../components/tool";
 import { callTool } from "../../bridge";
@@ -41,6 +42,7 @@ function HashTool() {
   const [results, setResults] = useState<HashOutput["results"]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [fileName, setFileName] = useState<string | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
@@ -121,9 +123,29 @@ function HashTool() {
     };
   }, []);
 
+  const handleFileUpload = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      setFileName(file.name);
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const text = ev.target?.result;
+        if (typeof text === "string") {
+          setInput(text);
+          setDraft(text);
+        }
+      };
+      reader.readAsText(file);
+      e.target.value = "";
+    },
+    [setDraft]
+  );
+
   const handleClear = useCallback(() => {
     setInput("");
     setDraft("");
+    setFileName(null);
     setHmacKey("");
     setResults([]);
     setError(null);
@@ -143,11 +165,38 @@ function HashTool() {
   return (
     <div className="flex flex-col h-full bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
       <div className="flex flex-col flex-1 min-h-0">
-        <div className="flex items-center justify-between px-3 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark text-xs text-slate-500 dark:text-slate-400 shrink-0">
-          <span>Input</span>
-          <span>Lines: {lines}</span>
-          <span>Chars: {charCount}</span>
-          {isLoading && <span className="text-primary">Processing…</span>}
+        <div className="flex flex-wrap items-center justify-between gap-2 px-3 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark text-xs text-slate-500 dark:text-slate-400 shrink-0">
+          <div className="flex min-w-0 flex-wrap items-center gap-2">
+            <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+              {fileName ?? "Input"}
+            </span>
+            {fileName ? (
+              <button
+                type="button"
+                onClick={() => {
+                  setFileName(null);
+                  setInput("");
+                  setDraft("");
+                }}
+                className="text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+              >
+                ✕
+              </button>
+            ) : null}
+            <label className="cursor-pointer rounded-lg border border-border-light bg-panel-light px-2.5 py-1 text-xs text-slate-500 transition-colors hover:text-slate-700 dark:border-border-dark dark:bg-panel-dark dark:text-slate-400 dark:hover:text-slate-200">
+              Upload file
+              <input
+                type="file"
+                className="sr-only"
+                onChange={handleFileUpload}
+              />
+            </label>
+          </div>
+          <div className="flex flex-wrap items-center gap-3">
+            <span>Lines: {lines}</span>
+            <span>Chars: {charCount}</span>
+            {isLoading ? <span className="text-primary">Processing…</span> : null}
+          </div>
         </div>
         <textarea
           aria-label="Text to hash"

@@ -1,5 +1,11 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import { CopyButton, PanelHeader, ToolbarFooter } from "../../components/tool";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type ChangeEvent,
+} from "react";
+import { CopyButton, ToolbarFooter } from "../../components/tool";
 import { callTool } from "../../bridge";
 import { useDraftInput, useRestoreDraft } from "../../hooks/useDraftInput";
 import { useHistoryStore } from "../../store";
@@ -75,6 +81,8 @@ function TextDiffTool() {
   const { setDraft } = useDraftInput(TOOL_ID);
   const [leftInput, setLeftInput] = useState("");
   const [rightInput, setRightInput] = useState("");
+  const [leftFileName, setLeftFileName] = useState<string | null>(null);
+  const [rightFileName, setRightFileName] = useState<string | null>(null);
   const [granularity, setGranularity] = useState<DiffGranularity>("word");
   useRestoreDraft(TOOL_ID, (raw) => {
     const v = raw as { left?: string; right?: string };
@@ -89,6 +97,44 @@ function TextDiffTool() {
   const rightRef = useRef<HTMLDivElement>(null);
   const isSyncing = useRef(false);
   const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
+
+  const handleLeftUpload = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      setLeftFileName(file.name);
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const text = ev.target?.result;
+        if (typeof text === "string") {
+          setLeftInput(text);
+          setDraft({ left: text, right: rightInput });
+        }
+      };
+      reader.readAsText(file);
+      e.target.value = "";
+    },
+    [rightInput, setDraft]
+  );
+
+  const handleRightUpload = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      setRightFileName(file.name);
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const text = ev.target?.result;
+        if (typeof text === "string") {
+          setRightInput(text);
+          setDraft({ left: leftInput, right: text });
+        }
+      };
+      reader.readAsText(file);
+      e.target.value = "";
+    },
+    [leftInput, setDraft]
+  );
 
   const handleLeftScroll = useCallback(() => {
     if (isSyncing.current || !rightRef.current || !leftRef.current) return;
@@ -182,15 +228,29 @@ function TextDiffTool() {
   const handleSwap = useCallback(() => {
     const newLeft = rightInput;
     const newRight = leftInput;
+    const newLeftName = rightFileName;
+    const newRightName = leftFileName;
     setLeftInput(newLeft);
     setRightInput(newRight);
+    setLeftFileName(newLeftName);
+    setRightFileName(newRightName);
     setDraft({ left: newLeft, right: newRight });
     runProcess(newLeft, newRight, granularity);
-  }, [leftInput, rightInput, granularity, runProcess, setDraft]);
+  }, [
+    leftInput,
+    rightInput,
+    leftFileName,
+    rightFileName,
+    granularity,
+    runProcess,
+    setDraft,
+  ]);
 
   const handleClear = useCallback(() => {
     setLeftInput("");
     setRightInput("");
+    setLeftFileName(null);
+    setRightFileName(null);
     setDraft({ left: "", right: "" });
     setOutput(null);
     setError(null);
@@ -207,10 +267,37 @@ function TextDiffTool() {
         style={{ height: "35%" }}
       >
         <div className="flex flex-col flex-1 min-w-0 border-r border-border-light dark:border-border-dark">
-          <PanelHeader
-            label="Left"
-            meta={`${leftInput.length.toLocaleString()} chars`}
-          />
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border-light bg-panel-light px-4 py-2 dark:border-border-dark dark:bg-panel-dark">
+            <div className="flex min-w-0 flex-wrap items-center gap-2">
+              <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                {leftFileName ?? "Before"}
+              </span>
+              {leftFileName ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setLeftFileName(null);
+                    setLeftInput("");
+                    setDraft({ left: "", right: rightInput });
+                  }}
+                  className="text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+                >
+                  ✕
+                </button>
+              ) : null}
+              <label className="cursor-pointer rounded-lg border border-border-light bg-panel-light px-2.5 py-1 text-xs text-slate-500 transition-colors hover:text-slate-700 dark:border-border-dark dark:bg-panel-dark dark:text-slate-400 dark:hover:text-slate-200">
+                Upload file
+                <input
+                  type="file"
+                  className="sr-only"
+                  onChange={handleLeftUpload}
+                />
+              </label>
+            </div>
+            <span className="text-xs tabular-nums text-slate-500 dark:text-slate-400">
+              {leftInput.length.toLocaleString()} chars
+            </span>
+          </div>
           <textarea
             aria-label="Left text"
             className="flex-1 w-full min-h-0 p-4 font-mono text-xs text-slate-700 dark:text-slate-300 bg-transparent resize-none border-none focus:outline-none leading-relaxed placeholder:text-slate-500"
@@ -224,10 +311,37 @@ function TextDiffTool() {
           />
         </div>
         <div className="flex flex-col flex-1 min-w-0">
-          <PanelHeader
-            label="Right"
-            meta={`${rightInput.length.toLocaleString()} chars`}
-          />
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border-light bg-panel-light px-4 py-2 dark:border-border-dark dark:bg-panel-dark">
+            <div className="flex min-w-0 flex-wrap items-center gap-2">
+              <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                {rightFileName ?? "After"}
+              </span>
+              {rightFileName ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setRightFileName(null);
+                    setRightInput("");
+                    setDraft({ left: leftInput, right: "" });
+                  }}
+                  className="text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+                >
+                  ✕
+                </button>
+              ) : null}
+              <label className="cursor-pointer rounded-lg border border-border-light bg-panel-light px-2.5 py-1 text-xs text-slate-500 transition-colors hover:text-slate-700 dark:border-border-dark dark:bg-panel-dark dark:text-slate-400 dark:hover:text-slate-200">
+                Upload file
+                <input
+                  type="file"
+                  className="sr-only"
+                  onChange={handleRightUpload}
+                />
+              </label>
+            </div>
+            <span className="text-xs tabular-nums text-slate-500 dark:text-slate-400">
+              {rightInput.length.toLocaleString()} chars
+            </span>
+          </div>
           <textarea
             aria-label="Right text"
             className="flex-1 w-full min-h-0 p-4 font-mono text-xs text-slate-700 dark:text-slate-300 bg-transparent resize-none border-none focus:outline-none leading-relaxed placeholder:text-slate-500"
