@@ -1,10 +1,12 @@
 import {
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
 import { callTool } from "../../bridge";
+import { CopyButton } from "../../components/tool";
 import { CodeBlock } from "../../components/ui/CodeBlock";
 import { useDraftInput, useRestoreDraft } from "../../hooks/useDraftInput";
 import type { JsonPathInput } from "../../bindings/JsonPathInput";
@@ -109,15 +111,10 @@ function JsonPathTool() {
     setFullDocOpen(false);
   }, [setDraft]);
 
-  const handleCopyAll = useCallback(async () => {
-    if (!output || !output.matches || output.matchCount === 0) return;
-    try {
-      const arr = `[${output.matches.map((m) => m.value).join(",")}]`;
-      await navigator.clipboard.writeText(arr);
-    } catch {
-      // ignore
-    }
-  }, [output]);
+  const allMatchesText = useMemo(() => {
+    if (!output?.matches?.length) return "";
+    return `[${output.matches.map((m) => m.value).join(",")}]`;
+  }, [output?.matches]);
 
   const isEmpty = query.trim() === "" && jsonInput.trim() === "";
   const hasMatches = (output?.matchCount ?? 0) > 0;
@@ -143,14 +140,6 @@ function JsonPathTool() {
         {m.value}
       </div>
     );
-  };
-
-  const handleCopyMatch = async (value: string) => {
-    try {
-      await navigator.clipboard.writeText(value);
-    } catch {
-      // ignore
-    }
   };
 
   return (
@@ -294,30 +283,29 @@ function JsonPathTool() {
                   {matches.map((m) => (
                     <div
                       key={m.index}
-                      className="relative bg-panel-light dark:bg-panel-dark border border-border-light dark:border-border-dark rounded-lg p-3"
+                      className="bg-panel-light dark:bg-panel-dark border border-border-light dark:border-border-dark rounded-lg p-3"
                     >
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="bg-primary/10 text-primary text-xs font-mono px-1.5 rounded">
+                      <div className="flex items-center gap-2 mb-1 min-w-0">
+                        <span className="bg-primary/10 text-primary text-xs font-mono px-1.5 rounded shrink-0">
                           #{m.index + 1}
                         </span>
-                        <span className="font-mono text-slate-500 dark:text-slate-400 text-xs truncate">
+                        <span className="font-mono text-slate-500 dark:text-slate-400 text-xs truncate min-w-0 flex-1">
                           {m.path}
                         </span>
+                        <CopyButton
+                          value={m.value}
+                          variant="icon"
+                          aria-label={`Copy match ${m.index + 1}`}
+                          className="shrink-0"
+                        />
                         <span
-                          className={`ml-auto text-xs px-1.5 rounded ${typeBadgeClasses(
+                          className={`shrink-0 text-xs px-1.5 rounded ${typeBadgeClasses(
                             m.valueType
                           )}`}
                         >
                           {m.valueType}
                         </span>
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => handleCopyMatch(m.value)}
-                        className="absolute top-2 right-2 text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 text-[10px] border border-border-light dark:border-border-dark rounded px-1 py-0.5 bg-background-light dark:bg-background-dark"
-                      >
-                        Copy
-                      </button>
                       {renderValue(m)}
                     </div>
                   ))}
@@ -362,13 +350,11 @@ function JsonPathTool() {
       {/* Footer */}
       <footer className="flex items-center gap-2 px-4 py-3 border-t border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0">
         {hasMatches && (
-          <button
-            type="button"
-            onClick={handleCopyAll}
-            className="px-3 py-2 text-xs font-medium bg-panel-light dark:bg-panel-dark text-slate-700 dark:text-slate-300 border border-border-light dark:border-border-dark rounded-lg hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
-          >
-            Copy All
-          </button>
+          <CopyButton
+            value={allMatchesText || undefined}
+            label="Copy All"
+            variant="primary"
+          />
         )}
         <button
           type="button"

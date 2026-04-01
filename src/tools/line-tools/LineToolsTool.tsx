@@ -216,7 +216,6 @@ function LineToolsTool() {
           },
           {
             end: true,
-            label: "Actions",
             children: (
               <>
                 <span className="text-xs text-slate-500 dark:text-slate-400">

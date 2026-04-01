@@ -24,6 +24,20 @@ const TOOL_ID = "json-formatter";
 const DEBOUNCE_MS = 150;
 const HISTORY_DEBOUNCE_MS = 1500;
 
+const MODE_ORDER = ["pretty", "minify", "compact"] as const satisfies readonly JsonFormatMode[];
+
+const MODE_LABELS: Record<JsonFormatMode, string> = {
+  pretty: "Pretty",
+  minify: "Minify",
+  compact: "Inline",
+};
+
+const MODE_TOOLTIPS: Record<JsonFormatMode, string> = {
+  pretty: "Multi-line with indentation",
+  minify: "Single line, no whitespace",
+  compact: "Single line with readable spacing",
+};
+
 function JsonFormatterTool() {
   const { setDraft } = useDraftInput(TOOL_ID);
   const [inputValue, setInputValue] = useState("");
@@ -215,48 +229,55 @@ function JsonFormatterTool() {
             label: "Mode",
             children: (
               <>
-                {(["pretty", "minify", "compact"] as const).map((m) => (
-                  <PillButton
-                    key={m}
-                    active={mode === m}
-                    onClick={() => setMode(m)}
-                    size="sm"
-                    shape="full"
-                  >
-                    <span className="capitalize">{m}</span>
-                  </PillButton>
+                {MODE_ORDER.map((m) => (
+                  <div key={m} className="relative group">
+                    <PillButton
+                      active={mode === m}
+                      onClick={() => setMode(m)}
+                      size="sm"
+                      shape="full"
+                    >
+                      {MODE_LABELS[m]}
+                    </PillButton>
+                    <span
+                      className="pointer-events-none absolute bottom-full left-1/2 z-50 mb-1.5 -translate-x-1/2 whitespace-nowrap rounded-md bg-slate-900 px-2 py-1 text-xs text-slate-100 opacity-0 transition-opacity group-hover:opacity-100 dark:bg-slate-700"
+                      role="tooltip"
+                    >
+                      {MODE_TOOLTIPS[m]}
+                    </span>
+                  </div>
                 ))}
               </>
             ),
           },
-          ...(mode === "pretty"
-            ? [
-                {
-                  label: "Indent",
-                  children: (
-                    <>
-                      {(
-                        [
-                          { value: "spaces2" as const, label: "2 spaces" },
-                          { value: "spaces4" as const, label: "4 spaces" },
-                          { value: "tab" as const, label: "Tab" },
-                        ] as const
-                      ).map(({ value, label }) => (
-                        <PillButton
-                          key={value}
-                          active={indent === value}
-                          onClick={() => setIndent(value)}
-                          size="sm"
-                          shape="full"
-                        >
-                          {label}
-                        </PillButton>
-                      ))}
-                    </>
-                  ),
-                },
-              ]
-            : []),
+          {
+            label: "Indent",
+            children: (
+              <div
+                className={
+                  mode !== "pretty" ? "pointer-events-none opacity-40" : ""
+                }
+              >
+                {(
+                  [
+                    { value: "spaces2" as const, label: "2 spaces" },
+                    { value: "spaces4" as const, label: "4 spaces" },
+                    { value: "tab" as const, label: "Tab" },
+                  ] as const
+                ).map(({ value, label }) => (
+                  <PillButton
+                    key={value}
+                    active={indent === value}
+                    onClick={() => setIndent(value)}
+                    size="sm"
+                    shape="full"
+                  >
+                    {label}
+                  </PillButton>
+                ))}
+              </div>
+            ),
+          },
           {
             label: "Options",
             children: (
@@ -276,7 +297,6 @@ function JsonFormatterTool() {
           },
           {
             end: true,
-            label: "Actions",
             children: (
               <>
                 {output?.isValid && output.result ? (

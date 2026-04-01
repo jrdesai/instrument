@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { HexColorPicker } from "react-colorful";
 import { callTool } from "../../bridge";
+import { CopyButton } from "../../components/tool";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useHistoryStore } from "../../store";
 import type { ColorInput } from "../../bindings/ColorInput";
@@ -10,7 +11,6 @@ const RUST_COMMAND = "color_convert";
 const TOOL_ID = "color-converter";
 const DEBOUNCE_MS = 150;
 const HISTORY_DEBOUNCE_MS = 1500;
-const COPIED_DURATION_MS = 1500;
 
 const FORMATS: { id: keyof Omit<ColorOutput, "name" | "error">; label: string }[] = [
   { id: "hex", label: "HEX" },
@@ -26,7 +26,6 @@ function ColorConverterTool() {
   const [output, setOutput] = useState<ColorOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [copiedId, setCopiedId] = useState<string | null>(null);
   const [pickerOpen, setPickerOpen] = useState(false);
   // Tracks the picker's live colour immediately — separate from the debounced output
   const [pickerColor, setPickerColor] = useState("#000000");
@@ -120,17 +119,6 @@ function ColorConverterTool() {
     setPickerOpen(false);
   }, [setDraft]);
 
-  const handleCopy = useCallback(async (value: string, id: string) => {
-    if (!value) return;
-    try {
-      await navigator.clipboard.writeText(value);
-      setCopiedId(id);
-      setTimeout(() => setCopiedId(null), COPIED_DURATION_MS);
-    } catch {
-      // ignore
-    }
-  }, []);
-
   const pickerHex = output?.hex ?? pickerColor;
   // Swatch reflects picker live colour when open; output hex when closed; null = show hue strip
   const swatchColor = pickerOpen ? pickerColor : (output?.hex ?? null);
@@ -200,7 +188,6 @@ function ColorConverterTool() {
           <div className="flex flex-col gap-2">
             {FORMATS.map(({ id, label }) => {
               const value = output[id];
-              const isCopied = copiedId === id;
               return (
                 <div
                   key={id}
@@ -212,13 +199,12 @@ function ColorConverterTool() {
                   <span className="flex-1 font-mono text-sm text-slate-800 dark:text-slate-200 select-all">
                     {value}
                   </span>
-                  <button
-                    type="button"
-                    onClick={() => handleCopy(value, id)}
-                    className="shrink-0 px-2 py-0.5 text-[10px] font-medium bg-background-light dark:bg-background-dark text-slate-700 dark:text-slate-300 border border-border-light dark:border-border-dark rounded-lg hover:text-primary hover:border-primary/60 transition-colors"
-                  >
-                    {isCopied ? "Copied" : "Copy"}
-                  </button>
+                  <CopyButton
+                    value={value}
+                    variant="icon"
+                    aria-label={`Copy ${label}`}
+                    className="shrink-0"
+                  />
                 </div>
               );
             })}
@@ -233,13 +219,12 @@ function ColorConverterTool() {
                   <span className="flex-1 font-mono text-sm text-slate-800 dark:text-slate-200 select-all">
                     {output.name}
                   </span>
-                  <button
-                    type="button"
-                    onClick={() => handleCopy(output.name!, "css")}
-                    className="shrink-0 px-2 py-0.5 text-[10px] font-medium bg-background-light dark:bg-background-dark text-slate-700 dark:text-slate-300 border border-border-light dark:border-border-dark rounded-lg hover:text-primary hover:border-primary/60 transition-colors"
-                  >
-                    {copiedId === "css" ? "Copied" : "Copy"}
-                  </button>
+                  <CopyButton
+                    value={output.name}
+                    variant="icon"
+                    aria-label="Copy CSS name"
+                    className="shrink-0"
+                  />
                 </>
               ) : (
                 <span className="flex-1 text-sm text-slate-400 dark:text-slate-600">—</span>

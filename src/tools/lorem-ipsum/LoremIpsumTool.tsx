@@ -1,12 +1,12 @@
 import { useCallback, useState } from "react";
 import { callTool } from "../../bridge";
+import { CopyButton } from "../../components/tool";
 import type { LoremIpsumInput } from "../../bindings/LoremIpsumInput";
 import type { LoremIpsumOutput } from "../../bindings/LoremIpsumOutput";
 import type { LoremOutputType } from "../../bindings/LoremOutputType";
 
 const RUST_COMMAND = "lorem_ipsum_process";
 export const TOOL_ID = "lorem-ipsum";
-const COPIED_DURATION_MS = 1500;
 const DEFAULT_COUNT = 3;
 
 function LoremIpsumTool() {
@@ -15,8 +15,6 @@ function LoremIpsumTool() {
   const [startWithClassic, setStartWithClassic] = useState(true);
   const [output, setOutput] = useState<LoremIpsumOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [copyLabel, setCopyLabel] = useState("Copy");
-
   const runProcess = useCallback(
     async (
       currentType: LoremOutputType,
@@ -70,19 +68,6 @@ function LoremIpsumTool() {
     const clamped = Math.min(50, Math.max(1, value));
     setCount(clamped);
   }, []);
-
-  const handleCopy = useCallback(async () => {
-    const text = output?.result ?? "";
-    if (!text) return;
-    try {
-      await navigator.clipboard.writeText(text);
-      setCopyLabel("Copied");
-      setTimeout(() => setCopyLabel("Copy"), COPIED_DURATION_MS);
-    } catch {
-      setCopyLabel("Copy failed");
-      setTimeout(() => setCopyLabel("Copy"), COPIED_DURATION_MS);
-    }
-  }, [output?.result]);
 
   const handleClear = useCallback(() => {
     setOutput(null);
@@ -239,13 +224,14 @@ function LoremIpsumTool() {
             </button>
             {hasContent && (
               <>
-                <button
-                  type="button"
-                  onClick={handleCopy}
-                  className="px-3 py-1 text-sm font-medium bg-panel-light dark:bg-panel-dark text-slate-700 dark:text-slate-300 border border-border-light dark:border-border-dark rounded-lg hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
-                >
-                  {copyLabel}
-                </button>
+                <CopyButton
+                  value={
+                    output?.result && !output.error ? output.result : undefined
+                  }
+                  label="Copy"
+                  variant="primary"
+                  className="py-1 text-sm"
+                />
                 <button
                   type="button"
                   onClick={handleClear}

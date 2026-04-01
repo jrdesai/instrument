@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { callTool } from "../../bridge";
+import { CopyButton } from "../../components/tool";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import type { ExprEvalInput } from "../../bindings/ExprEvalInput";
 import type { ExprEvalOutput } from "../../bindings/ExprEvalOutput";
@@ -7,14 +8,12 @@ import type { ExprEvalOutput } from "../../bindings/ExprEvalOutput";
 const TOOL_ID = "expression-evaluator";
 const RUST_COMMAND = "tool_expression_eval";
 const DEBOUNCE_MS = 300;
-const COPIED_DURATION_MS = 1500;
 
 function ExpressionEvaluatorTool() {
   const { setDraft } = useDraftInput(TOOL_ID);
   const [expression, setExpression] = useState("");
   useRestoreStringDraft(TOOL_ID, setExpression);
   const [output, setOutput] = useState<ExprEvalOutput | null>(null);
-  const [copyLabel, setCopyLabel] = useState("Copy");
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const runEval = useCallback(async (expr: string) => {
@@ -50,17 +49,6 @@ function ExpressionEvaluatorTool() {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
   }, [expression, runEval]);
-
-  const handleCopy = useCallback(async () => {
-    if (!output?.result) return;
-    try {
-      await navigator.clipboard.writeText(output.result);
-      setCopyLabel("Copied");
-      setTimeout(() => setCopyLabel("Copy"), COPIED_DURATION_MS);
-    } catch {
-      /* ignore */
-    }
-  }, [output]);
 
   const handleClear = useCallback(() => {
     setExpression("");
@@ -132,14 +120,14 @@ function ExpressionEvaluatorTool() {
       <footer className="shrink-0 border-t border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark px-4 py-3">
         <div className="flex items-center gap-6 text-xs text-slate-500 dark:text-slate-400">
           <div className="flex items-center gap-2 ml-auto">
-            <button
-              type="button"
-              onClick={handleCopy}
-              disabled={!output?.result}
-              className="px-3 py-1.5 rounded-md border border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark text-[11px] font-semibold uppercase tracking-wider disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-100 dark:hover:bg-white/5 transition-colors"
-            >
-              {copyLabel}
-            </button>
+            <CopyButton
+              value={
+                output?.success && output.result ? output.result : undefined
+              }
+              label="Copy"
+              variant="primary"
+              className="py-1.5 text-[11px] font-semibold uppercase tracking-wider"
+            />
             <button
               type="button"
               onClick={handleClear}

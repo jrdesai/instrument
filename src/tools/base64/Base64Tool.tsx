@@ -233,7 +233,6 @@ function Base64Tool() {
           },
           {
             end: true,
-            label: "Actions",
             children: (
               <>
                 <button

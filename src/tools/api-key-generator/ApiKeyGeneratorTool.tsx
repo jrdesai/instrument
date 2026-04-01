@@ -3,6 +3,7 @@ import {
   useState,
 } from "react";
 import { callTool } from "../../bridge";
+import { CopyButton } from "../../components/tool";
 import type { ApiKeyCharset } from "../../bindings/ApiKeyCharset";
 import type { ApiKeyFormat } from "../../bindings/ApiKeyFormat";
 import type { ApiKeyInput } from "../../bindings/ApiKeyInput";
@@ -10,8 +11,6 @@ import type { ApiKeyOutput } from "../../bindings/ApiKeyOutput";
 
 const RUST_COMMAND = "api_key_process";
 export const TOOL_ID = "api-key-generator";
-const COPIED_DURATION_MS = 1500;
-
 function ApiKeyGeneratorTool() {
   const [prefix, setPrefix] = useState<string>("");
   const [length, setLength] = useState<number>(32);
@@ -21,9 +20,6 @@ function ApiKeyGeneratorTool() {
   const [keys, setKeys] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [copyAllLabel, setCopyAllLabel] = useState("Copy all");
-  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
-
   const runProcess = useCallback(
     async (
       currentCount: number,
@@ -71,30 +67,6 @@ function ApiKeyGeneratorTool() {
   const handleGenerate = useCallback(() => {
     runProcess(count, length, prefix, format, charset);
   }, [count, length, prefix, format, charset, runProcess]);
-
-  const handleCopyLine = useCallback(async (index: number) => {
-    const value = keys[index];
-    if (!value) return;
-    try {
-      await navigator.clipboard.writeText(value);
-      setCopiedIndex(index);
-      setTimeout(() => setCopiedIndex(null), COPIED_DURATION_MS);
-    } catch {
-      // ignore copy errors
-    }
-  }, [keys]);
-
-  const handleCopyAll = useCallback(async () => {
-    if (!keys.length) return;
-    try {
-      await navigator.clipboard.writeText(keys.join("\n"));
-      setCopyAllLabel("Copied");
-      setTimeout(() => setCopyAllLabel("Copy all"), COPIED_DURATION_MS);
-    } catch {
-      setCopyAllLabel("Copy failed");
-      setTimeout(() => setCopyAllLabel("Copy all"), COPIED_DURATION_MS);
-    }
-  }, [keys]);
 
   const handleClear = useCallback(() => {
     setKeys([]);
@@ -152,14 +124,12 @@ function ApiKeyGeneratorTool() {
                 <span className="font-mono text-sm text-slate-700 dark:text-slate-300 break-all">
                   {key}
                 </span>
-                <button
-                  type="button"
+                <CopyButton
+                  value={key}
+                  variant="icon"
                   aria-label="Copy API key"
-                  onClick={() => handleCopyLine(index)}
-                  className="px-3 py-1 text-xs font-medium bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors shrink-0"
-                >
-                  {copiedIndex === index ? "Copied" : "Copy"}
-                </button>
+                  className="shrink-0"
+                />
               </li>
             ))}
           </ul>
@@ -391,14 +361,12 @@ function ApiKeyGeneratorTool() {
               )}
               {isLoading ? "Generating..." : "Generate"}
             </button>
-            <button
-              type="button"
-              onClick={handleCopyAll}
-              disabled={!keys.length}
-              className="px-3 py-2 text-xs font-medium bg-panel-light dark:bg-panel-dark text-slate-700 dark:text-slate-300 border border-border-light dark:border-border-dark rounded-lg hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              {copyAllLabel}
-            </button>
+            <CopyButton
+              value={keys.length ? keys.join("\n") : undefined}
+              label="Copy all"
+              variant="primary"
+              className="py-2 text-xs"
+            />
             {keys.length > 0 && (
               <button
                 type="button"

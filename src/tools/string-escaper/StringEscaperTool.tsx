@@ -268,7 +268,6 @@ function StringEscaperTool() {
           },
           {
             end: true,
-            label: "Actions",
             children: (
               <>
                 <button

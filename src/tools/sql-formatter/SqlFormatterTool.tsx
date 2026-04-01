@@ -5,6 +5,7 @@ import {
   useState,
 } from "react";
 import { callTool } from "../../bridge";
+import { CopyButton } from "../../components/tool";
 import { CodeBlock } from "../../components/ui/CodeBlock";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import type { SqlFormatInput } from "../../bindings/SqlFormatInput";
@@ -15,7 +16,6 @@ import type { SqlKeywordCase } from "../../bindings/SqlKeywordCase";
 const TOOL_ID = "sql-formatter";
 const RUST_COMMAND = "tool_sql_format";
 const DEBOUNCE_MS = 300;
-const COPIED_DURATION_MS = 1500;
 
 function SqlFormatterTool() {
   const { setDraft } = useDraftInput(TOOL_ID);
@@ -24,7 +24,6 @@ function SqlFormatterTool() {
   const [indent, setIndent] = useState<SqlIndentStyle>("spaces2");
   const [keywordCase, setKeywordCase] = useState<SqlKeywordCase>("upper");
   const [output, setOutput] = useState<SqlFormatOutput | null>(null);
-  const [copyLabel, setCopyLabel] = useState("Copy");
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const runFormat = useCallback(
@@ -73,17 +72,6 @@ function SqlFormatterTool() {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
   }, [inputValue, indent, keywordCase, runFormat]);
-
-  const handleCopy = useCallback(async () => {
-    if (!output?.result) return;
-    try {
-      await navigator.clipboard.writeText(output.result);
-      setCopyLabel("Copied");
-      setTimeout(() => setCopyLabel("Copy"), COPIED_DURATION_MS);
-    } catch {
-      // ignore
-    }
-  }, [output]);
 
   const handleClear = useCallback(() => {
     setInputValue("");
@@ -260,14 +248,14 @@ function SqlFormatterTool() {
             >
               Format
             </button>
-            <button
-              type="button"
-              onClick={handleCopy}
-              disabled={!output?.result}
-              className="px-3 py-1.5 rounded-md border border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark text-[11px] font-semibold uppercase tracking-wider disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-100 dark:hover:bg-white/5 transition-colors"
-            >
-              {copyLabel}
-            </button>
+            <CopyButton
+              value={
+                output?.result && !output.error ? output.result : undefined
+              }
+              label="Copy"
+              variant="primary"
+              className="py-1.5 text-[11px] font-semibold uppercase tracking-wider"
+            />
             <button
               type="button"
               onClick={handleClear}

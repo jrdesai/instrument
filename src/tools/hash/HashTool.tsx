@@ -17,7 +17,6 @@ const RUST_COMMAND = "hash_process";
 const TOOL_ID = "hash";
 const DEBOUNCE_MS = 150;
 const HISTORY_DEBOUNCE_MS = 1500;
-const COPIED_DURATION_MS = 1500;
 
 function historySafeInput(payload: HashInput): HashInput {
   const key = payload.hmacKey.trim();
@@ -42,7 +41,6 @@ function HashTool() {
   const [results, setResults] = useState<HashOutput["results"]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [rowCopyLabel, setRowCopyLabel] = useState<string | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
@@ -130,18 +128,6 @@ function HashTool() {
     setResults([]);
     setError(null);
   }, [setDraft]);
-
-  const copyRow = useCallback(async (algorithm: string, value: string) => {
-    if (!value) return;
-    try {
-      await navigator.clipboard.writeText(value);
-      setRowCopyLabel(algorithm);
-      setTimeout(() => setRowCopyLabel(null), COPIED_DURATION_MS);
-    } catch {
-      setRowCopyLabel(`fail:${algorithm}`);
-      setTimeout(() => setRowCopyLabel(null), COPIED_DURATION_MS);
-    }
-  }, []);
 
   const copyAllValue = useMemo(() => {
     const lines = results.filter((r) => r.value);
@@ -271,19 +257,12 @@ function HashTool() {
               >
                 {row.value || "—"}
               </div>
-              <button
-                type="button"
+              <CopyButton
+                value={row.value || undefined}
+                variant="icon"
                 aria-label={`Copy ${row.algorithm}`}
-                onClick={() => copyRow(row.algorithm, row.value)}
-                disabled={!row.value}
-                className="shrink-0 px-2 py-1 text-xs font-medium bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-100 rounded-md hover:bg-slate-300 dark:hover:bg-slate-600 disabled:opacity-40 disabled:cursor-not-allowed"
-              >
-                {rowCopyLabel === row.algorithm
-                  ? "Copied"
-                  : rowCopyLabel === `fail:${row.algorithm}`
-                    ? "Failed"
-                    : "Copy"}
-              </button>
+                className="shrink-0"
+              />
             </div>
           ))}
           {!error && results.length === 0 && !isLoading ? (

@@ -5,6 +5,7 @@ import {
   useState,
 } from "react";
 import { callTool } from "../../bridge";
+import { CopyButton } from "../../components/tool";
 import { useDraftInput, useRestoreDraft } from "../../hooks/useDraftInput";
 import { useHistoryStore } from "../../store";
 import type { BitwiseBase } from "../../bindings/BitwiseBase";
@@ -51,26 +52,22 @@ const BIT_WIDTH_OPTIONS: { id: BitwiseWidth; label: string; maxShift: number }[]
 function ResultCard({
   label,
   result,
-  onCopy,
 }: {
   label: string;
   result: BitwiseResult | null | undefined;
-  onCopy: (text: string) => void;
 }) {
   if (!result) return null;
   return (
     <div className="flex flex-col border border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark rounded-lg p-3 hover:border-primary/40 transition-colors">
-      <div className="flex items-center justify-between mb-2">
+      <div className="flex items-center justify-between mb-2 gap-2">
         <span className="text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider">
           {label}
         </span>
-        <button
-          type="button"
-          onClick={() => onCopy(result.decimal)}
-          className="px-2 py-0.5 text-[10px] font-medium bg-background-light dark:bg-background-dark text-slate-700 dark:text-slate-300 border border-border-light dark:border-border-dark rounded-lg hover:text-primary hover:border-primary/60 transition-colors"
-        >
-          Copy
-        </button>
+        <CopyButton
+          value={result.decimal}
+          variant="icon"
+          aria-label={`Copy ${label}`}
+        />
       </div>
       <div className="font-mono text-lg text-slate-800 dark:text-slate-200">{result.decimal}</div>
       <div className="font-mono text-xs text-slate-500 mt-1">
@@ -193,15 +190,6 @@ function BitwiseCalculatorTool() {
     };
   }, []);
 
-  const handleCopy = useCallback(async (text: string) => {
-    if (!text) return;
-    try {
-      await navigator.clipboard.writeText(text);
-    } catch {
-      // ignore
-    }
-  }, []);
-
   const handleClear = useCallback(() => {
     setValueA("");
     setValueB("");
@@ -297,7 +285,6 @@ function BitwiseCalculatorTool() {
                       key={key}
                       label={label}
                       result={output?.[key] as BitwiseResult | undefined}
-                      onCopy={handleCopy}
                     />
                   ))}
                 </div>
@@ -313,27 +300,22 @@ function BitwiseCalculatorTool() {
                   <ResultCard
                     label="NOT"
                     result={output?.notA ?? undefined}
-                    onCopy={handleCopy}
                   />
                   <ResultCard
                     label={`Shift Left (${clampedShift})`}
                     result={output?.shiftLeft ?? undefined}
-                    onCopy={handleCopy}
                   />
                   <ResultCard
                     label={`Shift Right (${clampedShift})`}
                     result={output?.shiftRight ?? undefined}
-                    onCopy={handleCopy}
                   />
                   <ResultCard
                     label={`Rotate Left (${clampedShift})`}
                     result={output?.rotateLeft ?? undefined}
-                    onCopy={handleCopy}
                   />
                   <ResultCard
                     label={`Rotate Right (${clampedShift})`}
                     result={output?.rotateRight ?? undefined}
-                    onCopy={handleCopy}
                   />
                 </div>
               </section>

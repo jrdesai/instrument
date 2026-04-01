@@ -7,6 +7,7 @@ import {
 import { callTool } from "../../bridge";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useHistoryStore } from "../../store";
+import { CopyButton } from "../../components/tool";
 import { CodeBlock } from "../../components/ui/CodeBlock";
 import type { JsonValidateInput } from "../../bindings/JsonValidateInput";
 import type { JsonValidateOutput } from "../../bindings/JsonValidateOutput";
@@ -121,15 +122,6 @@ function JsonValidatorTool() {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
   }, [inputValue, runProcess]);
-
-  const handleCopyInput = useCallback(async () => {
-    if (!inputValue) return;
-    try {
-      await navigator.clipboard.writeText(inputValue);
-    } catch {
-      // ignore
-    }
-  }, [inputValue]);
 
   const handleClear = useCallback(() => {
     setInputValue("");
@@ -420,14 +412,20 @@ function JsonValidatorTool() {
           aria-label="Actions"
         >
           <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={handleCopyInput}
-              disabled={!inputValue}
-              className="px-3 py-2 text-xs font-medium bg-panel-light dark:bg-panel-dark text-slate-700 dark:text-slate-300 border border-border-light dark:border-border-dark rounded-lg hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              Copy Input
-            </button>
+            <CopyButton
+              value={inputValue || undefined}
+              label="Copy Input"
+              variant="outline"
+              className="py-2 text-xs"
+            />
+            {isValid && output?.formatted ? (
+              <CopyButton
+                value={output.formatted}
+                label="Copy"
+                variant="primary"
+                className="py-2 text-xs"
+              />
+            ) : null}
             <button
               type="button"
               onClick={handleClear}

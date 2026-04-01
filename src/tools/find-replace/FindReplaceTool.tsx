@@ -5,6 +5,7 @@ import {
   useState,
 } from "react";
 import { callTool } from "../../bridge";
+import { CopyButton } from "../../components/tool";
 import { useDraftInput, useRestoreDraft } from "../../hooks/useDraftInput";
 import { useHistoryStore } from "../../store";
 import type { FindReplaceInput } from "../../bindings/FindReplaceInput";
@@ -14,7 +15,6 @@ const RUST_COMMAND = "find_replace_process";
 const TOOL_ID = "find-replace";
 const DEBOUNCE_MS = 150;
 const HISTORY_DEBOUNCE_MS = 1500;
-const COPIED_DURATION_MS = 1500;
 
 function isFindReplaceDraft(
   raw: unknown
@@ -98,7 +98,6 @@ function FindReplaceTool() {
   const [output, setOutput] = useState<FindReplaceOutput | null>(null);
   const [matchRanges, setMatchRanges] = useState<number[][]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [copyLabel, setCopyLabel] = useState("Copy output");
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const highlightRef = useRef<HTMLDivElement>(null);
@@ -206,19 +205,6 @@ function FindReplaceTool() {
     setOutput(null);
     setMatchRanges([]);
   }, [setDraft]);
-
-  const handleCopy = useCallback(async () => {
-    const resultText = output?.result ?? "";
-    if (!resultText) return;
-    try {
-      await navigator.clipboard.writeText(resultText);
-      setCopyLabel("Copied");
-      setTimeout(() => setCopyLabel("Copy output"), COPIED_DURATION_MS);
-    } catch {
-      setCopyLabel("Copy failed");
-      setTimeout(() => setCopyLabel("Copy output"), COPIED_DURATION_MS);
-    }
-  }, [output?.result]);
 
   const matchCount = output?.matchCount ?? 0;
   const replacedCount = output?.replacedCount ?? 0;
@@ -328,15 +314,13 @@ function FindReplaceTool() {
                   : `${replacedCount} replacement${replacedCount === 1 ? "" : "s"} made`}
               </span>
             )}
-            <button
-              type="button"
+            <CopyButton
+              value={resultText || undefined}
+              label="Copy"
+              variant="primary"
+              className="py-1 text-sm"
               aria-label="Copy output to clipboard"
-              onClick={handleCopy}
-              disabled={!resultText}
-              className="px-3 py-1 text-sm font-medium bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              {copyLabel}
-            </button>
+            />
           </div>
         </div>
         <pre

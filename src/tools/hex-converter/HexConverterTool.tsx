@@ -260,7 +260,6 @@ function HexConverterTool() {
           },
           {
             end: true,
-            label: "Actions",
             children: (
               <>
                 <button

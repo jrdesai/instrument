@@ -4,6 +4,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { CopyButton } from "../../components/tool";
 import { CodeBlock } from "../../components/ui/CodeBlock";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import type { CodeLanguage } from "./prettier-format";
@@ -12,7 +13,6 @@ import { detectLanguage } from "./detect-language";
 
 const TOOL_ID = "code-formatter";
 const DEBOUNCE_MS = 300;
-const COPIED_DURATION_MS = 1500;
 
 type TabWidthOption = 2 | 4 | "tab";
 
@@ -51,7 +51,6 @@ function CodeFormatterTool() {
   const [output, setOutput] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isFormatting, setIsFormatting] = useState(false);
-  const [copied, setCopied] = useState(false);
   const [userOverrodeLang, setUserOverrodeLang] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const languageRef = useRef(language);
@@ -114,17 +113,6 @@ function CodeFormatterTool() {
     if (input.trim() === "") return;
     runFormat(input, language, tabWidth);
   }, [language, tabWidth, runFormat]);
-
-  const handleCopy = useCallback(async () => {
-    if (!output) return;
-    try {
-      await navigator.clipboard.writeText(output);
-      setCopied(true);
-      setTimeout(() => setCopied(false), COPIED_DURATION_MS);
-    } catch {
-      // ignore
-    }
-  }, [output]);
 
   const handleClear = useCallback(() => {
     setInput("");
@@ -286,14 +274,12 @@ function CodeFormatterTool() {
             >
               Format
             </button>
-            <button
-              type="button"
-              onClick={handleCopy}
-              disabled={!output}
-              className="px-3 py-1.5 rounded-md border border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark text-[11px] font-semibold uppercase tracking-wider disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-100 dark:hover:bg-white/5 transition-colors"
-            >
-              {copied ? "Copied!" : "Copy"}
-            </button>
+            <CopyButton
+              value={output && !error ? output : undefined}
+              label="Copy"
+              variant="primary"
+              className="py-1.5 text-[11px] font-semibold uppercase tracking-wider"
+            />
             <button
               type="button"
               onClick={handleClear}
