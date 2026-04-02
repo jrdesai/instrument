@@ -190,17 +190,15 @@ export function SettingsPage() {
                       Download the native app for faster, fully offline use
                     </p>
                   </div>
-                  <a
-                    href="https://github.com/jrdesai/instrument/releases/latest"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="ml-4 flex shrink-0 items-center gap-1 text-xs text-primary hover:underline"
+                  <span
+                    title="Desktop app coming soon"
+                    className="ml-4 flex shrink-0 cursor-not-allowed items-center gap-1 text-xs text-slate-400 dark:text-slate-500"
                   >
                     <span className="material-symbols-outlined text-[14px]" aria-hidden>
-                      download
+                      schedule
                     </span>
-                    Download
-                  </a>
+                    Coming Soon
+                  </span>
                 </div>
               )}
               <div className="flex items-center justify-between px-4 py-3 bg-panel-light dark:bg-panel-dark border-t border-border-light dark:border-border-dark">

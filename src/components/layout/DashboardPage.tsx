@@ -76,17 +76,15 @@ function WelcomeCard({ onDismiss }: { onDismiss: () => void }) {
 
       <div className="flex flex-wrap items-center justify-center gap-2.5">
         {isWeb && (
-          <a
-            href="https://github.com/jrdesai/instrument/releases/latest"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary/90"
+          <span
+            title="Desktop app coming soon"
+            className="flex cursor-not-allowed items-center gap-1.5 rounded-lg bg-slate-200 px-4 py-2 text-sm font-semibold text-slate-400 dark:bg-slate-700 dark:text-slate-500"
           >
             <span className="material-symbols-outlined text-[16px]" aria-hidden>
               download
             </span>
-            Download Desktop App
-          </a>
+            Desktop App — Coming Soon
+          </span>
         )}
         <a
           href="https://github.com/jrdesai/instrument"
