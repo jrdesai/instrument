@@ -1,3 +1,4 @@
+export { WasmErrorBanner } from "./WasmErrorBanner";
 export { CopyButton } from "./CopyButton";
 export { PanelHeader } from "./PanelHeader";
 export type { PanelHeaderBadge } from "./PanelHeader";

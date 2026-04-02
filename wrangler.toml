@@ -1,0 +1,9 @@
+# Cloudflare Pages — build must NOT run `pnpm run build:web` (that invokes wasm-pack).
+# Use Vite only so committed public/wasm-pkg/ is copied into dist/.
+# Set NODE_VERSION=22 (or 20+) in the Pages project environment if builds fail on Node.
+name = "instrument"
+compatibility_date = "2024-01-01"
+pages_build_output_dir = "dist"
+
+[build]
+command = "pnpm install --frozen-lockfile && pnpm exec vite build --mode web"

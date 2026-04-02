@@ -9,6 +9,11 @@ alwaysApply: true
 `public/wasm-pkg/` (NOT `src/wasm-pkg/`) is committed so Cloudflare Pages can
 deploy without a Rust toolchain. `src/wasm-pkg/` is gitignored — ignore it.
 
+**Cloudflare Pages build command** must be `pnpm exec vite build --mode web` (or the
+equivalent in `wrangler.toml`), **not** `pnpm run build:web`. The latter runs
+`build:wasm` first and requires Rust/wasm-pack on the host; if that step is skipped
+or fails, `dist/wasm-pkg/` may be missing and every WASM tool breaks at runtime.
+
 ## After ANY change to src-core/ Rust files you MUST:
 1. Run `pnpm run build:wasm`
 2. `git add public/wasm-pkg/`

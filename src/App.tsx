@@ -1,4 +1,6 @@
 import { Suspense, useEffect, useRef } from "react";
+import { WasmLoadFailureOverlay } from "./components/ui/WasmLoadFailureOverlay";
+import { useWasmLoadFailureStore } from "./store/wasmLoadFailure";
 import {
   BrowserRouter,
   Routes,
@@ -25,6 +27,10 @@ function ToolPage() {
     containerRef.current?.focus();
   }, [toolId]);
 
+  useEffect(() => {
+    useWasmLoadFailureStore.getState().setWasmLoadFailure(null);
+  }, [toolId]);
+
   if (!tool) return <div className="p-4 text-slate-500 dark:text-slate-400">Tool not found.</div>;
   const Component = tool.component;
   return (
@@ -32,7 +38,8 @@ function ToolPage() {
       <ToolHeader tool={tool} />
       <ToolErrorBoundary key={toolId} toolName={tool.name}>
         <Suspense fallback={<LoadingSpinner label="Loading tool..." />}>
-          <div className="flex-1 flex flex-col min-h-0">
+          <div className="relative flex min-h-0 flex-1 flex-col">
+            <WasmLoadFailureOverlay />
             <Component />
           </div>
         </Suspense>

@@ -4,7 +4,23 @@
  * use callTool() from bridge/index.ts instead.
  */
 
+import { useWasmLoadFailureStore } from "../store/wasmLoadFailure";
+
 type WasmModule = Record<string, (input: unknown) => Promise<unknown> | unknown>
+
+/** Thrown when the instrument_web module cannot load (e.g. HTML fallback instead of JS). */
+export class WasmLoadError extends Error {
+  constructor(url: string, cause?: unknown) {
+    const causeMsg =
+      cause instanceof Error ? cause.message : String(cause ?? "unknown");
+    super(
+      `Failed to load WASM module from ${url}. ` +
+        `This usually means the wasm-pkg files are missing from the deployment. ` +
+        `Cause: ${causeMsg}`
+    );
+    this.name = "WasmLoadError";
+  }
+}
 
 // Load from public/wasm-pkg/ (copied to dist/wasm-pkg/ by Vite automatically).
 // Run `pnpm run build:wasm` to regenerate. BASE_URL supports non-root deployments.
@@ -34,21 +50,22 @@ async function loadWasmModule(): Promise<WasmModule> {
       if (typeof init === "function") await init()
       wasmCache = mod as WasmModule
       loadingPromise = null
+      useWasmLoadFailureStore.getState().setWasmLoadFailure(null)
       return wasmCache
     })
     .catch((err: unknown) => {
       loadingPromise = null
-      if (
-        import.meta.env.DEV &&
+      const msg = err instanceof Error ? err.message : String(err ?? "")
+      const looksLikeMimeOrHtml =
         err instanceof TypeError &&
-        typeof err.message === "string" &&
-        err.message.includes("MIME type")
-      ) {
-        throw new Error(
-          `WASM module load failed: ${wasmHref} returned HTML instead of JavaScript — ` +
-            `Vite is serving the SPA fallback, usually because public/wasm-pkg/instrument_web.js is missing. ` +
-            `Run pnpm run build:wasm and retry. (${err.message})`
-        )
+        (msg.includes("MIME type") ||
+          msg.includes("text/html") ||
+          msg.includes("Failed to fetch dynamically imported module"))
+
+      if (looksLikeMimeOrHtml) {
+        const wrapped = new WasmLoadError(wasmHref, err)
+        useWasmLoadFailureStore.getState().setWasmLoadFailure(wrapped.message)
+        throw wrapped
       }
       throw err
     })
