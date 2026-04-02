@@ -38,6 +38,7 @@ export const tool_json_convert: (a: any) => [number, number, number];
 export const tool_json_diff: (a: any) => [number, number, number];
 export const tool_json_format: (a: any) => [number, number, number];
 export const tool_json_path: (a: any) => [number, number, number];
+export const tool_json_schema_validate: (a: any) => [number, number, number];
 export const tool_json_validate: (a: any) => [number, number, number];
 export const tool_jwt_build: (a: any) => [number, number, number];
 export const tool_jwt_decode: (a: any) => [number, number, number];

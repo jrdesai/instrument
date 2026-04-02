@@ -205,6 +205,12 @@ async toolJsonValidate(input: JsonValidateInput) : Promise<JsonValidateOutput> {
     return await TAURI_INVOKE("tool_json_validate", { input });
 },
 /**
+ * Validates a JSON document against a JSON Schema via instrument-core.
+ */
+async toolJsonSchemaValidate(input: JsonSchemaValidateInput) : Promise<JsonSchemaValidateOutput> {
+    return await TAURI_INVOKE("tool_json_schema_validate", { input });
+},
+/**
  * Runs JSON diff (compare two JSON values) via instrument-core.
  */
 async toolJsonDiff(input: JsonDiffInput) : Promise<JsonDiffOutput> {
@@ -895,6 +901,42 @@ export type JsonPathOutput = { isValidJson: boolean; isValidQuery: boolean; matc
  */
 annotatedDocument: string | null }
 /**
+ * Input for JSON Schema validation.
+ */
+export type JsonSchemaValidateInput = { 
+/**
+ * The JSON document to validate (raw string).
+ */
+document: string; 
+/**
+ * The JSON Schema to validate against (raw string).
+ */
+schema: string; 
+/**
+ * Which schema draft to use (defaults to draft7).
+ */
+draft?: SchemaDraft }
+/**
+ * Output from JSON Schema validation.
+ */
+export type JsonSchemaValidateOutput = { 
+/**
+ * Whether the document is valid against the schema.
+ */
+valid: boolean; 
+/**
+ * Total number of validation errors.
+ */
+errorCount: number; 
+/**
+ * List of individual validation issues.
+ */
+issues: ValidationIssue[]; 
+/**
+ * Set when the document or schema itself is not valid JSON.
+ */
+parseError: string | null }
+/**
  * Input for the JSON validator.
  */
 export type JsonValidateInput = { 
@@ -1167,6 +1209,10 @@ export type QrEcLevel = "low" | "medium" | "quartile" | "high"
  */
 export type QueryParam = { key: string; value: string }
 export type RegexRequest = { pattern: string; text: string; engine: string; flags: string | null }
+/**
+ * Which JSON Schema draft to use for validation.
+ */
+export type SchemaDraft = "draft7" | "2019-09" | "2020-12"
 /**
  * How the verification secret is encoded.
  */
@@ -1491,6 +1537,22 @@ error: string | null }
  * Which UUID version to generate.
  */
 export type UuidVersion = "v1" | "v4" | "v7"
+/**
+ * A single validation issue (one schema violation).
+ */
+export type ValidationIssue = { 
+/**
+ * JSON Pointer path to the failing instance node (e.g. "/user/age").
+ */
+instancePath: string; 
+/**
+ * Human-readable error message.
+ */
+message: string; 
+/**
+ * JSON Pointer path into the schema that produced the error.
+ */
+schemaPath: string }
 /**
  * Input for the Word Counter tool.
  */

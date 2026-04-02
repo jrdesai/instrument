@@ -482,6 +482,19 @@ export function tool_json_path(js_input) {
 }
 
 /**
+ * JSON Schema Validator. Receives JsonSchemaValidateInput and returns JsonSchemaValidateOutput (camelCase).
+ * @param {any} js_input
+ * @returns {any}
+ */
+export function tool_json_schema_validate(js_input) {
+    const ret = wasm.tool_json_schema_validate(js_input);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
  * JSON validator. Receives JsonValidateInput (camelCase) and returns JsonValidateOutput (camelCase).
  * @param {any} js_input
  * @returns {any}

@@ -20,6 +20,9 @@ use instrument_core::json::config_converter::{
 use instrument_core::json::validator::{
     process as json_validate_process_core, JsonValidateInput, JsonValidateOutput,
 };
+use instrument_core::json::schema_validator::{
+    process as json_schema_validate_core, JsonSchemaValidateInput, JsonSchemaValidateOutput,
+};
 
 use crate::command_log::finish_ok;
 
@@ -40,6 +43,16 @@ pub fn tool_json_validate(input: JsonValidateInput) -> JsonValidateOutput {
     let start = Instant::now();
     let output = json_validate_process_core(input);
     finish_ok("tool_json_validate", start);
+    output
+}
+
+/// Validates a JSON document against a JSON Schema via instrument-core.
+#[tauri::command]
+#[specta::specta]
+pub fn tool_json_schema_validate(input: JsonSchemaValidateInput) -> JsonSchemaValidateOutput {
+    let start = Instant::now();
+    let output = json_schema_validate_core(input);
+    finish_ok("tool_json_schema_validate", start);
     output
 }
 

@@ -109,6 +109,7 @@ pub fn run() {
         instrument_desktop::commands::encoding::qr_generate,
         instrument_desktop::commands::json::tool_json_format,
         instrument_desktop::commands::json::tool_json_validate,
+        instrument_desktop::commands::json::tool_json_schema_validate,
         instrument_desktop::commands::json::tool_json_diff,
         instrument_desktop::commands::json::tool_json_path,
         instrument_desktop::commands::json::tool_json_convert,

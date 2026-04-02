@@ -5,4 +5,5 @@ pub mod converter;
 pub mod diff;
 pub mod formatter;
 pub mod path;
+pub mod schema_validator;
 pub mod validator;

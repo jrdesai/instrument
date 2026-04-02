@@ -464,6 +464,32 @@ export const tools: Tool[] = [
     implemented: true,
   },
   {
+    id: "json-schema-validator",
+    name: "JSON Schema Validator",
+    description:
+      "Validate a JSON document against a JSON Schema (draft-07, 2019-09, 2020-12).",
+    category: "json",
+    displayCategory: "JSON Tools",
+    displayCategoryIcon: "data_object",
+    roles: ["backend", "frontend", "data", "general"],
+    icon: "rule",
+    platforms: ["desktop", "web"],
+    rustCommand: "tool_json_schema_validate",
+    keywords: [
+      "json",
+      "schema",
+      "validate",
+      "jsonschema",
+      "draft",
+      "draft7",
+      "openapi",
+    ],
+    component: React.lazy(() =>
+      import("../tools/json-schema-validator").then((m) => ({ default: m.default }))
+    ),
+    implemented: true,
+  },
+  {
     id: "json-diff",
     name: "JSON Diff",
     description: "Diff two JSON values.",

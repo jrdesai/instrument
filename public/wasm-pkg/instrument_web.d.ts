@@ -187,6 +187,11 @@ export function tool_json_format(js_input: any): any;
 export function tool_json_path(js_input: any): any;
 
 /**
+ * JSON Schema Validator. Receives JsonSchemaValidateInput and returns JsonSchemaValidateOutput (camelCase).
+ */
+export function tool_json_schema_validate(js_input: any): any;
+
+/**
  * JSON validator. Receives JsonValidateInput (camelCase) and returns JsonValidateOutput (camelCase).
  */
 export function tool_json_validate(js_input: any): any;
@@ -287,6 +292,7 @@ export interface InitOutput {
     readonly tool_json_diff: (a: any) => [number, number, number];
     readonly tool_json_format: (a: any) => [number, number, number];
     readonly tool_json_path: (a: any) => [number, number, number];
+    readonly tool_json_schema_validate: (a: any) => [number, number, number];
     readonly tool_json_validate: (a: any) => [number, number, number];
     readonly tool_jwt_build: (a: any) => [number, number, number];
     readonly tool_jwt_decode: (a: any) => [number, number, number];

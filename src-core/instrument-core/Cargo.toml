@@ -43,6 +43,7 @@ chrono = { version = "0.4", features = ["serde"] }
 chrono-tz = "0.9"
 cron = "0.12"
 serde_json = { workspace = true }
+jsonschema = { version = "0.17", default-features = false, features = ["draft201909", "draft202012"] }
 jsonpath-rust = "0.7"
 serde_yaml = "0.9"
 toml = "0.8"

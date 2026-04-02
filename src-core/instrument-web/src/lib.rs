@@ -57,6 +57,9 @@ use instrument_core::json::formatter::{
 use instrument_core::json::validator::{
     process as json_validate_process_core, JsonValidateInput, JsonValidateOutput,
 };
+use instrument_core::json::schema_validator::{
+    process as json_schema_validate_core, JsonSchemaValidateInput, JsonSchemaValidateOutput,
+};
 use instrument_core::json::diff::{
     process as json_diff_process_core, JsonDiffInput, JsonDiffOutput,
 };
@@ -366,6 +369,15 @@ pub fn tool_json_validate_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
     let input: JsonValidateInput =
         from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
     let output: JsonValidateOutput = json_validate_process_core(input);
+    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
+}
+
+/// JSON Schema Validator. Receives JsonSchemaValidateInput and returns JsonSchemaValidateOutput (camelCase).
+#[wasm_bindgen(js_name = tool_json_schema_validate)]
+pub fn tool_json_schema_validate_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
+    let input: JsonSchemaValidateInput =
+        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let output: JsonSchemaValidateOutput = json_schema_validate_core(input);
     to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
 }
 

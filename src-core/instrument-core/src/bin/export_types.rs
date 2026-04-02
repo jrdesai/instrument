@@ -96,6 +96,10 @@ fn main() {
     instrument_core::json::path::JsonPathOutput::export_all_to(&out).unwrap();
     instrument_core::json::validator::JsonValidateInput::export_all_to(&out).unwrap();
     instrument_core::json::validator::JsonValidateOutput::export_all_to(&out).unwrap();
+    instrument_core::json::schema_validator::SchemaDraft::export_all_to(&out).unwrap();
+    instrument_core::json::schema_validator::ValidationIssue::export_all_to(&out).unwrap();
+    instrument_core::json::schema_validator::JsonSchemaValidateInput::export_all_to(&out).unwrap();
+    instrument_core::json::schema_validator::JsonSchemaValidateOutput::export_all_to(&out).unwrap();
     instrument_core::json::config_converter::ConfigConvertInput::export_all_to(&out).unwrap();
     instrument_core::json::config_converter::ConfigConvertOutput::export_all_to(&out).unwrap();
     instrument_core::json::config_converter::ConfigFormat::export_all_to(&out).unwrap();
