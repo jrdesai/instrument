@@ -21,21 +21,16 @@ pub struct ValidationIssue {
 }
 
 /// Which JSON Schema draft to use for validation.
-#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, TS, Type)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, Default, TS, Type)]
 #[ts(export)]
 pub enum SchemaDraft {
+    #[default]
     #[serde(rename = "draft7")]
     Draft7,
     #[serde(rename = "2019-09")]
     Draft2019,
     #[serde(rename = "2020-12")]
     Draft2020,
-}
-
-impl Default for SchemaDraft {
-    fn default() -> Self {
-        Self::Draft7
-    }
 }
 
 /// Input for JSON Schema validation.
