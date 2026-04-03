@@ -276,9 +276,12 @@ interface PreferenceState {
   activeRole: ActiveRole;
   /** Whether the user has dismissed the home screen welcome card. */
   welcomeDismissed: boolean;
+  /** Desktop only: show the menu bar / tray icon (persisted). */
+  showTrayIcon: boolean;
   setTheme: (theme: Theme) => void;
   setRole: (role: ActiveRole) => void;
   setWelcomeDismissed: (dismissed: boolean) => void;
+  setShowTrayIcon: (show: boolean) => void;
 }
 
 /**
@@ -290,6 +293,7 @@ const preferenceStoreImpl = persist(
     theme: "dark",
     activeRole: "general",
     welcomeDismissed: false,
+    showTrayIcon: true,
 
     setTheme: (theme) =>
       set((state) => {
@@ -304,6 +308,11 @@ const preferenceStoreImpl = persist(
     setWelcomeDismissed: (dismissed) =>
       set((state) => {
         state.welcomeDismissed = dismissed;
+      }),
+
+    setShowTrayIcon: (show) =>
+      set((state) => {
+        state.showTrayIcon = show;
       }),
   })),
   { name: "instrument-preferences" }

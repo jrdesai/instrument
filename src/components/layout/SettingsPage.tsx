@@ -1,4 +1,4 @@
-import { isWeb } from "../../bridge";
+import { isDesktop, isWeb } from "../../bridge";
 import { useHistoryStore, usePreferenceStore, useToolStore } from "../../store";
 import { APP_VERSION } from "../../version";
 import { ConfirmButton } from "../ui/ConfirmButton";
@@ -8,6 +8,8 @@ export function SettingsPage() {
   const setTheme = usePreferenceStore((s) => s.setTheme);
   const welcomeDismissed = usePreferenceStore((s) => s.welcomeDismissed);
   const setWelcomeDismissed = usePreferenceStore((s) => s.setWelcomeDismissed);
+  const showTrayIcon = usePreferenceStore((s) => s.showTrayIcon);
+  const setShowTrayIcon = usePreferenceStore((s) => s.setShowTrayIcon);
 
   const clearRecents = useToolStore((s) => s.clearRecents);
   const clearFavourites = useToolStore((s) => s.clearFavourites);
@@ -62,6 +64,57 @@ export function SettingsPage() {
 
           {/* Divider */}
           <div className="h-px bg-slate-200 dark:bg-border-dark" />
+
+          {/* ── Desktop ── */}
+          {isDesktop && (
+            <>
+              <section
+                role="group"
+                aria-labelledby="settings-desktop-heading"
+                className="flex flex-col gap-4"
+              >
+                <h2
+                  id="settings-desktop-heading"
+                  className="text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400"
+                >
+                  Desktop
+                </h2>
+
+                <div className="flex flex-col divide-y divide-slate-100 dark:divide-border-dark overflow-hidden rounded-lg border border-border-light dark:border-border-dark">
+                  <div className="flex items-center justify-between bg-panel-light px-4 py-3 dark:bg-panel-dark">
+                    <div>
+                      <p className="text-sm text-slate-700 dark:text-slate-300">
+                        Menu bar icon
+                      </p>
+                      <p className="mt-0.5 text-xs text-slate-400 dark:text-slate-500">
+                        Show Instrument in the menu bar for quick access to favourite
+                        tools
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      role="switch"
+                      aria-checked={showTrayIcon}
+                      onClick={() => setShowTrayIcon(!showTrayIcon)}
+                      className={`relative ml-4 h-6 w-11 shrink-0 rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
+                        showTrayIcon
+                          ? "bg-primary"
+                          : "bg-slate-200 dark:bg-slate-700"
+                      }`}
+                    >
+                      <span
+                        className={`absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${
+                          showTrayIcon ? "translate-x-5" : "translate-x-0"
+                        }`}
+                      />
+                    </button>
+                  </div>
+                </div>
+              </section>
+
+              <div className="h-px bg-slate-200 dark:bg-border-dark" />
+            </>
+          )}
 
           {/* ── Data ── */}
           <section role="group" aria-labelledby="settings-data-heading" className="flex flex-col gap-4">

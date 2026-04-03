@@ -53,6 +53,8 @@
     "allow-cert-decoder",
     "allow-cidr-calculator",
     "allow-env-parser",
-    "allow-qr-code"
+    "allow-qr-code",
+    "allow-update-tray-menu",
+    "allow-set-tray-visible"
   ]
 }

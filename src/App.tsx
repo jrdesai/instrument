@@ -6,8 +6,10 @@ import {
   Routes,
   Route,
   useParams,
+  useNavigate,
 } from "react-router-dom";
-import { getToolById } from "./registry";
+import { getToolById, tools } from "./registry";
+import { isDesktop } from "./bridge";
 import { AppShell } from "./components/layout/AppShell";
 import { DashboardPage } from "./components/layout/DashboardPage";
 import { HistoryPage } from "./components/layout/HistoryPage";
@@ -15,7 +17,7 @@ import { SettingsPage } from "./components/layout/SettingsPage";
 import { ToolHeader } from "./components/layout/ToolHeader";
 import { ToolErrorBoundary } from "./components/ui/ToolErrorBoundary";
 import { LoadingSpinner } from "./components/ui/LoadingSpinner";
-import { usePreferenceStore } from "./store";
+import { usePreferenceStore, useToolStore } from "./store";
 import "./App.css";
 
 function ToolPage() {
@@ -48,16 +50,61 @@ function ToolPage() {
   );
 }
 
+/** Desktop: tray visibility, favourites → tray menu, tray → navigate (inside Router). */
+function TrayDesktopSync() {
+  const navigate = useNavigate();
+  const showTrayIcon = usePreferenceStore((s) => s.showTrayIcon);
+  const favouriteToolIds = useToolStore((s) => s.favouriteToolIds);
+
+  useEffect(() => {
+    if (!isDesktop) return;
+    void import("@tauri-apps/api/core").then(({ invoke }) => {
+      invoke("set_tray_visible", { visible: showTrayIcon }).catch(() => {});
+    });
+  }, [showTrayIcon]);
+
+  useEffect(() => {
+    if (!isDesktop) return;
+    void import("@tauri-apps/api/core").then(({ invoke }) => {
+      const trayTools = favouriteToolIds
+        .map((id) => tools.find((t) => t.id === id))
+        .filter((t): t is NonNullable<typeof t> => t != null)
+        .map((t) => ({ id: t.id, name: t.name }));
+      invoke("update_tray_menu", { tools: trayTools }).catch(() => {});
+    });
+  }, [favouriteToolIds]);
+
+  useEffect(() => {
+    if (!isDesktop) return;
+    let unlisten: (() => void) | undefined;
+    void import("@tauri-apps/api/event").then(({ listen }) => {
+      void listen<string>("navigate-to-tool", (event) => {
+        navigate(`/tools/${event.payload}`);
+      }).then((fn) => {
+        unlisten = fn;
+      });
+    });
+    return () => {
+      unlisten?.();
+    };
+  }, [navigate]);
+
+  return null;
+}
+
 function RoutedLayout() {
   return (
-    <Routes>
-      <Route element={<AppShell />}>
-        <Route path="/" element={<DashboardPage />} />
-        <Route path="/history" element={<HistoryPage />} />
-        <Route path="/settings" element={<SettingsPage />} />
-        <Route path="/tools/:toolId" element={<ToolPage />} />
-      </Route>
-    </Routes>
+    <>
+      <TrayDesktopSync />
+      <Routes>
+        <Route element={<AppShell />}>
+          <Route path="/" element={<DashboardPage />} />
+          <Route path="/history" element={<HistoryPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/tools/:toolId" element={<ToolPage />} />
+        </Route>
+      </Routes>
+    </>
   );
 }
 

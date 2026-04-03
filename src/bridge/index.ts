@@ -11,9 +11,7 @@ import { useMemo } from "react";
 import { getToolByRustCommand } from "../registry";
 import { useHistoryStore } from "../store";
 
-// tray-icon temporarily disabled — TrayToolItem removed from bindings
-// import type { TrayToolItem } from "../bindings/tauri";
-// export type { TrayToolItem };
+export type { TrayToolItem } from "../bindings/tauri";
 
 /** Current runtime platform. */
 export type Platform = "desktop" | "web";

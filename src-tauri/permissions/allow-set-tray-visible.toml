@@ -1,0 +1,5 @@
+# Allow the frontend to show or hide the menu bar / tray icon.
+[[permission]]
+identifier = "allow-set-tray-visible"
+description = "Enables set_tray_visible to toggle tray icon visibility from Settings."
+commands.allow = ["set_tray_visible"]

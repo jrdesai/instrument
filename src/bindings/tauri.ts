@@ -306,6 +306,18 @@ async toolCsvToJson(input: CsvToJsonInput) : Promise<CsvToJsonOutput> {
 },
 async toolExpressionEval(input: ExprEvalInput) : Promise<ExprEvalOutput> {
     return await TAURI_INVOKE("tool_expression_eval", { input });
+},
+/**
+ * Rebuild the system tray menu from favourited tools (desktop).
+ */
+async updateTrayMenu(tools: TrayToolItem[]) : Promise<null> {
+    return await TAURI_INVOKE("update_tray_menu", { tools });
+},
+/**
+ * Show or hide the menu bar tray icon (desktop).
+ */
+async setTrayVisible(visible: boolean) : Promise<null> {
+    return await TAURI_INVOKE("set_tray_visible", { visible });
 }
 }
 
@@ -1364,6 +1376,10 @@ relative: string; isFuture: boolean; error: string | null }
  * Unit for ToHuman mode.
  */
 export type TimestampUnit = "seconds" | "milliseconds"
+/**
+ * One favourited tool for the system tray menu (id + display name).
+ */
+export type TrayToolItem = { id: string; name: string }
 /**
  * Input for the timezone converter.
  */
