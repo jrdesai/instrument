@@ -163,8 +163,8 @@ function JsonSchemaValidatorTool() {
         </button>
       </div>
 
-      <div className="flex min-h-0 flex-1 border-b border-border-light dark:border-border-dark">
-        <div className="flex min-w-0 flex-1 flex-col border-r border-border-light dark:border-border-dark">
+      <div className="flex flex-col md:flex-row min-h-0 flex-1 border-b border-border-light dark:border-border-dark">
+        <div className="flex min-w-0 flex-1 flex-col border-b md:border-b-0 md:border-r border-border-light dark:border-border-dark">
           <div className={panelHeaderClass}>
             <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
               Document
@@ -186,7 +186,7 @@ function JsonSchemaValidatorTool() {
           </div>
           <textarea
             aria-label="JSON Document"
-            className="min-h-0 w-full flex-1 resize-none border-none bg-transparent p-4 font-mono text-xs leading-relaxed text-slate-700 placeholder:text-slate-500 focus:outline-none dark:text-slate-300"
+            className="min-h-[180px] md:min-h-0 w-full flex-1 resize-none border-none bg-transparent p-4 font-mono text-xs leading-relaxed text-slate-700 placeholder:text-slate-500 focus:outline-none dark:text-slate-300"
             placeholder={`Paste JSON document here…\n\nExample:\n{\n  "name": "Alice",\n  "age": 30\n}`}
             value={document}
             onChange={(e) => {
@@ -220,7 +220,7 @@ function JsonSchemaValidatorTool() {
           </div>
           <textarea
             aria-label="JSON Schema"
-            className="min-h-0 w-full flex-1 resize-none border-none bg-transparent p-4 font-mono text-xs leading-relaxed text-slate-700 placeholder:text-slate-500 focus:outline-none dark:text-slate-300"
+            className="min-h-[180px] md:min-h-0 w-full flex-1 resize-none border-none bg-transparent p-4 font-mono text-xs leading-relaxed text-slate-700 placeholder:text-slate-500 focus:outline-none dark:text-slate-300"
             placeholder={`Paste JSON Schema here…\n\nExample:\n{\n  "$schema": "http://json-schema.org/draft-07/schema#",\n  "type": "object",\n  "required": ["name"],\n  "properties": {\n    "name": { "type": "string" },\n    "age": { "type": "integer", "minimum": 0 }\n  }\n}`}
             value={schema}
             onChange={(e) => {

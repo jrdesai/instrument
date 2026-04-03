@@ -262,11 +262,8 @@ function TextDiffTool() {
 
   return (
     <div className="flex flex-col h-full bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
-      <div
-        className="flex shrink-0 border-b border-border-light dark:border-border-dark"
-        style={{ height: "35%" }}
-      >
-        <div className="flex flex-col flex-1 min-w-0 border-r border-border-light dark:border-border-dark">
+      <div className="flex flex-col md:flex-row shrink-0 border-b border-border-light dark:border-border-dark md:h-[35%]">
+        <div className="flex flex-col flex-1 min-w-0 border-b md:border-b-0 md:border-r border-border-light dark:border-border-dark">
           <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border-light bg-panel-light px-4 py-2 dark:border-border-dark dark:bg-panel-dark">
             <div className="flex min-w-0 flex-wrap items-center gap-2">
               <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
@@ -300,7 +297,7 @@ function TextDiffTool() {
           </div>
           <textarea
             aria-label="Left text"
-            className="flex-1 w-full min-h-0 p-4 font-mono text-xs text-slate-700 dark:text-slate-300 bg-transparent resize-none border-none focus:outline-none leading-relaxed placeholder:text-slate-500"
+            className="flex-1 w-full min-h-[160px] md:min-h-0 p-4 font-mono text-xs text-slate-700 dark:text-slate-300 bg-transparent resize-none border-none focus:outline-none leading-relaxed placeholder:text-slate-500"
             placeholder="Paste first text..."
             value={leftInput}
             onChange={(e) => {
@@ -344,7 +341,7 @@ function TextDiffTool() {
           </div>
           <textarea
             aria-label="Right text"
-            className="flex-1 w-full min-h-0 p-4 font-mono text-xs text-slate-700 dark:text-slate-300 bg-transparent resize-none border-none focus:outline-none leading-relaxed placeholder:text-slate-500"
+            className="flex-1 w-full min-h-[160px] md:min-h-0 p-4 font-mono text-xs text-slate-700 dark:text-slate-300 bg-transparent resize-none border-none focus:outline-none leading-relaxed placeholder:text-slate-500"
             placeholder="Paste second text..."
             value={rightInput}
             onChange={(e) => {
@@ -439,11 +436,11 @@ function TextDiffTool() {
           </div>
         )}
         {!isEmpty && (
-          <div className="flex flex-1 min-h-0 overflow-hidden">
+          <div className="flex flex-col md:flex-row flex-1 min-h-0 overflow-hidden">
             <div
               ref={leftRef}
               onScroll={handleLeftScroll}
-              className="flex-1 min-w-0 overflow-y-auto h-full font-mono text-xs leading-relaxed custom-scrollbar border-r border-border-light dark:border-border-dark"
+              className="flex-1 min-w-0 overflow-y-auto md:h-full min-h-[200px] font-mono text-xs leading-relaxed custom-scrollbar border-b md:border-b-0 md:border-r border-border-light dark:border-border-dark"
             >
               <div className="p-4">
                 {toAnnotatedLines(output?.leftAnnotated).length === 0 && (
@@ -475,7 +472,7 @@ function TextDiffTool() {
             <div
               ref={rightRef}
               onScroll={handleRightScroll}
-              className="flex-1 min-w-0 overflow-y-auto h-full font-mono text-xs leading-relaxed custom-scrollbar"
+              className="flex-1 min-w-0 overflow-y-auto md:h-full min-h-[200px] font-mono text-xs leading-relaxed custom-scrollbar"
             >
               <div className="p-4">
                 {toAnnotatedLines(output?.rightAnnotated).length === 0 && (

@@ -169,7 +169,7 @@ function UnitConverterTool() {
         meta="Data size, time, temperature, length, weight, speed, angle, frequency"
       />
 
-      <div className="flex shrink-0 border-b border-border-light bg-panel-light dark:border-border-dark dark:bg-panel-dark">
+      <div className="no-scrollbar flex shrink-0 overflow-x-auto border-b border-border-light bg-panel-light dark:border-border-dark dark:bg-panel-dark">
         {CATEGORIES.map((cat) => {
           const active = category === cat.value;
           return (
@@ -178,7 +178,7 @@ function UnitConverterTool() {
               type="button"
               onClick={() => handleCategoryChange(cat.value)}
               className={twMerge(
-                "flex flex-1 items-center justify-center py-2.5 text-xs font-semibold transition-colors",
+                "flex shrink-0 items-center justify-center whitespace-nowrap px-4 py-2.5 text-xs font-semibold transition-colors",
                 active
                   ? "border-b-2 border-primary text-primary"
                   : "border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"

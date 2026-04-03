@@ -274,7 +274,7 @@ function CodeFormatterTool() {
 
       {/* Footer — options + actions */}
       <footer className="shrink-0 border-t border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark px-4 py-3">
-        <div className="flex items-start gap-6 text-xs text-slate-500 dark:text-slate-400">
+        <div className="flex flex-wrap items-start gap-x-6 gap-y-3 text-xs text-slate-500 dark:text-slate-400">
           {/* Language group */}
           <div className="flex flex-col gap-1">
             <span className="text-slate-500 text-[10px] uppercase tracking-wider">
@@ -296,7 +296,7 @@ function CodeFormatterTool() {
             </div>
           </div>
 
-          <div className="w-px h-6 bg-border-light dark:bg-border-dark self-center mx-3" />
+          <div className="hidden md:block w-px h-6 bg-border-light dark:bg-border-dark self-center mx-3" />
 
           {/* Tab width group */}
           <div className="flex flex-col gap-1">
@@ -337,7 +337,7 @@ function CodeFormatterTool() {
             </div>
           </div>
 
-          <div className="flex items-center gap-2 ml-auto">
+          <div className="flex items-center gap-2 ml-auto shrink-0">
             <button
               type="button"
               onClick={handleFormatNow}
