@@ -362,6 +362,28 @@ async openMainAndNavigate(toolId: string) : Promise<Result<null, string>> {
  */
 async consumePopoverClipboardSeed() : Promise<string | null> {
     return await TAURI_INVOKE("consume_popover_clipboard_seed");
+},
+/**
+ * Enable or disable the global popover shortcut at runtime.
+ */
+async setGlobalHotkeyEnabled(enabled: boolean) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("set_global_hotkey_enabled", { enabled }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
+ * Read current clipboard text (picker path after tool select).
+ */
+async readClipboardText() : Promise<Result<string, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("read_clipboard_text") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
 }
 }
 

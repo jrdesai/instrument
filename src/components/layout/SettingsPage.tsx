@@ -12,6 +12,13 @@ export function SettingsPage() {
   const setShowTrayIcon = usePreferenceStore((s) => s.setShowTrayIcon);
   const clipboardAutoPaste = usePreferenceStore((s) => s.clipboardAutoPaste);
   const setClipboardAutoPaste = usePreferenceStore((s) => s.setClipboardAutoPaste);
+  const globalHotkeyEnabled = usePreferenceStore((s) => s.globalHotkeyEnabled);
+  const setGlobalHotkeyEnabled = usePreferenceStore((s) => s.setGlobalHotkeyEnabled);
+
+  const hotkeyKbd =
+    typeof navigator !== "undefined" && /Mac|iPhone|iPod|iPad/i.test(navigator.userAgent)
+      ? "⌘⇧Space"
+      : "Ctrl+Shift+Space";
 
   const clearRecents = useToolStore((s) => s.clearRecents);
   const clearFavourites = useToolStore((s) => s.clearFavourites);
@@ -136,6 +143,42 @@ export function SettingsPage() {
                       <span
                         className={`absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${
                           clipboardAutoPaste ? "translate-x-5" : "translate-x-0"
+                        }`}
+                      />
+                    </button>
+                  </div>
+
+                  <div className="flex items-center justify-between bg-panel-light px-4 py-3 dark:bg-panel-dark">
+                    <div>
+                      <p className="text-sm text-slate-700 dark:text-slate-300">Global shortcut</p>
+                      <p className="mt-0.5 text-xs text-slate-400 dark:text-slate-500">
+                        Press{" "}
+                        <kbd className="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[10px] dark:bg-slate-800">
+                          {hotkeyKbd}
+                        </kbd>{" "}
+                        anywhere to open the tool picker
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      role="switch"
+                      aria-checked={globalHotkeyEnabled}
+                      onClick={() => {
+                        const next = !globalHotkeyEnabled;
+                        setGlobalHotkeyEnabled(next);
+                        void import("@tauri-apps/api/core").then(({ invoke }) => {
+                          void invoke("set_global_hotkey_enabled", { enabled: next });
+                        });
+                      }}
+                      className={`relative ml-4 h-6 w-11 shrink-0 rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
+                        globalHotkeyEnabled
+                          ? "bg-primary"
+                          : "bg-slate-200 dark:bg-slate-700"
+                      }`}
+                    >
+                      <span
+                        className={`absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${
+                          globalHotkeyEnabled ? "translate-x-5" : "translate-x-0"
                         }`}
                       />
                     </button>

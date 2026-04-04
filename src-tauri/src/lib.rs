@@ -1,11 +1,13 @@
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 
+mod hotkey;
 mod tray;
 
 use specta_typescript::{BigIntExportBehavior, Typescript};
 use std::path::Path;
 use tauri::tray::TrayIconBuilder;
 use tauri::Manager;
+use tauri_plugin_global_shortcut::{GlobalShortcutExt, ShortcutState};
 use tauri_plugin_log::{RotationStrategy, Target, TargetKind};
 use tauri_specta::{collect_commands, Builder};
 
@@ -83,6 +85,8 @@ pub fn run() {
         tray::get_popover_tool,
         tray::open_main_and_navigate,
         tray::consume_popover_clipboard_seed,
+        hotkey::set_global_hotkey_enabled,
+        hotkey::read_clipboard_text,
     ]);
 
     #[cfg(debug_assertions)]
@@ -119,6 +123,7 @@ pub fn run() {
         )
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_clipboard_manager::init())
+        .plugin(tauri_plugin_global_shortcut::Builder::new().build())
         .invoke_handler(builder.invoke_handler())
         .setup(move |app| {
             builder.mount_events(app);
@@ -154,6 +159,19 @@ pub fn run() {
                     }
                 })
                 .build(app)?;
+
+            let app_handle = app.handle().clone();
+            let hotkey_handle = app_handle.clone();
+            if let Err(e) = app_handle.global_shortcut().on_shortcut(
+                hotkey::POPOVER_HOTKEY,
+                move |_app, _shortcut, event| {
+                    if event.state == ShortcutState::Pressed {
+                        let _ = tray::open_popover_window(&hotkey_handle, "");
+                    }
+                },
+            ) {
+                log::warn!("Failed to register global popover shortcut: {}", e);
+            }
 
             Ok(())
         })

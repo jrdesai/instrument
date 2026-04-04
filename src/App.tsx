@@ -61,6 +61,18 @@ function TrayDesktopSync() {
 
   useEffect(() => {
     if (!isDesktop) return;
+    const syncHotkey = () => {
+      const enabled = usePreferenceStore.getState().globalHotkeyEnabled;
+      void import("@tauri-apps/api/core").then(({ invoke }) => {
+        void invoke("set_global_hotkey_enabled", { enabled }).catch(() => {});
+      });
+    };
+    if (usePreferenceStore.persist.hasHydrated()) syncHotkey();
+    else return usePreferenceStore.persist.onFinishHydration(syncHotkey);
+  }, []);
+
+  useEffect(() => {
+    if (!isDesktop) return;
     void import("@tauri-apps/api/core").then(({ invoke }) => {
       invoke("set_tray_visible", { visible: showTrayIcon }).catch(() => {});
     });

@@ -57,14 +57,22 @@ pub fn build_tray_menu(
 pub fn open_popover_window(app: &tauri::AppHandle, tool_id: &str) -> tauri::Result<()> {
     if let Some(state) = app.try_state::<PopoverState>() {
         *state.tool_id.lock().unwrap() = tool_id.to_string();
-        let clip = app.clipboard().read_text().ok();
-        *state.clipboard_seed.lock().unwrap() = clip;
+        if tool_id.is_empty() {
+            *state.clipboard_seed.lock().unwrap() = None;
+        } else {
+            let clip = app.clipboard().read_text().ok();
+            *state.clipboard_seed.lock().unwrap() = clip;
+        }
     }
 
     let win = if let Some(existing) = app.get_webview_window("popover") {
         existing.show()?;
         existing.set_focus()?;
-        existing.emit("popover-navigate", tool_id.to_string())?;
+        if tool_id.is_empty() {
+            let _ = existing.emit("popover-show-picker", ());
+        } else {
+            existing.emit("popover-navigate", tool_id.to_string())?;
+        }
         existing
     } else {
         let win = WebviewWindowBuilder::new(app, "popover", WebviewUrl::App("index.html".into()))
@@ -105,12 +113,14 @@ pub fn open_popover_window(app: &tauri::AppHandle, tool_id: &str) -> tauri::Resu
         win
     };
 
-    if let Some(state) = app.try_state::<PopoverState>() {
-        if let Some(text) = state.clipboard_seed.lock().unwrap().clone() {
-            let _ = win.emit(
-                "popover-clipboard",
-                serde_json::json!({ "toolId": tool_id, "text": text }),
-            );
+    if !tool_id.is_empty() {
+        if let Some(state) = app.try_state::<PopoverState>() {
+            if let Some(text) = state.clipboard_seed.lock().unwrap().clone() {
+                let _ = win.emit(
+                    "popover-clipboard",
+                    serde_json::json!({ "toolId": tool_id, "text": text }),
+                );
+            }
         }
     }
 

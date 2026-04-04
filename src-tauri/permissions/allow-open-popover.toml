@@ -7,4 +7,5 @@ commands.allow = [
   "get_popover_tool",
   "open_main_and_navigate",
   "consume_popover_clipboard_seed",
+  "set_global_hotkey_enabled",
 ]

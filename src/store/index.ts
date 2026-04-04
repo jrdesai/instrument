@@ -280,11 +280,14 @@ interface PreferenceState {
   showTrayIcon: boolean;
   /** Desktop only: auto-paste clipboard into popover tool input on open (default true). */
   clipboardAutoPaste: boolean;
+  /** Desktop only: global ⌘⇧Space / Ctrl+Shift+Space opens the popover picker (default true). */
+  globalHotkeyEnabled: boolean;
   setTheme: (theme: Theme) => void;
   setRole: (role: ActiveRole) => void;
   setWelcomeDismissed: (dismissed: boolean) => void;
   setShowTrayIcon: (show: boolean) => void;
   setClipboardAutoPaste: (enabled: boolean) => void;
+  setGlobalHotkeyEnabled: (enabled: boolean) => void;
 }
 
 /**
@@ -298,6 +301,7 @@ const preferenceStoreImpl = persist(
     welcomeDismissed: false,
     showTrayIcon: true,
     clipboardAutoPaste: true,
+    globalHotkeyEnabled: true,
 
     setTheme: (theme) =>
       set((state) => {
@@ -322,6 +326,11 @@ const preferenceStoreImpl = persist(
     setClipboardAutoPaste: (enabled) =>
       set((state) => {
         state.clipboardAutoPaste = enabled;
+      }),
+
+    setGlobalHotkeyEnabled: (enabled) =>
+      set((state) => {
+        state.globalHotkeyEnabled = enabled;
       }),
   })),
   { name: "instrument-preferences" }
