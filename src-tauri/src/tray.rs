@@ -6,10 +6,13 @@ use std::sync::Mutex;
 use tauri::menu::{Menu, MenuItem, PredefinedMenuItem};
 use tauri::webview::WebviewWindowBuilder;
 use tauri::{Emitter, Manager, PhysicalPosition, Position, Size, WebviewUrl, WindowEvent};
+use tauri_plugin_clipboard_manager::ClipboardExt;
 
-/// Stores the tool ID the popover should show on first load.
+/// Stores the tool ID the popover should show on first load and a one-shot clipboard snapshot.
 pub struct PopoverState {
     pub tool_id: Mutex<String>,
+    /// Filled when opening from tray; consumed by the popover webview before the tool mounts.
+    pub clipboard_seed: Mutex<Option<String>>,
 }
 
 /// A single tool entry for the tray menu — id and display name from the frontend.
@@ -54,12 +57,15 @@ pub fn build_tray_menu(
 pub fn open_popover_window(app: &tauri::AppHandle, tool_id: &str) -> tauri::Result<()> {
     if let Some(state) = app.try_state::<PopoverState>() {
         *state.tool_id.lock().unwrap() = tool_id.to_string();
+        let clip = app.clipboard().read_text().ok();
+        *state.clipboard_seed.lock().unwrap() = clip;
     }
 
-    if let Some(win) = app.get_webview_window("popover") {
-        win.show()?;
-        win.set_focus()?;
-        win.emit("popover-navigate", tool_id.to_string())?;
+    let win = if let Some(existing) = app.get_webview_window("popover") {
+        existing.show()?;
+        existing.set_focus()?;
+        existing.emit("popover-navigate", tool_id.to_string())?;
+        existing
     } else {
         let win = WebviewWindowBuilder::new(app, "popover", WebviewUrl::App("index.html".into()))
             .title("Instrument")
@@ -96,6 +102,16 @@ pub fn open_popover_window(app: &tauri::AppHandle, tool_id: &str) -> tauri::Resu
                 });
             }
         });
+        win
+    };
+
+    if let Some(state) = app.try_state::<PopoverState>() {
+        if let Some(text) = state.clipboard_seed.lock().unwrap().clone() {
+            let _ = win.emit(
+                "popover-clipboard",
+                serde_json::json!({ "toolId": tool_id, "text": text }),
+            );
+        }
     }
 
     Ok(())
@@ -113,6 +129,13 @@ pub fn open_popover(app: tauri::AppHandle, tool_id: String) -> Result<(), String
 #[specta::specta]
 pub fn get_popover_tool(state: tauri::State<'_, PopoverState>) -> String {
     state.tool_id.lock().unwrap().clone()
+}
+
+/// One-shot clipboard text captured when the tray opened the popover (for auto-paste before mount).
+#[tauri::command]
+#[specta::specta]
+pub fn consume_popover_clipboard_seed(state: tauri::State<'_, PopoverState>) -> Option<String> {
+    state.clipboard_seed.lock().unwrap().take()
 }
 
 /// Show main window, navigate to tool, hide popover.

@@ -1,0 +1,5 @@
+# Clipboard read for tray popover auto-paste (Rust reads before webview is ready).
+[[permission]]
+identifier = "allow-clipboard-read"
+description = "Allows reading clipboard text for auto-paste in the popover."
+commands.allow = ["plugin:clipboard-manager|read_text"]

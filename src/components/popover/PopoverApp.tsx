@@ -1,17 +1,43 @@
 import { Suspense, useEffect, useState } from "react";
 import { getToolById } from "../../registry";
+import { isClipboardRelevant } from "../../lib/clipboardRelevance";
+import {
+  usePopoverBootstrapStore,
+  usePreferenceStore,
+  useToolStore,
+} from "../../store";
 import { ToolErrorBoundary } from "../ui/ToolErrorBoundary";
 import { LoadingSpinner } from "../ui/LoadingSpinner";
 import { WasmLoadFailureOverlay } from "../ui/WasmLoadFailureOverlay";
 import { useWasmLoadFailureStore } from "../../store/wasmLoadFailure";
+
+function applyTrayClipboardFromRaw(
+  toolId: string,
+  raw: string | null | undefined
+) {
+  if (raw == null || raw === "") return;
+  if (!usePreferenceStore.getState().clipboardAutoPaste) return;
+  if (!isClipboardRelevant(toolId, raw)) return;
+  const trimmed = raw.trim();
+  // JWT must not hit persisted draftInputs (secrets on disk).
+  if (toolId === "jwt") {
+    usePopoverBootstrapStore.getState().setPending("jwt", trimmed);
+  } else {
+    useToolStore.getState().setDraftInput(toolId, trimmed);
+  }
+}
 
 export function PopoverApp() {
   const [toolId, setToolId] = useState<string | null>(null);
 
   useEffect(() => {
     void import("@tauri-apps/api/core").then(({ invoke }) => {
-      invoke<string>("get_popover_tool").then((id) => {
-        if (id) setToolId(id);
+      void invoke<string>("get_popover_tool").then((id) => {
+        if (!id) return;
+        void invoke<string | null>("consume_popover_clipboard_seed").then((raw) => {
+          applyTrayClipboardFromRaw(id, raw ?? undefined);
+          setToolId(id);
+        });
       });
     });
   }, []);
@@ -20,7 +46,27 @@ export function PopoverApp() {
     let unlisten: (() => void) | undefined;
     void import("@tauri-apps/api/event").then(({ listen }) => {
       void listen<string>("popover-navigate", (event) => {
-        setToolId(event.payload);
+        const id = event.payload;
+        void import("@tauri-apps/api/core").then(({ invoke }) => {
+          void invoke<string | null>("consume_popover_clipboard_seed").then((raw) => {
+            applyTrayClipboardFromRaw(id, raw ?? undefined);
+            setToolId(id);
+          });
+        });
+      }).then((fn) => {
+        unlisten = fn;
+      });
+    });
+    return () => unlisten?.();
+  }, []);
+
+  // Spec parity: Rust also emits `popover-clipboard` (payload has text if listener is registered first).
+  useEffect(() => {
+    let unlisten: (() => void) | undefined;
+    void import("@tauri-apps/api/event").then(({ listen }) => {
+      void listen<{ toolId: string; text: string }>("popover-clipboard", (event) => {
+        const { toolId: eventToolId, text } = event.payload;
+        applyTrayClipboardFromRaw(eventToolId, text);
       }).then((fn) => {
         unlisten = fn;
       });

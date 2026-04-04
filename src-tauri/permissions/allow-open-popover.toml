@@ -2,4 +2,9 @@
 [[permission]]
 identifier = "allow-open-popover"
 description = "Enables open_popover, get_popover_tool, and open_main_and_navigate."
-commands.allow = ["open_popover", "get_popover_tool", "open_main_and_navigate"]
+commands.allow = [
+  "open_popover",
+  "get_popover_tool",
+  "open_main_and_navigate",
+  "consume_popover_clipboard_seed",
+]

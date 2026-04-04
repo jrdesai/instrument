@@ -10,6 +10,8 @@ export function SettingsPage() {
   const setWelcomeDismissed = usePreferenceStore((s) => s.setWelcomeDismissed);
   const showTrayIcon = usePreferenceStore((s) => s.showTrayIcon);
   const setShowTrayIcon = usePreferenceStore((s) => s.setShowTrayIcon);
+  const clipboardAutoPaste = usePreferenceStore((s) => s.clipboardAutoPaste);
+  const setClipboardAutoPaste = usePreferenceStore((s) => s.setClipboardAutoPaste);
 
   const clearRecents = useToolStore((s) => s.clearRecents);
   const clearFavourites = useToolStore((s) => s.clearFavourites);
@@ -105,6 +107,35 @@ export function SettingsPage() {
                       <span
                         className={`absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${
                           showTrayIcon ? "translate-x-5" : "translate-x-0"
+                        }`}
+                      />
+                    </button>
+                  </div>
+
+                  <div className="flex items-center justify-between bg-panel-light px-4 py-3 dark:bg-panel-dark">
+                    <div>
+                      <p className="text-sm text-slate-700 dark:text-slate-300">
+                        Paste clipboard on open
+                      </p>
+                      <p className="mt-0.5 text-xs text-slate-400 dark:text-slate-500">
+                        Auto-fill the tool input with clipboard content when opening from the menu
+                        bar
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      role="switch"
+                      aria-checked={clipboardAutoPaste}
+                      onClick={() => setClipboardAutoPaste(!clipboardAutoPaste)}
+                      className={`relative ml-4 h-6 w-11 shrink-0 rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
+                        clipboardAutoPaste
+                          ? "bg-primary"
+                          : "bg-slate-200 dark:bg-slate-700"
+                      }`}
+                    >
+                      <span
+                        className={`absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${
+                          clipboardAutoPaste ? "translate-x-5" : "translate-x-0"
                         }`}
                       />
                     </button>

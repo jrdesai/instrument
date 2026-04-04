@@ -59,6 +59,7 @@
     "allow-qr-code",
     "allow-update-tray-menu",
     "allow-set-tray-visible",
-    "allow-open-popover"
+    "allow-open-popover",
+    "allow-clipboard-read"
   ]
 }

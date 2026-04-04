@@ -82,6 +82,7 @@ pub fn run() {
         tray::open_popover,
         tray::get_popover_tool,
         tray::open_main_and_navigate,
+        tray::consume_popover_clipboard_seed,
     ]);
 
     #[cfg(debug_assertions)]
@@ -117,11 +118,13 @@ pub fn run() {
                 .build(),
         )
         .plugin(tauri_plugin_opener::init())
+        .plugin(tauri_plugin_clipboard_manager::init())
         .invoke_handler(builder.invoke_handler())
         .setup(move |app| {
             builder.mount_events(app);
             app.manage(tray::PopoverState {
                 tool_id: std::sync::Mutex::new(String::new()),
+                clipboard_seed: std::sync::Mutex::new(None),
             });
             log::info!("Instrument v{} started", env!("CARGO_PKG_VERSION"));
 

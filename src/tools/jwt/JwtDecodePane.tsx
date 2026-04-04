@@ -5,6 +5,7 @@ import {
   useState,
 } from "react";
 import { callTool } from "../../bridge";
+import { usePopoverBootstrapStore } from "../../store";
 import type { JwtDecodeInput } from "../../bindings/JwtDecodeInput";
 import type { JwtDecodeOutput } from "../../bindings/JwtDecodeOutput";
 import type { SecretEncoding } from "../../bindings/SecretEncoding";
@@ -46,6 +47,11 @@ function relativeTimeUntil(nowSec: number, expSec: number): string {
 export function JwtDecodePane() {
   const [token, setToken] = useState("");
   const [secret, setSecret] = useState("");
+
+  useEffect(() => {
+    const pasted = usePopoverBootstrapStore.getState().consumePending("jwt");
+    if (pasted) setToken(pasted);
+  }, []);
   const [secretEncoding, setSecretEncoding] = useState<SecretEncoding>("utf8");
   const [showSecret, setShowSecret] = useState(false);
   const [output, setOutput] = useState<JwtDecodeOutput | null>(null);

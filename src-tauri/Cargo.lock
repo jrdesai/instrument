@@ -2235,6 +2235,7 @@ dependencies = [
  "specta-typescript",
  "tauri",
  "tauri-build",
+ "tauri-plugin-clipboard-manager",
  "tauri-plugin-log",
  "tauri-plugin-opener",
  "tauri-specta",

@@ -356,6 +356,12 @@ async openMainAndNavigate(toolId: string) : Promise<Result<null, string>> {
     if(e instanceof Error) throw e;
     else return { status: "error", error: e  as any };
 }
+},
+/**
+ * One-shot clipboard text captured when the tray opened the popover (for auto-paste before mount).
+ */
+async consumePopoverClipboardSeed() : Promise<string | null> {
+    return await TAURI_INVOKE("consume_popover_clipboard_seed");
 }
 }
 

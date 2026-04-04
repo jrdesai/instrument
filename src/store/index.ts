@@ -278,10 +278,13 @@ interface PreferenceState {
   welcomeDismissed: boolean;
   /** Desktop only: show the menu bar / tray icon (persisted). */
   showTrayIcon: boolean;
+  /** Desktop only: auto-paste clipboard into popover tool input on open (default true). */
+  clipboardAutoPaste: boolean;
   setTheme: (theme: Theme) => void;
   setRole: (role: ActiveRole) => void;
   setWelcomeDismissed: (dismissed: boolean) => void;
   setShowTrayIcon: (show: boolean) => void;
+  setClipboardAutoPaste: (enabled: boolean) => void;
 }
 
 /**
@@ -294,6 +297,7 @@ const preferenceStoreImpl = persist(
     activeRole: "general",
     welcomeDismissed: false,
     showTrayIcon: true,
+    clipboardAutoPaste: true,
 
     setTheme: (theme) =>
       set((state) => {
@@ -314,6 +318,11 @@ const preferenceStoreImpl = persist(
       set((state) => {
         state.showTrayIcon = show;
       }),
+
+    setClipboardAutoPaste: (enabled) =>
+      set((state) => {
+        state.clipboardAutoPaste = enabled;
+      }),
   })),
   { name: "instrument-preferences" }
 );
@@ -323,3 +332,5 @@ export const usePreferenceStore = create<PreferenceState>()(
     ? devtools(preferenceStoreImpl, { name: "PreferenceStore" })
     : preferenceStoreImpl) as typeof preferenceStoreImpl
 );
+
+export { usePopoverBootstrapStore } from "./popoverBootstrap";
