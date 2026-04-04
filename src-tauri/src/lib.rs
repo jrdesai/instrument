@@ -5,7 +5,7 @@ mod tray;
 use specta_typescript::{BigIntExportBehavior, Typescript};
 use std::path::Path;
 use tauri::tray::TrayIconBuilder;
-use tauri::{Emitter, Manager};
+use tauri::Manager;
 use tauri_plugin_log::{RotationStrategy, Target, TargetKind};
 use tauri_specta::{collect_commands, Builder};
 
@@ -79,6 +79,9 @@ pub fn run() {
         instrument_desktop::commands::expression::tool_expression_eval,
         tray::update_tray_menu,
         tray::set_tray_visible,
+        tray::open_popover,
+        tray::get_popover_tool,
+        tray::open_main_and_navigate,
     ]);
 
     #[cfg(debug_assertions)]
@@ -117,6 +120,9 @@ pub fn run() {
         .invoke_handler(builder.invoke_handler())
         .setup(move |app| {
             builder.mount_events(app);
+            app.manage(tray::PopoverState {
+                tool_id: std::sync::Mutex::new(String::new()),
+            });
             log::info!("Instrument v{} started", env!("CARGO_PKG_VERSION"));
 
             let initial_menu = tray::build_tray_menu(app.handle(), &[])?;
@@ -140,11 +146,7 @@ pub fn run() {
                             app.exit(0);
                         }
                         tool_id => {
-                            if let Some(window) = app.get_webview_window("main") {
-                                let _ = window.show();
-                                let _ = window.set_focus();
-                            }
-                            let _ = app.emit("navigate-to-tool", tool_id);
+                            let _ = tray::open_popover_window(app, tool_id);
                         }
                     }
                 })

@@ -8,7 +8,7 @@ import {
   useParams,
   useNavigate,
 } from "react-router-dom";
-import { getToolById, tools } from "./registry";
+import { getPopoverTools, getToolById } from "./registry";
 import { isDesktop } from "./bridge";
 import { AppShell } from "./components/layout/AppShell";
 import { DashboardPage } from "./components/layout/DashboardPage";
@@ -18,7 +18,10 @@ import { ToolHeader } from "./components/layout/ToolHeader";
 import { ToolErrorBoundary } from "./components/ui/ToolErrorBoundary";
 import { LoadingSpinner } from "./components/ui/LoadingSpinner";
 import { usePreferenceStore, useToolStore } from "./store";
+import { PopoverApp } from "./components/popover/PopoverApp";
 import "./App.css";
+
+const IS_POPOVER = window.__INSTRUMENT_POPOVER__ === true;
 
 function ToolPage() {
   const { toolId } = useParams<{ toolId: string }>();
@@ -66,8 +69,11 @@ function TrayDesktopSync() {
   useEffect(() => {
     if (!isDesktop) return;
     void import("@tauri-apps/api/core").then(({ invoke }) => {
+      const popoverById = new Map(
+        getPopoverTools().map((t) => [t.id, t] as const)
+      );
       const trayTools = favouriteToolIds
-        .map((id) => tools.find((t) => t.id === id))
+        .map((id) => popoverById.get(id))
         .filter((t): t is NonNullable<typeof t> => t != null)
         .map((t) => ({ id: t.id, name: t.name }));
       invoke("update_tray_menu", { tools: trayTools }).catch(() => {});
@@ -128,7 +134,7 @@ function App() {
   return (
     <div className="min-h-screen bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
       <BrowserRouter>
-        <RoutedLayout />
+        {IS_POPOVER ? <PopoverApp /> : <RoutedLayout />}
       </BrowserRouter>
     </div>
   );

@@ -308,16 +308,54 @@ async toolExpressionEval(input: ExprEvalInput) : Promise<ExprEvalOutput> {
     return await TAURI_INVOKE("tool_expression_eval", { input });
 },
 /**
- * Rebuild the system tray menu from favourited tools (desktop).
+ * Called from the frontend whenever the favourites list changes.
  */
-async updateTrayMenu(tools: TrayToolItem[]) : Promise<null> {
-    return await TAURI_INVOKE("update_tray_menu", { tools });
+async updateTrayMenu(tools: TrayToolItem[]) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("update_tray_menu", { tools }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
 },
 /**
- * Show or hide the menu bar tray icon (desktop).
+ * Show or hide the tray icon based on user preference.
  */
-async setTrayVisible(visible: boolean) : Promise<null> {
-    return await TAURI_INVOKE("set_tray_visible", { visible });
+async setTrayVisible(visible: boolean) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("set_tray_visible", { visible }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
+ * Open the popover to a specific tool (e.g. hotkey / programmatic).
+ */
+async openPopover(toolId: string) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("open_popover", { toolId }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
+ * Initial tool id for the popover webview (set before first open).
+ */
+async getPopoverTool() : Promise<string> {
+    return await TAURI_INVOKE("get_popover_tool");
+},
+/**
+ * Show main window, navigate to tool, hide popover.
+ */
+async openMainAndNavigate(toolId: string) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("open_main_and_navigate", { toolId }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
 }
 }
 
@@ -1377,10 +1415,6 @@ relative: string; isFuture: boolean; error: string | null }
  */
 export type TimestampUnit = "seconds" | "milliseconds"
 /**
- * One favourited tool for the system tray menu (id + display name).
- */
-export type TrayToolItem = { id: string; name: string }
-/**
  * Input for the timezone converter.
  */
 export type TimezoneInput = { 
@@ -1412,6 +1446,10 @@ resultIso: string; fromOffset: string; toOffset: string; fromAbbr: string; toAbb
  * e.g. "+5 hours", "-5 hours", "+5:30 hours", "0 hours (same zone)".
  */
 difference: string; error: string | null }
+/**
+ * A single tool entry for the tray menu — id and display name from the frontend.
+ */
+export type TrayToolItem = { id: string; name: string }
 /**
  * Input for the ULID Generator tool.
  */

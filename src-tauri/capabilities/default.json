@@ -55,6 +55,7 @@
     "allow-env-parser",
     "allow-qr-code",
     "allow-update-tray-menu",
-    "allow-set-tray-visible"
+    "allow-set-tray-visible",
+    "allow-open-popover"
   ]
 }

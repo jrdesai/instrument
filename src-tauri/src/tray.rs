@@ -1,8 +1,16 @@
-//! System tray: menu building and Tauri commands (favourites + visibility).
+//! System tray: menu building, visibility, and popover mini-window.
 
 use serde::{Deserialize, Serialize};
 use specta::Type;
+use std::sync::Mutex;
 use tauri::menu::{Menu, MenuItem, PredefinedMenuItem};
+use tauri::webview::WebviewWindowBuilder;
+use tauri::{Emitter, Manager, PhysicalPosition, Position, Size, WebviewUrl, WindowEvent};
+
+/// Stores the tool ID the popover should show on first load.
+pub struct PopoverState {
+    pub tool_id: Mutex<String>,
+}
 
 /// A single tool entry for the tray menu — id and display name from the frontend.
 #[derive(Debug, Clone, Serialize, Deserialize, Type)]
@@ -20,7 +28,12 @@ pub fn build_tray_menu(
     menu.append(&header)?;
     menu.append(&PredefinedMenuItem::separator(app)?)?;
     if tools.is_empty() {
-        let empty = MenuItem::new(app, "No favourites", false, None::<&str>)?;
+        let empty = MenuItem::new(
+            app,
+            "No tools — star a popover-eligible tool",
+            false,
+            None::<&str>,
+        )?;
         menu.append(&empty)?;
     } else {
         for tool in tools {
@@ -35,6 +48,79 @@ pub fn build_tray_menu(
     let quit = MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?;
     menu.append(&quit)?;
     Ok(menu)
+}
+
+/// Open or focus the popover webview for a tool (tray click / `open_popover` command).
+pub fn open_popover_window(app: &tauri::AppHandle, tool_id: &str) -> tauri::Result<()> {
+    if let Some(state) = app.try_state::<PopoverState>() {
+        *state.tool_id.lock().unwrap() = tool_id.to_string();
+    }
+
+    if let Some(win) = app.get_webview_window("popover") {
+        win.show()?;
+        win.set_focus()?;
+        win.emit("popover-navigate", tool_id.to_string())?;
+    } else {
+        let win = WebviewWindowBuilder::new(app, "popover", WebviewUrl::App("index.html".into()))
+            .title("Instrument")
+            .inner_size(400.0, 520.0)
+            .min_inner_size(400.0, 400.0)
+            .resizable(false)
+            .decorations(false)
+            .always_on_top(true)
+            .skip_taskbar(true)
+            .visible(false)
+            .initialization_script("window.__INSTRUMENT_POPOVER__ = true;")
+            .build()?;
+
+        if let Some(tray) = app.tray_by_id("main-tray") {
+            if let Ok(Some(rect)) = tray.rect() {
+                let scale = win.scale_factor().unwrap_or(1.0);
+                if let Some(pos) = popover_anchor_below_tray(rect, scale) {
+                    let _ = win.set_position(pos);
+                }
+            }
+        }
+
+        let win_clone = win.clone();
+        win.on_window_event(move |event| {
+            if let WindowEvent::Focused(false) = event {
+                let _ = win_clone.hide();
+            }
+        });
+    }
+
+    Ok(())
+}
+
+/// Open the popover to a specific tool (e.g. hotkey / programmatic).
+#[tauri::command]
+#[specta::specta]
+pub fn open_popover(app: tauri::AppHandle, tool_id: String) -> Result<(), String> {
+    open_popover_window(&app, &tool_id).map_err(|e| e.to_string())
+}
+
+/// Initial tool id for the popover webview (set before first open).
+#[tauri::command]
+#[specta::specta]
+pub fn get_popover_tool(state: tauri::State<'_, PopoverState>) -> String {
+    state.tool_id.lock().unwrap().clone()
+}
+
+/// Show main window, navigate to tool, hide popover.
+#[tauri::command]
+#[specta::specta]
+pub fn open_main_and_navigate(app: tauri::AppHandle, tool_id: String) -> Result<(), String> {
+    if let Some(win) = app.get_webview_window("main") {
+        win.show().map_err(|e| e.to_string())?;
+        win.set_focus().map_err(|e| e.to_string())?;
+    }
+    app.emit("navigate-to-tool", tool_id)
+        .map_err(|e| e.to_string())?;
+    if let Some(popover) = app.get_webview_window("popover") {
+        let _ = popover.hide();
+    }
+    Ok(())
 }
 
 /// Called from the frontend whenever the favourites list changes.
@@ -58,4 +144,28 @@ pub fn set_tray_visible(app: tauri::AppHandle, visible: bool) -> Result<(), Stri
         .ok_or_else(|| "Tray not found".to_string())?;
     tray.set_visible(visible).map_err(|e| e.to_string())?;
     Ok(())
+}
+
+/// Top-left of the popover at the bottom-left of the tray icon (physical pixels).
+fn popover_anchor_below_tray(rect: tauri::Rect, scale_factor: f64) -> Option<PhysicalPosition<i32>> {
+    match (rect.position, rect.size) {
+        (Position::Physical(p), Size::Physical(s)) => Some(PhysicalPosition::new(
+            p.x,
+            p.y + s.height as i32,
+        )),
+        (Position::Logical(p), Size::Logical(s)) => {
+            let x = (p.x * scale_factor).round() as i32;
+            let y = ((p.y + s.height) * scale_factor).round() as i32;
+            Some(PhysicalPosition::new(x, y))
+        }
+        (Position::Physical(p), Size::Logical(s)) => {
+            let h = (s.height * scale_factor).round() as i32;
+            Some(PhysicalPosition::new(p.x, p.y + h))
+        }
+        (Position::Logical(p), Size::Physical(s)) => {
+            let x = (p.x * scale_factor).round() as i32;
+            let y = (p.y * scale_factor).round() as i32 + s.height as i32;
+            Some(PhysicalPosition::new(x, y))
+        }
+    }
 }

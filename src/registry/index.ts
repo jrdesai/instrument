@@ -52,6 +52,11 @@ export interface Tool {
    */
   wasmExport?: string;
 
+  /**
+   * If true, this tool can be used in the tray popover mini-window (desktop).
+   * Only for tools that work in a ~400×520px single-panel layout.
+   */
+  trayPopover?: boolean;
 }
 
 /** Placeholder lazy component for future tools (currently unused). */
@@ -75,6 +80,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/base64").then((m) => ({ default: m.default }))
     ),
+    trayPopover: true,
     implemented: true,
   },
   {
@@ -95,6 +101,7 @@ export const tools: Tool[] = [
           default: React.ComponentType<unknown>;
         }>
     ),
+    trayPopover: true,
     implemented: true,
   },
   /** Same UI as Regex Tester; separate row so `tool_regex_explain` resolves for the bridge. Not shown in Library (implemented: false). */
@@ -134,6 +141,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/url-encoder").then((m) => ({ default: m.default }))
     ),
+    trayPopover: true,
     implemented: true,
   },
   {
@@ -151,6 +159,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/html-entity").then((m) => ({ default: m.default }))
     ),
+    trayPopover: true,
     implemented: true,
   },
   {
@@ -168,6 +177,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/hex-converter").then((m) => ({ default: m.default }))
     ),
+    trayPopover: true,
     implemented: true,
   },
   {
@@ -185,6 +195,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/color-converter").then((m) => ({ default: m.default }))
     ),
+    trayPopover: true,
     implemented: true,
   },
   {
@@ -202,6 +213,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/qr-code").then((m) => ({ default: m.default }))
     ),
+    trayPopover: true,
     implemented: true,
   },
   {
@@ -232,6 +244,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/hash/HashTool").then((m) => ({ default: m.default }))
     ),
+    trayPopover: true,
     implemented: true,
   },
   {
@@ -268,6 +281,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/uuid-generator").then((m) => ({ default: m.default }))
     ),
+    trayPopover: true,
     implemented: true,
   },
   {
@@ -285,6 +299,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/ulid-generator").then((m) => ({ default: m.default }))
     ),
+    trayPopover: true,
     implemented: true,
   },
   {
@@ -303,6 +318,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/nano-id-generator").then((m) => ({ default: m.default }))
     ),
+    trayPopover: true,
     implemented: true,
   },
   {
@@ -331,6 +347,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/jwt/JwtTool").then((m) => ({ default: m.default }))
     ),
+    trayPopover: true,
     implemented: true,
     sensitive: true,
   },
@@ -349,6 +366,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/api-key-generator").then((m) => ({ default: m.default }))
     ),
+    trayPopover: true,
     implemented: true,
     sensitive: true,
   },
@@ -370,6 +388,7 @@ export const tools: Tool[] = [
         default: m.default,
       }))
     ),
+    trayPopover: true,
     implemented: true,
   },
   {
@@ -398,6 +417,7 @@ export const tools: Tool[] = [
         default: m.default,
       }))
     ),
+    trayPopover: true,
     implemented: true,
   },
   {
@@ -444,6 +464,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/json-formatter").then((m) => ({ default: m.default }))
     ),
+    trayPopover: true,
     implemented: true,
   },
   {
@@ -461,6 +482,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/json-validator").then((m) => ({ default: m.default }))
     ),
+    trayPopover: true,
     implemented: true,
   },
   {
@@ -521,6 +543,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/json-path").then((m) => ({ default: m.default }))
     ),
+    trayPopover: true,
     implemented: true,
   },
   {
@@ -598,6 +621,7 @@ export const tools: Tool[] = [
         default: m.default,
       }))
     ),
+    trayPopover: true,
     implemented: true,
   },
   {
@@ -678,6 +702,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/text-case-converter").then((m) => ({ default: m.default }))
     ),
+    trayPopover: true,
     implemented: true,
   },
   {
@@ -695,6 +720,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/word-counter").then((m) => ({ default: m.default }))
     ),
+    trayPopover: true,
     implemented: true,
   },
   {
@@ -712,6 +738,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/string-escaper").then((m) => ({ default: m.default }))
     ),
+    trayPopover: true,
     implemented: true,
   },
   {
@@ -806,6 +833,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/timestamp-converter").then((m) => ({ default: m.default }))
     ),
+    trayPopover: true,
     implemented: true,
   },
   {
@@ -823,6 +851,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/timezone-converter").then((m) => ({ default: m.default }))
     ),
+    trayPopover: true,
     implemented: true,
   },
   {
@@ -877,6 +906,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/number-base-converter").then((m) => ({ default: m.default }))
     ),
+    trayPopover: true,
     implemented: true,
   },
   {
@@ -933,6 +963,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/unit-converter").then((m) => ({ default: m.default }))
     ),
+    trayPopover: true,
     implemented: true,
   },
   {
@@ -1063,6 +1094,11 @@ const _toolByRustCommand = new Map<string, Tool>(
  */
 export function getToolById(id: string): Tool | undefined {
   return _toolById.get(id);
+}
+
+/** Returns all tools eligible for the tray popover (desktop mini-window). */
+export function getPopoverTools(): Tool[] {
+  return tools.filter((t) => t.trayPopover === true && t.implemented);
 }
 
 /**
