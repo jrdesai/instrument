@@ -31,7 +31,10 @@ export function PopoverApp() {
   useEffect(() => {
     if (!toolId) return;
     void import("@tauri-apps/api/window").then(({ getCurrentWindow }) => {
-      void getCurrentWindow().show();
+      const w = getCurrentWindow();
+      void w.show();
+      // Without focus, the main window can remain key and we get an immediate blur → hide (Rust).
+      void w.setFocus();
     });
   }, [toolId]);
 

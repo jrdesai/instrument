@@ -85,7 +85,15 @@ pub fn open_popover_window(app: &tauri::AppHandle, tool_id: &str) -> tauri::Resu
         let win_clone = win.clone();
         win.on_window_event(move |event| {
             if let WindowEvent::Focused(false) = event {
-                let _ = win_clone.hide();
+                let w = win_clone.clone();
+                // Tray menu closes before the popover is shown; macOS often delivers a spurious
+                // blur. Defer hide so show()+setFocus() (Rust or frontend) can complete first.
+                tauri::async_runtime::spawn(async move {
+                    tokio::time::sleep(std::time::Duration::from_millis(200)).await;
+                    if let Ok(false) = w.is_focused() {
+                        let _ = w.hide();
+                    }
+                });
             }
         });
     }

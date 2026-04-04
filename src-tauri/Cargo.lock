@@ -2238,6 +2238,7 @@ dependencies = [
  "tauri-plugin-log",
  "tauri-plugin-opener",
  "tauri-specta",
+ "tokio",
 ]
 
 [[package]]
