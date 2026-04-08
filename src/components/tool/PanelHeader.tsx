@@ -39,7 +39,7 @@ export function PanelHeader({
   return (
     <div
       className={twMerge(
-        "flex flex-wrap items-center justify-between gap-2 px-4 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0",
+        "flex flex-wrap items-center justify-between gap-2 px-4 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0 min-h-[41px]",
         className
       )}
     >

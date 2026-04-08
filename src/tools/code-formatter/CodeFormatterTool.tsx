@@ -189,8 +189,8 @@ function CodeFormatterTool() {
       <div className="flex flex-1 min-h-0 w-full">
         {/* Left panel — input */}
         <div className="flex flex-col flex-1 min-w-0 border-r border-border-light dark:border-border-dark">
-          <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0">
-            <div className="flex min-w-0 flex-wrap items-center gap-2">
+          <div className="flex items-center justify-between gap-2 px-4 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0 min-h-[41px]">
+            <div className="flex min-w-0 items-center gap-2">
               <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                 {fileName ?? "Input"}
               </span>
@@ -208,7 +208,7 @@ function CodeFormatterTool() {
                   ✕
                 </button>
               ) : null}
-              <label className="cursor-pointer rounded-lg border border-border-light bg-panel-light px-2.5 py-1 text-xs text-slate-500 transition-colors hover:text-slate-700 dark:border-border-dark dark:bg-panel-dark dark:text-slate-400 dark:hover:text-slate-200">
+              <label className="cursor-pointer rounded-lg border border-border-light bg-panel-light px-2.5 py-0.5 text-xs text-slate-500 transition-colors hover:text-slate-700 dark:border-border-dark dark:bg-panel-dark dark:text-slate-400 dark:hover:text-slate-200">
                 Upload file
                 <input
                   type="file"
@@ -239,7 +239,7 @@ function CodeFormatterTool() {
 
         {/* Right panel — output */}
         <div className="flex flex-col flex-1 min-w-0">
-          <div className="flex items-center justify-between gap-2 px-4 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0">
+          <div className="flex items-center justify-between gap-2 px-4 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0 min-h-[41px]">
             <span className="text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider">
               OUTPUT
             </span>

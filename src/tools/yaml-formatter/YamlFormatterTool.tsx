@@ -89,10 +89,10 @@ export default function YamlFormatterTool() {
     <div className="flex h-full flex-col bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
       <div className="flex min-h-0 flex-1 flex-col md:flex-row">
         <div className="flex min-w-0 flex-1 flex-col border-b border-border-light dark:border-border-dark md:border-b-0 md:border-r">
-          <div className="flex items-center justify-between border-b border-border-light bg-panel-light px-4 py-2 dark:border-border-dark dark:bg-panel-dark">
+          <div className="flex items-center justify-between border-b border-border-light bg-panel-light px-4 py-2 dark:border-border-dark dark:bg-panel-dark min-h-[41px]">
             <div className="flex items-center gap-2">
               <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">{fileName ?? "INPUT"}</span>
-              <label className="cursor-pointer rounded-lg border border-border-light bg-panel-light px-2.5 py-1 text-xs text-slate-500 transition-colors hover:text-slate-700 dark:border-border-dark dark:bg-panel-dark dark:text-slate-400 dark:hover:text-slate-200">
+              <label className="cursor-pointer rounded-lg border border-border-light bg-panel-light px-2.5 py-0.5 text-xs text-slate-500 transition-colors hover:text-slate-700 dark:border-border-dark dark:bg-panel-dark dark:text-slate-400 dark:hover:text-slate-200">
                 Upload file
                 <input type="file" className="sr-only" accept=".yaml,.yml,text/yaml,text/plain" onChange={handleFileUpload} />
               </label>
@@ -110,7 +110,7 @@ export default function YamlFormatterTool() {
           />
         </div>
         <div className="flex min-w-0 flex-1 flex-col">
-          <div className="flex items-center justify-between border-b border-border-light bg-panel-light px-4 py-2 dark:border-border-dark dark:bg-panel-dark">
+          <div className="flex items-center justify-between border-b border-border-light bg-panel-light px-4 py-2 dark:border-border-dark dark:bg-panel-dark min-h-[41px]">
             <span className="text-xs uppercase tracking-wider text-slate-500">OUTPUT (YAML)</span>
             {output ? <span className="text-xs text-slate-600">{output.lineCount.toLocaleString()} lines</span> : null}
           </div>
