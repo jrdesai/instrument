@@ -8,6 +8,7 @@ use serde::{Deserialize, Serialize};
 use specta::Type;
 use ts_rs::TS;
 use serde_json::{Map, Value};
+use crate::json::converter::to_csv;
 
 #[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
 #[serde(rename_all = "camelCase")]
@@ -47,11 +48,47 @@ pub struct CsvToJsonOutput {
     pub error: Option<String>,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub struct JsonToCsvInput {
+    /// JSON text (array of objects, single object, or array of primitives).
+    pub value: String,
+    /// Output delimiter character: ",", "\t", "|", ";" (default: ",").
+    pub delimiter: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, TS, Type)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub struct JsonToCsvOutput {
+    /// CSV text output.
+    pub result: String,
+    /// Number of data rows (excluding header).
+    pub row_count: u32,
+    /// Number of columns.
+    pub column_count: u32,
+    /// Non-fatal warning (e.g. "Nested objects serialised as JSON").
+    pub warning: Option<String>,
+    /// Error message if conversion failed.
+    pub error: Option<String>,
+}
+
 fn empty_output() -> CsvToJsonOutput {
     CsvToJsonOutput {
         result: String::new(),
         row_count: 0,
         column_count: 0,
+        error: None,
+    }
+}
+
+fn empty_json_to_csv_output() -> JsonToCsvOutput {
+    JsonToCsvOutput {
+        result: String::new(),
+        row_count: 0,
+        column_count: 0,
+        warning: None,
         error: None,
     }
 }
@@ -78,6 +115,74 @@ pub fn process(input: CsvToJsonInput) -> CsvToJsonOutput {
         CsvOutputFormat::ArrayOfObjects => process_as_objects(&mut rdr, input.has_headers),
         CsvOutputFormat::ArrayOfArrays => process_as_arrays(&mut rdr),
     }
+}
+
+/// Convert JSON text to CSV.
+pub fn process_json_to_csv(input: JsonToCsvInput) -> JsonToCsvOutput {
+    let trimmed = input.value.trim();
+    if trimmed.is_empty() {
+        return empty_json_to_csv_output();
+    }
+
+    let parsed = match serde_json::from_str::<serde_json::Value>(trimmed) {
+        Ok(v) => v,
+        Err(e) => {
+            return JsonToCsvOutput {
+                error: Some(e.to_string()),
+                ..empty_json_to_csv_output()
+            };
+        }
+    };
+
+    let (result, warning) = to_csv::convert(&parsed);
+
+    match result {
+        Ok(csv) => {
+            let delim_char = input.delimiter.chars().next().unwrap_or(',');
+            let output = if delim_char != ',' {
+                apply_delimiter(&csv, delim_char)
+            } else {
+                csv
+            };
+
+            let lines: Vec<&str> = output.lines().collect();
+            let row_count = lines.len().saturating_sub(1);
+            let column_count = lines
+                .first()
+                .map(|h| h.split(delim_char).count())
+                .unwrap_or(0);
+
+            JsonToCsvOutput {
+                result: output,
+                row_count: u32::try_from(row_count).unwrap_or(u32::MAX),
+                column_count: u32::try_from(column_count).unwrap_or(u32::MAX),
+                warning,
+                error: None,
+            }
+        }
+        Err(e) => JsonToCsvOutput {
+            error: Some(e),
+            ..empty_json_to_csv_output()
+        },
+    }
+}
+
+/// Re-apply a non-comma delimiter to CSV output generated with comma delimiter.
+fn apply_delimiter(csv_text: &str, delim: char) -> String {
+    use csv::{ReaderBuilder, WriterBuilder};
+    let mut rdr = ReaderBuilder::new()
+        .has_headers(false)
+        .from_reader(csv_text.as_bytes());
+    let mut wtr = WriterBuilder::new()
+        .delimiter(delim as u8)
+        .from_writer(Vec::new());
+    for record in rdr.records().flatten() {
+        let _ = wtr.write_record(&record);
+    }
+    wtr.into_inner()
+        .ok()
+        .and_then(|b| String::from_utf8(b).ok())
+        .unwrap_or_else(|| csv_text.to_string())
 }
 
 fn process_as_objects<R: std::io::Read>(
@@ -354,6 +459,29 @@ mod tests {
         assert!(out.error.is_some());
         assert_eq!(out.result, "");
         assert_eq!(out.row_count, 0);
+    }
+
+    #[test]
+    fn json_to_csv_basic() {
+        let out = process_json_to_csv(JsonToCsvInput {
+            value: r#"[{"name":"Alice","age":30},{"name":"Bob","age":25}]"#.to_string(),
+            delimiter: ",".to_string(),
+        });
+        assert!(out.error.is_none(), "unexpected error: {:?}", out.error);
+        assert!(out.result.contains("name,age"));
+        assert!(out.result.contains("Alice,30"));
+        assert_eq!(out.row_count, 2);
+        assert_eq!(out.column_count, 2);
+    }
+
+    #[test]
+    fn json_to_csv_semicolon_delimiter() {
+        let out = process_json_to_csv(JsonToCsvInput {
+            value: r#"[{"name":"Alice","age":30}]"#.to_string(),
+            delimiter: ";".to_string(),
+        });
+        assert!(out.error.is_none(), "unexpected error: {:?}", out.error);
+        assert!(out.result.contains("name;age"));
     }
 }
 

@@ -116,8 +116,11 @@ use instrument_core::network::{
 };
 use instrument_core::network::cidr::{process as cidr_process_core, CidrInput, CidrOutput};
 use instrument_core::csv::{
-    process as csv_to_json_process_core, CsvToJsonInput, CsvToJsonOutput,
+    process as csv_to_json_process_core, process_json_to_csv as json_to_csv_process_core,
+    CsvToJsonInput, CsvToJsonOutput, JsonToCsvInput, JsonToCsvOutput,
 };
+use instrument_core::xml::{process as xml_format_process_core, XmlFormatInput, XmlFormatOutput};
+use instrument_core::yaml_fmt::{process as yaml_format_process_core, YamlFormatInput, YamlFormatOutput};
 use instrument_core::expression::{
     process as expression_eval_process_core, ExprEvalInput, ExprEvalOutput,
 };
@@ -172,6 +175,33 @@ pub fn tool_csv_to_json_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
     let input: CsvToJsonInput =
         from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
     let output: CsvToJsonOutput = csv_to_json_process_core(input);
+    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
+}
+
+/// JSON → CSV converter. Receives JsonToCsvInput (camelCase) and returns JsonToCsvOutput (camelCase).
+#[wasm_bindgen(js_name = tool_json_to_csv)]
+pub fn tool_json_to_csv_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
+    let input: JsonToCsvInput =
+        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let output: JsonToCsvOutput = json_to_csv_process_core(input);
+    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
+}
+
+/// XML formatter. Receives XmlFormatInput (camelCase) and returns XmlFormatOutput (camelCase).
+#[wasm_bindgen(js_name = tool_xml_format)]
+pub fn tool_xml_format_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
+    let input: XmlFormatInput =
+        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let output: XmlFormatOutput = xml_format_process_core(input);
+    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
+}
+
+/// YAML formatter. Receives YamlFormatInput (camelCase) and returns YamlFormatOutput (camelCase).
+#[wasm_bindgen(js_name = tool_yaml_format)]
+pub fn tool_yaml_format_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
+    let input: YamlFormatInput =
+        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let output: YamlFormatOutput = yaml_format_process_core(input);
     to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
 }
 

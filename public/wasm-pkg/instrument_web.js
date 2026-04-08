@@ -495,6 +495,19 @@ export function tool_json_schema_validate(js_input) {
 }
 
 /**
+ * JSON → CSV converter. Receives JsonToCsvInput (camelCase) and returns JsonToCsvOutput (camelCase).
+ * @param {any} js_input
+ * @returns {any}
+ */
+export function tool_json_to_csv(js_input) {
+    const ret = wasm.tool_json_to_csv(js_input);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
  * JSON validator. Receives JsonValidateInput (camelCase) and returns JsonValidateOutput (camelCase).
  * @param {any} js_input
  * @returns {any}
@@ -553,6 +566,32 @@ export function tool_sql_format(js_input) {
  */
 export function tool_url_parse(js_input) {
     const ret = wasm.tool_url_parse(js_input);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
+ * XML formatter. Receives XmlFormatInput (camelCase) and returns XmlFormatOutput (camelCase).
+ * @param {any} js_input
+ * @returns {any}
+ */
+export function tool_xml_format(js_input) {
+    const ret = wasm.tool_xml_format(js_input);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
+ * YAML formatter. Receives YamlFormatInput (camelCase) and returns YamlFormatOutput (camelCase).
+ * @param {any} js_input
+ * @returns {any}
+ */
+export function tool_yaml_format(js_input) {
+    const ret = wasm.tool_yaml_format(js_input);
     if (ret[2]) {
         throw takeFromExternrefTable0(ret[1]);
     }

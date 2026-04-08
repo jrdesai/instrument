@@ -1,0 +1,6 @@
+# Allow the YAML formatter tool command to be invoked from the frontend.
+[[permission]]
+identifier = "allow-yaml-formatter"
+description = "Enables the tool_yaml_format command."
+commands.allow = ["tool_yaml_format"]
+

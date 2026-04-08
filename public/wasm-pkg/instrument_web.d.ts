@@ -192,6 +192,11 @@ export function tool_json_path(js_input: any): any;
 export function tool_json_schema_validate(js_input: any): any;
 
 /**
+ * JSON → CSV converter. Receives JsonToCsvInput (camelCase) and returns JsonToCsvOutput (camelCase).
+ */
+export function tool_json_to_csv(js_input: any): any;
+
+/**
  * JSON validator. Receives JsonValidateInput (camelCase) and returns JsonValidateOutput (camelCase).
  */
 export function tool_json_validate(js_input: any): any;
@@ -215,6 +220,16 @@ export function tool_sql_format(js_input: any): any;
  * URL parser. Receives UrlParseInput (camelCase) and returns UrlParseOutput (camelCase).
  */
 export function tool_url_parse(js_input: any): any;
+
+/**
+ * XML formatter. Receives XmlFormatInput (camelCase) and returns XmlFormatOutput (camelCase).
+ */
+export function tool_xml_format(js_input: any): any;
+
+/**
+ * YAML formatter. Receives YamlFormatInput (camelCase) and returns YamlFormatOutput (camelCase).
+ */
+export function tool_yaml_format(js_input: any): any;
 
 /**
  * ULID inspection. Receives UlidInspectInput (camelCase) and returns UlidInspectOutput (camelCase).
@@ -293,11 +308,14 @@ export interface InitOutput {
     readonly tool_json_format: (a: any) => [number, number, number];
     readonly tool_json_path: (a: any) => [number, number, number];
     readonly tool_json_schema_validate: (a: any) => [number, number, number];
+    readonly tool_json_to_csv: (a: any) => [number, number, number];
     readonly tool_json_validate: (a: any) => [number, number, number];
     readonly tool_jwt_build: (a: any) => [number, number, number];
     readonly tool_jwt_decode: (a: any) => [number, number, number];
     readonly tool_sql_format: (a: any) => [number, number, number];
     readonly tool_url_parse: (a: any) => [number, number, number];
+    readonly tool_xml_format: (a: any) => [number, number, number];
+    readonly tool_yaml_format: (a: any) => [number, number, number];
     readonly ulid_inspect: (a: any) => [number, number, number];
     readonly ulid_process: (a: any) => [number, number, number];
     readonly unit_convert: (a: any) => [number, number, number];

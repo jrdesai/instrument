@@ -46,6 +46,8 @@ fn main() {
     instrument_core::csv::CsvOutputFormat::export_all_to(&out).unwrap();
     instrument_core::csv::CsvToJsonInput::export_all_to(&out).unwrap();
     instrument_core::csv::CsvToJsonOutput::export_all_to(&out).unwrap();
+    instrument_core::csv::JsonToCsvInput::export_all_to(&out).unwrap();
+    instrument_core::csv::JsonToCsvOutput::export_all_to(&out).unwrap();
     instrument_core::datetime::cron::CronInput::export_all_to(&out).unwrap();
     instrument_core::datetime::cron::CronOutput::export_all_to(&out).unwrap();
     instrument_core::datetime::iso8601::Iso8601Input::export_all_to(&out).unwrap();
@@ -155,4 +157,8 @@ fn main() {
     instrument_core::text::string_escaper::StringEscaperOutput::export_all_to(&out).unwrap();
     instrument_core::text::word_counter::WordCounterInput::export_all_to(&out).unwrap();
     instrument_core::text::word_counter::WordCounterOutput::export_all_to(&out).unwrap();
+    instrument_core::xml::XmlFormatInput::export_all_to(&out).unwrap();
+    instrument_core::xml::XmlFormatOutput::export_all_to(&out).unwrap();
+    instrument_core::yaml_fmt::YamlFormatInput::export_all_to(&out).unwrap();
+    instrument_core::yaml_fmt::YamlFormatOutput::export_all_to(&out).unwrap();
 }

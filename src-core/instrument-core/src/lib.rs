@@ -10,4 +10,6 @@ pub mod numbers;
 #[cfg(feature = "sql")]
 pub mod sql;
 pub mod csv;
+pub mod xml;
+pub mod yaml_fmt;
 pub mod expression;

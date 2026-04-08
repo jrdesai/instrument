@@ -12,13 +12,15 @@ import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput"
 import type { CsvOutputFormat } from "../../bindings/CsvOutputFormat";
 import type { CsvToJsonInput } from "../../bindings/CsvToJsonInput";
 import type { CsvToJsonOutput } from "../../bindings/CsvToJsonOutput";
+import type { JsonToCsvInput } from "../../bindings/JsonToCsvInput";
+import type { JsonToCsvOutput } from "../../bindings/JsonToCsvOutput";
 
 const TOOL_ID = "csv-to-json";
-const RUST_COMMAND = "tool_csv_to_json";
 const DEBOUNCE_MS = 300;
 
 function CsvToJsonTool() {
   const { setDraft } = useDraftInput(TOOL_ID);
+  const [direction, setDirection] = useState<"csv-to-json" | "json-to-csv">("csv-to-json");
   const [inputValue, setInputValue] = useState(
     () =>
       ["name,email,age", "Alice,alice@example.com,30", "Bob,bob@example.com,25"].join(
@@ -30,12 +32,14 @@ function CsvToJsonTool() {
   const [delimiter, setDelimiter] = useState<"," | "\t" | "|" | ";">(",");
   const [outputFormat, setOutputFormat] = useState<CsvOutputFormat>("arrayOfObjects");
   const [output, setOutput] = useState<CsvToJsonOutput | null>(null);
+  const [jsonToCsvOutput, setJsonToCsvOutput] = useState<JsonToCsvOutput | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const runConvert = useCallback(
     async (
       value: string,
+      currentDirection: "csv-to-json" | "json-to-csv",
       currentHasHeaders: boolean,
       currentDelimiter: string,
       currentFormat: CsvOutputFormat
@@ -46,26 +50,44 @@ function CsvToJsonTool() {
         return;
       }
       try {
-        const payload: CsvToJsonInput = {
-          value: trimmed,
-          hasHeaders: currentHasHeaders,
-          delimiter: currentDelimiter,
-          outputFormat: currentFormat,
-        };
-        const result = (await callTool(
-          RUST_COMMAND,
-          payload
-        )) as CsvToJsonOutput;
-        setOutput(result);
+        if (currentDirection === "csv-to-json") {
+          const payload: CsvToJsonInput = {
+            value: trimmed,
+            hasHeaders: currentHasHeaders,
+            delimiter: currentDelimiter,
+            outputFormat: currentFormat,
+          };
+          const result = (await callTool("tool_csv_to_json", payload)) as CsvToJsonOutput;
+          setOutput(result);
+          setJsonToCsvOutput(null);
+        } else {
+          const payload: JsonToCsvInput = {
+            value: trimmed,
+            delimiter: currentDelimiter,
+          };
+          const result = (await callTool("tool_json_to_csv", payload)) as JsonToCsvOutput;
+          setJsonToCsvOutput(result);
+          setOutput(null);
+        }
       } catch (e) {
         const message =
           e instanceof Error ? e.message : String(e ?? "Convert failed");
-        setOutput({
-          result: "",
-          rowCount: 0,
-          columnCount: 0,
-          error: message,
-        });
+        if (currentDirection === "csv-to-json") {
+          setOutput({
+            result: "",
+            rowCount: 0,
+            columnCount: 0,
+            error: message,
+          });
+        } else {
+          setJsonToCsvOutput({
+            result: "",
+            rowCount: 0,
+            columnCount: 0,
+            warning: null,
+            error: message,
+          });
+        }
       }
     },
     []
@@ -81,13 +103,13 @@ function CsvToJsonTool() {
       };
     }
     debounceRef.current = setTimeout(() => {
-      runConvert(inputValue, hasHeaders, delimiter, outputFormat);
+      runConvert(inputValue, direction, hasHeaders, delimiter, outputFormat);
       debounceRef.current = null;
     }, DEBOUNCE_MS);
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
-  }, [inputValue, hasHeaders, delimiter, outputFormat, runConvert]);
+  }, [inputValue, direction, hasHeaders, delimiter, outputFormat, runConvert]);
 
   const handleFileUpload = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
@@ -123,6 +145,7 @@ function CsvToJsonTool() {
     setDraft("");
     setFileName(null);
     setOutput(null);
+    setJsonToCsvOutput(null);
   }, [setDraft]);
 
   const handleConvertNow = useCallback(() => {
@@ -130,18 +153,54 @@ function CsvToJsonTool() {
       clearTimeout(debounceRef.current);
       debounceRef.current = null;
     }
-    runConvert(inputValue, hasHeaders, delimiter, outputFormat);
-  }, [inputValue, hasHeaders, delimiter, outputFormat, runConvert]);
+    runConvert(inputValue, direction, hasHeaders, delimiter, outputFormat);
+  }, [inputValue, direction, hasHeaders, delimiter, outputFormat, runConvert]);
+
+  const handleDirectionChange = useCallback(
+    (newDir: "csv-to-json" | "json-to-csv") => {
+      if (newDir === direction) return;
+      setDirection(newDir);
+      setInputValue("");
+      setDraft("");
+      setFileName(null);
+      setOutput(null);
+      setJsonToCsvOutput(null);
+    },
+    [direction, setDraft]
+  );
 
   const isEmpty = inputValue.trim() === "";
+  const activeResult = direction === "csv-to-json" ? output : jsonToCsvOutput;
+  const outputLanguage = direction === "csv-to-json" ? "json" : "bash";
+  const inputLabel = direction === "csv-to-json" ? "CSV" : "JSON";
+  const outputLabel = direction === "csv-to-json" ? "JSON" : "CSV";
+  const uploadAccept = direction === "csv-to-json" ? ".csv,text/csv" : ".json,application/json,text/plain";
 
   return (
     <div className="flex flex-col h-full bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
+      <div className="shrink-0 border-b border-border-light dark:border-border-dark px-4 py-2 bg-panel-light dark:bg-panel-dark">
+        <div className="inline-flex rounded-lg border border-border-light dark:border-border-dark overflow-hidden">
+          <button
+            type="button"
+            onClick={() => handleDirectionChange("csv-to-json")}
+            className={`px-3 py-1.5 text-xs font-semibold ${direction === "csv-to-json" ? "bg-primary text-white" : "bg-transparent text-slate-500 dark:text-slate-300"}`}
+          >
+            CSV → JSON
+          </button>
+          <button
+            type="button"
+            onClick={() => handleDirectionChange("json-to-csv")}
+            className={`px-3 py-1.5 text-xs font-semibold border-l border-border-light dark:border-border-dark ${direction === "json-to-csv" ? "bg-primary text-white" : "bg-transparent text-slate-500 dark:text-slate-300"}`}
+          >
+            JSON → CSV
+          </button>
+        </div>
+      </div>
       <div className="flex flex-col md:flex-row flex-1 min-h-0 w-full">
-        {/* Left panel — CSV input */}
+        {/* Left panel — input */}
         <div className="flex flex-col flex-1 min-w-0 border-b md:border-b-0 md:border-r border-border-light dark:border-border-dark">
-          <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0">
-            <div className="flex min-w-0 flex-wrap items-center gap-2">
+          <div className="flex items-center justify-between gap-2 px-4 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0 min-h-[41px]">
+            <div className="flex min-w-0 items-center gap-2">
               <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                 {fileName ?? "Input"}
               </span>
@@ -158,12 +217,12 @@ function CsvToJsonTool() {
                   ✕
                 </button>
               ) : null}
-              <label className="cursor-pointer rounded-lg border border-border-light bg-panel-light px-2.5 py-1 text-xs text-slate-500 transition-colors hover:text-slate-700 dark:border-border-dark dark:bg-panel-dark dark:text-slate-400 dark:hover:text-slate-200">
+              <label className="cursor-pointer rounded-lg border border-border-light bg-panel-light px-2.5 py-0.5 text-xs text-slate-500 transition-colors hover:text-slate-700 dark:border-border-dark dark:bg-panel-dark dark:text-slate-400 dark:hover:text-slate-200">
                 Upload file
                 <input
                   type="file"
                   className="sr-only"
-                  accept=".csv,text/csv"
+                  accept={uploadAccept}
                   onChange={handleFileUpload}
                 />
               </label>
@@ -175,11 +234,18 @@ function CsvToJsonTool() {
             )}
           </div>
           <textarea
-            aria-label="CSV input"
+            aria-label={`${inputLabel} input`}
             className="flex-1 w-full min-h-[180px] md:min-h-0 p-4 font-mono text-xs text-slate-700 dark:text-slate-300 bg-transparent resize-none border-none focus:outline-none leading-relaxed placeholder:text-slate-500"
-            placeholder={["name,email,age", "Alice,alice@example.com,30", "Bob,bob@example.com,25"].join(
-              "\n"
-            )}
+            placeholder={direction === "csv-to-json"
+              ? ["name,email,age", "Alice,alice@example.com,30", "Bob,bob@example.com,25"].join("\n")
+              : JSON.stringify(
+                  [
+                    { name: "Alice", age: 30 },
+                    { name: "Bob", age: 25 },
+                  ],
+                  null,
+                  2
+                )}
             value={inputValue}
             onChange={(e) => {
               const v = e.target.value;
@@ -189,38 +255,43 @@ function CsvToJsonTool() {
           />
         </div>
 
-        {/* Right panel — JSON output */}
+        {/* Right panel — output */}
         <div className="flex flex-col flex-1 min-w-0">
-          <div className="flex items-center justify-between gap-2 px-4 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0">
+          <div className="flex items-center justify-between gap-2 px-4 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0 min-h-[41px]">
             <span className="text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider">
-              OUTPUT (JSON)
+              OUTPUT ({outputLabel})
             </span>
             {!isEmpty && (
               <span className="text-slate-600 text-xs">
-                {output
-                  ? `${output.rowCount.toLocaleString()} rows · ${output.columnCount.toLocaleString()} columns`
+                {activeResult
+                  ? `${activeResult.rowCount.toLocaleString()} rows · ${activeResult.columnCount.toLocaleString()} columns`
                   : "Converting..."}
               </span>
             )}
           </div>
           <div className="flex-1 min-h-0 overflow-auto custom-scrollbar bg-background-light dark:bg-background-dark">
-            {output?.result ? (
+            {activeResult?.result ? (
               <CodeBlock
-                language="json"
-                code={output.result}
+                language={outputLanguage}
+                code={activeResult.result}
                 className="h-full"
               />
             ) : (
               <div className="h-full flex items-center justify-center text-xs text-slate-500 px-4">
                 {isEmpty
-                  ? "Enter CSV on the left to see JSON output here."
+                  ? `Enter ${inputLabel} on the left to see ${outputLabel} output here.`
                   : "Converting..."}
               </div>
             )}
           </div>
-          {output?.error && (
+          {direction === "json-to-csv" && jsonToCsvOutput?.warning && !jsonToCsvOutput.error && (
+            <div className="px-4 py-2 text-xs text-amber-800 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40 border-t border-amber-200 dark:border-amber-900">
+              {jsonToCsvOutput.warning}
+            </div>
+          )}
+          {activeResult?.error && (
             <div className="px-4 py-2 text-xs text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-950/40 border-t border-red-200 dark:border-red-900">
-              {output.error}
+              {activeResult.error}
             </div>
           )}
         </div>
@@ -229,21 +300,20 @@ function CsvToJsonTool() {
       {/* Footer — options + actions */}
       <footer className="shrink-0 border-t border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark px-4 py-3">
         <div className="flex flex-wrap items-start gap-x-6 gap-y-3 text-xs text-slate-500 dark:text-slate-400">
-          {/* Headers toggle */}
-          <div className="flex flex-col gap-1">
-            <span className="text-slate-500 text-[10px] uppercase tracking-wider">
-              Headers
-            </span>
-            <label className="inline-flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                className="h-3 w-3 accent-primary"
-                checked={hasHeaders}
-                onChange={(e) => setHasHeaders(e.target.checked)}
-              />
-              <span>First row is header</span>
-            </label>
-          </div>
+          {direction === "csv-to-json" && (
+            <div className="flex flex-col gap-1">
+              <span className="text-slate-500 text-[10px] uppercase tracking-wider">Headers</span>
+              <label className="inline-flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  className="h-3 w-3 accent-primary"
+                  checked={hasHeaders}
+                  onChange={(e) => setHasHeaders(e.target.checked)}
+                />
+                <span>First row is header</span>
+              </label>
+            </div>
+          )}
 
           {/* Divider */}
           <div className="hidden md:block w-px h-6 bg-border-light dark:bg-border-dark self-center mx-1" />
@@ -297,37 +367,36 @@ function CsvToJsonTool() {
             </div>
           </div>
 
-          {/* Divider */}
-          <div className="hidden md:block w-px h-6 bg-border-light dark:bg-border-dark self-center mx-1" />
-
-          {/* Format group */}
-          <div className="flex flex-col gap-1">
-            <span className="text-slate-500 text-[10px] uppercase tracking-wider">
-              Format
-            </span>
-            <div className="flex items-center gap-3">
-              <label className="inline-flex items-center gap-1 cursor-pointer">
-                <input
-                  type="radio"
-                  name="csv-format"
-                  className="h-3 w-3 accent-primary"
-                  checked={outputFormat === "arrayOfObjects"}
-                  onChange={() => setOutputFormat("arrayOfObjects")}
-                />
-                <span>Array of Objects</span>
-              </label>
-              <label className="inline-flex items-center gap-1 cursor-pointer">
-                <input
-                  type="radio"
-                  name="csv-format"
-                  className="h-3 w-3 accent-primary"
-                  checked={outputFormat === "arrayOfArrays"}
-                  onChange={() => setOutputFormat("arrayOfArrays")}
-                />
-                <span>Array of Arrays</span>
-              </label>
-            </div>
-          </div>
+          {direction === "csv-to-json" && (
+            <>
+              <div className="hidden md:block w-px h-6 bg-border-light dark:bg-border-dark self-center mx-1" />
+              <div className="flex flex-col gap-1">
+                <span className="text-slate-500 text-[10px] uppercase tracking-wider">Format</span>
+                <div className="flex items-center gap-3">
+                  <label className="inline-flex items-center gap-1 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="csv-format"
+                      className="h-3 w-3 accent-primary"
+                      checked={outputFormat === "arrayOfObjects"}
+                      onChange={() => setOutputFormat("arrayOfObjects")}
+                    />
+                    <span>Array of Objects</span>
+                  </label>
+                  <label className="inline-flex items-center gap-1 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="csv-format"
+                      className="h-3 w-3 accent-primary"
+                      checked={outputFormat === "arrayOfArrays"}
+                      onChange={() => setOutputFormat("arrayOfArrays")}
+                    />
+                    <span>Array of Arrays</span>
+                  </label>
+                </div>
+              </div>
+            </>
+          )}
 
           {/* Actions */}
           <div className="flex items-center gap-2 ml-auto shrink-0">
@@ -339,26 +408,26 @@ function CsvToJsonTool() {
             >
               Convert
             </button>
-            {output?.result && !output.error ? (
+            {activeResult?.result && !activeResult.error ? (
               <button
                 type="button"
                 onClick={() =>
                   handleDownload(
-                    output.result,
+                    activeResult.result,
                     fileName
-                      ? `${fileName.replace(/\.[^.]+$/, "")}.json`
-                      : "output.json",
-                    "application/json"
+                      ? `${fileName.replace(/\.[^.]+$/, "")}.${direction === "csv-to-json" ? "json" : "csv"}`
+                      : `output.${direction === "csv-to-json" ? "json" : "csv"}`,
+                    direction === "csv-to-json" ? "application/json" : "text/csv"
                   )
                 }
                 className="rounded-lg border border-border-light bg-panel-light px-3 py-1.5 text-xs text-slate-500 transition-colors hover:text-slate-700 dark:border-border-dark dark:bg-panel-dark dark:text-slate-400 dark:hover:text-slate-200"
               >
-                Download .json
+                Download .{direction === "csv-to-json" ? "json" : "csv"}
               </button>
             ) : null}
             <CopyButton
               value={
-                output?.result && !output.error ? output.result : undefined
+                activeResult?.result && !activeResult.error ? activeResult.result : undefined
               }
               label="Copy"
               variant="primary"

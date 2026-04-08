@@ -304,6 +304,18 @@ async toolSqlFormat(input: SqlFormatInput) : Promise<SqlFormatOutput> {
 async toolCsvToJson(input: CsvToJsonInput) : Promise<CsvToJsonOutput> {
     return await TAURI_INVOKE("tool_csv_to_json", { input });
 },
+/**
+ * Runs JSON to CSV conversion via instrument-core.
+ */
+async toolJsonToCsv(input: JsonToCsvInput) : Promise<JsonToCsvOutput> {
+    return await TAURI_INVOKE("tool_json_to_csv", { input });
+},
+async toolXmlFormat(input: XmlFormatInput) : Promise<XmlFormatOutput> {
+    return await TAURI_INVOKE("tool_xml_format", { input });
+},
+async toolYamlFormat(input: YamlFormatInput) : Promise<YamlFormatOutput> {
+    return await TAURI_INVOKE("tool_yaml_format", { input });
+},
 async toolExpressionEval(input: ExprEvalInput) : Promise<ExprEvalOutput> {
     return await TAURI_INVOKE("tool_expression_eval", { input });
 },
@@ -364,7 +376,7 @@ async consumePopoverClipboardSeed() : Promise<string | null> {
     return await TAURI_INVOKE("consume_popover_clipboard_seed");
 },
 /**
- * Enable or disable the global popover shortcut at runtime.
+ * Enable or disable the global hotkey at runtime (from Settings toggle).
  */
 async setGlobalHotkeyEnabled(enabled: boolean) : Promise<Result<null, string>> {
     try {
@@ -375,7 +387,7 @@ async setGlobalHotkeyEnabled(enabled: boolean) : Promise<Result<null, string>> {
 }
 },
 /**
- * Read current clipboard text (picker path after tool select).
+ * Read the current clipboard text — used by the popover picker after selecting a tool.
  */
 async readClipboardText() : Promise<Result<string, string>> {
     try {
@@ -1014,6 +1026,36 @@ issues: ValidationIssue[];
  * Set when the document or schema itself is not valid JSON.
  */
 parseError: string | null }
+export type JsonToCsvInput = { 
+/**
+ * JSON text (array of objects, single object, or array of primitives).
+ */
+value: string; 
+/**
+ * Output delimiter character: ",", "\t", "|", ";" (default: ",").
+ */
+delimiter: string }
+export type JsonToCsvOutput = { 
+/**
+ * CSV text output.
+ */
+result: string; 
+/**
+ * Number of data rows (excluding header).
+ */
+rowCount: number; 
+/**
+ * Number of columns.
+ */
+columnCount: number; 
+/**
+ * Non-fatal warning (e.g. "Nested objects serialised as JSON").
+ */
+warning: string | null; 
+/**
+ * Error message if conversion failed.
+ */
+error: string | null }
 /**
  * Input for the JSON validator.
  */
@@ -1643,6 +1685,54 @@ export type WordCounterInput = { text: string }
  * Output for the Word Counter tool: all stats in one struct.
  */
 export type WordCounterOutput = { words: number; charactersWithSpaces: number; charactersWithoutSpaces: number; lines: number; sentences: number; paragraphs: number; uniqueWords: number; avgWordLength: number; readingTimeSeconds: number; error: string | null }
+export type XmlFormatInput = { 
+/**
+ * Raw XML text to format.
+ */
+value: string; 
+/**
+ * Indentation size in spaces (2 or 4). Defaults to 2.
+ */
+indentSize: number }
+export type XmlFormatOutput = { 
+/**
+ * Formatted XML string.
+ */
+result: string; 
+/**
+ * Number of lines in formatted output.
+ */
+lineCount: number; 
+/**
+ * Character count of formatted output.
+ */
+charCount: number; 
+/**
+ * Error message if parsing/formatting failed.
+ */
+error: string | null }
+export type YamlFormatInput = { 
+/**
+ * Raw YAML text to format.
+ */
+value: string }
+export type YamlFormatOutput = { 
+/**
+ * Normalised YAML string.
+ */
+result: string; 
+/**
+ * Number of lines in formatted output.
+ */
+lineCount: number; 
+/**
+ * Character count.
+ */
+charCount: number; 
+/**
+ * Error message if parsing failed.
+ */
+error: string | null }
 
 /** tauri-specta globals **/
 

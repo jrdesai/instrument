@@ -587,8 +587,8 @@ export const tools: Tool[] = [
   },
   {
     id: "csv-to-json",
-    name: "CSV to JSON",
-    description: "Convert CSV to JSON.",
+    name: "CSV / JSON",
+    description: "Convert between CSV and JSON in both directions.",
     category: "data",
     displayCategory: "Data",
     displayCategoryIcon: "table_chart",
@@ -596,9 +596,50 @@ export const tools: Tool[] = [
     icon: "table_chart",
     platforms: ["desktop", "web"],
     rustCommand: "tool_csv_to_json",
-    keywords: ["csv", "json", "convert", "table"],
+    keywords: ["csv", "json", "convert", "table", "json-to-csv", "bidirectional"],
     component: React.lazy(() =>
       import("../tools/csv-to-json/CsvToJsonTool").then((m) => ({
+        default: m.default,
+      }))
+    ),
+    trayPopover: true,
+    implemented: true,
+  },
+  {
+    id: "xml-formatter",
+    name: "XML Formatter",
+    description: "Format and validate XML documents.",
+    category: "data",
+    displayCategory: "Data",
+    displayCategoryIcon: "table_chart",
+    roles: ["backend", "data", "general"],
+    icon: "code",
+    platforms: ["desktop", "web"],
+    rustCommand: "tool_xml_format",
+    keywords: ["xml", "format", "pretty", "indent", "validate", "markup"],
+    trayPopover: false,
+    component: React.lazy(() =>
+      import("../tools/xml-formatter/XmlFormatterTool").then((m) => ({
+        default: m.default,
+      }))
+    ),
+    implemented: true,
+  },
+  {
+    id: "yaml-formatter",
+    name: "YAML Formatter",
+    description: "Format and validate YAML documents.",
+    category: "data",
+    displayCategory: "Data",
+    displayCategoryIcon: "table_chart",
+    roles: ["backend", "data", "general"],
+    icon: "code",
+    platforms: ["desktop", "web"],
+    rustCommand: "tool_yaml_format",
+    keywords: ["yaml", "format", "pretty", "validate", "yml", "config"],
+    trayPopover: false,
+    component: React.lazy(() =>
+      import("../tools/yaml-formatter/YamlFormatterTool").then((m) => ({
         default: m.default,
       }))
     ),

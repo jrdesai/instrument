@@ -1,0 +1,6 @@
+# Allow the JSON to CSV tool command to be invoked from the frontend.
+[[permission]]
+identifier = "allow-json-to-csv"
+description = "Enables the tool_json_to_csv command."
+commands.allow = ["tool_json_to_csv"]
+

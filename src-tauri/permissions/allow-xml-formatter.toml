@@ -1,0 +1,6 @@
+# Allow the XML formatter tool command to be invoked from the frontend.
+[[permission]]
+identifier = "allow-xml-formatter"
+description = "Enables the tool_xml_format command."
+commands.allow = ["tool_xml_format"]
+
