@@ -21,6 +21,7 @@ use instrument_core::crypto::passphrase::{
     process as passphrase_process_core, PassphraseInput, PassphraseOutput,
 };
 use instrument_core::crypto::password::{process as password_process_core, PasswordInput, PasswordOutput};
+use instrument_core::crypto::totp::{process as totp_process_core, TotpInput, TotpOutput};
 
 use crate::command_log::finish_ok;
 
@@ -131,5 +132,15 @@ pub fn cert_decode(input: CertDecodeInput) -> CertDecodeOutput {
     let start = Instant::now();
     let output = cert_decode_core(input);
     finish_ok("cert_decode", start);
+    output
+}
+
+/// Generates a TOTP code. Input/output values are never logged (sensitive tool).
+#[tauri::command]
+#[specta::specta]
+pub fn tool_totp_generate(input: TotpInput) -> TotpOutput {
+    let start = Instant::now();
+    let output = totp_process_core(input);
+    finish_ok("tool_totp_generate", start);
     output
 }

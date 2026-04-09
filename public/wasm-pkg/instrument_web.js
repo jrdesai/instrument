@@ -560,6 +560,19 @@ export function tool_sql_format(js_input) {
 }
 
 /**
+ * TOTP generator. Receives TotpInput (camelCase) and returns TotpOutput (camelCase).
+ * @param {any} js_input
+ * @returns {any}
+ */
+export function tool_totp_generate(js_input) {
+    const ret = wasm.tool_totp_generate(js_input);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
  * URL parser. Receives UrlParseInput (camelCase) and returns UrlParseOutput (camelCase).
  * @param {any} js_input
  * @returns {any}

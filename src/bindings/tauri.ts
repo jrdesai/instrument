@@ -73,6 +73,12 @@ async aesProcess(input: AesInput) : Promise<AesOutput> {
     return await TAURI_INVOKE("aes_process", { input });
 },
 /**
+ * Generates a TOTP code. Input/output values are never logged (sensitive tool).
+ */
+async toolTotpGenerate(input: TotpInput) : Promise<TotpOutput> {
+    return await TAURI_INVOKE("tool_totp_generate", { input });
+},
+/**
  * Runs Password generation via instrument-core.
  */
 async passwordProcess(input: PasswordInput) : Promise<PasswordOutput> {
@@ -1516,6 +1522,51 @@ resultIso: string; fromOffset: string; toOffset: string; fromAbbr: string; toAbb
  * e.g. "+5 hours", "-5 hours", "+5:30 hours", "0 hours (same zone)".
  */
 difference: string; error: string | null }
+export type TotpAlgorithm = "sha1" | "sha256" | "sha512"
+export type TotpInput = { 
+/**
+ * Base32-encoded TOTP secret (spaces are stripped before parsing).
+ */
+secret: string; 
+/**
+ * HMAC algorithm. Default: Sha1.
+ */
+algorithm: TotpAlgorithm; 
+/**
+ * Number of digits in the output code (6 or 8). Default: 6.
+ */
+digits: number; 
+/**
+ * Time step in seconds (30 or 60). Default: 30.
+ */
+period: number; 
+/**
+ * Current Unix timestamp in seconds (supplied by the caller — do not use
+ * system time here so WASM works without clock access).
+ */
+timestamp: number }
+export type TotpOutput = { 
+/**
+ * The current OTP code (zero-padded to `digits` length).
+ */
+code: string; 
+/**
+ * The next OTP code (one period ahead — useful for testing).
+ */
+nextCode: string; 
+/**
+ * Seconds remaining in the current time window.
+ */
+validFor: number; 
+/**
+ * Progress through the current window as a value 0.0–1.0 (1.0 = just
+ * started rolling toward expiry, 0.0 = about to expire). Use for the countdown bar.
+ */
+progress: number; 
+/**
+ * Error message if the secret is invalid or generation failed.
+ */
+error: string | null }
 /**
  * A single tool entry for the tray menu — id and display name from the frontend.
  */

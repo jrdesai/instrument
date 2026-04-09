@@ -45,6 +45,9 @@ use instrument_core::crypto::nanoid::{
     process as nanoid_process_core, NanoIdInput, NanoIdOutput,
 };
 use instrument_core::crypto::aes::{process as aes_process_core, AesInput, AesOutput};
+use instrument_core::crypto::totp::{
+    process as totp_process_core, TotpInput, TotpOutput,
+};
 use instrument_core::auth::jwt_decoder::{
     process as jwt_decode_process_core, JwtDecodeInput, JwtDecodeOutput,
 };
@@ -363,6 +366,15 @@ pub fn aes_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
     let input: AesInput =
         from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
     let output: AesOutput = aes_process_core(input);
+    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
+}
+
+/// TOTP generator. Receives TotpInput (camelCase) and returns TotpOutput (camelCase).
+#[wasm_bindgen(js_name = tool_totp_generate)]
+pub fn tool_totp_generate_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
+    let input: TotpInput =
+        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let output: TotpOutput = totp_process_core(input);
     to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
 }
 

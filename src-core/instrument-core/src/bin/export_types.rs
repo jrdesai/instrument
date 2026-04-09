@@ -34,6 +34,9 @@ fn main() {
     instrument_core::crypto::passphrase::PassphraseInput::export_all_to(&out).unwrap();
     instrument_core::crypto::passphrase::PassphraseOutput::export_all_to(&out).unwrap();
     instrument_core::crypto::passphrase::PassphraseSeparator::export_all_to(&out).unwrap();
+    instrument_core::crypto::totp::TotpAlgorithm::export_all_to(&out).unwrap();
+    instrument_core::crypto::totp::TotpInput::export_all_to(&out).unwrap();
+    instrument_core::crypto::totp::TotpOutput::export_all_to(&out).unwrap();
     instrument_core::crypto::ulid::UlidInput::export_all_to(&out).unwrap();
     instrument_core::crypto::ulid::UlidInspectInput::export_all_to(&out).unwrap();
     instrument_core::crypto::ulid::UlidInspectOutput::export_all_to(&out).unwrap();

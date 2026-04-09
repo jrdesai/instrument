@@ -40,6 +40,7 @@ pub fn run() {
         instrument_desktop::commands::crypto::nanoid_process,
         instrument_desktop::commands::crypto::cert_decode,
         instrument_desktop::commands::crypto::aes_process,
+        instrument_desktop::commands::crypto::tool_totp_generate,
         instrument_desktop::commands::crypto::password_process,
         instrument_desktop::commands::crypto::passphrase_process,
         instrument_desktop::commands::text::case_process,

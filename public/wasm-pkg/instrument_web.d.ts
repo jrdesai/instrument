@@ -217,6 +217,11 @@ export function tool_jwt_decode(js_input: any): any;
 export function tool_sql_format(js_input: any): any;
 
 /**
+ * TOTP generator. Receives TotpInput (camelCase) and returns TotpOutput (camelCase).
+ */
+export function tool_totp_generate(js_input: any): any;
+
+/**
  * URL parser. Receives UrlParseInput (camelCase) and returns UrlParseOutput (camelCase).
  */
 export function tool_url_parse(js_input: any): any;
@@ -313,6 +318,7 @@ export interface InitOutput {
     readonly tool_jwt_build: (a: any) => [number, number, number];
     readonly tool_jwt_decode: (a: any) => [number, number, number];
     readonly tool_sql_format: (a: any) => [number, number, number];
+    readonly tool_totp_generate: (a: any) => [number, number, number];
     readonly tool_url_parse: (a: any) => [number, number, number];
     readonly tool_xml_format: (a: any) => [number, number, number];
     readonly tool_yaml_format: (a: any) => [number, number, number];

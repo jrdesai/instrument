@@ -1,0 +1,5 @@
+# Allow the TOTP Generator tool command to be invoked from the frontend.
+[[permission]]
+identifier = "allow-totp"
+description = "Allows invoking the tool_totp_generate command."
+commands.allow = ["tool_totp_generate"]

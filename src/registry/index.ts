@@ -450,6 +450,38 @@ export const tools: Tool[] = [
     implemented: true,
   },
   {
+    id: "totp-generator",
+    name: "TOTP Generator",
+    description:
+      "Generate time-based OTP codes from a TOTP secret. Runs entirely offline.",
+    category: "crypto",
+    displayCategory: "Security",
+    displayCategoryIcon: "security",
+    roles: ["backend", "security", "general"],
+    icon: "pin",
+    platforms: ["desktop", "web"],
+    rustCommand: "tool_totp_generate",
+    sensitive: true,
+    keywords: [
+      "totp",
+      "otp",
+      "2fa",
+      "mfa",
+      "authenticator",
+      "time",
+      "one-time",
+      "password",
+      "secret",
+    ],
+    trayPopover: true,
+    component: React.lazy(() =>
+      import("../tools/totp-generator/TotpGeneratorTool").then((m) => ({
+        default: m.default,
+      }))
+    ),
+    implemented: true,
+  },
+  {
     id: "json-formatter",
     name: "JSON Formatter",
     description: "Format and minify JSON.",

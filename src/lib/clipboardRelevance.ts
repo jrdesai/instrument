@@ -14,6 +14,15 @@ export function isClipboardRelevant(toolId: string, text: string): boolean {
     case "jwt":
       return /^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]*$/.test(t);
 
+    case "totp-generator": {
+      const stripped = text.replace(/\s/g, "");
+      return (
+        stripped.length >= 16 &&
+        stripped.length <= 64 &&
+        /^[A-Z2-7]+=*$/i.test(stripped)
+      );
+    }
+
     case "hex-converter":
       return /^[0-9a-fA-F\s]+$/.test(t) && t.length <= SHORT;
 

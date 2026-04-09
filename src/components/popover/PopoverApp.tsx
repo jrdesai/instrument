@@ -20,8 +20,8 @@ function applyTrayClipboardFromRaw(
   if (!usePreferenceStore.getState().clipboardAutoPaste) return;
   if (!isClipboardRelevant(toolId, raw)) return;
   const trimmed = raw.trim();
-  if (toolId === "jwt") {
-    usePopoverBootstrapStore.getState().setPending("jwt", trimmed);
+  if (toolId === "jwt" || toolId === "totp-generator") {
+    usePopoverBootstrapStore.getState().setPending(toolId, trimmed);
   } else {
     useToolStore.getState().setDraftInput(toolId, trimmed);
   }
