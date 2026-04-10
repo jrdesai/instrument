@@ -1,7 +1,46 @@
+import { useCallback } from "react";
 import { isDesktop, isWeb } from "../../bridge";
 import { useHistoryStore, usePreferenceStore, useToolStore } from "../../store";
 import { APP_VERSION } from "../../version";
 import { ConfirmButton } from "../ui/ConfirmButton";
+
+const STORAGE_SUMMARY_ROWS = [
+  {
+    icon: "timer",
+    label: "Session history",
+    detail: "Kept in memory · cleared when you close the app",
+    badge: "Memory only" as const,
+    iconClass: "text-slate-400",
+  },
+  {
+    icon: "star",
+    label: "Favourites",
+    detail: "Saved locally · persists across sessions",
+    badge: "Persisted" as const,
+    iconClass: "text-primary",
+  },
+  {
+    icon: "edit_note",
+    label: "Draft inputs",
+    detail: "Last-typed text per tool · saved locally",
+    badge: "Persisted" as const,
+    iconClass: "text-primary",
+  },
+  {
+    icon: "tune",
+    label: "Preferences",
+    detail: "Theme, role, settings · saved locally",
+    badge: "Persisted" as const,
+    iconClass: "text-primary",
+  },
+  {
+    icon: "lock",
+    label: "Sensitive tools",
+    detail: "JWT, TOTP, passwords, keys · never stored anywhere",
+    badge: "Never stored" as const,
+    iconClass: "text-amber-500",
+  },
+] as const;
 
 export function SettingsPage() {
   const theme = usePreferenceStore((s) => s.theme);
@@ -24,6 +63,51 @@ export function SettingsPage() {
   const clearFavourites = useToolStore((s) => s.clearFavourites);
   const clearDraftInputs = useToolStore((s) => s.clearDraftInputs);
   const clearHistory = useHistoryStore((s) => s.clearHistory);
+
+  const handleExport = useCallback(() => {
+    const toolRaw = localStorage.getItem("instrument-tools");
+    const prefRaw = localStorage.getItem("instrument-preferences");
+    let toolsParsed: unknown;
+    let prefsParsed: unknown;
+    try {
+      toolsParsed = toolRaw ? JSON.parse(toolRaw) : null;
+    } catch {
+      toolsParsed = null;
+    }
+    try {
+      prefsParsed = prefRaw ? JSON.parse(prefRaw) : null;
+    } catch {
+      prefsParsed = null;
+    }
+
+    const toolsExport =
+      toolsParsed != null && typeof toolsParsed === "object"
+        ? (JSON.parse(JSON.stringify(toolsParsed)) as Record<string, unknown>)
+        : null;
+    const st = toolsExport?.state;
+    if (st != null && typeof st === "object") {
+      delete (st as { draftInputs?: unknown }).draftInputs;
+    }
+
+    const exportPayload = {
+      exportedAt: new Date().toISOString(),
+      version: APP_VERSION,
+      data: {
+        tools: toolsExport,
+        preferences: prefsParsed,
+      },
+    };
+
+    const blob = new Blob([JSON.stringify(exportPayload, null, 2)], {
+      type: "application/json",
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `instrument-data-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }, []);
 
   return (
     <div className="flex flex-col h-full w-full overflow-hidden bg-background-light dark:bg-background-dark">
@@ -190,38 +274,95 @@ export function SettingsPage() {
             </>
           )}
 
-          {/* ── Data ── */}
-          <section role="group" aria-labelledby="settings-data-heading" className="flex flex-col gap-4">
+          {/* ── Privacy & Data ── */}
+          <section
+            role="group"
+            aria-labelledby="settings-privacy-heading"
+            className="flex flex-col gap-4"
+          >
             <h2
-              id="settings-data-heading"
+              id="settings-privacy-heading"
               className="text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400"
             >
-              Data
+              Privacy & Data
             </h2>
 
-            <div className="flex flex-col divide-y divide-slate-100 dark:divide-border-dark rounded-lg border border-border-light dark:border-border-dark overflow-hidden">
+            <div className="overflow-hidden rounded-xl border border-border-light bg-panel-light dark:border-border-dark dark:bg-panel-dark">
+              <div className="border-b border-border-light px-4 py-3 dark:border-border-dark">
+                <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">
+                  What Instrument stores on this device
+                </p>
+              </div>
+              {STORAGE_SUMMARY_ROWS.map((row, i) => (
+                <div
+                  key={row.label}
+                  className={`flex items-start gap-3 px-4 py-3 ${
+                    i < STORAGE_SUMMARY_ROWS.length - 1
+                      ? "border-b border-border-light dark:border-border-dark"
+                      : ""
+                  }`}
+                >
+                  <span
+                    className={`material-symbols-outlined mt-0.5 shrink-0 text-[16px] ${row.iconClass}`}
+                    aria-hidden
+                  >
+                    {row.icon}
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                      {row.label}
+                    </p>
+                    <p className="mt-0.5 text-xs text-slate-400 dark:text-slate-500">{row.detail}</p>
+                  </div>
+                  <span
+                    className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider ${
+                      row.badge === "Never stored"
+                        ? "border border-amber-200/80 bg-amber-50 text-amber-700 dark:border-amber-800/40 dark:bg-amber-900/20 dark:text-amber-400"
+                        : "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400"
+                    }`}
+                  >
+                    {row.badge}
+                  </span>
+                </div>
+              ))}
+              <div className="border-t border-border-light bg-slate-50 px-4 py-3 dark:border-border-dark dark:bg-background-dark">
+                <p className="flex items-start gap-1.5 text-xs text-slate-500 dark:text-slate-400">
+                  <span className="material-symbols-outlined shrink-0 text-[14px] text-primary" aria-hidden>
+                    shield
+                  </span>
+                  <span>
+                    Nothing is ever sent to a server. All data stays on this device.
+                    {isWeb ? (
+                      <span className="text-slate-400"> · Web: stored in this browser only.</span>
+                    ) : null}
+                  </span>
+                </p>
+              </div>
+            </div>
+
+            <div className="flex flex-col divide-y divide-slate-100 overflow-hidden rounded-lg border border-border-light dark:divide-border-dark dark:border-border-dark">
               {/* Clear Recents */}
-              <div className="flex items-center justify-between px-4 py-3 bg-panel-light dark:bg-panel-dark">
+              <div className="flex items-center justify-between bg-panel-light px-4 py-3 dark:bg-panel-dark">
                 <div>
                   <p className="text-sm text-slate-700 dark:text-slate-300">Clear recent tools</p>
-                  <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
+                  <p className="mt-0.5 text-xs text-slate-400 dark:text-slate-500">
                     Removes the recently used list from the dashboard
                   </p>
                 </div>
                 <button
                   type="button"
                   onClick={clearRecents}
-                  className="shrink-0 ml-4 px-3 py-1.5 text-xs font-medium rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                  className="ml-4 shrink-0 rounded-md bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-600 transition-colors hover:bg-red-50 hover:text-red-600 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-red-900/20 dark:hover:text-red-400"
                 >
                   Clear
                 </button>
               </div>
 
               {/* Clear Favourites */}
-              <div className="flex items-center justify-between px-4 py-3 bg-panel-light dark:bg-panel-dark">
+              <div className="flex items-center justify-between bg-panel-light px-4 py-3 dark:bg-panel-dark">
                 <div>
                   <p className="text-sm text-slate-700 dark:text-slate-300">Clear favourites</p>
-                  <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
+                  <p className="mt-0.5 text-xs text-slate-400 dark:text-slate-500">
                     Unpins all starred tools
                   </p>
                 </div>
@@ -229,49 +370,71 @@ export function SettingsPage() {
                   label="Clear"
                   confirmLabel="Yes, clear"
                   onConfirm={clearFavourites}
-                  className="px-3 py-1.5 text-xs font-medium rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                  className="rounded-md bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-600 transition-colors hover:bg-red-50 hover:text-red-600 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-red-900/20 dark:hover:text-red-400"
                 />
               </div>
 
               {/* Clear History */}
-              <div className="flex items-center justify-between px-4 py-3 bg-panel-light dark:bg-panel-dark">
+              <div className="flex items-center justify-between bg-panel-light px-4 py-3 dark:bg-panel-dark">
                 <div>
                   <p className="text-sm text-slate-700 dark:text-slate-300">Clear session history</p>
-                  <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
-                    Removes all tool run history for this session
+                  <p className="mt-0.5 text-xs text-slate-400 dark:text-slate-500">
+                    Session history is already cleared when you close the app. Clear it now if
+                    needed.
                   </p>
                 </div>
                 <button
                   type="button"
                   onClick={clearHistory}
-                  className="shrink-0 ml-4 px-3 py-1.5 text-xs font-medium rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                  className="ml-4 shrink-0 rounded-md bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-600 transition-colors hover:bg-red-50 hover:text-red-600 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-red-900/20 dark:hover:text-red-400"
                 >
                   Clear
                 </button>
               </div>
 
               {/* Clear saved tool inputs */}
-              <div className="flex items-center justify-between px-4 py-3 bg-panel-light dark:bg-panel-dark">
+              <div className="flex items-center justify-between bg-panel-light px-4 py-3 dark:bg-panel-dark">
                 <div>
                   <p className="text-sm text-slate-700 dark:text-slate-300">Clear saved inputs</p>
-                  <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
+                  <p className="mt-0.5 text-xs text-slate-400 dark:text-slate-500">
                     Removes last-typed drafts stored for each tool (not session history)
                   </p>
                 </div>
                 <button
                   type="button"
                   onClick={clearDraftInputs}
-                  className="shrink-0 ml-4 px-3 py-1.5 text-xs font-medium rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                  className="ml-4 shrink-0 rounded-md bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-600 transition-colors hover:bg-red-50 hover:text-red-600 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-red-900/20 dark:hover:text-red-400"
                 >
                   Clear
                 </button>
               </div>
 
+              {/* Export */}
+              <div className="flex items-center justify-between bg-panel-light px-4 py-3 dark:bg-panel-dark">
+                <div>
+                  <p className="text-sm font-medium text-slate-700 dark:text-slate-300">Export my data</p>
+                  <p className="mt-0.5 text-xs text-slate-400 dark:text-slate-500">
+                    Download favourites, preferences, and recents as JSON (draft inputs omitted for
+                    privacy).
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleExport}
+                  className="ml-4 flex shrink-0 items-center gap-1.5 rounded-md bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-600 transition-colors hover:bg-primary/10 hover:text-primary dark:bg-slate-800 dark:text-slate-400"
+                >
+                  <span className="material-symbols-outlined text-[14px]" aria-hidden>
+                    download
+                  </span>
+                  Export
+                </button>
+              </div>
+
               {/* Clear All Data */}
-              <div className="flex items-center justify-between px-4 py-3 bg-panel-light dark:bg-panel-dark">
+              <div className="flex items-center justify-between bg-panel-light px-4 py-3 dark:bg-panel-dark">
                 <div>
                   <p className="text-sm font-medium text-slate-700 dark:text-slate-300">Clear all data</p>
-                  <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
+                  <p className="mt-0.5 text-xs text-slate-400 dark:text-slate-500">
                     Clears recents, favourites, session history, and saved tool inputs in one go
                   </p>
                 </div>
@@ -284,7 +447,7 @@ export function SettingsPage() {
                     clearHistory();
                     clearDraftInputs();
                   }}
-                  className="px-3 py-1.5 text-xs font-medium rounded-md bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors"
+                  className="rounded-md bg-red-50 px-3 py-1.5 text-xs font-medium text-red-600 transition-colors hover:bg-red-100 dark:bg-red-900/20 dark:text-red-400 dark:hover:bg-red-900/40"
                 />
               </div>
             </div>

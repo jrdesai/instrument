@@ -1,4 +1,5 @@
 import type { Tool } from "../../registry";
+import { StorageBadge } from "../tool";
 import { useToolStore } from "../../store";
 
 export function ToolHeader({ tool }: { tool: Tool }) {
@@ -15,10 +16,13 @@ export function ToolHeader({ tool }: { tool: Tool }) {
           </span>
         </div>
         <div className="min-w-0">
-          <h1 className="text-lg font-medium text-slate-900 dark:text-slate-100 truncate">
-            {tool.name}
-          </h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400 truncate">
+          <div className="flex min-w-0 flex-wrap items-center gap-2">
+            <h1 className="truncate text-lg font-medium text-slate-900 dark:text-slate-100">
+              {tool.name}
+            </h1>
+            <StorageBadge tool={tool} />
+          </div>
+          <p className="truncate text-sm text-slate-500 dark:text-slate-400">
             {tool.description}
           </p>
         </div>
