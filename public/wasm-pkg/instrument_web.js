@@ -391,6 +391,19 @@ export function timezone_process(js_input) {
 }
 
 /**
+ * HTTP Basic Authorization header encode/decode.
+ * @param {any} js_input
+ * @returns {any}
+ */
+export function tool_basic_auth(js_input) {
+    const ret = wasm.tool_basic_auth(js_input);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
  * Config converter (JSON ↔ YAML ↔ TOML). Receives ConfigConvertInput and returns ConfigConvertOutput (camelCase).
  * @param {any} js_input
  * @returns {any}
@@ -547,6 +560,19 @@ export function tool_jwt_decode(js_input) {
 }
 
 /**
+ * Slug generator. Receives SlugInput and returns SlugOutput.
+ * @param {any} js_input
+ * @returns {any}
+ */
+export function tool_slug_generate(js_input) {
+    const ret = wasm.tool_slug_generate(js_input);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
  * SQL formatter. Receives SqlFormatInput (camelCase) and returns SqlFormatOutput (camelCase).
  * @param {any} js_input
  * @returns {any}
@@ -566,6 +592,19 @@ export function tool_sql_format(js_input) {
  */
 export function tool_totp_generate(js_input) {
     const ret = wasm.tool_totp_generate(js_input);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
+ * Unicode Inspector. Receives UnicodeInspectInput and returns UnicodeInspectOutput.
+ * @param {any} js_input
+ * @returns {any}
+ */
+export function tool_unicode_inspect(js_input) {
+    const ret = wasm.tool_unicode_inspect(js_input);
     if (ret[2]) {
         throw takeFromExternrefTable0(ret[1]);
     }

@@ -152,6 +152,11 @@ export function timestamp_process(js_input: any): any;
 export function timezone_process(js_input: any): any;
 
 /**
+ * HTTP Basic Authorization header encode/decode.
+ */
+export function tool_basic_auth(js_input: any): any;
+
+/**
  * Config converter (JSON ↔ YAML ↔ TOML). Receives ConfigConvertInput and returns ConfigConvertOutput (camelCase).
  */
 export function tool_config_convert(js_input: any): any;
@@ -212,6 +217,11 @@ export function tool_jwt_build(js_input: any): any;
 export function tool_jwt_decode(js_input: any): any;
 
 /**
+ * Slug generator. Receives SlugInput and returns SlugOutput.
+ */
+export function tool_slug_generate(js_input: any): any;
+
+/**
  * SQL formatter. Receives SqlFormatInput (camelCase) and returns SqlFormatOutput (camelCase).
  */
 export function tool_sql_format(js_input: any): any;
@@ -220,6 +230,11 @@ export function tool_sql_format(js_input: any): any;
  * TOTP generator. Receives TotpInput (camelCase) and returns TotpOutput (camelCase).
  */
 export function tool_totp_generate(js_input: any): any;
+
+/**
+ * Unicode Inspector. Receives UnicodeInspectInput and returns UnicodeInspectOutput.
+ */
+export function tool_unicode_inspect(js_input: any): any;
 
 /**
  * URL parser. Receives UrlParseInput (camelCase) and returns UrlParseOutput (camelCase).
@@ -305,6 +320,7 @@ export interface InitOutput {
     readonly text_diff_process: (a: any) => [number, number, number];
     readonly timestamp_process: (a: any) => [number, number, number];
     readonly timezone_process: (a: any) => [number, number, number];
+    readonly tool_basic_auth: (a: any) => [number, number, number];
     readonly tool_config_convert: (a: any) => [number, number, number];
     readonly tool_csv_to_json: (a: any) => [number, number, number];
     readonly tool_expression_eval: (a: any) => [number, number, number];
@@ -317,8 +333,10 @@ export interface InitOutput {
     readonly tool_json_validate: (a: any) => [number, number, number];
     readonly tool_jwt_build: (a: any) => [number, number, number];
     readonly tool_jwt_decode: (a: any) => [number, number, number];
+    readonly tool_slug_generate: (a: any) => [number, number, number];
     readonly tool_sql_format: (a: any) => [number, number, number];
     readonly tool_totp_generate: (a: any) => [number, number, number];
+    readonly tool_unicode_inspect: (a: any) => [number, number, number];
     readonly tool_url_parse: (a: any) => [number, number, number];
     readonly tool_xml_format: (a: any) => [number, number, number];
     readonly tool_yaml_format: (a: any) => [number, number, number];
