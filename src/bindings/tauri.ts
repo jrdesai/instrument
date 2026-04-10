@@ -480,6 +480,18 @@ export type BaseConverterInput = { value: string; fromBase: NumberBase; bitWidth
  */
 export type BaseConverterOutput = { decimal: string; hexadecimal: string; binary: string; binaryGrouped: string; octal: string; base32: string; base36: string; bitLength: number; isNegative: boolean; error: string | null }
 /**
+ * Input for the Basic Auth Header tool.
+ */
+export type BasicAuthInput = { mode: BasicAuthMode; username: string; password: string; header: string }
+/**
+ * Whether to encode credentials to a header or decode an existing header.
+ */
+export type BasicAuthMode = "encode" | "decode"
+/**
+ * Output: always all fields present; unused strings are empty on error or opposite mode.
+ */
+export type BasicAuthOutput = { encoded: string; decodedUsername: string; decodedPassword: string; rawBase64: string; error: string | null }
+/**
  * Bit width for binary output (padding and grouping).
  */
 export type BitWidth = "auto" | "bit8" | "bit16" | "bit32" | "bit64"
@@ -1093,18 +1105,6 @@ value: string }
  */
 export type JsonValidateOutput = { isValid: boolean; error: string | null; errorLine: number | null; errorColumn: number | null; errorContext: string | null; rootType: string | null; depth: number | null; keyCount: number | null; valueCount: number | null; arrayCount: number | null; objectCount: number | null; stringCount: number | null; numberCount: number | null; booleanCount: number | null; nullCount: number | null; maxArrayLength: number | null; hasDuplicateKeys: boolean; formatted: string | null }
 /**
- * Input for the Basic Auth Header tool.
- */
-export type BasicAuthInput = { mode: BasicAuthMode; username: string; password: string; header: string }
-/**
- * Whether to encode credentials to a header or decode an existing header.
- */
-export type BasicAuthMode = "encode" | "decode"
-/**
- * Output: always all fields present; unused strings are empty on error or opposite mode.
- */
-export type BasicAuthOutput = { encoded: string; decodedUsername: string; decodedPassword: string; rawBase64: string; error: string | null }
-/**
  * Signing algorithm for the JWT.
  */
 export type JwtAlgorithm = "HS256" | "HS384" | "HS512" | "none"
@@ -1401,6 +1401,14 @@ export type SemverOutput = { major: number | null; minor: number | null; patch: 
  * Normalized semver string for the parsed version.
  */
 canonical: string; compareResult: SemverCompareResult | null; compareError: string | null; rangeSatisfied: boolean | null; rangeError: string | null; bumpedMajor: string | null; bumpedMinor: string | null; bumpedPatch: string | null; error: string | null }
+/**
+ * Input for the Slug Generator tool.
+ */
+export type SlugInput = { text: string; separator: string; lowercase: boolean; maxLength: number | null }
+/**
+ * Output of slug generation.
+ */
+export type SlugOutput = { slug: string; error: string | null }
 export type SqlFormatInput = { 
 /**
  * Raw SQL string to format.
@@ -1637,6 +1645,18 @@ ulids: string[];
  * Optional error message when generation fails (e.g. invalid count).
  */
 error: string | null }
+/**
+ * One inspected character row.
+ */
+export type UnicodeChar = { char: string; codepoint: number; hex: string; name: string; block: string; category: string; utf8Bytes: number[]; utf8Hex: string }
+/**
+ * Input for the Unicode Inspector tool.
+ */
+export type UnicodeInspectInput = { text: string }
+/**
+ * Output of Unicode inspection.
+ */
+export type UnicodeInspectOutput = { chars: UnicodeChar[]; totalChars: number; totalBytes: number; error: string | null }
 export type UnitCategory = "dataSize" | "time" | "temperature" | "length" | "weight" | "speed" | "angle" | "frequency"
 export type UnitConverterInput = { value: number; 
 /**
@@ -1758,26 +1778,6 @@ message: string;
  * JSON Pointer path into the schema that produced the error.
  */
 schemaPath: string }
-/**
- * Input for the Slug Generator tool.
- */
-export type SlugInput = { text: string; separator: string; lowercase: boolean; maxLength: number | null }
-/**
- * Output of slug generation.
- */
-export type SlugOutput = { slug: string; error: string | null }
-/**
- * One inspected character row.
- */
-export type UnicodeChar = { char: string; codepoint: number; hex: string; name: string; block: string; category: string; utf8Bytes: number[]; utf8Hex: string }
-/**
- * Input for the Unicode Inspector tool.
- */
-export type UnicodeInspectInput = { text: string }
-/**
- * Output of Unicode inspection.
- */
-export type UnicodeInspectOutput = { chars: UnicodeChar[]; totalChars: number; totalBytes: number; error: string | null }
 /**
  * Input for the Word Counter tool.
  */
