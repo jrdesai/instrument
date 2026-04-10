@@ -276,6 +276,10 @@ interface PreferenceState {
   activeRole: ActiveRole;
   /** Whether the user has dismissed the home screen welcome card. */
   welcomeDismissed: boolean;
+  /** Whether the user has completed or dismissed the first-run onboarding. */
+  onboardingComplete: boolean;
+  /** Roles the user selected during onboarding. */
+  selectedRoles: Role[];
   /** Desktop only: show the menu bar / tray icon (persisted). */
   showTrayIcon: boolean;
   /** Desktop only: auto-paste clipboard into popover tool input on open (default true). */
@@ -285,6 +289,8 @@ interface PreferenceState {
   setTheme: (theme: Theme) => void;
   setRole: (role: ActiveRole) => void;
   setWelcomeDismissed: (dismissed: boolean) => void;
+  setOnboardingComplete: (complete: boolean) => void;
+  setSelectedRoles: (roles: Role[]) => void;
   setShowTrayIcon: (show: boolean) => void;
   setClipboardAutoPaste: (enabled: boolean) => void;
   setGlobalHotkeyEnabled: (enabled: boolean) => void;
@@ -299,6 +305,8 @@ const preferenceStoreImpl = persist(
     theme: "dark",
     activeRole: "general",
     welcomeDismissed: false,
+    onboardingComplete: false,
+    selectedRoles: [],
     showTrayIcon: true,
     clipboardAutoPaste: true,
     globalHotkeyEnabled: true,
@@ -318,6 +326,16 @@ const preferenceStoreImpl = persist(
         state.welcomeDismissed = dismissed;
       }),
 
+    setOnboardingComplete: (complete) =>
+      set((state) => {
+        state.onboardingComplete = complete;
+      }),
+
+    setSelectedRoles: (roles) =>
+      set((state) => {
+        state.selectedRoles = roles;
+      }),
+
     setShowTrayIcon: (show) =>
       set((state) => {
         state.showTrayIcon = show;
@@ -333,7 +351,27 @@ const preferenceStoreImpl = persist(
         state.globalHotkeyEnabled = enabled;
       }),
   })),
-  { name: "instrument-preferences" }
+  {
+    name: "instrument-preferences",
+    merge: (persistedState, currentState) => {
+      if (!persistedState || typeof persistedState !== "object") {
+        return currentState;
+      }
+      const p = persistedState as Partial<PreferenceState>;
+      return {
+        ...currentState,
+        ...p,
+        // Existing installs without this flag should not see onboarding again.
+        onboardingComplete:
+          typeof p.onboardingComplete === "boolean"
+            ? p.onboardingComplete
+            : true,
+        selectedRoles: Array.isArray(p.selectedRoles)
+          ? (p.selectedRoles as Role[])
+          : [],
+      };
+    },
+  }
 );
 
 export const usePreferenceStore = create<PreferenceState>()(

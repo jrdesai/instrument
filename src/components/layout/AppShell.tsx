@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { getToolById } from "../../registry";
+import { LogoMark } from "../LogoMark";
+import { OnboardingModal } from "../onboarding/OnboardingModal";
 import { SearchModal } from "../ui/SearchModal";
 
 const SIDEBAR_WIDTH = 48;
@@ -17,17 +19,6 @@ const navItems: { to: string; icon: string; label: string; shortcut: string }[] 
     { to: "/history", icon: "history", label: "History", shortcut: `${MOD}2` },
     { to: "/settings", icon: "settings", label: "Settings", shortcut: `${MOD}3` },
   ];
-
-function LogoMark({ className }: { className?: string }) {
-  return (
-    <div
-      className={`w-8 h-8 rounded-lg bg-primary text-white font-bold text-sm flex items-center justify-center shrink-0 ${className ?? ""}`}
-      aria-hidden
-    >
-      ⟨/⟩
-    </div>
-  );
-}
 
 export function AppShell() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -162,6 +153,8 @@ export function AppShell() {
       </nav>
 
       <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+
+      <OnboardingModal />
     </div>
   );
 }
