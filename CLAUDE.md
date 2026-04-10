@@ -174,3 +174,9 @@ Zustand devtools are only active in `import.meta.env.DEV` to avoid bundle bloat.
 - All Rust structs: `#[derive(Debug, Clone, Serialize, Deserialize)]` + `#[serde(rename_all = "camelCase")]`
 - Rust errors: use `thiserror` — never `panic!` in library code
 - TypeScript: strict mode, named exports (except tool components), JSDoc on all exported functions
+
+---
+
+## Compact instructions
+
+When compacting, prioritize: files edited, new Rust command names, registry entries added, WASM sync status, and any unresolved errors. Discard UI iteration details, intermediate error messages that were resolved, and tool output samples.

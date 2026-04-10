@@ -6,6 +6,14 @@
       "Bash(pnpm *)",
       "Bash(ls *)",
       "Bash(cat *)"
+    ],
+    "deny": [
+      "Read(public/wasm-pkg/**)",
+      "Read(src-core/target/**)",
+      "Read(src-tauri/target/**)",
+      "Read(node_modules/**)",
+      "Read(dist/**)",
+      "Read(src/wasm-pkg/**)"
     ]
   },
   "hooks": {
