@@ -31,6 +31,7 @@ pub fn run() {
     let mut builder = Builder::<tauri::Wry>::new().commands(collect_commands![
         instrument_desktop::commands::auth::tool_jwt_decode,
         instrument_desktop::commands::auth::tool_jwt_build,
+        instrument_desktop::commands::auth::tool_basic_auth,
         instrument_desktop::commands::crypto::hash_process,
         instrument_desktop::commands::crypto::ulid_process,
         instrument_desktop::commands::crypto::ulid_inspect,
@@ -45,6 +46,8 @@ pub fn run() {
         instrument_desktop::commands::crypto::passphrase_process,
         instrument_desktop::commands::text::case_process,
         instrument_desktop::commands::text::word_counter_process,
+        instrument_desktop::commands::text::tool_unicode_inspect,
+        instrument_desktop::commands::text::tool_slug_generate,
         instrument_desktop::commands::text::string_escaper_process,
         instrument_desktop::commands::text::find_replace_process,
         instrument_desktop::commands::text::lorem_ipsum_process,

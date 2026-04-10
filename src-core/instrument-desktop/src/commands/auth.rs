@@ -2,6 +2,9 @@
 
 use std::time::Instant;
 
+use instrument_core::auth::basic_auth::{
+    process as basic_auth_core, BasicAuthInput, BasicAuthOutput,
+};
 use instrument_core::auth::jwt_builder::{
     process as jwt_build_process_core, JwtBuildInput, JwtBuildOutput,
 };
@@ -28,5 +31,15 @@ pub fn tool_jwt_build(input: JwtBuildInput) -> JwtBuildOutput {
     let start = Instant::now();
     let output = jwt_build_process_core(input);
     finish_ok("tool_jwt_build", start);
+    output
+}
+
+/// Encodes or decodes HTTP Basic Authorization header values via instrument-core.
+#[tauri::command]
+#[specta::specta]
+pub fn tool_basic_auth(input: BasicAuthInput) -> BasicAuthOutput {
+    let start = Instant::now();
+    let output = basic_auth_core(input);
+    finish_ok("tool_basic_auth", start);
     output
 }

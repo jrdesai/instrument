@@ -21,6 +21,10 @@ use instrument_core::text::string_escaper::{
 use instrument_core::text::lorem_ipsum::{
     process as lorem_ipsum_process_core, LoremIpsumInput, LoremIpsumOutput,
 };
+use instrument_core::text::slug::{process as slug_generate_core, SlugInput, SlugOutput};
+use instrument_core::text::unicode::{
+    process as unicode_inspect_core, UnicodeInspectInput, UnicodeInspectOutput,
+};
 use instrument_core::text::word_counter::{
     process as word_counter_process_core, WordCounterInput, WordCounterOutput,
 };
@@ -104,5 +108,25 @@ pub fn env_parse(input: EnvParseInput) -> EnvParseOutput {
     let start = Instant::now();
     let output = env_parse_process_core(input);
     finish_ok("env_parse", start);
+    output
+}
+
+/// Runs Unicode character inspection via instrument-core.
+#[tauri::command]
+#[specta::specta]
+pub fn tool_unicode_inspect(input: UnicodeInspectInput) -> UnicodeInspectOutput {
+    let start = Instant::now();
+    let output = unicode_inspect_core(input);
+    finish_ok("tool_unicode_inspect", start);
+    output
+}
+
+/// Runs slug generation via instrument-core.
+#[tauri::command]
+#[specta::specta]
+pub fn tool_slug_generate(input: SlugInput) -> SlugOutput {
+    let start = Instant::now();
+    let output = slug_generate_core(input);
+    finish_ok("tool_slug_generate", start);
     output
 }

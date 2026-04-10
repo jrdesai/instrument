@@ -7,6 +7,9 @@ use ts_rs::TS;
 fn main() {
     let out = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../src/bindings");
     std::fs::create_dir_all(&out).expect("create src/bindings");
+    instrument_core::auth::basic_auth::BasicAuthInput::export_all_to(&out).unwrap();
+    instrument_core::auth::basic_auth::BasicAuthMode::export_all_to(&out).unwrap();
+    instrument_core::auth::basic_auth::BasicAuthOutput::export_all_to(&out).unwrap();
     instrument_core::auth::jwt_builder::JwtAlgorithm::export_all_to(&out).unwrap();
     instrument_core::auth::jwt_builder::JwtBuildInput::export_all_to(&out).unwrap();
     instrument_core::auth::jwt_builder::JwtBuildOutput::export_all_to(&out).unwrap();
@@ -158,6 +161,11 @@ fn main() {
     instrument_core::text::string_escaper::EscapeTarget::export_all_to(&out).unwrap();
     instrument_core::text::string_escaper::StringEscaperInput::export_all_to(&out).unwrap();
     instrument_core::text::string_escaper::StringEscaperOutput::export_all_to(&out).unwrap();
+    instrument_core::text::slug::SlugInput::export_all_to(&out).unwrap();
+    instrument_core::text::slug::SlugOutput::export_all_to(&out).unwrap();
+    instrument_core::text::unicode::UnicodeChar::export_all_to(&out).unwrap();
+    instrument_core::text::unicode::UnicodeInspectInput::export_all_to(&out).unwrap();
+    instrument_core::text::unicode::UnicodeInspectOutput::export_all_to(&out).unwrap();
     instrument_core::text::word_counter::WordCounterInput::export_all_to(&out).unwrap();
     instrument_core::text::word_counter::WordCounterOutput::export_all_to(&out).unwrap();
     instrument_core::xml::XmlFormatInput::export_all_to(&out).unwrap();

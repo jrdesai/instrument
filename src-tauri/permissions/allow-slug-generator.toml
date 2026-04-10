@@ -1,0 +1,5 @@
+# Allow the Slug Generator tool command.
+[[permission]]
+identifier = "allow-slug-generator"
+description = "Enables the tool_slug_generate command."
+commands.allow = ["tool_slug_generate"]

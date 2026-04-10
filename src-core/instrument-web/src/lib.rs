@@ -28,6 +28,10 @@ use instrument_core::text::lorem_ipsum::{
 use instrument_core::text::string_escaper::{
     process as string_escaper_process_core, StringEscaperInput, StringEscaperOutput,
 };
+use instrument_core::text::slug::{process as slug_generate_core, SlugInput, SlugOutput};
+use instrument_core::text::unicode::{
+    process as unicode_inspect_core, UnicodeInspectInput, UnicodeInspectOutput,
+};
 use instrument_core::text::word_counter::{
     process as word_counter_process_core, WordCounterInput, WordCounterOutput,
 };
@@ -47,6 +51,9 @@ use instrument_core::crypto::nanoid::{
 use instrument_core::crypto::aes::{process as aes_process_core, AesInput, AesOutput};
 use instrument_core::crypto::totp::{
     process as totp_process_core, TotpInput, TotpOutput,
+};
+use instrument_core::auth::basic_auth::{
+    process as basic_auth_core, BasicAuthInput, BasicAuthOutput,
 };
 use instrument_core::auth::jwt_decoder::{
     process as jwt_decode_process_core, JwtDecodeInput, JwtDecodeOutput,
@@ -396,6 +403,15 @@ pub fn tool_jwt_build_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
     to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
 }
 
+/// HTTP Basic Authorization header encode/decode.
+#[wasm_bindgen(js_name = tool_basic_auth)]
+pub fn tool_basic_auth_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
+    let input: BasicAuthInput =
+        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let output: BasicAuthOutput = basic_auth_core(input);
+    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
+}
+
 /// JSON formatter. Receives JsonFormatInput (camelCase) and returns JsonFormatOutput (camelCase).
 #[wasm_bindgen(js_name = tool_json_format)]
 pub fn tool_json_format_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
@@ -546,6 +562,23 @@ pub fn word_counter_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> 
     let input: WordCounterInput =
         from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
     let output: WordCounterOutput = word_counter_process_core(input);
+    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
+}
+
+/// Unicode Inspector. Receives UnicodeInspectInput and returns UnicodeInspectOutput.
+#[wasm_bindgen(js_name = tool_unicode_inspect)]
+pub fn tool_unicode_inspect_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
+    let input: UnicodeInspectInput =
+        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let output: UnicodeInspectOutput = unicode_inspect_core(input);
+    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
+}
+
+/// Slug generator. Receives SlugInput and returns SlugOutput.
+#[wasm_bindgen(js_name = tool_slug_generate)]
+pub fn tool_slug_generate_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
+    let input: SlugInput = from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let output: SlugOutput = slug_generate_core(input);
     to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
 }
 

@@ -1,0 +1,5 @@
+# Allow the Unicode Inspector tool command.
+[[permission]]
+identifier = "allow-unicode-inspector"
+description = "Enables the tool_unicode_inspect command."
+commands.allow = ["tool_unicode_inspect"]

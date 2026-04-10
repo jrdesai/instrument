@@ -19,6 +19,12 @@ async toolJwtBuild(input: JwtBuildInput) : Promise<JwtBuildOutput> {
     return await TAURI_INVOKE("tool_jwt_build", { input });
 },
 /**
+ * Encodes or decodes HTTP Basic Authorization header values via instrument-core.
+ */
+async toolBasicAuth(input: BasicAuthInput) : Promise<BasicAuthOutput> {
+    return await TAURI_INVOKE("tool_basic_auth", { input });
+},
+/**
  * Runs combined hash (MD5, SHA-1/256/512, SHA3-256/512) via instrument-core.
  */
 async hashProcess(input: HashInput) : Promise<HashOutput> {
@@ -101,6 +107,18 @@ async caseProcess(input: CaseInput) : Promise<CaseOutput> {
  */
 async wordCounterProcess(input: WordCounterInput) : Promise<WordCounterOutput> {
     return await TAURI_INVOKE("word_counter_process", { input });
+},
+/**
+ * Runs Unicode character inspection via instrument-core.
+ */
+async toolUnicodeInspect(input: UnicodeInspectInput) : Promise<UnicodeInspectOutput> {
+    return await TAURI_INVOKE("tool_unicode_inspect", { input });
+},
+/**
+ * Runs slug generation via instrument-core.
+ */
+async toolSlugGenerate(input: SlugInput) : Promise<SlugOutput> {
+    return await TAURI_INVOKE("tool_slug_generate", { input });
 },
 /**
  * Runs string escape/unescape via instrument-core.
@@ -1075,6 +1093,18 @@ value: string }
  */
 export type JsonValidateOutput = { isValid: boolean; error: string | null; errorLine: number | null; errorColumn: number | null; errorContext: string | null; rootType: string | null; depth: number | null; keyCount: number | null; valueCount: number | null; arrayCount: number | null; objectCount: number | null; stringCount: number | null; numberCount: number | null; booleanCount: number | null; nullCount: number | null; maxArrayLength: number | null; hasDuplicateKeys: boolean; formatted: string | null }
 /**
+ * Input for the Basic Auth Header tool.
+ */
+export type BasicAuthInput = { mode: BasicAuthMode; username: string; password: string; header: string }
+/**
+ * Whether to encode credentials to a header or decode an existing header.
+ */
+export type BasicAuthMode = "encode" | "decode"
+/**
+ * Output: always all fields present; unused strings are empty on error or opposite mode.
+ */
+export type BasicAuthOutput = { encoded: string; decodedUsername: string; decodedPassword: string; rawBase64: string; error: string | null }
+/**
  * Signing algorithm for the JWT.
  */
 export type JwtAlgorithm = "HS256" | "HS384" | "HS512" | "none"
@@ -1728,6 +1758,26 @@ message: string;
  * JSON Pointer path into the schema that produced the error.
  */
 schemaPath: string }
+/**
+ * Input for the Slug Generator tool.
+ */
+export type SlugInput = { text: string; separator: string; lowercase: boolean; maxLength: number | null }
+/**
+ * Output of slug generation.
+ */
+export type SlugOutput = { slug: string; error: string | null }
+/**
+ * One inspected character row.
+ */
+export type UnicodeChar = { char: string; codepoint: number; hex: string; name: string; block: string; category: string; utf8Bytes: number[]; utf8Hex: string }
+/**
+ * Input for the Unicode Inspector tool.
+ */
+export type UnicodeInspectInput = { text: string }
+/**
+ * Output of Unicode inspection.
+ */
+export type UnicodeInspectOutput = { chars: UnicodeChar[]; totalChars: number; totalBytes: number; error: string | null }
 /**
  * Input for the Word Counter tool.
  */

@@ -352,6 +352,32 @@ export const tools: Tool[] = [
     sensitive: true,
   },
   {
+    id: "basic-auth",
+    name: "Basic Auth Header",
+    description: "Encode or decode HTTP Basic Authorization headers.",
+    category: "auth",
+    displayCategory: "Auth",
+    displayCategoryIcon: "lock",
+    roles: ["backend", "general"],
+    icon: "badge",
+    platforms: ["desktop", "web"],
+    rustCommand: "tool_basic_auth",
+    sensitive: true,
+    keywords: [
+      "basic",
+      "auth",
+      "authorization",
+      "header",
+      "base64",
+      "username",
+      "password",
+    ],
+    component: React.lazy(() =>
+      import("../tools/basic-auth").then((m) => ({ default: m.default }))
+    ),
+    implemented: true,
+  },
+  {
     id: "api-key-generator",
     name: "API Key Generator",
     description: "Generate secure API keys.",
@@ -792,6 +818,49 @@ export const tools: Tool[] = [
     keywords: ["word", "count", "character", "line"],
     component: React.lazy(() =>
       import("../tools/word-counter").then((m) => ({ default: m.default }))
+    ),
+    trayPopover: true,
+    implemented: true,
+  },
+  {
+    id: "unicode-inspector",
+    name: "Unicode Inspector",
+    description:
+      "Inspect each character — codepoint, name, block, and UTF-8 bytes.",
+    category: "text",
+    displayCategory: "Formatting",
+    displayCategoryIcon: "format_indent_increase",
+    roles: ["frontend", "backend", "general"],
+    icon: "language",
+    platforms: ["desktop", "web"],
+    rustCommand: "tool_unicode_inspect",
+    keywords: [
+      "unicode",
+      "character",
+      "codepoint",
+      "utf8",
+      "inspect",
+      "hex",
+    ],
+    component: React.lazy(() =>
+      import("../tools/unicode-inspector").then((m) => ({ default: m.default }))
+    ),
+    implemented: true,
+  },
+  {
+    id: "slug-generator",
+    name: "Slug Generator",
+    description: "Convert any string to a URL-safe slug.",
+    category: "text",
+    displayCategory: "Formatting",
+    displayCategoryIcon: "format_indent_increase",
+    roles: ["frontend", "backend", "general"],
+    icon: "link",
+    platforms: ["desktop", "web"],
+    rustCommand: "tool_slug_generate",
+    keywords: ["slug", "url", "kebab", "path", "seo", "permalink"],
+    component: React.lazy(() =>
+      import("../tools/slug-generator").then((m) => ({ default: m.default }))
     ),
     trayPopover: true,
     implemented: true,

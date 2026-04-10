@@ -1,0 +1,5 @@
+# Allow the Basic Auth Header tool command.
+[[permission]]
+identifier = "allow-basic-auth"
+description = "Enables the tool_basic_auth command."
+commands.allow = ["tool_basic_auth"]
