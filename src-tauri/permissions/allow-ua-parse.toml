@@ -1,0 +1,5 @@
+# Allow the User-Agent Parser command to be invoked from the frontend.
+[[permission]]
+identifier = "allow-ua-parse"
+description = "Enables the ua_parse command."
+commands.allow = ["ua_parse"]
