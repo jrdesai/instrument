@@ -122,8 +122,8 @@ export function AppShell() {
           </button>
         </header>
 
+        <PwaInstallBanner />
         <main className="flex min-h-0 flex-1 flex-col overflow-y-auto md:overflow-hidden">
-          <PwaInstallBanner />
           <Outlet />
         </main>
       </div>

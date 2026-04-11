@@ -312,7 +312,7 @@ function TextDiffTool() {
               {leftFileDropError}
             </p>
           ) : null}
-          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border-light bg-panel-light px-4 py-2 dark:border-border-dark dark:bg-panel-dark">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border-light bg-panel-light px-4 py-2 dark:border-border-dark dark:bg-panel-dark min-h-[41px]">
             <div className="flex min-w-0 flex-wrap items-center gap-2">
               <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                 {leftFileName ?? "Before"}
@@ -374,7 +374,7 @@ function TextDiffTool() {
               {rightFileDropError}
             </p>
           ) : null}
-          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border-light bg-panel-light px-4 py-2 dark:border-border-dark dark:bg-panel-dark">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border-light bg-panel-light px-4 py-2 dark:border-border-dark dark:bg-panel-dark min-h-[41px]">
             <div className="flex min-w-0 flex-wrap items-center gap-2">
               <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                 {rightFileName ?? "After"}

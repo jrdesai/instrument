@@ -234,7 +234,7 @@ function Base64Tool() {
               {fileDropError}
             </p>
           ) : null}
-          <div className="flex flex-wrap items-center justify-between gap-2 px-3 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark text-xs text-slate-500 dark:text-slate-400 shrink-0">
+          <div className="flex flex-wrap items-center justify-between gap-2 px-3 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark text-xs text-slate-500 dark:text-slate-400 shrink-0 min-h-[41px]">
             <div className="flex min-w-0 flex-wrap items-center gap-2">
               <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                 {fileName ?? "Input"}
@@ -289,7 +289,7 @@ function Base64Tool() {
 
         {/* Output panel */}
         <div className="flex flex-col flex-1 min-w-0">
-          <div className="flex items-center justify-between px-3 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark text-xs text-slate-500 dark:text-slate-400 shrink-0">
+          <div className="flex items-center justify-between px-3 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark text-xs text-slate-500 dark:text-slate-400 shrink-0 min-h-[41px]">
             <span>Output</span>
             {isLoading && <span className="text-primary">Processing…</span>}
           </div>
