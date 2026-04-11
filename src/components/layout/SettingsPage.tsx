@@ -1,4 +1,3 @@
-import { useCallback } from "react";
 import { isDesktop, isWeb } from "../../bridge";
 import { useHistoryStore, usePreferenceStore, useToolStore } from "../../store";
 import { APP_VERSION } from "../../version";
@@ -63,51 +62,6 @@ export function SettingsPage() {
   const clearFavourites = useToolStore((s) => s.clearFavourites);
   const clearDraftInputs = useToolStore((s) => s.clearDraftInputs);
   const clearHistory = useHistoryStore((s) => s.clearHistory);
-
-  const handleExport = useCallback(() => {
-    const toolRaw = localStorage.getItem("instrument-tools");
-    const prefRaw = localStorage.getItem("instrument-preferences");
-    let toolsParsed: unknown;
-    let prefsParsed: unknown;
-    try {
-      toolsParsed = toolRaw ? JSON.parse(toolRaw) : null;
-    } catch {
-      toolsParsed = null;
-    }
-    try {
-      prefsParsed = prefRaw ? JSON.parse(prefRaw) : null;
-    } catch {
-      prefsParsed = null;
-    }
-
-    const toolsExport =
-      toolsParsed != null && typeof toolsParsed === "object"
-        ? (JSON.parse(JSON.stringify(toolsParsed)) as Record<string, unknown>)
-        : null;
-    const st = toolsExport?.state;
-    if (st != null && typeof st === "object") {
-      delete (st as { draftInputs?: unknown }).draftInputs;
-    }
-
-    const exportPayload = {
-      exportedAt: new Date().toISOString(),
-      version: APP_VERSION,
-      data: {
-        tools: toolsExport,
-        preferences: prefsParsed,
-      },
-    };
-
-    const blob = new Blob([JSON.stringify(exportPayload, null, 2)], {
-      type: "application/json",
-    });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `instrument-data-${new Date().toISOString().slice(0, 10)}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-  }, []);
 
   return (
     <div className="flex flex-col h-full w-full overflow-hidden bg-background-light dark:bg-background-dark">
@@ -406,27 +360,6 @@ export function SettingsPage() {
                   className="ml-4 shrink-0 rounded-md bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-600 transition-colors hover:bg-red-50 hover:text-red-600 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-red-900/20 dark:hover:text-red-400"
                 >
                   Clear
-                </button>
-              </div>
-
-              {/* Export */}
-              <div className="flex items-center justify-between bg-panel-light px-4 py-3 dark:bg-panel-dark">
-                <div>
-                  <p className="text-sm font-medium text-slate-700 dark:text-slate-300">Export my data</p>
-                  <p className="mt-0.5 text-xs text-slate-400 dark:text-slate-500">
-                    Download favourites, preferences, and recents as JSON (draft inputs omitted for
-                    privacy).
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={handleExport}
-                  className="ml-4 flex shrink-0 items-center gap-1.5 rounded-md bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-600 transition-colors hover:bg-primary/10 hover:text-primary dark:bg-slate-800 dark:text-slate-400"
-                >
-                  <span className="material-symbols-outlined text-[14px]" aria-hidden>
-                    download
-                  </span>
-                  Export
                 </button>
               </div>
 
