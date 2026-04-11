@@ -651,6 +651,19 @@ export function tool_yaml_format(js_input) {
 }
 
 /**
+ * User-Agent parser. Receives UaParseInput (camelCase) and returns UaParseOutput (camelCase).
+ * @param {any} js_input
+ * @returns {any}
+ */
+export function ua_parse(js_input) {
+    const ret = wasm.ua_parse(js_input);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
  * ULID inspection. Receives UlidInspectInput (camelCase) and returns UlidInspectOutput (camelCase).
  * @param {any} js_input
  * @returns {any}

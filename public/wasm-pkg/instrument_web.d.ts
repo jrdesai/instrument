@@ -252,6 +252,11 @@ export function tool_xml_format(js_input: any): any;
 export function tool_yaml_format(js_input: any): any;
 
 /**
+ * User-Agent parser. Receives UaParseInput (camelCase) and returns UaParseOutput (camelCase).
+ */
+export function ua_parse(js_input: any): any;
+
+/**
  * ULID inspection. Receives UlidInspectInput (camelCase) and returns UlidInspectOutput (camelCase).
  */
 export function ulid_inspect(js_input: any): any;
@@ -340,6 +345,7 @@ export interface InitOutput {
     readonly tool_url_parse: (a: any) => [number, number, number];
     readonly tool_xml_format: (a: any) => [number, number, number];
     readonly tool_yaml_format: (a: any) => [number, number, number];
+    readonly ua_parse: (a: any) => [number, number, number];
     readonly ulid_inspect: (a: any) => [number, number, number];
     readonly ulid_process: (a: any) => [number, number, number];
     readonly unit_convert: (a: any) => [number, number, number];

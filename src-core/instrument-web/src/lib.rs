@@ -1,86 +1,45 @@
 //! WASM bindings for Instrument tools. Each export mirrors a Tauri command or shared core API.
 
-use instrument_core::crypto::hash::{process as hash_process_core, HashInput, HashOutput};
-use instrument_core::crypto::uuid_gen::{
-    inspect as uuid_inspect_core, process as uuid_process_core,
-    UuidInspectInput, UuidInspectOutput, UuidInput, UuidOutput,
+use instrument_core::auth::basic_auth::{
+    process as basic_auth_core, BasicAuthInput, BasicAuthOutput,
 };
-use instrument_core::crypto::ulid::{
-    inspect as ulid_inspect_core, process as ulid_process_core,
-    UlidInspectInput, UlidInspectOutput, UlidInput, UlidOutput,
+use instrument_core::auth::jwt_builder::{
+    process as jwt_build_process_core, JwtBuildInput, JwtBuildOutput,
 };
-use instrument_core::text::case::{process as case_process_core, CaseInput, CaseOutput};
-use instrument_core::text::find_replace::{
-    process as find_replace_process_core, FindReplaceInput, FindReplaceOutput,
+use instrument_core::auth::jwt_decoder::{
+    process as jwt_decode_process_core, JwtDecodeInput, JwtDecodeOutput,
 };
-use instrument_core::text::env_parser::{
-    process as env_parse_process_core, EnvParseInput, EnvParseOutput,
-};
-use instrument_core::text::line_tools::{
-    process as line_tools_process_core, LineToolsInput, LineToolsOutput,
-};
-use instrument_core::text::diff::{
-    process as text_diff_process_core, TextDiffInput, TextDiffOutput,
-};
-use instrument_core::text::lorem_ipsum::{
-    process as lorem_ipsum_process_core, LoremIpsumInput, LoremIpsumOutput,
-};
-use instrument_core::text::string_escaper::{
-    process as string_escaper_process_core, StringEscaperInput, StringEscaperOutput,
-};
-use instrument_core::text::slug::{process as slug_generate_core, SlugInput, SlugOutput};
-use instrument_core::text::unicode::{
-    process as unicode_inspect_core, UnicodeInspectInput, UnicodeInspectOutput,
-};
-use instrument_core::text::word_counter::{
-    process as word_counter_process_core, WordCounterInput, WordCounterOutput,
-};
+use instrument_core::crypto::aes::{process as aes_process_core, AesInput, AesOutput};
 use instrument_core::crypto::api_key::{
     process as api_key_process_core, ApiKeyInput, ApiKeyOutput,
 };
 use instrument_core::crypto::cert::{
     process as cert_decode_core, CertDecodeInput, CertDecodeOutput,
 };
+use instrument_core::crypto::hash::{process as hash_process_core, HashInput, HashOutput};
+use instrument_core::crypto::nanoid::{process as nanoid_process_core, NanoIdInput, NanoIdOutput};
 use instrument_core::crypto::passphrase::{
     process as passphrase_process_core, PassphraseInput, PassphraseOutput,
 };
-use instrument_core::crypto::password::{process as password_process_core, PasswordInput, PasswordOutput};
-use instrument_core::crypto::nanoid::{
-    process as nanoid_process_core, NanoIdInput, NanoIdOutput,
+use instrument_core::crypto::password::{
+    process as password_process_core, PasswordInput, PasswordOutput,
 };
-use instrument_core::crypto::aes::{process as aes_process_core, AesInput, AesOutput};
-use instrument_core::crypto::totp::{
-    process as totp_process_core, TotpInput, TotpOutput,
+use instrument_core::crypto::totp::{process as totp_process_core, TotpInput, TotpOutput};
+use instrument_core::crypto::ulid::{
+    inspect as ulid_inspect_core, process as ulid_process_core, UlidInput, UlidInspectInput,
+    UlidInspectOutput, UlidOutput,
 };
-use instrument_core::auth::basic_auth::{
-    process as basic_auth_core, BasicAuthInput, BasicAuthOutput,
+use instrument_core::crypto::uuid_gen::{
+    inspect as uuid_inspect_core, process as uuid_process_core, UuidInput, UuidInspectInput,
+    UuidInspectOutput, UuidOutput,
 };
-use instrument_core::auth::jwt_decoder::{
-    process as jwt_decode_process_core, JwtDecodeInput, JwtDecodeOutput,
+use instrument_core::csv::{
+    process as csv_to_json_process_core, process_json_to_csv as json_to_csv_process_core,
+    CsvToJsonInput, CsvToJsonOutput, JsonToCsvInput, JsonToCsvOutput,
 };
-use instrument_core::auth::jwt_builder::{
-    process as jwt_build_process_core, JwtBuildInput, JwtBuildOutput,
-};
-use instrument_core::json::formatter::{
-    process as json_format_process_core, JsonFormatInput, JsonFormatOutput,
-};
-use instrument_core::json::validator::{
-    process as json_validate_process_core, JsonValidateInput, JsonValidateOutput,
-};
-use instrument_core::json::schema_validator::{
-    process as json_schema_validate_core, JsonSchemaValidateInput, JsonSchemaValidateOutput,
-};
-use instrument_core::json::diff::{
-    process as json_diff_process_core, JsonDiffInput, JsonDiffOutput,
-};
-use instrument_core::json::path::{
-    process as json_path_process_core, JsonPathInput, JsonPathOutput,
-};
-use instrument_core::json::converter::{
-    process as json_convert_process_core, JsonConvertInput, JsonConvertOutput,
-};
-use instrument_core::json::config_converter::{
-    process as config_convert_core, ConfigConvertInput, ConfigConvertOutput,
+use instrument_core::datetime::cron::{process as cron_process_core, CronInput, CronOutput};
+use instrument_core::datetime::iso8601::{
+    process as iso8601_process_core, Iso8601Input, Iso8601Output,
 };
 use instrument_core::datetime::timestamp::{
     process as timestamp_process_core, TimestampInput, TimestampOutput,
@@ -88,58 +47,89 @@ use instrument_core::datetime::timestamp::{
 use instrument_core::datetime::timezone::{
     process as timezone_process_core, TimezoneInput, TimezoneOutput,
 };
-use instrument_core::datetime::cron::{
-    process as cron_process_core, CronInput, CronOutput,
+use instrument_core::encoding::base64::{process, Base64Input};
+use instrument_core::encoding::color::{process as color_process_core, ColorInput};
+use instrument_core::encoding::hex::{process as hex_process_core, HexInput, HexOutput};
+use instrument_core::encoding::html_entity::{
+    process as html_entity_process_core, HtmlEntityInput, HtmlEntityOutput,
 };
-use instrument_core::datetime::iso8601::{
-    process as iso8601_process_core, Iso8601Input, Iso8601Output,
+use instrument_core::encoding::qrcode::{process as qr_process_core, QrCodeInput, QrCodeOutput};
+use instrument_core::encoding::url::{process as url_process, UrlEncodeInput, UrlEncodeOutput};
+use instrument_core::expression::{
+    process as expression_eval_process_core, ExprEvalInput, ExprEvalOutput,
 };
+use instrument_core::json::config_converter::{
+    process as config_convert_core, ConfigConvertInput, ConfigConvertOutput,
+};
+use instrument_core::json::converter::{
+    process as json_convert_process_core, JsonConvertInput, JsonConvertOutput,
+};
+use instrument_core::json::diff::{
+    process as json_diff_process_core, JsonDiffInput, JsonDiffOutput,
+};
+use instrument_core::json::formatter::{
+    process as json_format_process_core, JsonFormatInput, JsonFormatOutput,
+};
+use instrument_core::json::path::{
+    process as json_path_process_core, JsonPathInput, JsonPathOutput,
+};
+use instrument_core::json::schema_validator::{
+    process as json_schema_validate_core, JsonSchemaValidateInput, JsonSchemaValidateOutput,
+};
+use instrument_core::json::validator::{
+    process as json_validate_process_core, JsonValidateInput, JsonValidateOutput,
+};
+use instrument_core::network::cidr::{process as cidr_process_core, CidrInput, CidrOutput};
+use instrument_core::network::user_agent::{
+    process as ua_parse_process_core, UaParseInput, UaParseOutput,
+};
+use instrument_core::network::{process as url_parse_process, UrlParseInput, UrlParseOutput};
 use instrument_core::numbers::base_converter::{
     process as base_converter_process_core, BaseConverterInput, BaseConverterOutput,
 };
 use instrument_core::numbers::bitwise::{
     process as bitwise_process_core, BitwiseInput, BitwiseOutput,
 };
-use instrument_core::numbers::chmod::{
-    process as chmod_process_core, ChmodInput, ChmodOutput,
-};
-use instrument_core::numbers::semver::{
-    process as semver_process_core, SemverInput, SemverOutput,
-};
+use instrument_core::numbers::chmod::{process as chmod_process_core, ChmodInput, ChmodOutput};
+use instrument_core::numbers::semver::{process as semver_process_core, SemverInput, SemverOutput};
 use instrument_core::numbers::unit_converter::{
     process as unit_convert_core, UnitConverterInput, UnitConverterOutput,
 };
-use instrument_core::encoding::base64::{process, Base64Input};
-use instrument_core::encoding::color::{process as color_process_core, ColorInput};
-use instrument_core::encoding::hex::{
-    process as hex_process_core, HexInput, HexOutput,
+use instrument_core::sql::{process as sql_format_process_core, SqlFormatInput, SqlFormatOutput};
+use instrument_core::text::case::{process as case_process_core, CaseInput, CaseOutput};
+use instrument_core::text::diff::{
+    process as text_diff_process_core, TextDiffInput, TextDiffOutput,
 };
-use instrument_core::encoding::qrcode::{
-    process as qr_process_core, QrCodeInput, QrCodeOutput,
+use instrument_core::text::env_parser::{
+    process as env_parse_process_core, EnvParseInput, EnvParseOutput,
 };
-use instrument_core::encoding::html_entity::{
-    process as html_entity_process_core, HtmlEntityInput, HtmlEntityOutput,
+use instrument_core::text::find_replace::{
+    process as find_replace_process_core, FindReplaceInput, FindReplaceOutput,
 };
-use instrument_core::encoding::url::{process as url_process, UrlEncodeInput, UrlEncodeOutput};
-use instrument_core::network::{
-    process as url_parse_process, UrlParseInput, UrlParseOutput,
+use instrument_core::text::line_tools::{
+    process as line_tools_process_core, LineToolsInput, LineToolsOutput,
 };
-use instrument_core::network::cidr::{process as cidr_process_core, CidrInput, CidrOutput};
-use instrument_core::csv::{
-    process as csv_to_json_process_core, process_json_to_csv as json_to_csv_process_core,
-    CsvToJsonInput, CsvToJsonOutput, JsonToCsvInput, JsonToCsvOutput,
+use instrument_core::text::lorem_ipsum::{
+    process as lorem_ipsum_process_core, LoremIpsumInput, LoremIpsumOutput,
+};
+use instrument_core::text::slug::{process as slug_generate_core, SlugInput, SlugOutput};
+use instrument_core::text::string_escaper::{
+    process as string_escaper_process_core, StringEscaperInput, StringEscaperOutput,
+};
+use instrument_core::text::unicode::{
+    process as unicode_inspect_core, UnicodeInspectInput, UnicodeInspectOutput,
+};
+use instrument_core::text::word_counter::{
+    process as word_counter_process_core, WordCounterInput, WordCounterOutput,
 };
 use instrument_core::xml::{process as xml_format_process_core, XmlFormatInput, XmlFormatOutput};
-use instrument_core::yaml_fmt::{process as yaml_format_process_core, YamlFormatInput, YamlFormatOutput};
-use instrument_core::expression::{
-    process as expression_eval_process_core, ExprEvalInput, ExprEvalOutput,
-};
-use instrument_core::sql::{
-    process as sql_format_process_core, SqlFormatInput, SqlFormatOutput,
+use instrument_core::yaml_fmt::{
+    process as yaml_format_process_core, YamlFormatInput, YamlFormatOutput,
 };
 use regex_core::router as regex_router;
 use regex_core::types::{
-    ExplainRequest, ExplainToken as RegexExplainToken, MatchResult as RegexMatchResult, RegexRequest,
+    ExplainRequest, ExplainToken as RegexExplainToken, MatchResult as RegexMatchResult,
+    RegexRequest,
 };
 use serde_wasm_bindgen::{from_value, to_value};
 use wasm_bindgen::prelude::*;
@@ -147,8 +137,7 @@ use wasm_bindgen::prelude::*;
 /// Base64 encode/decode. Receives a Base64Input (camelCase) and returns a Base64Output (camelCase).
 #[wasm_bindgen(js_name = base64_process)]
 pub fn base64_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: Base64Input =
-        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let input: Base64Input = from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
     let output = process(input);
     to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
 }
@@ -176,6 +165,15 @@ pub fn tool_url_parse_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
 pub fn cidr_calculate_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
     let input: CidrInput = from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
     let output: CidrOutput = cidr_process_core(input);
+    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
+}
+
+/// User-Agent parser. Receives UaParseInput (camelCase) and returns UaParseOutput (camelCase).
+#[wasm_bindgen(js_name = ua_parse)]
+pub fn ua_parse_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
+    let input: UaParseInput =
+        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let output: UaParseOutput = ua_parse_process_core(input);
     to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
 }
 
@@ -245,8 +243,7 @@ pub fn html_entity_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
 /// Hex encode/decode. Receives HexInput (camelCase) and returns HexOutput (camelCase).
 #[wasm_bindgen(js_name = hex_process)]
 pub fn hex_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: HexInput =
-        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let input: HexInput = from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
     let output: HexOutput = hex_process_core(input);
     to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
 }
@@ -254,8 +251,7 @@ pub fn hex_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
 /// Colour converter. Receives ColorInput (camelCase) and returns ColorOutput (camelCase).
 #[wasm_bindgen(js_name = color_convert)]
 pub fn color_convert_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: ColorInput =
-        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let input: ColorInput = from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
     let output = color_process_core(input);
     to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
 }
@@ -263,8 +259,7 @@ pub fn color_convert_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
 /// QR code generator.
 #[wasm_bindgen(js_name = qr_generate)]
 pub fn qr_generate_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: QrCodeInput =
-        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let input: QrCodeInput = from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
     let output: QrCodeOutput = qr_process_core(input);
     to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
 }
@@ -272,8 +267,7 @@ pub fn qr_generate_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
 /// Combined hash. Receives HashInput (camelCase) and returns HashOutput (camelCase).
 #[wasm_bindgen(js_name = hash_process)]
 pub fn hash_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: HashInput =
-        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let input: HashInput = from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
     let output: HashOutput = hash_process_core(input);
     to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
 }
@@ -281,8 +275,7 @@ pub fn hash_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
 /// UUID generation. Receives UuidInput (camelCase) and returns UuidOutput (camelCase).
 #[wasm_bindgen(js_name = uuid_process)]
 pub fn uuid_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: UuidInput =
-        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let input: UuidInput = from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
     let output: UuidOutput = uuid_process_core(input);
     to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
 }
@@ -299,8 +292,7 @@ pub fn uuid_inspect_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
 /// ULID generation. Receives UlidInput (camelCase) and returns UlidOutput (camelCase).
 #[wasm_bindgen(js_name = ulid_process)]
 pub fn ulid_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: UlidInput =
-        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let input: UlidInput = from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
     let output: UlidOutput = ulid_process_core(input);
     to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
 }
@@ -317,8 +309,7 @@ pub fn ulid_inspect_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
 /// Text case converter. Receives CaseInput (camelCase) and returns CaseOutput (camelCase).
 #[wasm_bindgen(js_name = case_process)]
 pub fn case_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: CaseInput =
-        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let input: CaseInput = from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
     let output: CaseOutput = case_process_core(input);
     to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
 }
@@ -326,8 +317,7 @@ pub fn case_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
 /// API key generation. Receives ApiKeyInput (camelCase) and returns ApiKeyOutput (camelCase).
 #[wasm_bindgen(js_name = api_key_process)]
 pub fn api_key_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: ApiKeyInput =
-        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let input: ApiKeyInput = from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
     let output: ApiKeyOutput = api_key_process_core(input);
     to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
 }
@@ -344,7 +334,8 @@ pub fn cert_decode_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
 /// Password generation. Receives PasswordInput (camelCase) and returns PasswordOutput (camelCase).
 #[wasm_bindgen(js_name = password_process)]
 pub fn password_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: PasswordInput = from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let input: PasswordInput =
+        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
     let output: PasswordOutput = password_process_core(input);
     to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
 }
@@ -361,8 +352,7 @@ pub fn passphrase_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
 /// Nano ID generation. Receives NanoIdInput (camelCase) and returns NanoIdOutput (camelCase).
 #[wasm_bindgen(js_name = nanoid_process)]
 pub fn nanoid_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: NanoIdInput =
-        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let input: NanoIdInput = from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
     let output: NanoIdOutput = nanoid_process_core(input);
     to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
 }
@@ -370,8 +360,7 @@ pub fn nanoid_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
 /// AES-256-GCM encrypt/decrypt. Receives AesInput (camelCase) and returns AesOutput (camelCase).
 #[wasm_bindgen(js_name = aes_process)]
 pub fn aes_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: AesInput =
-        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let input: AesInput = from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
     let output: AesOutput = aes_process_core(input);
     to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
 }
@@ -379,8 +368,7 @@ pub fn aes_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
 /// TOTP generator. Receives TotpInput (camelCase) and returns TotpOutput (camelCase).
 #[wasm_bindgen(js_name = tool_totp_generate)]
 pub fn tool_totp_generate_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: TotpInput =
-        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let input: TotpInput = from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
     let output: TotpOutput = totp_process_core(input);
     to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
 }
@@ -505,8 +493,7 @@ pub fn iso8601_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
 /// Cron expression parser. Receives CronInput (camelCase) and returns CronOutput (camelCase).
 #[wasm_bindgen(js_name = cron_process)]
 pub fn cron_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: CronInput =
-        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let input: CronInput = from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
     let output: CronOutput = cron_process_core(input);
     to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
 }
@@ -532,8 +519,7 @@ pub fn bitwise_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
 /// chmod / Unix permissions calculator. Receives ChmodInput and returns ChmodOutput (camelCase).
 #[wasm_bindgen(js_name = chmod_process)]
 pub fn chmod_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: ChmodInput =
-        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let input: ChmodInput = from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
     let output: ChmodOutput = chmod_process_core(input);
     to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
 }
@@ -541,8 +527,7 @@ pub fn chmod_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
 /// Semantic versioning: parse, compare, range check, next major/minor/patch.
 #[wasm_bindgen(js_name = semver_process)]
 pub fn semver_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: SemverInput =
-        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let input: SemverInput = from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
     let output: SemverOutput = semver_process_core(input);
     to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
 }

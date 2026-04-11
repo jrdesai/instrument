@@ -50,6 +50,7 @@ toml = "0.8"
 quick-xml = { version = "0.36", features = ["serialize"] }
 sqlformat = { version = "0.2", optional = true }
 url = "2"
+woothee = "0.13"
 csv = "1"
 meval = "0.2"
 similar = "2"

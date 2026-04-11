@@ -3,6 +3,9 @@
 use std::time::Instant;
 
 use instrument_core::network::cidr::{process as cidr_process_core, CidrInput, CidrOutput};
+use instrument_core::network::user_agent::{
+    process as ua_parse_process_core, UaParseInput, UaParseOutput,
+};
 use instrument_core::network::{process as url_parse_process, UrlParseInput, UrlParseOutput};
 
 use crate::command_log::finish_ok;
@@ -22,5 +25,14 @@ pub fn cidr_calculate(input: CidrInput) -> CidrOutput {
     let start = Instant::now();
     let output = cidr_process_core(input);
     finish_ok("cidr_calculate", start);
+    output
+}
+
+#[tauri::command]
+#[specta::specta]
+pub fn ua_parse(input: UaParseInput) -> UaParseOutput {
+    let start = Instant::now();
+    let output = ua_parse_process_core(input);
+    finish_ok("ua_parse", start);
     output
 }

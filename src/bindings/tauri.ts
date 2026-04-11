@@ -264,6 +264,9 @@ async toolUrlParse(input: UrlParseInput) : Promise<UrlParseOutput> {
 async cidrCalculate(input: CidrInput) : Promise<CidrOutput> {
     return await TAURI_INVOKE("cidr_calculate", { input });
 },
+async uaParse(input: UaParseInput) : Promise<UaParseOutput> {
+    return await TAURI_INVOKE("ua_parse", { input });
+},
 /**
  * Runs base conversion via instrument-core.
  */
@@ -1609,6 +1612,44 @@ error: string | null }
  * A single tool entry for the tray menu — id and display name from the frontend.
  */
 export type TrayToolItem = { id: string; name: string }
+export type UaParseInput = { ua: string }
+export type UaParseOutput = { 
+/**
+ * Browser name, e.g. "Chrome", "Firefox", "Safari".
+ */
+browserName: string | null; 
+/**
+ * Browser version string, e.g. "120.0.0.0".
+ */
+browserVersion: string | null; 
+/**
+ * Operating system name, e.g. "Mac OSX", "Windows", "iOS".
+ */
+os: string | null; 
+/**
+ * OS version string if available.
+ */
+osVersion: string | null; 
+/**
+ * High-level device classification: "Desktop", "Mobile", "Tablet", "Bot", "Other", "Unknown".
+ */
+deviceType: string; 
+/**
+ * Rendering engine: "Blink", "Gecko", "WebKit", "Trident", "EdgeHTML", or "Presto".
+ */
+engine: string | null; 
+/**
+ * True when the UA belongs to a crawler, bot, or spider.
+ */
+isBot: boolean; 
+/**
+ * Hardware vendor if detectable (e.g. "Apple", "Samsung").
+ */
+vendor: string | null; 
+/**
+ * Raw woothee category string for reference ("pc", "smartphone", "crawler", etc.).
+ */
+category: string; error: string | null }
 /**
  * Input for the ULID Generator tool.
  */

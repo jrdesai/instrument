@@ -51,6 +51,7 @@ export const tool_unicode_inspect: (a: any) => [number, number, number];
 export const tool_url_parse: (a: any) => [number, number, number];
 export const tool_xml_format: (a: any) => [number, number, number];
 export const tool_yaml_format: (a: any) => [number, number, number];
+export const ua_parse: (a: any) => [number, number, number];
 export const ulid_inspect: (a: any) => [number, number, number];
 export const ulid_process: (a: any) => [number, number, number];
 export const unit_convert: (a: any) => [number, number, number];

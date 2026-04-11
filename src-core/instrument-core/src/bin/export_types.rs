@@ -116,6 +116,8 @@ fn main() {
     instrument_core::network::UrlParseOutput::export_all_to(&out).unwrap();
     instrument_core::network::cidr::CidrInput::export_all_to(&out).unwrap();
     instrument_core::network::cidr::CidrOutput::export_all_to(&out).unwrap();
+    instrument_core::network::user_agent::UaParseInput::export_all_to(&out).unwrap();
+    instrument_core::network::user_agent::UaParseOutput::export_all_to(&out).unwrap();
     instrument_core::numbers::base_converter::BaseConverterInput::export_all_to(&out).unwrap();
     instrument_core::numbers::base_converter::BaseConverterOutput::export_all_to(&out).unwrap();
     instrument_core::numbers::base_converter::BitWidth::export_all_to(&out).unwrap();
