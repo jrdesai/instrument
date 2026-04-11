@@ -9,6 +9,7 @@ import { callTool } from "../../bridge";
 import { CopyButton } from "../../components/tool";
 import { CodeBlock } from "../../components/ui/CodeBlock";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
+import { useFileDrop } from "../../hooks/useFileDrop";
 
 import type { ConversionTarget } from "../../bindings/ConversionTarget";
 import type { JsonConvertInput } from "../../bindings/JsonConvertInput";
@@ -65,6 +66,7 @@ function JsonConverterTool() {
   const [xmlRootElement, setXmlRootElement] = useState("root");
   const [output, setOutput] = useState<JsonConvertOutput | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
+  const [fileDropError, setFileDropError] = useState<string | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const runProcess = useCallback(
@@ -149,10 +151,21 @@ function JsonConverterTool() {
     URL.revokeObjectURL(url);
   }, []);
 
+  const { isDragging, dropZoneProps } = useFileDrop({
+    onFile: (text, filename) => {
+      setFileDropError(null);
+      setFileName(filename.replace(/\.[^.]+$/, ""));
+      setInputValue(text);
+      setDraft(text);
+    },
+    onError: (msg) => setFileDropError(msg),
+  });
+
   const handleFileUpload = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
       if (!file) return;
+      setFileDropError(null);
       setFileName(file.name.replace(/\.[^.]+$/, ""));
       const reader = new FileReader();
       reader.onload = (ev) => {
@@ -170,6 +183,7 @@ function JsonConverterTool() {
     setInputValue("");
     setDraft("");
     setFileName(null);
+    setFileDropError(null);
     setOutput(null);
   }, [setDraft]);
 
@@ -180,7 +194,26 @@ function JsonConverterTool() {
     <div className="flex flex-col h-full bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
       <div className="flex flex-col md:flex-row flex-1 min-h-0 w-full">
         {/* Left panel — input */}
-        <div className="flex flex-col flex-1 min-w-0 border-b md:border-b-0 md:border-r border-border-light dark:border-border-dark">
+        <div
+          className="relative flex flex-col flex-1 min-w-0 border-b md:border-b-0 md:border-r border-border-light dark:border-border-dark"
+          {...dropZoneProps}
+        >
+          {isDragging && (
+            <div
+              className="pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-primary/50 bg-primary/5"
+              aria-hidden
+            >
+              <span className="material-symbols-outlined text-[32px] text-primary/60">
+                upload_file
+              </span>
+              <span className="text-sm font-medium text-primary/70">Drop file to load</span>
+            </div>
+          )}
+          {fileDropError ? (
+            <p className="shrink-0 border-b border-red-200 bg-red-50 px-4 py-1.5 text-xs text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-400">
+              {fileDropError}
+            </p>
+          ) : null}
           <div className="flex items-center justify-between gap-2 px-4 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0 min-h-[41px]">
             <div className="flex min-w-0 items-center gap-2">
               <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
@@ -191,6 +224,7 @@ function JsonConverterTool() {
                   type="button"
                   onClick={() => {
                     setFileName(null);
+                    setFileDropError(null);
                     setInputValue("");
                     setDraft("");
                   }}
@@ -222,6 +256,7 @@ function JsonConverterTool() {
             value={inputValue}
             onChange={(e) => {
               const v = e.target.value;
+              setFileDropError(null);
               setInputValue(v);
               setDraft(v);
             }}

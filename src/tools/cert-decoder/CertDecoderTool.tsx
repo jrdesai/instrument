@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { callTool } from "../../bridge";
 import { CopyButton, PanelHeader, ToolbarFooter } from "../../components/tool";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
+import { useFileDrop } from "../../hooks/useFileDrop";
 import { useHistoryStore } from "../../store";
 import type { CertDecodeInput } from "../../bindings/CertDecodeInput";
 import type { CertDecodeOutput } from "../../bindings/CertDecodeOutput";
@@ -37,6 +38,7 @@ function DnTable({ fields, label }: { fields: DnField[]; label: string }) {
 function CertDecoderTool() {
   const { setDraft } = useDraftInput(TOOL_ID);
   const [pem, setPem] = useState("");
+  const [fileDropError, setFileDropError] = useState<string | null>(null);
   const [output, setOutput] = useState<CertDecodeOutput | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -78,14 +80,43 @@ function CertDecoderTool() {
     };
   }, [pem, run]);
 
+  const { isDragging, dropZoneProps } = useFileDrop({
+    onFile: (text) => {
+      setFileDropError(null);
+      setPem(text);
+      setDraft(text);
+    },
+    onError: (msg) => setFileDropError(msg),
+  });
+
   return (
     <div className="flex h-full flex-col bg-background-light font-display text-slate-100 dark:bg-background-dark">
       <div className="flex min-h-0 flex-1">
-        <div className="flex min-w-0 flex-1 flex-col border-r border-border-light dark:border-border-dark">
+        <div
+          className="relative flex min-w-0 flex-1 flex-col border-r border-border-light dark:border-border-dark"
+          {...dropZoneProps}
+        >
+          {isDragging && (
+            <div
+              className="pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-primary/50 bg-primary/5"
+              aria-hidden
+            >
+              <span className="material-symbols-outlined text-[32px] text-primary/60">
+                upload_file
+              </span>
+              <span className="text-sm font-medium text-primary/70">Drop file to load</span>
+            </div>
+          )}
+          {fileDropError ? (
+            <p className="shrink-0 border-b border-red-200 bg-red-50 px-4 py-1.5 text-xs text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-400">
+              {fileDropError}
+            </p>
+          ) : null}
           <PanelHeader label="Input (PEM or DER base64)" />
           <textarea
             value={pem}
             onChange={(e) => {
+              setFileDropError(null);
               setPem(e.target.value);
               setDraft(e.target.value);
             }}
@@ -245,6 +276,7 @@ function CertDecoderTool() {
                 type="button"
                 onClick={() => {
                   setPem("");
+                  setFileDropError(null);
                   setDraft("");
                   setOutput(null);
                 }}

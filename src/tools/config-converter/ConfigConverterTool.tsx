@@ -3,6 +3,7 @@ import { CopyButton, PanelHeader, ToolbarFooter } from "../../components/tool";
 import { CodeBlock } from "../../components/ui/CodeBlock";
 import { callTool } from "../../bridge";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
+import { useFileDrop } from "../../hooks/useFileDrop";
 import type { ConfigConvertInput } from "../../bindings/ConfigConvertInput";
 import type { ConfigConvertOutput } from "../../bindings/ConfigConvertOutput";
 import type { ConfigFormat } from "../../bindings/ConfigFormat";
@@ -66,6 +67,7 @@ const ConfigConverterTool: React.FC = () => {
   const [sortKeys, setSortKeys] = useState(false);
   const [output, setOutput] = useState<ConfigConvertOutput | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
+  const [fileDropError, setFileDropError] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
   const hasInput = input.trim().length > 0;
@@ -138,10 +140,27 @@ const ConfigConverterTool: React.FC = () => {
     URL.revokeObjectURL(url);
   }, []);
 
+  const { isDragging, dropZoneProps } = useFileDrop({
+    onFile: (text, filename) => {
+      setFileDropError(null);
+      const ext = filename.split(".").pop()?.toLowerCase() ?? "";
+      setFileName(filename.replace(/\.[^.]+$/, ""));
+      const detected = EXT_TO_FORMAT[ext];
+      if (detected) {
+        setFrom(detected);
+        setTo((prevTo) => (prevTo === detected ? nextFormatAfter(detected) : prevTo));
+      }
+      setInput(text);
+      setDraft(text);
+    },
+    onError: (msg) => setFileDropError(msg),
+  });
+
   const handleFileUpload = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
       if (!file) return;
+      setFileDropError(null);
       const ext = file.name.split(".").pop()?.toLowerCase() ?? "";
       setFileName(file.name.replace(/\.[^.]+$/, ""));
       const detected = EXT_TO_FORMAT[ext];
@@ -163,6 +182,7 @@ const ConfigConverterTool: React.FC = () => {
 
   const handleChangeInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const v = e.target.value;
+    setFileDropError(null);
     setInput(v);
     setDraft(v);
   };
@@ -190,6 +210,7 @@ const ConfigConverterTool: React.FC = () => {
   };
 
   const handleSwap = () => {
+    setFileDropError(null);
     setFrom(to);
     setTo(from);
     if (output?.isValidInput && output.result) {
@@ -202,6 +223,7 @@ const ConfigConverterTool: React.FC = () => {
     setInput("");
     setDraft("");
     setFileName(null);
+    setFileDropError(null);
     setOutput(null);
   };
 
@@ -229,7 +251,26 @@ const ConfigConverterTool: React.FC = () => {
       <div className="flex-1 flex flex-col min-h-0 border border-border-light dark:border-border-dark rounded-lg overflow-hidden bg-panel-light/60 dark:bg-panel-dark/60">
       {/* Two-panel row */}
       <div className="flex-1 flex flex-row min-h-0">
-        <div className="flex flex-col w-1/2 border-r border-border-light dark:border-border-dark bg-panel-light/60 dark:bg-panel-dark/60">
+        <div
+          className="relative flex flex-col w-1/2 border-r border-border-light dark:border-border-dark bg-panel-light/60 dark:bg-panel-dark/60"
+          {...dropZoneProps}
+        >
+          {isDragging && (
+            <div
+              className="pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-primary/50 bg-primary/5"
+              aria-hidden
+            >
+              <span className="material-symbols-outlined text-[32px] text-primary/60">
+                upload_file
+              </span>
+              <span className="text-sm font-medium text-primary/70">Drop file to load</span>
+            </div>
+          )}
+          {fileDropError ? (
+            <p className="shrink-0 border-b border-red-200 bg-red-50 px-4 py-1.5 text-xs text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-400">
+              {fileDropError}
+            </p>
+          ) : null}
           <PanelHeader
             className="border-border-light/80 bg-panel-light/80 dark:border-border-dark dark:bg-panel-dark/80"
             prependChildren
@@ -251,6 +292,7 @@ const ConfigConverterTool: React.FC = () => {
                 type="button"
                 onClick={() => {
                   setFileName(null);
+                  setFileDropError(null);
                   setInput("");
                   setDraft("");
                 }}

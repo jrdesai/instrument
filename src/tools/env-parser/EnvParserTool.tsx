@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState, type ChangeEvent } from "reac
 import { callTool } from "../../bridge";
 import { CopyButton, PanelHeader, PillButton, ToolbarFooter } from "../../components/tool";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
+import { useFileDrop } from "../../hooks/useFileDrop";
 import { useHistoryStore } from "../../store";
 import type { EnvFileFormat } from "../../bindings/EnvFileFormat";
 import type { EnvEntry } from "../../bindings/EnvEntry";
@@ -99,6 +100,7 @@ function EnvParserTool() {
   const { setDraft } = useDraftInput(TOOL_ID);
   const [content, setContent] = useState("");
   const [fileName, setFileName] = useState<string | null>(null);
+  const [fileDropError, setFileDropError] = useState<string | null>(null);
   const [format, setFormat] = useState<EnvFileFormat>("auto");
   const [maskValues, setMaskValues] = useState(true);
   const [severityFilter, setSeverityFilter] = useState<"all" | "error" | "warning">("all");
@@ -108,10 +110,26 @@ function EnvParserTool() {
   const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
   useRestoreStringDraft(TOOL_ID, setContent);
 
+  const { isDragging, dropZoneProps } = useFileDrop({
+    onFile: (text, filename) => {
+      setFileDropError(null);
+      setFileName(filename);
+      const ext = filename.startsWith(".")
+        ? filename.slice(1).toLowerCase()
+        : (filename.split(".").pop()?.toLowerCase() ?? "");
+      const detected = EXT_TO_FORMAT[ext];
+      if (detected) setFormat(detected);
+      setContent(text);
+      setDraft(text);
+    },
+    onError: (msg) => setFileDropError(msg),
+  });
+
   const handleFileUpload = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
       if (!file) return;
+      setFileDropError(null);
       setFileName(file.name);
       const ext = file.name.startsWith(".")
         ? file.name.slice(1).toLowerCase()
@@ -193,7 +211,26 @@ function EnvParserTool() {
     <div className="flex h-full flex-col bg-background-light font-display text-slate-900 dark:bg-background-dark dark:text-slate-100">
       <div className="flex min-h-0 flex-1">
         {/* Left — input */}
-        <div className="flex min-w-0 flex-1 flex-col border-r border-border-light dark:border-border-dark">
+        <div
+          className="relative flex min-w-0 flex-1 flex-col border-r border-border-light dark:border-border-dark"
+          {...dropZoneProps}
+        >
+          {isDragging && (
+            <div
+              className="pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-primary/50 bg-primary/5"
+              aria-hidden
+            >
+              <span className="material-symbols-outlined text-[32px] text-primary/60">
+                upload_file
+              </span>
+              <span className="text-sm font-medium text-primary/70">Drop file to load</span>
+            </div>
+          )}
+          {fileDropError ? (
+            <p className="shrink-0 border-b border-red-200 bg-red-50 px-4 py-1.5 text-xs text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-400">
+              {fileDropError}
+            </p>
+          ) : null}
           <PanelHeader
             label=""
             children={
@@ -206,6 +243,7 @@ function EnvParserTool() {
                     type="button"
                     onClick={() => {
                       setFileName(null);
+                      setFileDropError(null);
                       setContent("");
                       setDraft("");
                     }}
@@ -229,6 +267,7 @@ function EnvParserTool() {
           <textarea
             value={content}
             onChange={(e) => {
+              setFileDropError(null);
               setContent(e.target.value);
               setDraft(e.target.value);
             }}
@@ -378,6 +417,7 @@ function EnvParserTool() {
                 onClick={() => {
                   setContent("");
                   setFileName(null);
+                  setFileDropError(null);
                   setDraft("");
                   setOutput(null);
                 }}

@@ -8,6 +8,7 @@ import {
 import { twMerge } from "tailwind-merge";
 import { callTool } from "../../bridge";
 import { useDraftInput, useRestoreDraft } from "../../hooks/useDraftInput";
+import { useFileDrop } from "../../hooks/useFileDrop";
 
 const RUST_COMMAND = "tool_json_schema_validate";
 const TOOL_ID = "json-schema-validator";
@@ -43,6 +44,8 @@ function JsonSchemaValidatorTool() {
   const [schema, setSchema] = useState("");
   const [selectedDraft, setSelectedDraft] = useState<Draft>("draft7");
   const [output, setOutput] = useState<ValidateOutput | null>(null);
+  const [documentFileDropError, setDocumentFileDropError] = useState<string | null>(null);
+  const [schemaFileDropError, setSchemaFileDropError] = useState<string | null>(null);
 
   useRestoreDraft(TOOL_ID, (raw) => {
     const v = raw as { document?: string; schema?: string; draft?: Draft };
@@ -88,14 +91,35 @@ function JsonSchemaValidatorTool() {
   const handleClear = useCallback(() => {
     setDocument("");
     setSchema("");
+    setDocumentFileDropError(null);
+    setSchemaFileDropError(null);
     setOutput(null);
     setDraft({ document: "", schema: "", draft: selectedDraft });
   }, [selectedDraft, setDraft]);
+
+  const { isDragging: isDocDragging, dropZoneProps: docDropZoneProps } = useFileDrop({
+    onFile: (text) => {
+      setDocumentFileDropError(null);
+      setDocument(text);
+      setDraft({ document: text, schema, draft: selectedDraft });
+    },
+    onError: (msg) => setDocumentFileDropError(msg),
+  });
+
+  const { isDragging: isSchemaDragging, dropZoneProps: schemaDropZoneProps } = useFileDrop({
+    onFile: (text) => {
+      setSchemaFileDropError(null);
+      setSchema(text);
+      setDraft({ document, schema: text, draft: selectedDraft });
+    },
+    onError: (msg) => setSchemaFileDropError(msg),
+  });
 
   const handleDocumentUpload = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
       if (!file) return;
+      setDocumentFileDropError(null);
       const reader = new FileReader();
       reader.onload = (ev) => {
         const text = ev.target?.result as string;
@@ -112,6 +136,7 @@ function JsonSchemaValidatorTool() {
     (e: ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
       if (!file) return;
+      setSchemaFileDropError(null);
       const reader = new FileReader();
       reader.onload = (ev) => {
         const text = ev.target?.result as string;
@@ -164,7 +189,26 @@ function JsonSchemaValidatorTool() {
       </div>
 
       <div className="flex flex-col md:flex-row min-h-0 flex-1 border-b border-border-light dark:border-border-dark">
-        <div className="flex min-w-0 flex-1 flex-col border-b md:border-b-0 md:border-r border-border-light dark:border-border-dark">
+        <div
+          className="relative flex min-w-0 flex-1 flex-col border-b md:border-b-0 md:border-r border-border-light dark:border-border-dark"
+          {...docDropZoneProps}
+        >
+          {isDocDragging && (
+            <div
+              className="pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-primary/50 bg-primary/5"
+              aria-hidden
+            >
+              <span className="material-symbols-outlined text-[32px] text-primary/60">
+                upload_file
+              </span>
+              <span className="text-sm font-medium text-primary/70">Drop file to load</span>
+            </div>
+          )}
+          {documentFileDropError ? (
+            <p className="shrink-0 border-b border-red-200 bg-red-50 px-4 py-1.5 text-xs text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-400">
+              {documentFileDropError}
+            </p>
+          ) : null}
           <div className={panelHeaderClass}>
             <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
               Document
@@ -191,6 +235,7 @@ function JsonSchemaValidatorTool() {
             value={document}
             onChange={(e) => {
               const value = e.target.value;
+              setDocumentFileDropError(null);
               setDocument(value);
               setDraft({ document: value, schema, draft: selectedDraft });
             }}
@@ -198,7 +243,23 @@ function JsonSchemaValidatorTool() {
           />
         </div>
 
-        <div className="flex min-w-0 flex-1 flex-col">
+        <div className="relative flex min-w-0 flex-1 flex-col" {...schemaDropZoneProps}>
+          {isSchemaDragging && (
+            <div
+              className="pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-primary/50 bg-primary/5"
+              aria-hidden
+            >
+              <span className="material-symbols-outlined text-[32px] text-primary/60">
+                upload_file
+              </span>
+              <span className="text-sm font-medium text-primary/70">Drop file to load</span>
+            </div>
+          )}
+          {schemaFileDropError ? (
+            <p className="shrink-0 border-b border-red-200 bg-red-50 px-4 py-1.5 text-xs text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-400">
+              {schemaFileDropError}
+            </p>
+          ) : null}
           <div className={panelHeaderClass}>
             <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
               Schema
@@ -225,6 +286,7 @@ function JsonSchemaValidatorTool() {
             value={schema}
             onChange={(e) => {
               const value = e.target.value;
+              setSchemaFileDropError(null);
               setSchema(value);
               setDraft({ document, schema: value, draft: selectedDraft });
             }}

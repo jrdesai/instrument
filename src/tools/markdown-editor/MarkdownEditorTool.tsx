@@ -13,6 +13,7 @@ import hljs from "highlight.js";
 import hljsGitHubLight from "highlight.js/styles/github.css?url";
 import hljsGitHubDark from "highlight.js/styles/github-dark.css?url";
 import { CopyButton } from "../../components/tool";
+import { useFileDrop } from "../../hooks/useFileDrop";
 import { usePreferenceStore } from "../../store";
 
 const HLJS_LINK_ID = "instrument-markdown-hljs-theme";
@@ -96,6 +97,7 @@ function MarkdownEditorTool() {
   const [viewMode, setViewMode] = useState<ViewMode>("split");
   const [wordWrap, setWordWrap] = useState(true);
   const [fileName, setFileName] = useState<string | null>(null);
+  const [fileDropError, setFileDropError] = useState<string | null>(null);
 
   const editorRef = useRef<HTMLTextAreaElement>(null);
   const previewRef = useRef<HTMLDivElement>(null);
@@ -125,9 +127,19 @@ function MarkdownEditorTool() {
       ratio * (preview.scrollHeight - preview.clientHeight || 1);
   }, []);
 
+  const { isDragging, dropZoneProps } = useFileDrop({
+    onFile: (text, filename) => {
+      setFileDropError(null);
+      setFileName(filename);
+      setSource(text);
+    },
+    onError: (msg) => setFileDropError(msg),
+  });
+
   const handleFileUpload = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    setFileDropError(null);
     setFileName(file.name);
     const reader = new FileReader();
     reader.onload = (ev) => setSource(ev.target?.result as string);
@@ -373,10 +385,27 @@ function MarkdownEditorTool() {
         {showEditor ? (
           <div
             className={twMerge(
-              "flex min-h-0 min-w-0 flex-col border-border-light dark:border-border-dark",
+              "relative flex min-h-0 min-w-0 flex-col border-border-light dark:border-border-dark",
               showPreview ? "md:w-1/2 md:border-r" : "flex-1"
             )}
+            {...dropZoneProps}
           >
+            {isDragging && (
+              <div
+                className="pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-primary/50 bg-primary/5"
+                aria-hidden
+              >
+                <span className="material-symbols-outlined text-[32px] text-primary/60">
+                  upload_file
+                </span>
+                <span className="text-sm font-medium text-primary/70">Drop file to load</span>
+              </div>
+            )}
+            {fileDropError ? (
+              <p className="shrink-0 border-b border-red-200 bg-red-50 px-4 py-1.5 text-xs text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-400">
+                {fileDropError}
+              </p>
+            ) : null}
             <div className="flex items-center justify-between border-b border-border-light px-4 py-2 dark:border-border-dark">
               <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                 {fileName ?? "Markdown"}
@@ -391,7 +420,10 @@ function MarkdownEditorTool() {
             <textarea
               ref={editorRef}
               value={source}
-              onChange={(e) => setSource(e.target.value)}
+              onChange={(e) => {
+                setFileDropError(null);
+                setSource(e.target.value);
+              }}
               onScroll={viewMode === "split" ? handleEditorScroll : undefined}
               onKeyDown={handleKeyDown}
               placeholder="Start writing Markdown…"

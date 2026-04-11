@@ -3,6 +3,7 @@ import { callTool } from "../../bridge";
 import { CopyButton } from "../../components/tool";
 import { CodeBlock } from "../../components/ui/CodeBlock";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
+import { useFileDrop } from "../../hooks/useFileDrop";
 import type { YamlFormatInput } from "../../bindings/YamlFormatInput";
 import type { YamlFormatOutput } from "../../bindings/YamlFormatOutput";
 
@@ -16,6 +17,7 @@ export default function YamlFormatterTool() {
   useRestoreStringDraft(TOOL_ID, setInputValue);
   const [output, setOutput] = useState<YamlFormatOutput | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
+  const [fileDropError, setFileDropError] = useState<string | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const runFormat = useCallback(async (value: string) => {
@@ -49,10 +51,21 @@ export default function YamlFormatterTool() {
     };
   }, [inputValue, runFormat]);
 
+  const { isDragging, dropZoneProps } = useFileDrop({
+    onFile: (text, filename) => {
+      setFileDropError(null);
+      setFileName(filename);
+      setInputValue(text);
+      setDraft(text);
+    },
+    onError: (msg) => setFileDropError(msg),
+  });
+
   const handleFileUpload = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
       if (!file) return;
+      setFileDropError(null);
       setFileName(file.name);
       const reader = new FileReader();
       reader.onload = (ev) => {
@@ -82,13 +95,33 @@ export default function YamlFormatterTool() {
     setInputValue("");
     setDraft("");
     setFileName(null);
+    setFileDropError(null);
     setOutput(null);
   }, [setDraft]);
 
   return (
     <div className="flex h-full flex-col bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
       <div className="flex min-h-0 flex-1 flex-col md:flex-row">
-        <div className="flex min-w-0 flex-1 flex-col border-b border-border-light dark:border-border-dark md:border-b-0 md:border-r">
+        <div
+          className="relative flex min-w-0 flex-1 flex-col border-b border-border-light dark:border-border-dark md:border-b-0 md:border-r"
+          {...dropZoneProps}
+        >
+          {isDragging && (
+            <div
+              className="pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-primary/50 bg-primary/5"
+              aria-hidden
+            >
+              <span className="material-symbols-outlined text-[32px] text-primary/60">
+                upload_file
+              </span>
+              <span className="text-sm font-medium text-primary/70">Drop file to load</span>
+            </div>
+          )}
+          {fileDropError ? (
+            <p className="shrink-0 border-b border-red-200 bg-red-50 px-4 py-1.5 text-xs text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-400">
+              {fileDropError}
+            </p>
+          ) : null}
           <div className="flex items-center justify-between border-b border-border-light bg-panel-light px-4 py-2 dark:border-border-dark dark:bg-panel-dark min-h-[41px]">
             <div className="flex items-center gap-2">
               <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">{fileName ?? "INPUT"}</span>
@@ -104,6 +137,7 @@ export default function YamlFormatterTool() {
             value={inputValue}
             placeholder={`name: Alice\nage: 30\nskills:\n  - Rust\n  - TypeScript`}
             onChange={(e) => {
+              setFileDropError(null);
               setInputValue(e.target.value);
               setDraft(e.target.value);
             }}

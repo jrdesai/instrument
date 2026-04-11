@@ -9,6 +9,7 @@ import {
 import { CopyButton } from "../../components/tool";
 import { callTool } from "../../bridge";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
+import { useFileDrop } from "../../hooks/useFileDrop";
 import { useHistoryStore } from "../../store";
 import type { HashInput } from "../../bindings/HashInput";
 import type { HashOutput } from "../../bindings/HashOutput";
@@ -41,6 +42,7 @@ function HashTool() {
   const [hashEmpty, setHashEmpty] = useState(false);
   const [results, setResults] = useState<HashOutput["results"]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [fileDropError, setFileDropError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [fileName, setFileName] = useState<string | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -123,10 +125,21 @@ function HashTool() {
     };
   }, []);
 
+  const { isDragging, dropZoneProps } = useFileDrop({
+    onFile: (text, filename) => {
+      setFileDropError(null);
+      setFileName(filename);
+      setInput(text);
+      setDraft(text);
+    },
+    onError: (msg) => setFileDropError(msg),
+  });
+
   const handleFileUpload = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
       if (!file) return;
+      setFileDropError(null);
       setFileName(file.name);
       const reader = new FileReader();
       reader.onload = (ev) => {
@@ -146,6 +159,7 @@ function HashTool() {
     setInput("");
     setDraft("");
     setFileName(null);
+    setFileDropError(null);
     setHmacKey("");
     setResults([]);
     setError(null);
@@ -165,7 +179,24 @@ function HashTool() {
   return (
     <div className="flex flex-col h-full bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
       <div className="flex flex-col flex-1 min-h-0">
-        <div className="flex flex-wrap items-center justify-between gap-2 px-3 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark text-xs text-slate-500 dark:text-slate-400 shrink-0">
+        <div className="relative flex shrink-0 flex-col" {...dropZoneProps}>
+          {isDragging && (
+            <div
+              className="pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-primary/50 bg-primary/5"
+              aria-hidden
+            >
+              <span className="material-symbols-outlined text-[32px] text-primary/60">
+                upload_file
+              </span>
+              <span className="text-sm font-medium text-primary/70">Drop file to load</span>
+            </div>
+          )}
+          {fileDropError ? (
+            <p className="shrink-0 border-b border-red-200 bg-red-50 px-3 py-1.5 text-xs text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-400">
+              {fileDropError}
+            </p>
+          ) : null}
+          <div className="flex flex-wrap items-center justify-between gap-2 px-3 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark text-xs text-slate-500 dark:text-slate-400 shrink-0">
           <div className="flex min-w-0 flex-wrap items-center gap-2">
             <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
               {fileName ?? "Input"}
@@ -175,6 +206,7 @@ function HashTool() {
                 type="button"
                 onClick={() => {
                   setFileName(null);
+                  setFileDropError(null);
                   setInput("");
                   setDraft("");
                 }}
@@ -204,11 +236,13 @@ function HashTool() {
           placeholder="Enter text to hash…"
           value={input}
           onChange={(e) => {
+            setFileDropError(null);
             setInput(e.target.value);
             setDraft(e.target.value);
           }}
           spellCheck={false}
         />
+        </div>
 
         <div className="px-4 py-3 border-b border-border-light dark:border-border-dark space-y-2 shrink-0">
           <label className="flex flex-col gap-1 text-sm text-slate-700 dark:text-slate-300">

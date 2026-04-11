@@ -8,6 +8,7 @@ import React, {
 import { CopyButton, PillButton, ToolbarFooter } from "../../components/tool";
 import { callTool } from "../../bridge";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
+import { useFileDrop } from "../../hooks/useFileDrop";
 import { useHistoryStore } from "../../store";
 import type { Base64Input } from "../../bindings/Base64Input";
 import type { Base64Mode } from "../../bindings/Base64Mode";
@@ -27,6 +28,7 @@ function Base64Tool() {
   const [urlSafe, setUrlSafe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [fileDropError, setFileDropError] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
   const [leftPanelPercent, setLeftPanelPercent] = useState(50);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -99,10 +101,8 @@ function Base64Tool() {
     };
   }, []);
 
-  const handleFileUpload = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[0];
-      if (!file) return;
+  const applyUploadedFile = useCallback(
+    (file: File) => {
       setFileName(file.name);
       if (mode === "encode") {
         const reader = new FileReader();
@@ -126,9 +126,28 @@ function Base64Tool() {
         };
         reader.readAsText(file);
       }
-      e.target.value = "";
     },
     [mode, setDraft]
+  );
+
+  const { isDragging: isFileDragging, dropZoneProps } = useFileDrop({
+    onFileRaw: (file) => {
+      setFileDropError(null);
+      setError(null);
+      applyUploadedFile(file);
+    },
+    onError: (msg) => setFileDropError(msg),
+  });
+
+  const handleFileUpload = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      setFileDropError(null);
+      applyUploadedFile(file);
+      e.target.value = "";
+    },
+    [applyUploadedFile]
   );
 
   const handleBinaryDownload = useCallback(() => {
@@ -151,6 +170,7 @@ function Base64Tool() {
     setOutput(input);
     setMode(newMode);
     setFileName(null);
+    setFileDropError(null);
     runProcess(newInput, newMode, urlSafe);
   }, [input, output, mode, urlSafe, runProcess, setDraft]);
 
@@ -159,6 +179,7 @@ function Base64Tool() {
     setDraft("");
     setOutput("");
     setError(null);
+    setFileDropError(null);
     setFileName(null);
   }, [setDraft]);
 
@@ -193,9 +214,26 @@ function Base64Tool() {
       <div className="flex flex-1 min-h-0">
         {/* Input panel */}
         <div
-          className="flex flex-col border-r border-border-light dark:border-border-dark shrink-0"
+          className="relative flex flex-col border-r border-border-light dark:border-border-dark shrink-0"
           style={{ width: `${leftPanelPercent}%` }}
+          {...dropZoneProps}
         >
+          {isFileDragging && (
+            <div
+              className="pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-primary/50 bg-primary/5"
+              aria-hidden
+            >
+              <span className="material-symbols-outlined text-[32px] text-primary/60">
+                upload_file
+              </span>
+              <span className="text-sm font-medium text-primary/70">Drop file to load</span>
+            </div>
+          )}
+          {fileDropError ? (
+            <p className="shrink-0 border-b border-red-200 bg-red-50 px-3 py-1.5 text-xs text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-400">
+              {fileDropError}
+            </p>
+          ) : null}
           <div className="flex flex-wrap items-center justify-between gap-2 px-3 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark text-xs text-slate-500 dark:text-slate-400 shrink-0">
             <div className="flex min-w-0 flex-wrap items-center gap-2">
               <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
@@ -206,6 +244,7 @@ function Base64Tool() {
                   type="button"
                   onClick={() => {
                     setFileName(null);
+                    setFileDropError(null);
                     setInput("");
                     setDraft("");
                   }}
@@ -232,6 +271,7 @@ function Base64Tool() {
             value={input}
             onChange={(e) => {
               const v = e.target.value;
+              setFileDropError(null);
               setInput(v);
               setDraft(v);
             }}

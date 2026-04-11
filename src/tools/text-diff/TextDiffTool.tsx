@@ -8,6 +8,7 @@ import {
 import { CopyButton, ToolbarFooter } from "../../components/tool";
 import { callTool } from "../../bridge";
 import { useDraftInput, useRestoreDraft } from "../../hooks/useDraftInput";
+import { useFileDrop } from "../../hooks/useFileDrop";
 import { useHistoryStore } from "../../store";
 import type { AnnotatedLine } from "../../bindings/TextDiffAnnotatedLine";
 import type { DiffGranularity } from "../../bindings/DiffGranularity";
@@ -91,6 +92,8 @@ function TextDiffTool() {
   });
   const [output, setOutput] = useState<TextDiffOutput | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [leftFileDropError, setLeftFileDropError] = useState<string | null>(null);
+  const [rightFileDropError, setRightFileDropError] = useState<string | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const leftRef = useRef<HTMLDivElement>(null);
@@ -98,10 +101,31 @@ function TextDiffTool() {
   const isSyncing = useRef(false);
   const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
 
+  const { isDragging: isDraggingLeft, dropZoneProps: dropLeft } = useFileDrop({
+    onFile: (text, filename) => {
+      setLeftFileDropError(null);
+      setLeftFileName(filename);
+      setLeftInput(text);
+      setDraft({ left: text, right: rightInput });
+    },
+    onError: (m) => setLeftFileDropError(m),
+  });
+
+  const { isDragging: isDraggingRight, dropZoneProps: dropRight } = useFileDrop({
+    onFile: (text, filename) => {
+      setRightFileDropError(null);
+      setRightFileName(filename);
+      setRightInput(text);
+      setDraft({ left: leftInput, right: text });
+    },
+    onError: (m) => setRightFileDropError(m),
+  });
+
   const handleLeftUpload = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
       if (!file) return;
+      setLeftFileDropError(null);
       setLeftFileName(file.name);
       const reader = new FileReader();
       reader.onload = (ev) => {
@@ -121,6 +145,7 @@ function TextDiffTool() {
     (e: ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
       if (!file) return;
+      setRightFileDropError(null);
       setRightFileName(file.name);
       const reader = new FileReader();
       reader.onload = (ev) => {
@@ -234,6 +259,8 @@ function TextDiffTool() {
     setRightInput(newRight);
     setLeftFileName(newLeftName);
     setRightFileName(newRightName);
+    setLeftFileDropError(null);
+    setRightFileDropError(null);
     setDraft({ left: newLeft, right: newRight });
     runProcess(newLeft, newRight, granularity);
   }, [
@@ -251,6 +278,8 @@ function TextDiffTool() {
     setRightInput("");
     setLeftFileName(null);
     setRightFileName(null);
+    setLeftFileDropError(null);
+    setRightFileDropError(null);
     setDraft({ left: "", right: "" });
     setOutput(null);
     setError(null);
@@ -263,7 +292,26 @@ function TextDiffTool() {
   return (
     <div className="flex flex-col h-full bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
       <div className="flex flex-col md:flex-row shrink-0 border-b border-border-light dark:border-border-dark md:h-[35%]">
-        <div className="flex flex-col flex-1 min-w-0 border-b md:border-b-0 md:border-r border-border-light dark:border-border-dark">
+        <div
+          className="relative flex flex-col flex-1 min-w-0 border-b md:border-b-0 md:border-r border-border-light dark:border-border-dark"
+          {...dropLeft}
+        >
+          {isDraggingLeft && (
+            <div
+              className="pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-primary/50 bg-primary/5"
+              aria-hidden
+            >
+              <span className="material-symbols-outlined text-[32px] text-primary/60">
+                upload_file
+              </span>
+              <span className="text-sm font-medium text-primary/70">Drop file to load</span>
+            </div>
+          )}
+          {leftFileDropError ? (
+            <p className="shrink-0 border-b border-red-200 bg-red-50 px-4 py-1.5 text-xs text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-400">
+              {leftFileDropError}
+            </p>
+          ) : null}
           <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border-light bg-panel-light px-4 py-2 dark:border-border-dark dark:bg-panel-dark">
             <div className="flex min-w-0 flex-wrap items-center gap-2">
               <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
@@ -274,6 +322,7 @@ function TextDiffTool() {
                   type="button"
                   onClick={() => {
                     setLeftFileName(null);
+                    setLeftFileDropError(null);
                     setLeftInput("");
                     setDraft({ left: "", right: rightInput });
                   }}
@@ -302,12 +351,29 @@ function TextDiffTool() {
             value={leftInput}
             onChange={(e) => {
               const value = e.target.value;
+              setLeftFileDropError(null);
               setLeftInput(value);
               setDraft({ left: value, right: rightInput });
             }}
           />
         </div>
-        <div className="flex flex-col flex-1 min-w-0">
+        <div className="relative flex flex-col flex-1 min-w-0" {...dropRight}>
+          {isDraggingRight && (
+            <div
+              className="pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-primary/50 bg-primary/5"
+              aria-hidden
+            >
+              <span className="material-symbols-outlined text-[32px] text-primary/60">
+                upload_file
+              </span>
+              <span className="text-sm font-medium text-primary/70">Drop file to load</span>
+            </div>
+          )}
+          {rightFileDropError ? (
+            <p className="shrink-0 border-b border-red-200 bg-red-50 px-4 py-1.5 text-xs text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-400">
+              {rightFileDropError}
+            </p>
+          ) : null}
           <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border-light bg-panel-light px-4 py-2 dark:border-border-dark dark:bg-panel-dark">
             <div className="flex min-w-0 flex-wrap items-center gap-2">
               <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
@@ -318,6 +384,7 @@ function TextDiffTool() {
                   type="button"
                   onClick={() => {
                     setRightFileName(null);
+                    setRightFileDropError(null);
                     setRightInput("");
                     setDraft({ left: leftInput, right: "" });
                   }}
@@ -346,6 +413,7 @@ function TextDiffTool() {
             value={rightInput}
             onChange={(e) => {
               const value = e.target.value;
+              setRightFileDropError(null);
               setRightInput(value);
               setDraft({ left: leftInput, right: value });
             }}

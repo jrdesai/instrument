@@ -13,6 +13,7 @@ import {
 } from "../../components/tool";
 import { callTool } from "../../bridge";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
+import { useFileDrop } from "../../hooks/useFileDrop";
 import { useHistoryStore } from "../../store";
 import { CodeBlock } from "../../components/ui/CodeBlock";
 import type { IndentStyle } from "../../bindings/IndentStyle";
@@ -48,6 +49,7 @@ function JsonFormatterTool() {
   const [sortKeys, setSortKeys] = useState(false);
   const [output, setOutput] = useState<JsonFormatOutput | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
+  const [fileDropError, setFileDropError] = useState<string | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
@@ -128,10 +130,21 @@ function JsonFormatterTool() {
     };
   }, [inputValue, mode, indent, sortKeys, runProcess]);
 
+  const { isDragging, dropZoneProps } = useFileDrop({
+    onFile: (text, filename) => {
+      setFileDropError(null);
+      setFileName(filename);
+      setInputValue(text);
+      setDraft(text);
+    },
+    onError: (msg) => setFileDropError(msg),
+  });
+
   const handleFileUpload = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
       if (!file) return;
+      setFileDropError(null);
       setFileName(file.name);
       const reader = new FileReader();
       reader.onload = (ev) => {
@@ -161,6 +174,7 @@ function JsonFormatterTool() {
     setInputValue("");
     setDraft("");
     setFileName(null);
+    setFileDropError(null);
     setOutput(null);
   }, [setDraft]);
 
@@ -186,7 +200,26 @@ function JsonFormatterTool() {
     <div className="flex flex-col h-full bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
       <div className="flex flex-1 min-h-0 w-full">
         {/* Left panel — input */}
-        <div className="flex flex-col flex-1 min-w-0 border-r border-border-light dark:border-border-dark">
+        <div
+          className="relative flex flex-col flex-1 min-w-0 border-r border-border-light dark:border-border-dark"
+          {...dropZoneProps}
+        >
+          {isDragging && (
+            <div
+              className="pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-primary/50 bg-primary/5"
+              aria-hidden
+            >
+              <span className="material-symbols-outlined text-[32px] text-primary/60">
+                upload_file
+              </span>
+              <span className="text-sm font-medium text-primary/70">Drop file to load</span>
+            </div>
+          )}
+          {fileDropError ? (
+            <p className="shrink-0 border-b border-red-200 bg-red-50 px-4 py-1.5 text-xs text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-400">
+              {fileDropError}
+            </p>
+          ) : null}
           <PanelHeader
             label=""
             meta={
@@ -204,6 +237,7 @@ function JsonFormatterTool() {
                     type="button"
                     onClick={() => {
                       setFileName(null);
+                      setFileDropError(null);
                       setInputValue("");
                       setDraft("");
                     }}
@@ -231,6 +265,7 @@ function JsonFormatterTool() {
             value={inputValue}
             onChange={(e) => {
               const v = e.target.value;
+              setFileDropError(null);
               setInputValue(v);
               setDraft(v);
             }}
