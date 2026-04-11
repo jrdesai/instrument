@@ -3,6 +3,7 @@ import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { getToolById } from "../../registry";
 import { LogoMark } from "../LogoMark";
 import { OnboardingModal } from "../onboarding/OnboardingModal";
+import { PwaInstallBanner } from "../ui/PwaInstallBanner";
 import { SearchModal } from "../ui/SearchModal";
 
 const SIDEBAR_WIDTH = 48;
@@ -122,6 +123,7 @@ export function AppShell() {
         </header>
 
         <main className="flex min-h-0 flex-1 flex-col overflow-y-auto md:overflow-hidden">
+          <PwaInstallBanner />
           <Outlet />
         </main>
       </div>

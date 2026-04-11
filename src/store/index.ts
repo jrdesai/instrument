@@ -286,6 +286,8 @@ interface PreferenceState {
   clipboardAutoPaste: boolean;
   /** Desktop only: global ⌘⇧Space / Ctrl+Shift+Space opens the popover picker (default true). */
   globalHotkeyEnabled: boolean;
+  /** Web only: user dismissed the PWA install banner permanently. */
+  pwaInstallDismissed: boolean;
   setTheme: (theme: Theme) => void;
   setRole: (role: ActiveRole) => void;
   setWelcomeDismissed: (dismissed: boolean) => void;
@@ -294,6 +296,7 @@ interface PreferenceState {
   setShowTrayIcon: (show: boolean) => void;
   setClipboardAutoPaste: (enabled: boolean) => void;
   setGlobalHotkeyEnabled: (enabled: boolean) => void;
+  setPwaInstallDismissed: (dismissed: boolean) => void;
 }
 
 /**
@@ -310,6 +313,7 @@ const preferenceStoreImpl = persist(
     showTrayIcon: true,
     clipboardAutoPaste: true,
     globalHotkeyEnabled: true,
+    pwaInstallDismissed: false,
 
     setTheme: (theme) =>
       set((state) => {
@@ -350,6 +354,11 @@ const preferenceStoreImpl = persist(
       set((state) => {
         state.globalHotkeyEnabled = enabled;
       }),
+
+    setPwaInstallDismissed: (dismissed) =>
+      set((state) => {
+        state.pwaInstallDismissed = dismissed;
+      }),
   })),
   {
     name: "instrument-preferences",
@@ -369,6 +378,7 @@ const preferenceStoreImpl = persist(
         selectedRoles: Array.isArray(p.selectedRoles)
           ? (p.selectedRoles as Role[])
           : [],
+        pwaInstallDismissed: p.pwaInstallDismissed ?? false,
       };
     },
   }

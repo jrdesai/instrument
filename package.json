@@ -25,7 +25,8 @@
     "gen:types": "cargo run --manifest-path src-core/Cargo.toml -p instrument-core --bin export_types --features ts-export",
     "typecheck": "pnpm run gen:types && tsc --noEmit",
     "check:pure": "grep -r 'std::fs\\|tauri\\|tokio' src-core/instrument-core/src/ && echo 'PURITY VIOLATION' || echo 'instrument-core is pure'",
-    "gen:og-image": "node scripts/generate-og-image.mjs"
+    "gen:og-image": "node scripts/generate-og-image.mjs",
+    "gen:pwa-icons": "node scripts/generate-pwa-icons.mjs"
   },
   "dependencies": {
     "@tauri-apps/api": "^2",
@@ -64,6 +65,7 @@
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.56.1",
     "vite": "^7.0.4",
+    "vite-plugin-pwa": "^1.2.0",
     "vitest": "^4.0.18"
   }
 }

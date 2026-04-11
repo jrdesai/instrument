@@ -1,6 +1,7 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
+import { VitePWA } from "vite-plugin-pwa";
 import { readFileSync } from "fs";
 
 const pkg = JSON.parse(readFileSync("./package.json", "utf-8")) as { version: string };
@@ -9,8 +10,68 @@ const pkg = JSON.parse(readFileSync("./package.json", "utf-8")) as { version: st
 const host = process.env.TAURI_DEV_HOST;
 
 // https://vite.dev/config/
-export default defineConfig(async () => ({
-  plugins: [react(), tailwindcss()],
+export default defineConfig(async ({ command, mode }) => ({
+  plugins: [
+    react(),
+    tailwindcss(),
+    // PWA only for production web builds — never register a service worker in Tauri/desktop.
+    ...(mode === "web" && command === "build"
+      ? [
+          VitePWA({
+            registerType: "autoUpdate",
+            injectRegister: "auto",
+            manifest: {
+              name: "Instrument",
+              short_name: "Instrument",
+              description: "Privacy-first developer toolkit. All tools run locally.",
+              theme_color: "#306ee8",
+              background_color: "#1B1D21",
+              display: "standalone",
+              orientation: "portrait-primary",
+              scope: "/",
+              start_url: "/",
+              icons: [
+                {
+                  src: "/pwa-192.png",
+                  sizes: "192x192",
+                  type: "image/png",
+                },
+                {
+                  src: "/pwa-512.png",
+                  sizes: "512x512",
+                  type: "image/png",
+                },
+                {
+                  src: "/pwa-512.png",
+                  sizes: "512x512",
+                  type: "image/png",
+                  purpose: "maskable",
+                },
+              ],
+            },
+            workbox: {
+              // Material Symbols woff2 is ~3.5 MiB — above Workbox’s 2 MiB default precache cap.
+              maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
+              globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
+              globIgnores: ["**/wasm-pkg/**"],
+              runtimeCaching: [
+                {
+                  urlPattern: /\/wasm-pkg\/.*/,
+                  handler: "NetworkFirst",
+                  options: {
+                    cacheName: "wasm-cache",
+                    networkTimeoutSeconds: 10,
+                  },
+                },
+              ],
+              navigateFallback: "index.html",
+              navigateFallbackDenylist: [/^\/wasm-pkg\//],
+              cleanupOutdatedCaches: true,
+            },
+          }),
+        ]
+      : []),
+  ],
 
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
   //
