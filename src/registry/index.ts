@@ -76,7 +76,20 @@ export const tools: Tool[] = [
     icon: "data_array",
     platforms: ["desktop", "web"],
     rustCommand: "base64_process",
-    keywords: ["base64", "encode", "decode", "binary"],
+    keywords: [
+      "base64",
+      "encode",
+      "decode",
+      "binary",
+      "image",
+      "file",
+      "attachment",
+      "data uri",
+      "atob",
+      "btoa",
+      "encode string",
+      "decode string",
+    ],
     component: React.lazy(() =>
       import("../tools/base64").then((m) => ({ default: m.default }))
     ),
@@ -94,7 +107,19 @@ export const tools: Tool[] = [
     icon: "find_in_page",
     platforms: ["desktop", "web"],
     rustCommand: "tool_regex_test",
-    keywords: ["regex", "regular expression", "match", "pattern"],
+    keywords: [
+      "regex",
+      "regular expression",
+      "match",
+      "pattern",
+      "regexp",
+      "pattern matching",
+      "test regex",
+      "capture group",
+      "replace",
+      "find pattern",
+      "validate input",
+    ],
     component: React.lazy(
       () =>
         import("../tools/regex-tester") as Promise<{
@@ -137,7 +162,19 @@ export const tools: Tool[] = [
     icon: "link",
     platforms: ["desktop", "web"],
     rustCommand: "url_encode_process",
-    keywords: ["url", "encode", "decode", "percent"],
+    keywords: [
+      "url",
+      "encode",
+      "decode",
+      "percent",
+      "percent encoding",
+      "uri",
+      "escape",
+      "unescape",
+      "query string",
+      "encode url",
+      "decode url",
+    ],
     component: React.lazy(() =>
       import("../tools/url-encoder").then((m) => ({ default: m.default }))
     ),
@@ -155,7 +192,18 @@ export const tools: Tool[] = [
     icon: "html",
     platforms: ["desktop", "web"],
     rustCommand: "html_entity_process",
-    keywords: ["html", "entity", "encode", "decode"],
+    keywords: [
+      "html",
+      "entity",
+      "encode",
+      "decode",
+      "escape html",
+      "unescape html",
+      "ampersand",
+      "special characters",
+      "xss",
+      "sanitize",
+    ],
     component: React.lazy(() =>
       import("../tools/html-entity").then((m) => ({ default: m.default }))
     ),
@@ -173,7 +221,17 @@ export const tools: Tool[] = [
     icon: "calculate",
     platforms: ["desktop", "web"],
     rustCommand: "hex_process",
-    keywords: ["hex", "hexadecimal", "convert"],
+    keywords: [
+      "hex",
+      "hexadecimal",
+      "convert",
+      "bytes",
+      "ascii",
+      "text to hex",
+      "hex to text",
+      "binary",
+      "encoding",
+    ],
     component: React.lazy(() =>
       import("../tools/hex-converter").then((m) => ({ default: m.default }))
     ),
@@ -191,7 +249,25 @@ export const tools: Tool[] = [
     icon: "palette",
     platforms: ["desktop", "web"],
     rustCommand: "color_convert",
-    keywords: ["color", "colour", "hex", "rgb", "hsl", "hsb", "hsv", "css", "convert", "palette"],
+    keywords: [
+      "color",
+      "colour",
+      "hex",
+      "rgb",
+      "hsl",
+      "hsb",
+      "hsv",
+      "css",
+      "convert",
+      "palette",
+      "color picker",
+      "colour picker",
+      "color code",
+      "oklch",
+      "tailwind",
+      "design",
+      "rgba",
+    ],
     component: React.lazy(() =>
       import("../tools/color-converter").then((m) => ({ default: m.default }))
     ),
@@ -209,7 +285,19 @@ export const tools: Tool[] = [
     icon: "qr_code",
     platforms: ["desktop", "web"],
     rustCommand: "qr_generate",
-    keywords: ["qr", "qrcode", "barcode", "url", "encode", "scan"],
+    keywords: [
+      "qr",
+      "qrcode",
+      "barcode",
+      "url",
+      "encode",
+      "scan",
+      "qr generator",
+      "link",
+      "wifi",
+      "contact",
+      "share",
+    ],
     component: React.lazy(() =>
       import("../tools/qr-code").then((m) => ({ default: m.default }))
     ),
@@ -240,6 +328,12 @@ export const tools: Tool[] = [
       "hmac",
       "checksum",
       "digest",
+      "fingerprint",
+      "integrity",
+      "verify file",
+      "bcrypt",
+      "pbkdf2",
+      "hmac key",
     ],
     component: React.lazy(() =>
       import("../tools/hash/HashTool").then((m) => ({ default: m.default }))
@@ -260,7 +354,26 @@ export const tools: Tool[] = [
     platforms: ["desktop", "web"],
     rustCommand: "cert_decode",
     sensitive: true,
-    keywords: ["certificate", "x509", "pem", "tls", "ssl", "cert", "san"],
+    keywords: [
+      "certificate",
+      "x509",
+      "pem",
+      "tls",
+      "ssl",
+      "cert",
+      "san",
+      "certificate file",
+      "pem file",
+      ".pem",
+      ".crt",
+      ".cer",
+      "ssl certificate",
+      "tls certificate",
+      "x509 decode",
+      "inspect cert",
+      "expiry",
+      "expiration",
+    ],
     component: React.lazy(() =>
       import("../tools/cert-decoder").then((m) => ({ default: m.default }))
     ),
@@ -277,7 +390,7 @@ export const tools: Tool[] = [
     icon: "tag",
     platforms: ["desktop", "web"],
     rustCommand: "uuid_process",
-    keywords: ["uuid", "guid", "generate"],
+    keywords: ["uuid", "guid", "generate", "unique id", "v4", "v7", "random id", "identifier"],
     component: React.lazy(() =>
       import("../tools/uuid-generator").then((m) => ({ default: m.default }))
     ),
@@ -295,7 +408,7 @@ export const tools: Tool[] = [
     icon: "tag",
     platforms: ["desktop", "web"],
     rustCommand: "ulid_process",
-    keywords: ["ulid", "generate", "id"],
+    keywords: ["ulid", "generate", "id", "unique id", "sortable", "identifier", "time-based id"],
     component: React.lazy(() =>
       import("../tools/ulid-generator").then((m) => ({ default: m.default }))
     ),
@@ -314,7 +427,18 @@ export const tools: Tool[] = [
     icon: "tag",
     platforms: ["desktop", "web"],
     rustCommand: "nanoid_process",
-    keywords: ["nanoid", "nano", "id", "generate", "random"],
+    keywords: [
+      "nanoid",
+      "nano",
+      "id",
+      "generate",
+      "random",
+      "short id",
+      "unique id",
+      "url safe",
+      "identifier",
+      "compact",
+    ],
     component: React.lazy(() =>
       import("../tools/nano-id-generator").then((m) => ({ default: m.default }))
     ),
@@ -343,6 +467,14 @@ export const tools: Tool[] = [
       "auth",
       "hmac",
       "bearer",
+      "claims",
+      "payload",
+      "header",
+      "signature",
+      "inspect token",
+      "decode token",
+      "auth token",
+      "access token",
     ],
     component: React.lazy(() =>
       import("../tools/jwt/JwtTool").then((m) => ({ default: m.default }))
@@ -371,6 +503,11 @@ export const tools: Tool[] = [
       "base64",
       "username",
       "password",
+      "http auth",
+      "authorization header",
+      "encode credentials",
+      "decode credentials",
+      "username password",
     ],
     component: React.lazy(() =>
       import("../tools/basic-auth").then((m) => ({ default: m.default }))
@@ -388,7 +525,7 @@ export const tools: Tool[] = [
     icon: "key",
     platforms: ["desktop", "web"],
     rustCommand: "api_key_process",
-    keywords: ["api", "key", "generate", "secret"],
+    keywords: ["api", "key", "generate", "secret", "token", "random string", "generate token", "auth key"],
     component: React.lazy(() =>
       import("../tools/api-key-generator").then((m) => ({ default: m.default }))
     ),
@@ -408,7 +545,18 @@ export const tools: Tool[] = [
     platforms: ["desktop", "web"],
     rustCommand: "password_process",
     sensitive: false,
-    keywords: ["password", "generate", "random", "secure", "entropy", "strength"],
+    keywords: [
+      "password",
+      "generate",
+      "random",
+      "secure",
+      "entropy",
+      "strength",
+      "strong password",
+      "random password",
+      "passphrase",
+      "credentials",
+    ],
     component: React.lazy(() =>
       import("../tools/password-generator/PasswordGeneratorTool").then((m) => ({
         default: m.default,
@@ -437,6 +585,8 @@ export const tools: Tool[] = [
       "diceware",
       "memorable",
       "entropy",
+      "random words",
+      "mnemonic",
     ],
     component: React.lazy(() =>
       import("../tools/passphrase-generator/PassphraseGeneratorTool").then((m) => ({
@@ -467,6 +617,9 @@ export const tools: Tool[] = [
       "symmetric",
       "cipher",
       "secret",
+      "secret key",
+      "encrypt text",
+      "decrypt text",
     ],
     component: React.lazy(() =>
       import("../tools/aes-encrypt-decrypt/AesEncryptDecryptTool").then((m) => ({
@@ -498,6 +651,9 @@ export const tools: Tool[] = [
       "one-time",
       "password",
       "secret",
+      "two factor",
+      "one time password",
+      "google authenticator",
     ],
     trayPopover: true,
     component: React.lazy(() =>
@@ -518,7 +674,18 @@ export const tools: Tool[] = [
     icon: "data_object",
     platforms: ["desktop", "web"],
     rustCommand: "tool_json_format",
-    keywords: ["json", "format", "prettify", "minify"],
+    keywords: [
+      "json",
+      "format",
+      "prettify",
+      "minify",
+      "beautify",
+      "pretty print",
+      "json file",
+      "format json",
+      "indent json",
+      "compress json",
+    ],
     component: React.lazy(() =>
       import("../tools/json-formatter").then((m) => ({ default: m.default }))
     ),
@@ -536,7 +703,17 @@ export const tools: Tool[] = [
     icon: "check_circle",
     platforms: ["desktop", "web"],
     rustCommand: "tool_json_validate",
-    keywords: ["json", "validate", "schema"],
+    keywords: [
+      "json",
+      "validate",
+      "schema",
+      "validate json",
+      "check json",
+      "json error",
+      "json lint",
+      "invalid json",
+      "json syntax",
+    ],
     component: React.lazy(() =>
       import("../tools/json-validator").then((m) => ({ default: m.default }))
     ),
@@ -563,6 +740,12 @@ export const tools: Tool[] = [
       "draft",
       "draft7",
       "openapi",
+      "validate schema",
+      "json schema file",
+      "draft-07",
+      "openapi schema",
+      "ajv",
+      "validation errors",
     ],
     component: React.lazy(() =>
       import("../tools/json-schema-validator").then((m) => ({ default: m.default }))
@@ -580,7 +763,16 @@ export const tools: Tool[] = [
     icon: "difference",
     platforms: ["desktop", "web"],
     rustCommand: "tool_json_diff",
-    keywords: ["json", "diff", "compare"],
+    keywords: [
+      "json",
+      "diff",
+      "compare",
+      "compare json",
+      "json difference",
+      "json compare",
+      "diff objects",
+      "changed keys",
+    ],
     component: React.lazy(() =>
       import("../tools/json-diff").then((m) => ({ default: m.default }))
     ),
@@ -597,7 +789,17 @@ export const tools: Tool[] = [
     icon: "route",
     platforms: ["desktop", "web"],
     rustCommand: "tool_json_path",
-    keywords: ["json", "path", "query", "jq"],
+    keywords: [
+      "json",
+      "path",
+      "query",
+      "jq",
+      "query json",
+      "extract json",
+      "jsonpath",
+      "filter json",
+      "select fields",
+    ],
     component: React.lazy(() =>
       import("../tools/json-path").then((m) => ({ default: m.default }))
     ),
@@ -615,7 +817,21 @@ export const tools: Tool[] = [
     icon: "compare_arrows",
     platforms: ["desktop", "web"],
     rustCommand: "tool_json_convert",
-    keywords: ["json", "yaml", "typescript", "csv", "xml", "convert", "transform"],
+    keywords: [
+      "json",
+      "yaml",
+      "typescript",
+      "csv",
+      "xml",
+      "convert",
+      "transform",
+      "json to yaml",
+      "json to csv",
+      "json to xml",
+      "json to typescript",
+      "convert json",
+      "export json",
+    ],
     component: React.lazy(() =>
       import("../tools/json-converter").then((m) => ({ default: m.default }))
     ),
@@ -634,7 +850,19 @@ export const tools: Tool[] = [
     platforms: ["desktop", "web"],
     rustCommand: "tool_config_convert",
     sensitive: false,
-    keywords: ["json", "yaml", "toml", "convert", "config", "cargo"],
+    keywords: [
+      "json",
+      "yaml",
+      "toml",
+      "convert",
+      "config",
+      "cargo",
+      "convert config",
+      "json to toml",
+      "yaml to json",
+      "toml to json",
+      "config file",
+    ],
     component: React.lazy(
       () =>
         import("../tools/config-converter/ConfigConverterTool") as Promise<{
@@ -654,7 +882,23 @@ export const tools: Tool[] = [
     icon: "table_chart",
     platforms: ["desktop", "web"],
     rustCommand: "tool_csv_to_json",
-    keywords: ["csv", "json", "convert", "table", "json-to-csv", "bidirectional"],
+    keywords: [
+      "csv",
+      "json",
+      "convert",
+      "table",
+      "json-to-csv",
+      "bidirectional",
+      "csv file",
+      ".csv",
+      "spreadsheet",
+      "excel",
+      "import csv",
+      "convert csv",
+      "tsv",
+      "json to csv",
+      "export csv",
+    ],
     component: React.lazy(() =>
       import("../tools/csv-to-json/CsvToJsonTool").then((m) => ({
         default: m.default,
@@ -674,7 +918,22 @@ export const tools: Tool[] = [
     icon: "code",
     platforms: ["desktop", "web"],
     rustCommand: "tool_xml_format",
-    keywords: ["xml", "format", "pretty", "indent", "validate", "markup"],
+    keywords: [
+      "xml",
+      "format",
+      "pretty",
+      "indent",
+      "validate",
+      "markup",
+      "xml file",
+      ".xml",
+      "prettify xml",
+      "beautify xml",
+      "soap",
+      "rss",
+      "sitemap",
+      "format xml",
+    ],
     trayPopover: false,
     component: React.lazy(() =>
       import("../tools/xml-formatter/XmlFormatterTool").then((m) => ({
@@ -694,7 +953,23 @@ export const tools: Tool[] = [
     icon: "code",
     platforms: ["desktop", "web"],
     rustCommand: "tool_yaml_format",
-    keywords: ["yaml", "format", "pretty", "validate", "yml", "config"],
+    keywords: [
+      "yaml",
+      "format",
+      "pretty",
+      "validate",
+      "yml",
+      "config",
+      "yaml file",
+      ".yaml",
+      ".yml",
+      "prettify yaml",
+      "format yaml",
+      "docker compose",
+      "kubernetes",
+      "k8s",
+      "ansible",
+    ],
     trayPopover: false,
     component: React.lazy(() =>
       import("../tools/yaml-formatter/YamlFormatterTool").then((m) => ({
@@ -714,7 +989,22 @@ export const tools: Tool[] = [
     icon: "link",
     platforms: ["desktop", "web"],
     rustCommand: "tool_url_parse",
-    keywords: ["url", "parse", "query", "host", "path", "fragment"],
+    keywords: [
+      "url",
+      "parse",
+      "query",
+      "host",
+      "path",
+      "fragment",
+      "parse url",
+      "url components",
+      "query params",
+      "hostname",
+      "pathname",
+      "protocol",
+      "inspect url",
+      "url breakdown",
+    ],
     component: React.lazy(() =>
       import("../tools/url-parser/UrlParserTool").then((m) => ({
         default: m.default,
@@ -744,6 +1034,12 @@ export const tools: Tool[] = [
       "broadcast",
       "ipv4",
       "ipv6",
+      "network mask",
+      "ip range",
+      "subnetting",
+      "network address",
+      "/24",
+      "vpc",
     ],
     component: React.lazy(() =>
       import("../tools/cidr-calculator").then((m) => ({ default: m.default }))
@@ -789,6 +1085,10 @@ export const tools: Tool[] = [
       "bad request",
       "conflict",
       "server error",
+      "status code lookup",
+      "http error",
+      "rest api",
+      "response code",
     ],
     component: React.lazy(() =>
       import("../tools/http-status-codes").then((m) => ({ default: m.default }))
@@ -809,7 +1109,23 @@ export const tools: Tool[] = [
     platforms: ["desktop", "web"],
     rustCommand: "env_parse",
     sensitive: true,
-    keywords: ["env", "dotenv", "properties", "ini", "config", "environment", "variables", "parse"],
+    keywords: [
+      "env",
+      "dotenv",
+      "properties",
+      "ini",
+      "config",
+      "environment",
+      "variables",
+      "parse",
+      ".env file",
+      "environment variables",
+      "env file",
+      ".properties",
+      ".ini",
+      "config file",
+      "parse env",
+    ],
     component: React.lazy(() =>
       import("../tools/env-parser").then((m) => ({ default: m.default }))
     ),
@@ -826,7 +1142,20 @@ export const tools: Tool[] = [
     icon: "sort",
     platforms: ["desktop", "web"],
     rustCommand: "line_tools_process",
-    keywords: ["sort", "deduplicate", "reverse", "lines", "trim", "clean", "text"],
+    keywords: [
+      "sort",
+      "deduplicate",
+      "reverse",
+      "lines",
+      "trim",
+      "clean",
+      "text",
+      "sort lines",
+      "dedupe",
+      "remove duplicates",
+      "unique lines",
+      "sort text",
+    ],
     component: React.lazy(() =>
       import("../tools/line-tools").then((m) => ({ default: m.default }))
     ),
@@ -843,7 +1172,23 @@ export const tools: Tool[] = [
     icon: "text_fields",
     platforms: ["desktop", "web"],
     rustCommand: "case_process",
-    keywords: ["text", "case", "camel", "snake", "lower", "upper"],
+    keywords: [
+      "text",
+      "case",
+      "camel",
+      "snake",
+      "lower",
+      "upper",
+      "camelcase",
+      "snake_case",
+      "kebab-case",
+      "pascalcase",
+      "uppercase",
+      "lowercase",
+      "title case",
+      "rename",
+      "variable name",
+    ],
     component: React.lazy(() =>
       import("../tools/text-case-converter").then((m) => ({ default: m.default }))
     ),
@@ -861,7 +1206,18 @@ export const tools: Tool[] = [
     icon: "sort_by_alpha",
     platforms: ["desktop", "web"],
     rustCommand: "word_counter_process",
-    keywords: ["word", "count", "character", "line"],
+    keywords: [
+      "word",
+      "count",
+      "character",
+      "line",
+      "character count",
+      "letter count",
+      "reading time",
+      "text stats",
+      "count words",
+      "text length",
+    ],
     component: React.lazy(() =>
       import("../tools/word-counter").then((m) => ({ default: m.default }))
     ),
@@ -887,6 +1243,12 @@ export const tools: Tool[] = [
       "utf8",
       "inspect",
       "hex",
+      "character info",
+      "utf-8",
+      "emoji",
+      "inspect character",
+      "unicode lookup",
+      "character encoding",
     ],
     component: React.lazy(() =>
       import("../tools/unicode-inspector").then((m) => ({ default: m.default }))
@@ -904,7 +1266,19 @@ export const tools: Tool[] = [
     icon: "link",
     platforms: ["desktop", "web"],
     rustCommand: "tool_slug_generate",
-    keywords: ["slug", "url", "kebab", "path", "seo", "permalink"],
+    keywords: [
+      "slug",
+      "url",
+      "kebab",
+      "path",
+      "seo",
+      "permalink",
+      "url slug",
+      "seo url",
+      "url friendly",
+      "sanitize url",
+      "title to url",
+    ],
     component: React.lazy(() =>
       import("../tools/slug-generator").then((m) => ({ default: m.default }))
     ),
@@ -922,7 +1296,17 @@ export const tools: Tool[] = [
     icon: "keyboard",
     platforms: ["desktop", "web"],
     rustCommand: "string_escaper_process",
-    keywords: ["string", "escape", "unescape", "json"],
+    keywords: [
+      "string",
+      "escape",
+      "unescape",
+      "json",
+      "escape string",
+      "backslash",
+      "quotes",
+      "json escape",
+      "regex escape",
+    ],
     component: React.lazy(() =>
       import("../tools/string-escaper").then((m) => ({ default: m.default }))
     ),
@@ -940,7 +1324,17 @@ export const tools: Tool[] = [
     icon: "find_replace",
     platforms: ["desktop", "web"],
     rustCommand: "find_replace_process",
-    keywords: ["find", "replace", "regex", "search"],
+    keywords: [
+      "find",
+      "replace",
+      "regex",
+      "search",
+      "search replace",
+      "bulk replace",
+      "text substitution",
+      "replace all",
+      "regex replace",
+    ],
     component: React.lazy(() =>
       import("../tools/find-replace").then((m) => ({ default: m.default }))
     ),
@@ -957,7 +1351,18 @@ export const tools: Tool[] = [
     icon: "difference",
     platforms: ["desktop", "web"],
     rustCommand: "text_diff_process",
-    keywords: ["text", "diff", "compare", "difference", "lines"],
+    keywords: [
+      "text",
+      "diff",
+      "compare",
+      "difference",
+      "lines",
+      "compare text",
+      "diff text",
+      "text compare",
+      "find changes",
+      "before after",
+    ],
     component: React.lazy(() =>
       import("../tools/text-diff").then((m) => ({ default: m.default }))
     ),
@@ -974,7 +1379,18 @@ export const tools: Tool[] = [
     icon: "format_quote",
     platforms: ["desktop", "web"],
     rustCommand: "lorem_ipsum_process",
-    keywords: ["lorem", "ipsum", "placeholder", "dummy", "text"],
+    keywords: [
+      "lorem",
+      "ipsum",
+      "placeholder",
+      "dummy",
+      "text",
+      "placeholder text",
+      "dummy text",
+      "filler text",
+      "sample text",
+      "mockup",
+    ],
     component: React.lazy(() =>
       import("../tools/lorem-ipsum").then((m) => ({ default: m.default }))
     ),
@@ -1000,6 +1416,12 @@ export const tools: Tool[] = [
       "write",
       "format",
       "render",
+      "md file",
+      ".md",
+      "render markdown",
+      "markdown preview",
+      "github markdown",
+      "readme",
     ],
     component: React.lazy(() =>
       import("../tools/markdown-editor").then((m) => ({ default: m.default }))
@@ -1017,7 +1439,20 @@ export const tools: Tool[] = [
     icon: "schedule",
     platforms: ["desktop", "web"],
     rustCommand: "timestamp_process",
-    keywords: ["timestamp", "unix", "date", "time"],
+    keywords: [
+      "timestamp",
+      "unix",
+      "date",
+      "time",
+      "unix time",
+      "epoch",
+      "milliseconds",
+      "date convert",
+      "utc",
+      "unix epoch",
+      "date to timestamp",
+      "timestamp to date",
+    ],
     component: React.lazy(() =>
       import("../tools/timestamp-converter").then((m) => ({ default: m.default }))
     ),
@@ -1035,7 +1470,18 @@ export const tools: Tool[] = [
     icon: "public",
     platforms: ["desktop", "web"],
     rustCommand: "timezone_process",
-    keywords: ["timezone", "tz", "convert", "utc"],
+    keywords: [
+      "timezone",
+      "tz",
+      "convert",
+      "utc",
+      "time zone",
+      "utc offset",
+      "convert time",
+      "dst",
+      "meeting time",
+      "world clock",
+    ],
     component: React.lazy(() =>
       import("../tools/timezone-converter").then((m) => ({ default: m.default }))
     ),
@@ -1053,7 +1499,18 @@ export const tools: Tool[] = [
     icon: "event",
     platforms: ["desktop", "web"],
     rustCommand: "iso8601_process",
-    keywords: ["iso8601", "iso", "date", "format"],
+    keywords: [
+      "iso8601",
+      "iso",
+      "date",
+      "format",
+      "date format",
+      "iso date",
+      "datetime",
+      "date string",
+      "rfc3339",
+      "date parse",
+    ],
     component: React.lazy(() =>
       import("../tools/iso8601-formatter").then((m) => ({ default: m.default }))
     ),
@@ -1071,7 +1528,19 @@ export const tools: Tool[] = [
     icon: "update",
     platforms: ["desktop", "web"],
     rustCommand: "cron_process",
-    keywords: ["cron", "schedule", "expression", "job", "interval", "timer"],
+    keywords: [
+      "cron",
+      "schedule",
+      "expression",
+      "job",
+      "interval",
+      "timer",
+      "cron job",
+      "cron syntax",
+      "next run",
+      "scheduled task",
+      "crontab",
+    ],
     component: React.lazy(() =>
       import("../tools/cron-parser/CronParserTool").then((m) => ({
         default: m.default,
@@ -1090,7 +1559,19 @@ export const tools: Tool[] = [
     icon: "numbers",
     platforms: ["desktop", "web"],
     rustCommand: "base_converter_process",
-    keywords: ["number", "base", "hex", "binary", "decimal"],
+    keywords: [
+      "number",
+      "base",
+      "hex",
+      "binary",
+      "decimal",
+      "octal",
+      "hexadecimal",
+      "number system",
+      "convert number",
+      "base 2",
+      "base 16",
+    ],
     component: React.lazy(() =>
       import("../tools/number-base-converter").then((m) => ({ default: m.default }))
     ),
@@ -1109,7 +1590,21 @@ export const tools: Tool[] = [
     icon: "account_tree",
     platforms: ["desktop", "web"],
     rustCommand: "semver_process",
-    keywords: ["semver", "version", "semantic", "npm", "cargo", "release", "bump"],
+    keywords: [
+      "semver",
+      "version",
+      "semantic",
+      "npm",
+      "cargo",
+      "release",
+      "bump",
+      "semantic version",
+      "version bump",
+      "major minor patch",
+      "npm version",
+      "package version",
+      "version compare",
+    ],
     component: React.lazy(() =>
       import("../tools/semver").then((m) => ({ default: m.default }))
     ),
@@ -1147,6 +1642,11 @@ export const tools: Tool[] = [
       "frequency",
       "hertz",
       "megahertz",
+      "convert units",
+      "mb to gb",
+      "celsius fahrenheit",
+      "km miles",
+      "data size",
     ],
     component: React.lazy(() =>
       import("../tools/unit-converter").then((m) => ({ default: m.default }))
@@ -1165,7 +1665,17 @@ export const tools: Tool[] = [
     icon: "memory",
     platforms: ["desktop", "web"],
     rustCommand: "bitwise_process",
-    keywords: ["bitwise", "and", "or", "xor", "shift"],
+    keywords: [
+      "bitwise",
+      "and",
+      "or",
+      "xor",
+      "shift",
+      "bit operations",
+      "binary math",
+      "bitmask",
+      "flags",
+    ],
     component: React.lazy(() =>
       import("../tools/bitwise-calculator").then((m) => ({ default: m.default }))
     ),
@@ -1192,6 +1702,12 @@ export const tools: Tool[] = [
       "octal",
       "symbolic",
       "rwx",
+      "file permissions",
+      "unix permissions",
+      "linux permissions",
+      "octal permissions",
+      "755",
+      "644",
     ],
     component: React.lazy(
       () =>
@@ -1212,7 +1728,16 @@ export const tools: Tool[] = [
     icon: "calculate",
     platforms: ["desktop", "web"],
     rustCommand: "tool_expression_eval",
-    keywords: ["expression", "eval", "calculator"],
+    keywords: [
+      "expression",
+      "eval",
+      "calculator",
+      "calculate",
+      "math",
+      "formula",
+      "arithmetic",
+      "compute",
+    ],
     component: React.lazy(() =>
       import("../tools/expression-evaluator").then((m) => ({
         default: m.default,
@@ -1239,6 +1764,12 @@ export const tools: Tool[] = [
       "html",
       "css",
       "markdown",
+      "format code",
+      "beautify code",
+      "indent",
+      "css format",
+      "html format",
+      "markdown format",
     ],
     component: React.lazy(() =>
       import("../tools/code-formatter/CodeFormatterTool").then((m) => ({
@@ -1258,7 +1789,20 @@ export const tools: Tool[] = [
     icon: "storage",
     platforms: ["desktop", "web"],
     rustCommand: "tool_sql_format",
-    keywords: ["sql", "format", "beautify", "query"],
+    keywords: [
+      "sql",
+      "format",
+      "beautify",
+      "query",
+      "prettify sql",
+      "beautify sql",
+      "format query",
+      "sql file",
+      "sql indent",
+      "mysql",
+      "postgres",
+      "sqlite",
+    ],
     component: React.lazy(() =>
       import("../tools/sql-formatter/SqlFormatterTool").then((m) => ({
         default: m.default,
