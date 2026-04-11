@@ -65,6 +65,7 @@
     "allow-line-tools",
     "allow-cert-decoder",
     "allow-cidr-calculator",
+    "allow-ua-parse",
     "allow-env-parser",
     "allow-qr-code",
     "allow-update-tray-menu",
