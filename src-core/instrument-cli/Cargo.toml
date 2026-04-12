@@ -1,0 +1,18 @@
+[package]
+name = "instrument-cli"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+description = "Command-line interface for Instrument developer tools"
+
+[[bin]]
+name = "instrument"
+path = "src/main.rs"
+
+[dependencies]
+instrument-core = { path = "../instrument-core", features = ["full"] }
+clap = { version = "4", features = ["derive", "color", "wrap_help"] }
+serde_json = { workspace = true }
+
+[dev-dependencies]
+serde_json = { workspace = true }

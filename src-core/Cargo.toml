@@ -4,6 +4,7 @@ members = [
     "instrument-core",
     "instrument-desktop",
     "instrument-web",
+    "instrument-cli",
     "regex-core",
 ]
 
