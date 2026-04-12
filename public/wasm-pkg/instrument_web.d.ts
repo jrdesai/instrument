@@ -62,6 +62,11 @@ export function cron_process(js_input: any): any;
 export function env_parse(js_input: any): any;
 
 /**
+ * Fake data generator. Receives FakeDataInput and returns FakeDataOutput.
+ */
+export function fake_data_process(js_input: any): any;
+
+/**
  * Find & replace. Receives FindReplaceInput (camelCase) and returns FindReplaceOutput (camelCase).
  */
 export function find_replace_process(js_input: any): any;
@@ -307,6 +312,7 @@ export interface InitOutput {
     readonly color_convert: (a: any) => [number, number, number];
     readonly cron_process: (a: any) => [number, number, number];
     readonly env_parse: (a: any) => [number, number, number];
+    readonly fake_data_process: (a: any) => [number, number, number];
     readonly find_replace_process: (a: any) => [number, number, number];
     readonly hash_process: (a: any) => [number, number, number];
     readonly hex_process: (a: any) => [number, number, number];

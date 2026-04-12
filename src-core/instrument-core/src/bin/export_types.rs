@@ -170,6 +170,9 @@ fn main() {
     instrument_core::text::unicode::UnicodeInspectOutput::export_all_to(&out).unwrap();
     instrument_core::text::word_counter::WordCounterInput::export_all_to(&out).unwrap();
     instrument_core::text::word_counter::WordCounterOutput::export_all_to(&out).unwrap();
+    instrument_core::text::fake_data::FakeField::export_all_to(&out).unwrap();
+    instrument_core::text::fake_data::FakeDataInput::export_all_to(&out).unwrap();
+    instrument_core::text::fake_data::FakeDataOutput::export_all_to(&out).unwrap();
     instrument_core::xml::XmlFormatInput::export_all_to(&out).unwrap();
     instrument_core::xml::XmlFormatOutput::export_all_to(&out).unwrap();
     instrument_core::yaml_fmt::YamlFormatInput::export_all_to(&out).unwrap();

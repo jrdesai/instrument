@@ -109,6 +109,12 @@ async wordCounterProcess(input: WordCounterInput) : Promise<WordCounterOutput> {
     return await TAURI_INVOKE("word_counter_process", { input });
 },
 /**
+ * Generates fake records from a field schema via instrument-core.
+ */
+async fakeDataProcess(input: FakeDataInput) : Promise<FakeDataOutput> {
+    return await TAURI_INVOKE("fake_data_process", { input });
+},
+/**
  * Runs Unicode character inspection via instrument-core.
  */
 async toolUnicodeInspect(input: UnicodeInspectInput) : Promise<UnicodeInspectOutput> {
@@ -1827,6 +1833,10 @@ export type WordCounterInput = { text: string }
  * Output for the Word Counter tool: all stats in one struct.
  */
 export type WordCounterOutput = { words: number; charactersWithSpaces: number; charactersWithoutSpaces: number; lines: number; sentences: number; paragraphs: number; uniqueWords: number; avgWordLength: number; readingTimeSeconds: number; error: string | null }
+/** One field in the fake data schema (camelCase matches serde). */
+export type FakeField = { name: string; fieldType: string; params: Record<string, unknown> | null }
+export type FakeDataInput = { fields: FakeField[]; count: number }
+export type FakeDataOutput = { json: string; error: string | null }
 export type XmlFormatInput = { 
 /**
  * Raw XML text to format.

@@ -1,4 +1,5 @@
 pub mod case;
+pub mod fake_data;
 pub mod diff;
 pub mod env_parser;
 pub mod find_replace;

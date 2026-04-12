@@ -61,6 +61,7 @@ qrcode = "0.14"
 semver = "1"
 totp-rs = { version = "5", features = ["gen_secret", "otpauth"] }
 ts-rs = { version = "10", features = ["serde-compat"] }
-specta = { version = "=2.0.0-rc.22", features = ["derive", "function"] }
+specta = { version = "=2.0.0-rc.22", features = ["derive", "function", "serde_json"] }
 unicode_names2 = "1"
 deunicode = "1"
+fake = { version = "2", features = ["chrono", "random_color"] }

@@ -13,6 +13,7 @@ export const cidr_calculate: (a: any) => [number, number, number];
 export const color_convert: (a: any) => [number, number, number];
 export const cron_process: (a: any) => [number, number, number];
 export const env_parse: (a: any) => [number, number, number];
+export const fake_data_process: (a: any) => [number, number, number];
 export const find_replace_process: (a: any) => [number, number, number];
 export const hash_process: (a: any) => [number, number, number];
 export const hex_process: (a: any) => [number, number, number];

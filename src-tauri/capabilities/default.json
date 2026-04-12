@@ -25,6 +25,7 @@
     "allow-totp",
     "allow-text-case",
     "allow-word-counter",
+    "allow-fake-data",
     "allow-unicode-inspector",
     "allow-slug-generator",
     "allow-string-escaper",

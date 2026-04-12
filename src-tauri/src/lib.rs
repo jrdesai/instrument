@@ -53,6 +53,7 @@ pub fn run() {
         instrument_desktop::commands::text::lorem_ipsum_process,
         instrument_desktop::commands::text::text_diff_process,
         instrument_desktop::commands::text::line_tools_process,
+        instrument_desktop::commands::text::fake_data_process,
         instrument_desktop::commands::text::env_parse,
         instrument_desktop::commands::datetime::timestamp_process,
         instrument_desktop::commands::datetime::timezone_process,

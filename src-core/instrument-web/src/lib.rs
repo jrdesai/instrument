@@ -122,6 +122,9 @@ use instrument_core::text::unicode::{
 use instrument_core::text::word_counter::{
     process as word_counter_process_core, WordCounterInput, WordCounterOutput,
 };
+use instrument_core::text::fake_data::{
+    process as fake_data_process_core, FakeDataInput, FakeDataOutput,
+};
 use instrument_core::xml::{process as xml_format_process_core, XmlFormatInput, XmlFormatOutput};
 use instrument_core::yaml_fmt::{
     process as yaml_format_process_core, YamlFormatInput, YamlFormatOutput,
@@ -547,6 +550,14 @@ pub fn word_counter_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> 
     let input: WordCounterInput =
         from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
     let output: WordCounterOutput = word_counter_process_core(input);
+    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
+}
+
+/// Fake data generator. Receives FakeDataInput and returns FakeDataOutput.
+#[wasm_bindgen(js_name = fake_data_process)]
+pub fn fake_data_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
+    let input: FakeDataInput = from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let output: FakeDataOutput = fake_data_process_core(input);
     to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
 }
 

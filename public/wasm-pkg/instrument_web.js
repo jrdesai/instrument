@@ -157,6 +157,19 @@ export function env_parse(js_input) {
 }
 
 /**
+ * Fake data generator. Receives FakeDataInput and returns FakeDataOutput.
+ * @param {any} js_input
+ * @returns {any}
+ */
+export function fake_data_process(js_input) {
+    const ret = wasm.fake_data_process(js_input);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
  * Find & replace. Receives FindReplaceInput (camelCase) and returns FindReplaceOutput (camelCase).
  * @param {any} js_input
  * @returns {any}
@@ -893,6 +906,16 @@ function __wbg_get_imports() {
             let result;
             try {
                 result = arg0 instanceof ArrayBuffer;
+            } catch (_) {
+                result = false;
+            }
+            const ret = result;
+            return ret;
+        },
+        __wbg_instanceof_Map_f194b366846aca0c: function(arg0) {
+            let result;
+            try {
+                result = arg0 instanceof Map;
             } catch (_) {
                 result = false;
             }

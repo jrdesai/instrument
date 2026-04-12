@@ -12,6 +12,9 @@ use instrument_core::text::diff::{
 use instrument_core::text::env_parser::{
     process as env_parse_process_core, EnvParseInput, EnvParseOutput,
 };
+use instrument_core::text::fake_data::{
+    process as fake_data_process_core, FakeDataInput, FakeDataOutput,
+};
 use instrument_core::text::line_tools::{
     process as line_tools_process_core, LineToolsInput, LineToolsOutput,
 };
@@ -128,5 +131,15 @@ pub fn tool_slug_generate(input: SlugInput) -> SlugOutput {
     let start = Instant::now();
     let output = slug_generate_core(input);
     finish_ok("tool_slug_generate", start);
+    output
+}
+
+/// Generates fake records from a field schema (JSON output).
+#[tauri::command]
+#[specta::specta]
+pub fn fake_data_process(input: FakeDataInput) -> FakeDataOutput {
+    let start = Instant::now();
+    let output = fake_data_process_core(input);
+    finish_ok("fake_data_process", start);
     output
 }

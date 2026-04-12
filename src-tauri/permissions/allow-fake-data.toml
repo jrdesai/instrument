@@ -1,0 +1,5 @@
+# Allow the Fake Data Generator tool command to be invoked from the frontend.
+[[permission]]
+identifier = "allow-fake-data"
+description = "Enables the fake_data_process command."
+commands.allow = ["fake_data_process"]
