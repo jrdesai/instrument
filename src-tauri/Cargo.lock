@@ -1286,6 +1286,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "fake"
+version = "2.10.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2d391ba4af7f1d93f01fcf7b2f29e2bc9348e109dfdbf4dcbdc51dfa38dab0b6"
+dependencies = [
+ "chrono",
+ "deunicode",
+ "rand 0.8.5",
+ "random_color",
+]
+
+[[package]]
 name = "fancy-regex"
 version = "0.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2300,6 +2312,7 @@ dependencies = [
  "csv",
  "deunicode",
  "digest",
+ "fake",
  "hex",
  "hmac",
  "ipnetwork",
@@ -3936,6 +3949,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "random_color"
+version = "0.8.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0085421bc527effa7ed6d46bac0a28734663c47abe03d80a5e78e441fad85196"
+dependencies = [
+ "rand 0.8.5",
+]
+
+[[package]]
 name = "raw-window-handle"
 version = "0.6.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4594,6 +4616,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ab7f01e9310a820edd31c80fde3cae445295adde21a3f9416517d7d65015b971"
 dependencies = [
  "paste",
+ "serde_json",
  "specta-macros",
  "thiserror 1.0.69",
 ]

@@ -109,12 +109,6 @@ async wordCounterProcess(input: WordCounterInput) : Promise<WordCounterOutput> {
     return await TAURI_INVOKE("word_counter_process", { input });
 },
 /**
- * Generates fake records from a field schema via instrument-core.
- */
-async fakeDataProcess(input: FakeDataInput) : Promise<FakeDataOutput> {
-    return await TAURI_INVOKE("fake_data_process", { input });
-},
-/**
  * Runs Unicode character inspection via instrument-core.
  */
 async toolUnicodeInspect(input: UnicodeInspectInput) : Promise<UnicodeInspectOutput> {
@@ -155,6 +149,12 @@ async textDiffProcess(input: TextDiffInput) : Promise<TextDiffOutput> {
  */
 async lineToolsProcess(input: LineToolsInput) : Promise<LineToolsOutput> {
     return await TAURI_INVOKE("line_tools_process", { input });
+},
+/**
+ * Generates fake records from a field schema (JSON output).
+ */
+async fakeDataProcess(input: FakeDataInput) : Promise<FakeDataOutput> {
+    return await TAURI_INVOKE("fake_data_process", { input });
 },
 /**
  * Parses and validates .env content via instrument-core.
@@ -770,6 +770,32 @@ success: boolean;
  * Human-readable error if evaluation failed.
  */
 error: string | null }
+export type FakeDataInput = { fields: FakeField[]; 
+/**
+ * Number of records to generate (capped at 500).
+ */
+count: number }
+export type FakeDataOutput = { 
+/**
+ * Pretty-printed JSON array of generated records.
+ */
+json: string; error: string | null }
+/**
+ * One field definition in the schema.
+ */
+export type FakeField = { 
+/**
+ * The key name in the output JSON object.
+ */
+name: string; 
+/**
+ * The data type identifier (e.g. "email", "city", "uuid").
+ */
+fieldType: string; 
+/**
+ * Optional parameters for parameterised types.
+ */
+params: JsonValue | null }
 /**
  * Input for the Find & Replace tool.
  */
@@ -1113,6 +1139,7 @@ value: string }
  * Output from the JSON validator.
  */
 export type JsonValidateOutput = { isValid: boolean; error: string | null; errorLine: number | null; errorColumn: number | null; errorContext: string | null; rootType: string | null; depth: number | null; keyCount: number | null; valueCount: number | null; arrayCount: number | null; objectCount: number | null; stringCount: number | null; numberCount: number | null; booleanCount: number | null; nullCount: number | null; maxArrayLength: number | null; hasDuplicateKeys: boolean; formatted: string | null }
+export type JsonValue = null | boolean | number | string | JsonValue[] | Partial<{ [key in string]: JsonValue }>
 /**
  * Signing algorithm for the JWT.
  */
@@ -1833,10 +1860,6 @@ export type WordCounterInput = { text: string }
  * Output for the Word Counter tool: all stats in one struct.
  */
 export type WordCounterOutput = { words: number; charactersWithSpaces: number; charactersWithoutSpaces: number; lines: number; sentences: number; paragraphs: number; uniqueWords: number; avgWordLength: number; readingTimeSeconds: number; error: string | null }
-/** One field in the fake data schema (camelCase matches serde). */
-export type FakeField = { name: string; fieldType: string; params: Record<string, unknown> | null }
-export type FakeDataInput = { fields: FakeField[]; count: number }
-export type FakeDataOutput = { json: string; error: string | null }
 export type XmlFormatInput = { 
 /**
  * Raw XML text to format.
