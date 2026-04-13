@@ -67,3 +67,7 @@ unicode_names2 = "1"
 deunicode = "1"
 fake = { version = "2", features = ["chrono", "random_color"] }
 image = { version = "0.25", features = ["png", "jpeg", "webp", "bmp", "tiff", "ico", "tga", "pnm", "gif"] }
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+# Lossy WebP via libwebp — not used for WASM (C build); WASM uses `image`'s lossless encoder only.
+webp = "0.3"

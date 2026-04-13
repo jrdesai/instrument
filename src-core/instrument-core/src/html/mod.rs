@@ -148,6 +148,17 @@ mod tests {
     #[test]
     fn invalid_html_handled_gracefully() {
         let out = process(input("<div><p>Unclosed"));
-        let _ = out;
+        // markup_fmt is lenient — it formats unclosed tags without returning an error.
+        // Verify it either returns a non-empty formatted result with no error,
+        // or returns an error with an empty formatted string — never both or neither.
+        let has_output = !out.formatted.is_empty();
+        let has_error = out.error.is_some();
+        assert!(
+            has_output ^ has_error,
+            "expected either formatted output or an error, not both/neither. \
+             formatted={:?}, error={:?}",
+            out.formatted,
+            out.error
+        );
     }
 }

@@ -174,11 +174,15 @@ function KeycodeInfoTool() {
                 <PropCard
                   label="charCode"
                   value={String(current.charCode)}
-                  tooltip="Always 0 on keydown — only populated on the deprecated keypress event"
+                  tooltip="Deprecated — always 0 in modern browsers on all event types"
                   badge={
                     <div className="mt-0.5">
-                      <span className="font-mono text-sm text-slate-800 dark:text-slate-200">{current.charCode}</span>
-                      <span className="ml-1.5 text-[10px] text-slate-400 dark:text-slate-500">keydown only</span>
+                      <span className="font-mono text-sm text-slate-800 dark:text-slate-200">
+                        {current.charCode}
+                      </span>
+                      <span className="ml-1.5 text-[10px] text-slate-400 dark:text-slate-500">
+                        deprecated
+                      </span>
                     </div>
                   }
                 />

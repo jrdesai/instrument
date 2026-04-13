@@ -229,12 +229,7 @@ export default function HtmlFormatterTool() {
                   <span className="truncate text-xs text-slate-500 dark:text-slate-400">{fileName}</span>
                   <button
                     type="button"
-                    onClick={() => {
-                      setFileName(null);
-                      setFileDropError(null);
-                      setInputValue("");
-                      setDraft("");
-                    }}
+                    onClick={handleClear}
                     className="text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
                   >
                     ✕

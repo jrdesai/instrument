@@ -18,7 +18,7 @@ const TOOL_ID = "fake-data-generator";
 const DEBOUNCE_MS = 300;
 const HISTORY_DEBOUNCE_MS = 1500;
 
-export const FIELD_TYPES = [
+const FIELD_TYPES = [
   {
     group: "Person",
     types: [
@@ -254,10 +254,12 @@ function downloadJson(json: string) {
   URL.revokeObjectURL(url);
 }
 
-function downloadCsv(json: string) {
+function downloadCsv(json: string): void {
   try {
     const records = JSON.parse(json) as Record<string, unknown>[];
-    if (!Array.isArray(records) || records.length === 0) return;
+    if (!Array.isArray(records) || records.length === 0) {
+      throw new Error("No records to export.");
+    }
     const headers = Object.keys(records[0]);
     const escape = (v: unknown) => {
       const s = String(v ?? "");
@@ -276,8 +278,9 @@ function downloadCsv(json: string) {
     a.download = "fake-data.csv";
     a.click();
     URL.revokeObjectURL(url);
-  } catch {
-    /* ignore */
+  } catch (e) {
+    console.error("CSV export failed:", e);
+    throw e instanceof Error ? e : new Error(String(e));
   }
 }
 
@@ -298,7 +301,9 @@ function FakeDataGeneratorTool() {
   const { setDraft } = useDraftInput(TOOL_ID);
   const [fields, setFields] = useState<SchemaField[]>(() => createDefaultFields());
   const [count, setCount] = useState(10);
+  const [countRaw, setCountRaw] = useState(String(10));
   const [output, setOutput] = useState<FakeDataOutput | null>(null);
+  const [downloadError, setDownloadError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -308,7 +313,9 @@ function FakeDataGeneratorTool() {
     if (!isToolDraft(raw)) return;
     setFields(normalizeRestoredFields(raw.fields));
     const c = Math.min(500, Math.max(1, Math.floor(raw.count)));
-    setCount(Number.isFinite(c) ? c : 10);
+    const next = Number.isFinite(c) ? c : 10;
+    setCount(next);
+    setCountRaw(String(next));
   });
 
   useEffect(() => {
@@ -376,6 +383,10 @@ function FakeDataGeneratorTool() {
     };
   }, [fields, count, addHistoryEntry]);
 
+  useEffect(() => {
+    setDownloadError(null);
+  }, [output?.json, output?.error]);
+
   const updateField = useCallback((id: string, patch: Partial<SchemaField>) => {
     setFields((prev) => prev.map((f) => (f.id === id ? { ...f, ...patch } : f)));
   }, []);
@@ -429,13 +440,19 @@ function FakeDataGeneratorTool() {
   }, []);
 
   const handleCountChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    setCountRaw(e.target.value);
     const n = parseInt(e.target.value, 10);
-    if (Number.isNaN(n)) {
-      setCount(1);
-      return;
+    if (!Number.isNaN(n)) {
+      setCount(Math.min(500, Math.max(1, n)));
     }
-    setCount(Math.min(500, Math.max(1, n)));
   }, []);
+
+  const handleCountBlur = useCallback(() => {
+    const n = parseInt(countRaw, 10);
+    const clamped = Number.isNaN(n) ? 1 : Math.min(500, Math.max(1, n));
+    setCount(clamped);
+    setCountRaw(String(clamped));
+  }, [countRaw]);
 
   const hasJson = Boolean(output?.json && output.json.length > 0);
   const showDownloads = hasJson && !output?.error;
@@ -457,8 +474,9 @@ function FakeDataGeneratorTool() {
                 type="number"
                 min={1}
                 max={500}
-                value={count}
+                value={countRaw}
                 onChange={handleCountChange}
+                onBlur={handleCountBlur}
                 className="w-14 rounded border border-border-light bg-transparent px-1.5 py-0.5 font-mono text-xs text-slate-800 focus:border-primary focus:outline-none dark:border-border-dark dark:text-slate-200"
               />
             </label>
@@ -617,36 +635,45 @@ function FakeDataGeneratorTool() {
                 <p className="text-sm text-red-600 dark:text-red-400">{output.error}</p>
               </div>
             ) : hasJson ? (
-              <div className="flex min-h-0 flex-1 flex-col p-3">
-                <CodeBlock
-                  code={output!.json}
-                  language="json"
-                  maxHeight="100%"
-                  showCopyButton={false}
-                  className="min-h-0 flex-1"
-                />
+              <div className="custom-scrollbar min-h-0 flex-1 overflow-auto p-3">
+                <CodeBlock code={output!.json} language="json" showCopyButton={false} />
               </div>
             ) : (
               <EmptyState />
             )}
             {showDownloads && (
-              <div className="flex shrink-0 items-center justify-end gap-2 border-t border-border-light bg-panel-light px-4 py-2 dark:border-border-dark dark:bg-panel-dark">
-                <button
-                  type="button"
-                  onClick={() => downloadJson(output!.json)}
-                  className="flex items-center gap-1.5 rounded-lg border border-border-light px-3 py-1 text-xs text-slate-600 transition-colors hover:text-primary dark:border-border-dark dark:text-slate-400"
-                >
-                  <span className="material-symbols-outlined text-[14px]">download</span>
-                  JSON
-                </button>
-                <button
-                  type="button"
-                  onClick={() => downloadCsv(output!.json)}
-                  className="flex items-center gap-1.5 rounded-lg border border-border-light px-3 py-1 text-xs text-slate-600 transition-colors hover:text-primary dark:border-border-dark dark:text-slate-400"
-                >
-                  <span className="material-symbols-outlined text-[14px]">download</span>
-                  CSV
-                </button>
+              <div className="flex shrink-0 flex-col gap-2 border-t border-border-light bg-panel-light px-4 py-2 dark:border-border-dark dark:bg-panel-dark">
+                {downloadError ? (
+                  <p className="text-xs text-red-600 dark:text-red-400">{downloadError}</p>
+                ) : null}
+                <div className="flex items-center justify-end gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setDownloadError(null);
+                      downloadJson(output!.json);
+                    }}
+                    className="flex items-center gap-1.5 rounded-lg border border-border-light px-3 py-1 text-xs text-slate-600 transition-colors hover:text-primary dark:border-border-dark dark:text-slate-400"
+                  >
+                    <span className="material-symbols-outlined text-[14px]">download</span>
+                    JSON
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setDownloadError(null);
+                      try {
+                        downloadCsv(output!.json);
+                      } catch (e) {
+                        setDownloadError(e instanceof Error ? e.message : String(e));
+                      }
+                    }}
+                    className="flex items-center gap-1.5 rounded-lg border border-border-light px-3 py-1 text-xs text-slate-600 transition-colors hover:text-primary dark:border-border-dark dark:text-slate-400"
+                  >
+                    <span className="material-symbols-outlined text-[14px]">download</span>
+                    CSV
+                  </button>
+                </div>
               </div>
             )}
           </div>

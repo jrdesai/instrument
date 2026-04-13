@@ -22,6 +22,9 @@ pub struct JsonArgs {
     pub text: Option<String>,
     #[arg(short, long)]
     pub file: Option<std::path::PathBuf>,
+    /// Indent style: 2 (default), 4, tab
+    #[arg(long, default_value = "2", value_parser = ["2", "4", "tab"])]
+    pub indent: String,
 }
 
 pub fn run_json(args: JsonArgs, json: bool) {
@@ -34,16 +37,21 @@ pub fn run_json(args: JsonArgs, json: bool) {
             } else {
                 formatter::JsonFormatMode::Pretty
             };
+            let indent = match args.indent.as_str() {
+                "4" => formatter::IndentStyle::Spaces4,
+                "tab" => formatter::IndentStyle::Tab,
+                _ => formatter::IndentStyle::Spaces2,
+            };
             let result = formatter::process(formatter::JsonFormatInput {
                 value: inp,
                 mode,
-                indent: formatter::IndentStyle::Spaces2,
+                indent,
                 sort_keys: false,
             });
-            if let Some(e) = result.error {
-                output::print_err(&e, json, "json");
+            match result.error {
+                Some(e) => output::print_err(&e, json, "json"),
+                None => output::print_ok(&result.result, json, "json"),
             }
-            output::print_ok(&result.result, json, "json");
         }
         JsonAction::Validate => {
             let result = validator::process(validator::JsonValidateInput { value: inp });
@@ -105,7 +113,7 @@ pub fn run_yaml(args: YamlArgs, json: bool) {
             } else {
                 output::print_err(
                     &result.error.unwrap_or_else(|| "Invalid YAML".to_string()),
-                    false,
+                    json,
                     "yaml",
                 );
             }

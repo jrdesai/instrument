@@ -187,6 +187,13 @@ function ImageConverterTool() {
     try {
       setError(null);
       setResult(null);
+      const MAX_BYTES = 25 * 1024 * 1024; // 25 MB
+      if (file.size > MAX_BYTES) {
+        setError(
+          `File too large (${(file.size / 1024 / 1024).toFixed(1)} MB). Maximum is 25 MB.`
+        );
+        return;
+      }
       const [b64, dims] = await Promise.all([readFileAsB64(file), readImageDimensions(file)]);
       setInputFile({
         name: file.name,

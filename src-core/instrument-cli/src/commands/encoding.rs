@@ -105,10 +105,10 @@ pub fn run_url(args: UrlArgs, json: bool) {
                 mode: UrlEncodeMode::Encode,
                 encode_type: UrlEncodeType::Full,
             });
-            if let Some(e) = result.error {
-                output::print_err(&e, json, "url");
+            match result.error {
+                Some(e) => output::print_err(&e, json, "url"),
+                None => output::print_ok(&result.result, json, "url"),
             }
-            output::print_ok(&result.result, json, "url");
         }
         UrlMode::Decode { text, file } => {
             let inp = input::resolve(text, file).unwrap_or_else(|e| output::print_err(&e, json, "url"));
@@ -117,10 +117,10 @@ pub fn run_url(args: UrlArgs, json: bool) {
                 mode: UrlEncodeMode::Decode,
                 encode_type: UrlEncodeType::Full,
             });
-            if let Some(e) = result.error {
-                output::print_err(&e, json, "url");
+            match result.error {
+                Some(e) => output::print_err(&e, json, "url"),
+                None => output::print_ok(&result.result, json, "url"),
             }
-            output::print_ok(&result.result, json, "url");
         }
     }
 }
@@ -131,6 +131,9 @@ pub fn run_url(args: UrlArgs, json: bool) {
 pub struct HexArgs {
     #[command(subcommand)]
     pub mode: HexMode,
+    /// Output separator between hex bytes: space (default), colon, none
+    #[arg(long, default_value = "space", value_parser = ["space", "colon", "none"])]
+    pub separator: String,
 }
 
 #[derive(Subcommand)]
@@ -151,10 +154,15 @@ pub fn run_hex(args: HexArgs, json: bool) {
     match args.mode {
         HexMode::Encode { text, file } => {
             let inp = input::resolve(text, file).unwrap_or_else(|e| output::print_err(&e, json, "hex"));
+            let sep = match args.separator.as_str() {
+                "colon" => hex_mod::HexSeparator::Colon,
+                "none" => hex_mod::HexSeparator::None,
+                _ => hex_mod::HexSeparator::Space,
+            };
             let result = hex_mod::process(hex_mod::HexInput {
                 text: inp,
                 mode: hex_mod::HexMode::TextToHex,
-                separator: hex_mod::HexSeparator::Space,
+                separator: sep,
             });
             match result.error {
                 Some(e) => output::print_err(&e, json, "hex"),
@@ -207,10 +215,10 @@ pub fn run_html_entity(args: HtmlEntityArgs, json: bool) {
                 mode: html_entity::HtmlEntityMode::Encode,
                 encode_type: html_entity::HtmlEntityEncodeType::Named,
             });
-            if let Some(e) = result.error {
-                output::print_err(&e, json, "html-entity");
+            match result.error {
+                Some(e) => output::print_err(&e, json, "html-entity"),
+                None => output::print_ok(&result.result, json, "html-entity"),
             }
-            output::print_ok(&result.result, json, "html-entity");
         }
         HtmlEntityMode::Decode { text, file } => {
             let inp = input::resolve(text, file).unwrap_or_else(|e| output::print_err(&e, json, "html-entity"));
@@ -219,10 +227,10 @@ pub fn run_html_entity(args: HtmlEntityArgs, json: bool) {
                 mode: html_entity::HtmlEntityMode::Decode,
                 encode_type: html_entity::HtmlEntityEncodeType::Named,
             });
-            if let Some(e) = result.error {
-                output::print_err(&e, json, "html-entity");
+            match result.error {
+                Some(e) => output::print_err(&e, json, "html-entity"),
+                None => output::print_ok(&result.result, json, "html-entity"),
             }
-            output::print_ok(&result.result, json, "html-entity");
         }
     }
 }
@@ -250,8 +258,8 @@ pub fn run_slug(args: SlugArgs, json: bool) {
         lowercase: !args.no_lowercase,
         max_length: args.max_length,
     });
-    if let Some(e) = result.error {
-        output::print_err(&e, json, "slug");
+    match result.error {
+        Some(e) => output::print_err(&e, json, "slug"),
+        None => output::print_ok(&result.slug, json, "slug"),
     }
-    output::print_ok(&result.slug, json, "slug");
 }

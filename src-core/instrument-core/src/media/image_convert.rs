@@ -60,8 +60,27 @@ pub fn process(input: ImageConvertInput) -> ImageConvertOutput {
 
 fn convert(input: ImageConvertInput) -> Result<ImageConvertOutput, Box<dyn std::error::Error>> {
     let bytes = STANDARD.decode(&input.data)?;
-    let cursor = Cursor::new(&bytes);
-    let reader = ImageReader::new(cursor).with_guessed_format()?;
+    let reader = {
+        let fmt = match input.input_format.to_lowercase().as_str() {
+            "tga" => Some(ImageFormat::Tga),
+            "png" => Some(ImageFormat::Png),
+            "jpeg" | "jpg" => Some(ImageFormat::Jpeg),
+            "webp" => Some(ImageFormat::WebP),
+            "bmp" => Some(ImageFormat::Bmp),
+            "tiff" => Some(ImageFormat::Tiff),
+            "ico" => Some(ImageFormat::Ico),
+            "pnm" => Some(ImageFormat::Pnm),
+            _ => None,
+        };
+        match fmt {
+            Some(f) => {
+                let mut r = ImageReader::new(Cursor::new(&bytes));
+                r.set_format(f);
+                r
+            }
+            None => ImageReader::new(Cursor::new(&bytes)).with_guessed_format()?,
+        }
+    };
     let mut img: DynamicImage = reader.decode()?;
 
     if let Some(ref r) = input.resize {
@@ -78,7 +97,6 @@ fn convert(input: ImageConvertInput) -> Result<ImageConvertOutput, Box<dyn std::
     img = match input.flip.as_str() {
         "horizontal" => img.fliph(),
         "vertical" => img.flipv(),
-        "both" => img.fliph().flipv(),
         _ => img,
     };
 
@@ -147,7 +165,22 @@ fn encode(
             let encoder = JpegEncoder::new_with_quality(&mut cursor, quality);
             img.write_with_encoder(encoder)?;
         }
-        "webp" => img.write_to(&mut Cursor::new(&mut buf), ImageFormat::WebP)?,
+        "webp" => {
+            #[cfg(target_arch = "wasm32")]
+            {
+                // `image` WebP encoder is lossless-only and pure Rust (WASM-safe). Quality is ignored on web.
+                use image::codecs::webp::WebPEncoder;
+                let cursor = Cursor::new(&mut buf);
+                let encoder = WebPEncoder::new_lossless(cursor);
+                img.write_with_encoder(encoder)?;
+            }
+            #[cfg(not(target_arch = "wasm32"))]
+            {
+                let encoder = webp::Encoder::from_image(img)
+                    .map_err(|e| format!("WebP encode: {e}"))?;
+                buf = encoder.encode(quality as f32).to_vec();
+            }
+        }
         "png" => img.write_to(&mut Cursor::new(&mut buf), ImageFormat::Png)?,
         "bmp" => img.write_to(&mut Cursor::new(&mut buf), ImageFormat::Bmp)?,
         "tiff" => img.write_to(&mut Cursor::new(&mut buf), ImageFormat::Tiff)?,
@@ -265,5 +298,43 @@ mod tests {
         let out = process(input);
         assert!(out.error.is_none(), "{:?}", out.error);
         assert!(!out.data.is_empty());
+    }
+
+    /// Larger PNG so WebP quality differences dominate over container overhead.
+    fn larger_png_b64() -> String {
+        let img: ImageBuffer<Rgba<u8>, _> =
+            ImageBuffer::from_fn(96, 96, |x, y| Rgba([(x as u8).wrapping_mul(3), (y as u8).wrapping_mul(5), 200, 255]));
+        let dyn_img = DynamicImage::ImageRgba8(img);
+        let mut buf = Vec::new();
+        dyn_img
+            .write_to(&mut Cursor::new(&mut buf), ImageFormat::Png)
+            .expect("encode png");
+        STANDARD.encode(&buf)
+    }
+
+    #[cfg(not(target_arch = "wasm32"))]
+    #[test]
+    fn webp_quality_low_is_smaller_than_high() {
+        let data = larger_png_b64();
+        let high = process(ImageConvertInput {
+            data: data.clone(),
+            output_format: "webp".into(),
+            quality: 90,
+            ..base_input()
+        });
+        let low = process(ImageConvertInput {
+            data,
+            output_format: "webp".into(),
+            quality: 10,
+            ..base_input()
+        });
+        assert!(high.error.is_none(), "{:?}", high.error);
+        assert!(low.error.is_none(), "{:?}", low.error);
+        assert!(
+            low.size_bytes <= high.size_bytes,
+            "expected low-quality WebP ({} bytes) ≤ high-quality ({} bytes)",
+            low.size_bytes,
+            high.size_bytes
+        );
     }
 }
