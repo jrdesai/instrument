@@ -18,6 +18,7 @@ export const find_replace_process: (a: any) => [number, number, number];
 export const hash_process: (a: any) => [number, number, number];
 export const hex_process: (a: any) => [number, number, number];
 export const html_entity_process: (a: any) => [number, number, number];
+export const html_format: (a: any) => [number, number, number];
 export const iso8601_process: (a: any) => [number, number, number];
 export const line_tools_process: (a: any) => [number, number, number];
 export const lorem_ipsum_process: (a: any) => [number, number, number];

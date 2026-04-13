@@ -125,6 +125,7 @@ use instrument_core::text::word_counter::{
 use instrument_core::text::fake_data::{
     process as fake_data_process_core, FakeDataInput, FakeDataOutput,
 };
+use instrument_core::html::{process as html_format_process_core, HtmlFormatInput, HtmlFormatOutput};
 use instrument_core::xml::{process as xml_format_process_core, XmlFormatInput, XmlFormatOutput};
 use instrument_core::yaml_fmt::{
     process as yaml_format_process_core, YamlFormatInput, YamlFormatOutput,
@@ -195,6 +196,15 @@ pub fn tool_json_to_csv_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
     let input: JsonToCsvInput =
         from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
     let output: JsonToCsvOutput = json_to_csv_process_core(input);
+    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
+}
+
+/// HTML formatter. Receives HtmlFormatInput (camelCase) and returns HtmlFormatOutput (camelCase).
+#[wasm_bindgen(js_name = html_format)]
+pub fn html_format_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
+    let input: HtmlFormatInput =
+        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let output: HtmlFormatOutput = html_format_process_core(input);
     to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
 }
 

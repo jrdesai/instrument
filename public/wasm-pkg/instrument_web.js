@@ -222,6 +222,19 @@ export function html_entity_process(js_input) {
 }
 
 /**
+ * HTML formatter. Receives HtmlFormatInput (camelCase) and returns HtmlFormatOutput (camelCase).
+ * @param {any} js_input
+ * @returns {any}
+ */
+export function html_format(js_input) {
+    const ret = wasm.html_format(js_input);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
  * ISO 8601 formatter. Receives Iso8601Input (camelCase) and returns Iso8601Output (camelCase).
  * @param {any} js_input
  * @returns {any}

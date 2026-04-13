@@ -346,6 +346,9 @@ async toolJsonToCsv(input: JsonToCsvInput) : Promise<JsonToCsvOutput> {
 async toolXmlFormat(input: XmlFormatInput) : Promise<XmlFormatOutput> {
     return await TAURI_INVOKE("tool_xml_format", { input });
 },
+async htmlFormat(input: HtmlFormatInput) : Promise<HtmlFormatOutput> {
+    return await TAURI_INVOKE("html_format", { input });
+},
 async toolYamlFormat(input: YamlFormatInput) : Promise<YamlFormatOutput> {
     return await TAURI_INVOKE("tool_yaml_format", { input });
 },
@@ -876,6 +879,24 @@ export type HtmlEntityMode = "encode" | "decode"
  * Output: result string, count of entities encoded/decoded, and optional error.
  */
 export type HtmlEntityOutput = { result: string; entitiesFound: number; error: string | null }
+export type HtmlFormatInput = { 
+/**
+ * Raw HTML to format.
+ */
+code: string; 
+/**
+ * Spaces per indent level, or `0` for tabs.
+ */
+indentSize: number; 
+/**
+ * Prefer each attribute on its own line when a tag has multiple attributes.
+ */
+wrapAttributes: boolean; 
+/**
+ * Soft wrap width (used by the formatter layout engine; strongest effect with wrap attributes on).
+ */
+printWidth: number }
+export type HtmlFormatOutput = { formatted: string; error: string | null }
 export type ImageConvertInput = { data: string; inputFormat: string; outputFormat: string; quality: number; resize: ResizeOptions | null; rotate: number; flip: string; grayscale: boolean }
 export type ImageConvertOutput = { data: string; format: string; width: number; height: number; sizeBytes: number; error: string | null }
 /**

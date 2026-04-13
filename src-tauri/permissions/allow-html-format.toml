@@ -1,0 +1,5 @@
+# Allow the HTML formatter tool command to be invoked from the frontend.
+[[permission]]
+identifier = "allow-html-format"
+description = "Enables the html_format command."
+commands.allow = ["html_format"]

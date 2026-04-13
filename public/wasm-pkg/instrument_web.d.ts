@@ -87,6 +87,11 @@ export function hex_process(js_input: any): any;
 export function html_entity_process(js_input: any): any;
 
 /**
+ * HTML formatter. Receives HtmlFormatInput (camelCase) and returns HtmlFormatOutput (camelCase).
+ */
+export function html_format(js_input: any): any;
+
+/**
  * ISO 8601 formatter. Receives Iso8601Input (camelCase) and returns Iso8601Output (camelCase).
  */
 export function iso8601_process(js_input: any): any;
@@ -317,6 +322,7 @@ export interface InitOutput {
     readonly hash_process: (a: any) => [number, number, number];
     readonly hex_process: (a: any) => [number, number, number];
     readonly html_entity_process: (a: any) => [number, number, number];
+    readonly html_format: (a: any) => [number, number, number];
     readonly iso8601_process: (a: any) => [number, number, number];
     readonly line_tools_process: (a: any) => [number, number, number];
     readonly lorem_ipsum_process: (a: any) => [number, number, number];

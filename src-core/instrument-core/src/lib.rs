@@ -11,6 +11,7 @@ pub mod numbers;
 pub mod sql;
 pub mod csv;
 pub mod xml;
+pub mod html;
 pub mod yaml_fmt;
 pub mod expression;
 pub mod media;

@@ -58,6 +58,7 @@
     "allow-csv-to-json",
     "allow-json-to-csv",
     "allow-xml-formatter",
+    "allow-html-format",
     "allow-yaml-formatter",
     "allow-cron",
     "allow-expression-eval",

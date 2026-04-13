@@ -86,6 +86,7 @@ pub fn run() {
         instrument_desktop::commands::csv::tool_csv_to_json,
         instrument_desktop::commands::csv::tool_json_to_csv,
         instrument_desktop::commands::xml::tool_xml_format,
+        instrument_desktop::commands::html::html_format,
         instrument_desktop::commands::yaml_fmt::tool_yaml_format,
         instrument_desktop::commands::expression::tool_expression_eval,
         instrument_desktop::commands::media::image_convert,

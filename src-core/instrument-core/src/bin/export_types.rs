@@ -178,6 +178,8 @@ fn main() {
     instrument_core::text::fake_data::FakeDataOutput::export_all_to(&out).unwrap();
     instrument_core::xml::XmlFormatInput::export_all_to(&out).unwrap();
     instrument_core::xml::XmlFormatOutput::export_all_to(&out).unwrap();
+    instrument_core::html::HtmlFormatInput::export_all_to(&out).unwrap();
+    instrument_core::html::HtmlFormatOutput::export_all_to(&out).unwrap();
     instrument_core::yaml_fmt::YamlFormatInput::export_all_to(&out).unwrap();
     instrument_core::yaml_fmt::YamlFormatOutput::export_all_to(&out).unwrap();
 }

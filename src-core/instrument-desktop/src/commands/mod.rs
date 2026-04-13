@@ -12,5 +12,6 @@ pub mod text;
 pub mod regex;
 pub mod sql;
 pub mod xml;
+pub mod html;
 pub mod yaml_fmt;
 pub mod media;

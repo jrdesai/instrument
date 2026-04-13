@@ -982,6 +982,40 @@ export const tools: Tool[] = [
     implemented: true,
   },
   {
+    id: "html-formatter",
+    name: "HTML Formatter",
+    description:
+      "Format and pretty-print HTML with configurable indent and attribute wrapping.",
+    category: "code",
+    displayCategory: "Code",
+    displayCategoryIcon: "code",
+    roles: ["frontend", "general"],
+    icon: "html",
+    platforms: ["desktop", "web"],
+    rustCommand: "html_format",
+    keywords: [
+      "html",
+      "format",
+      "formatter",
+      "pretty print",
+      "beautify",
+      "indent",
+      "minify",
+      "tidy",
+      "markup",
+      "template",
+      "dom",
+      "structure",
+    ],
+    trayPopover: false,
+    component: React.lazy(() =>
+      import("../tools/html-formatter/HtmlFormatterTool").then((m) => ({
+        default: m.default,
+      }))
+    ),
+    implemented: true,
+  },
+  {
     id: "yaml-formatter",
     name: "YAML Formatter",
     description: "Format and validate YAML documents.",
