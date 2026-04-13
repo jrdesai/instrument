@@ -188,7 +188,7 @@ pub fn process(input: FakeDataInput) -> FakeDataOutput {
         };
     }
 
-    let count = input.count.min(500).max(1);
+    let count = input.count.clamp(1, 500);
     let mut records = Vec::with_capacity(count);
 
     for i in 0..count {
@@ -343,7 +343,7 @@ mod tests {
         let arr: Vec<serde_json::Value> = serde_json::from_str(&out.json).expect("json");
         for record in &arr {
             let f = record["rating"].as_f64().expect("float");
-            assert!(f >= 1.0 && f <= 5.0);
+            assert!((1.0..=5.0).contains(&f));
         }
     }
 }
