@@ -65,3 +65,4 @@ specta = { version = "=2.0.0-rc.22", features = ["derive", "function", "serde_js
 unicode_names2 = "1"
 deunicode = "1"
 fake = { version = "2", features = ["chrono", "random_color"] }
+image = { version = "0.25", features = ["png", "jpeg", "webp", "bmp", "tiff", "ico", "tga", "pnm", "gif"] }

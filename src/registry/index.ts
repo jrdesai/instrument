@@ -12,7 +12,8 @@ export type ToolCategory =
   | "code"
   | "network"
   | "design"
-  | "data";
+  | "data"
+  | "media";
 
 /** Role tag for tool discovery (e.g. frontend, backend). */
 export type Role =
@@ -905,6 +906,44 @@ export const tools: Tool[] = [
       }))
     ),
     trayPopover: true,
+    implemented: true,
+  },
+  {
+    id: "image-converter",
+    name: "Image Converter",
+    description:
+      "Convert images between formats with resize, rotate, flip, and quality control.",
+    category: "media",
+    displayCategory: "Media",
+    displayCategoryIcon: "image",
+    roles: ["frontend", "general"],
+    icon: "image",
+    platforms: ["desktop"],
+    rustCommand: "image_convert",
+    keywords: [
+      "image",
+      "convert",
+      "png",
+      "jpeg",
+      "jpg",
+      "webp",
+      "bmp",
+      "tiff",
+      "ico",
+      "tga",
+      "gif",
+      "resize",
+      "rotate",
+      "flip",
+      "compress",
+      "format",
+      "photo",
+    ],
+    component: React.lazy(() =>
+      import("../tools/image-converter/ImageConverterTool").then((m) => ({
+        default: m.default,
+      }))
+    ),
     implemented: true,
   },
   {

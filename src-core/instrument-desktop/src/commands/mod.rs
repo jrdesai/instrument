@@ -13,3 +13,4 @@ pub mod regex;
 pub mod sql;
 pub mod xml;
 pub mod yaml_fmt;
+pub mod media;

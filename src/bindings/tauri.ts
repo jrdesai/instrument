@@ -353,6 +353,12 @@ async toolExpressionEval(input: ExprEvalInput) : Promise<ExprEvalOutput> {
     return await TAURI_INVOKE("tool_expression_eval", { input });
 },
 /**
+ * Converts image bytes between formats with optional transforms.
+ */
+async imageConvert(input: ImageConvertInput) : Promise<ImageConvertOutput> {
+    return await TAURI_INVOKE("image_convert", { input });
+},
+/**
  * Called from the frontend whenever the favourites list changes.
  */
 async updateTrayMenu(tools: TrayToolItem[]) : Promise<Result<null, string>> {
@@ -870,6 +876,8 @@ export type HtmlEntityMode = "encode" | "decode"
  * Output: result string, count of entities encoded/decoded, and optional error.
  */
 export type HtmlEntityOutput = { result: string; entitiesFound: number; error: string | null }
+export type ImageConvertInput = { data: string; inputFormat: string; outputFormat: string; quality: number; resize: ResizeOptions | null; rotate: number; flip: string; grayscale: boolean }
+export type ImageConvertOutput = { data: string; format: string; width: number; height: number; sizeBytes: number; error: string | null }
 /**
  * Indentation style for Pretty mode.
  */
@@ -1401,6 +1409,7 @@ export type QrEcLevel = "low" | "medium" | "quartile" | "high"
  */
 export type QueryParam = { key: string; value: string }
 export type RegexRequest = { pattern: string; text: string; engine: string; flags: string | null }
+export type ResizeOptions = { width: number | null; height: number | null; maintainAspect: boolean }
 /**
  * Which JSON Schema draft to use for validation.
  */

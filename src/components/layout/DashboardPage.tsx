@@ -107,45 +107,64 @@ function ToolGridCard({
   isFavourite,
   onClick,
   onToggleFavourite,
+  desktopOnly = false,
 }: {
   tool: Tool;
   isFavourite: boolean;
   onClick: () => void;
   onToggleFavourite: (e: React.MouseEvent) => void;
+  desktopOnly?: boolean;
 }) {
   return (
-    <div className="group relative flex flex-col gap-2 rounded-xl border border-border-light bg-white p-4 transition-colors hover:border-primary/40 hover:bg-primary/5 dark:border-border-dark dark:bg-panel-dark">
+    <div
+      title={desktopOnly ? "Available in the Instrument desktop app" : undefined}
+      className={`group relative flex flex-col gap-2 rounded-xl border border-border-light bg-white p-4 transition-colors dark:border-border-dark dark:bg-panel-dark ${
+        desktopOnly ? "opacity-60" : "hover:border-primary/40 hover:bg-primary/5"
+      }`}
+    >
       <button
         type="button"
         onClick={onClick}
         aria-label={tool.name}
-        className="absolute inset-0 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+        className={`absolute inset-0 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
+          desktopOnly ? "pointer-events-none cursor-not-allowed" : ""
+        }`}
       />
 
       <div className="flex items-start justify-between">
-        <div className="flex size-9 items-center justify-center rounded-lg bg-slate-100 text-slate-500 transition-colors group-hover:bg-primary/10 group-hover:text-primary dark:bg-slate-800 dark:text-slate-400">
+        <div
+          className={`flex size-9 items-center justify-center rounded-lg bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400 ${
+            desktopOnly ? "" : "transition-colors group-hover:bg-primary/10 group-hover:text-primary"
+          }`}
+        >
           <span className="material-symbols-outlined text-[20px]" aria-hidden>
             {tool.icon}
           </span>
         </div>
-        <button
-          type="button"
-          onClick={onToggleFavourite}
-          aria-label={isFavourite ? "Remove from favourites" : "Add to favourites"}
-          className={`relative z-10 shrink-0 transition-all hover:text-amber-400 ${
-            isFavourite
-              ? "opacity-100 text-amber-400"
-              : "opacity-0 text-slate-400 group-hover:opacity-60 dark:text-slate-500"
-          }`}
-        >
-          <span
-            className="material-symbols-outlined text-[18px]"
-            aria-hidden
-            style={{ fontVariationSettings: isFavourite ? "'FILL' 1" : "'FILL' 0" }}
-          >
-            star
+        {desktopOnly ? (
+          <span className="relative z-10 shrink-0 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+            Desktop only
           </span>
-        </button>
+        ) : (
+          <button
+            type="button"
+            onClick={onToggleFavourite}
+            aria-label={isFavourite ? "Remove from favourites" : "Add to favourites"}
+            className={`relative z-10 shrink-0 transition-all hover:text-amber-400 ${
+              isFavourite
+                ? "opacity-100 text-amber-400"
+                : "opacity-0 text-slate-400 group-hover:opacity-60 dark:text-slate-500"
+            }`}
+          >
+            <span
+              className="material-symbols-outlined text-[18px]"
+              aria-hidden
+              style={{ fontVariationSettings: isFavourite ? "'FILL' 1" : "'FILL' 0" }}
+            >
+              star
+            </span>
+          </button>
+        )}
       </div>
 
       <div>
@@ -183,12 +202,22 @@ export function DashboardPage() {
   );
   const displayCategories = useMemo(() => getDisplayCategories(), []);
   const totalImplemented = implementedTools.length;
+  const allRoleTools = useMemo(
+    () =>
+      tools
+        .filter((t) => t.implemented)
+        .filter(
+          (t) =>
+            activeRole === "All" ||
+            t.roles.includes(activeRole.toLowerCase() as Role)
+        ),
+    [activeRole]
+  );
   const categoriesWithTools = displayCategories.length;
 
   const filteredTools = useMemo(() => {
     if (view.type !== "category") return [];
     return getToolsByDisplayCategory(view.name)
-      .filter((t) => !isWeb || t.platforms.includes("web"))
       .filter(
         (t) =>
           activeRole === "All" ||
@@ -487,7 +516,12 @@ export function DashboardPage() {
                     key={tool.id}
                     tool={tool}
                     isFavourite={favouriteToolIds.includes(tool.id)}
-                    onClick={() => handleOpenTool(tool)}
+                    desktopOnly={isWeb && !tool.platforms.includes("web")}
+                    onClick={
+                      isWeb && !tool.platforms.includes("web")
+                        ? () => {}
+                        : () => handleOpenTool(tool)
+                    }
                     onToggleFavourite={(e) => {
                       e.stopPropagation();
                       toggleFavourite(tool);
@@ -521,7 +555,7 @@ export function DashboardPage() {
                   All tools
                 </span>
                 <span className="ml-auto font-mono text-xs text-slate-400 dark:text-slate-500">
-                  {totalImplemented} {totalImplemented === 1 ? "tool" : "tools"}
+                  {allRoleTools.length} {allRoleTools.length === 1 ? "tool" : "tools"}
                   {activeRole !== "All" && (
                     <span className="ml-1.5 text-primary">· {activeRole}</span>
                   )}
@@ -531,12 +565,17 @@ export function DashboardPage() {
 
             <div className="min-h-0 flex-1 overflow-y-auto px-6 py-4">
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                {implementedTools.map((tool) => (
+                {allRoleTools.map((tool) => (
                   <ToolGridCard
                     key={tool.id}
                     tool={tool}
                     isFavourite={favouriteToolIds.includes(tool.id)}
-                    onClick={() => handleOpenTool(tool)}
+                    desktopOnly={isWeb && !tool.platforms.includes("web")}
+                    onClick={
+                      isWeb && !tool.platforms.includes("web")
+                        ? () => {}
+                        : () => handleOpenTool(tool)
+                    }
                     onToggleFavourite={(e) => {
                       e.stopPropagation();
                       toggleFavourite(tool);

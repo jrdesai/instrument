@@ -14,4 +14,5 @@ export const categorySubtitles: Record<string, string> = {
   Code: "Test, format, and analyze code.",
   Data: "Transform and convert data formats.",
   Network: "Parse and inspect network data.",
+  Media: "Convert and transform media assets locally.",
 };

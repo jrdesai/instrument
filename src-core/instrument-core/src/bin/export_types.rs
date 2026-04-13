@@ -86,6 +86,9 @@ fn main() {
     instrument_core::encoding::url::UrlEncodeType::export_all_to(&out).unwrap();
     instrument_core::expression::ExprEvalInput::export_all_to(&out).unwrap();
     instrument_core::expression::ExprEvalOutput::export_all_to(&out).unwrap();
+    instrument_core::media::image_convert::ImageConvertInput::export_all_to(&out).unwrap();
+    instrument_core::media::image_convert::ImageConvertOutput::export_all_to(&out).unwrap();
+    instrument_core::media::image_convert::ResizeOptions::export_all_to(&out).unwrap();
     instrument_core::json::converter::ConversionTarget::export_all_to(&out).unwrap();
     instrument_core::json::converter::JsonConvertInput::export_all_to(&out).unwrap();
     instrument_core::json::converter::JsonConvertOutput::export_all_to(&out).unwrap();

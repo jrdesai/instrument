@@ -88,6 +88,7 @@ pub fn run() {
         instrument_desktop::commands::xml::tool_xml_format,
         instrument_desktop::commands::yaml_fmt::tool_yaml_format,
         instrument_desktop::commands::expression::tool_expression_eval,
+        instrument_desktop::commands::media::image_convert,
         tray::update_tray_menu,
         tray::set_tray_visible,
         tray::open_popover,

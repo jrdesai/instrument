@@ -1,0 +1,4 @@
+[[permission]]
+identifier = "allow-image-convert"
+description = "Enables the image_convert command."
+commands.allow = ["image_convert"]

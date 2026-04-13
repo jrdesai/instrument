@@ -26,6 +26,7 @@
     "allow-text-case",
     "allow-word-counter",
     "allow-fake-data",
+    "allow-image-convert",
     "allow-unicode-inspector",
     "allow-slug-generator",
     "allow-string-escaper",
