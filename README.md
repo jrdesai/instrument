@@ -1,86 +1,165 @@
 # Instrument
 
-**Cross-platform developer utility toolkit.**
+**A privacy-first developer toolkit — all processing happens locally on your device. No data ever leaves.**
 
 > Screenshot coming soon
 
-## Features
+---
 
-- **Encoding** — Base64, URL, HTML entities, Hex
-- **Crypto** — MD5, SHA-256, SHA-512, UUID, ULID, API key generator
-- **Text** — Case converter, Word counter, String escaper, Find & Replace, Lorem Ipsum generator
+## Ways to use Instrument
 
-Tools run in a Tauri desktop app or in the browser via WASM. More categories (JSON, datetime, etc.) are planned; see `docs/DEVELOPMENT_PLAN.md`.
+### Desktop app
+The full experience. Open the app, browse 62 tools across the Library, pin favourites to your dashboard, and keep a history of recent inputs.
+
+Supported platforms: macOS · Windows · Linux
+
+### Web app
+No install needed — open [instrument-wqt.pages.dev](https://instrument-wqt.pages.dev) in any browser. Tool logic runs in WebAssembly compiled from the same Rust source as the desktop app. Nothing is sent to a server.
+
+Desktop-only tools (e.g. Image Converter) are shown greyed out on the web so you know they exist.
+
+### System tray (desktop)
+Instrument lives in your menu bar / system tray. Star any tray-eligible tool and it appears in the tray menu for one-click access. Clicking a tool opens a compact 400 × 520 popover anchored below the tray icon — and automatically pre-fills it with whatever is on your clipboard.
+
+Works without opening the main window.
+
+### Command line
+A native `instrument` binary for scripting and piping. Reads from stdin, writes to stdout. Pass `--json` for machine-readable output.
+
+```bash
+# Encode / decode
+echo "hello world" | instrument base64 --encode
+echo "aGVsbG8gd29ybGQ=" | instrument base64 --decode
+
+# Hash
+echo "secret" | instrument hash --algorithm sha256
+
+# Generate
+instrument uuid
+instrument password --length 32
+
+# Format / validate
+cat data.json | instrument json --format
+cat query.sql | instrument sql --format
+
+# Timestamps & versions
+instrument timestamp 1700000000
+instrument semver bump minor 1.4.2
+```
+
+**Available subcommands:** `base64` · `url` · `hex` · `html-entity` · `slug` · `hash` · `jwt` · `uuid` · `ulid` · `nanoid` · `password` · `case` · `lines` · `word-count` · `json` · `yaml` · `xml` · `sql` · `timestamp` · `semver`
+
+---
+
+## Tools (62 total)
+
+| Category | Tools |
+|----------|-------|
+| **Encoding** | Base64, URL Encoder, HTML Entity, Hex Converter, Color Converter, QR Code Generator |
+| **Crypto** | Hash, UUID / ULID / Nano ID Generator, Password Generator, Passphrase Generator, API Key Generator, AES Encrypt/Decrypt, TOTP Generator, Certificate Decoder |
+| **Auth** | JWT Decoder, Basic Auth Header |
+| **JSON** | Formatter, Validator, Schema Validator, Diff, Path, Converter, Config Converter |
+| **Data** | CSV ↔ JSON, XML Formatter, YAML Formatter |
+| **Media** | Image Converter *(desktop only)* |
+| **Network** | URL Parser, CIDR Calculator, HTTP Status Codes, cURL Builder, User-Agent Parser |
+| **Text** | Case Converter, Word Counter, Find & Replace, Text Diff, Line Tools, String Escaper, Lorem Ipsum, Markdown Editor, Config Parser, Unicode Inspector, Slug Generator, Fake Data Generator |
+| **Code** | Regex Tester, Regex Explain, HTML Formatter, SQL Formatter, Code Formatter, Keycode Info |
+| **Numbers** | Number Base Converter, Semver, Unit Converter, Bitwise Calculator, chmod Calculator, Expression Evaluator |
+| **Date & Time** | Timestamp Converter, Timezone Converter, ISO 8601 Formatter, Cron Expression Parser |
+
+---
 
 ## Tech stack
 
-- **Tauri 2** — Desktop shell
-- **Rust** — Core logic (`instrument-core`), desktop commands (`instrument-desktop`), WASM bindings (`instrument-web`)
-- **React 19** + **TypeScript** + **Vite**
-- **Tailwind v4** — Styling
-- **Zustand** — State
-- **pnpm** — Package manager
+| Layer | Technology |
+|-------|-----------|
+| Desktop shell | Tauri 2 |
+| Frontend | React 18 · TypeScript · Vite · Tailwind v4 · Zustand |
+| Core logic | Rust (`instrument-core`) — shared between desktop and WASM |
+| Desktop commands | `instrument-desktop` — Tauri command wrappers |
+| Web / WASM | `instrument-web` — wasm-bindgen exports, compiled with wasm-pack |
+| CLI | `instrument-cli` — Clap-based binary |
+| Web hosting | Cloudflare Pages |
+| Package manager | pnpm |
 
-## Prerequisites
-
-- **Node.js** 22+
-- **Rust** 1.80+
-- **pnpm** 9+
+---
 
 ## Getting started
+
+### Prerequisites
+
+- Node.js 22+
+- Rust 1.80+
+- pnpm 9+
+
+### Run the desktop app
 
 ```bash
 git clone https://github.com/jrdesai/instrument.git
 cd instrument
 pnpm install
-pnpm run dev
+pnpm tauri dev
 ```
 
-The app opens in a window. Use the sidebar to open the Library and run any tool.
+### Run the web version locally
+
+```bash
+pnpm run build:wasm   # compile Rust → WASM (once, or after any Rust change)
+pnpm run dev:web      # Vite dev server at localhost:1420
+```
+
+---
 
 ## Building
 
+**Desktop installer:**
 ```bash
 pnpm run build
 ```
+Output: `src-tauri/target/release/`
 
-Output is in `src-tauri/target/release/` (or `debug/` for unoptimized builds).
+**Web (WASM + Vite):**
+```bash
+pnpm run build:wasm   # Rust → public/wasm-pkg/
+pnpm run build:web    # wasm + vite build → dist/
+```
 
-**Web (WASM):**
-​```bash
-pnpm run build:wasm   # run once before web mode
-pnpm run build:web    # produces /dist for browser deployment
-​```
+> `public/wasm-pkg/` is committed to git so Cloudflare Pages can deploy without a Rust toolchain. Rebuild and commit it after every Rust change.
+
+---
 
 ## Running tests
 
-**Rust (core library):**
-
 ```bash
-cargo test --manifest-path src-core/Cargo.toml -p instrument-core
+pnpm run typecheck          # TypeScript strict check
+pnpm run lint               # ESLint
+pnpm run test:ts            # Vitest
+pnpm run test:rust          # cargo test (all crates)
+pnpm run check:pure         # verify instrument-core has no Tauri/WASM imports
 ```
 
-**TypeScript:**
-
-```bash
-pnpm run typecheck
-pnpm run test:ts
-pnpm run lint
-pnpm run check:pure
-```
+---
 
 ## Project structure
 
-| Path        | Description |
-|------------|-------------|
-| `src/`     | React frontend — UI, tools, store, registry, bridge |
-| `src-core/` | Rust crates: `instrument-core` (shared logic), `instrument-desktop` (Tauri commands), `instrument-web` (WASM exports) |
-| `src-tauri/` | Tauri app shell, capabilities, permissions |
-| `docs/`    | Design reference, development plan, per-tool docs |
+```
+instrument/
+├── src/                  # React frontend (bridge, registry, tools, components, store)
+├── src-core/
+│   ├── instrument-core/  # Pure Rust — all tool logic (no Tauri, no WASM deps)
+│   ├── instrument-desktop/ # Tauri command wrappers
+│   ├── instrument-web/   # wasm-bindgen exports
+│   └── instrument-cli/   # CLI binary
+├── src-tauri/            # Tauri app shell, capabilities, permissions
+├── public/wasm-pkg/      # Compiled WASM — committed to git
+└── docs/                 # Architecture, design tokens, per-tool docs
+```
+
+---
 
 ## Contributing
 
-See `docs/` for design tokens, tool patterns, and the development plan. Add new tools by following the existing Rust → Tauri/WASM → React flow and register them in `src/registry/index.ts`.
+See `docs/ARCHITECTURE.md` for the full architecture reference and `docs/DEVELOPMENT_PLAN.md` for the backlog. New tools follow a Rust core → desktop binding → WASM binding → registry → React component flow.
 
 ## License
 
