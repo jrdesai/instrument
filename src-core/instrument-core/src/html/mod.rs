@@ -50,12 +50,14 @@ pub fn process(input: HtmlFormatInput) -> HtmlFormatOutput {
 
     // `prefer_attrs_single_line` keeps multiple attributes on one line when they fit;
     // disabling it plus `max_attrs_per_line: 1` matches “wrap attributes” in the UI.
-    let mut language = LanguageOptions::default();
-    language.prefer_attrs_single_line = !input.wrap_attributes;
-    language.max_attrs_per_line = if input.wrap_attributes {
-        NonZeroUsize::new(1)
-    } else {
-        None
+    let language = LanguageOptions {
+        prefer_attrs_single_line: !input.wrap_attributes,
+        max_attrs_per_line: if input.wrap_attributes {
+            NonZeroUsize::new(1)
+        } else {
+            None
+        },
+        ..Default::default()
     };
 
     let options = FormatOptions {
