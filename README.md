@@ -1,6 +1,6 @@
 # Instrument
 
-**A privacy-first developer toolkit — all processing happens locally on your device. No data ever leaves.**
+**A privacy-first developer toolkit — 61 tools, all processing happens locally on your device. No data ever leaves.**
 
 > Screenshot coming soon
 
@@ -9,7 +9,7 @@
 ## Ways to use Instrument
 
 ### Desktop app
-The full experience. Open the app, browse 62 tools across the Library, pin favourites to your dashboard, and keep a history of recent inputs.
+The full experience. Open the app, browse 61 tools across the Library, pin favourites to your dashboard, and keep a history of recent inputs.
 
 Supported platforms: macOS · Windows · Linux
 
@@ -51,7 +51,7 @@ instrument semver bump minor 1.4.2
 
 ---
 
-## Tools (62 total)
+## Tools (61 total)
 
 | Category | Tools |
 |----------|-------|
