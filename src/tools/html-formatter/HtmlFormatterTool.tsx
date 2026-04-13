@@ -313,8 +313,6 @@ export default function HtmlFormatterTool() {
               <CodeBlock
                 language="markup"
                 code={output.formatted}
-                className="h-full min-h-0"
-                maxHeight="100%"
               />
             ) : (
               <div className="flex h-full items-center justify-center p-4 text-xs text-slate-500">
