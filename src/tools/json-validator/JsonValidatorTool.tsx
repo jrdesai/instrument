@@ -137,7 +137,7 @@ function JsonValidatorTool() {
       <div className="flex flex-1 min-h-0 w-full">
         {/* Left panel — input */}
         <div className="flex flex-col flex-1 min-w-0 border-r border-border-light dark:border-border-dark">
-          <div className="flex items-center justify-between px-4 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0">
+          <div className="flex items-center justify-between px-4 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0 min-h-[41px]">
             <span className="text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider">
               INPUT
             </span>
@@ -162,7 +162,7 @@ function JsonValidatorTool() {
 
         {/* Right panel — result */}
         <div className="flex flex-col flex-1 min-w-0 overflow-y-auto">
-          <div className="flex items-center justify-between px-4 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0">
+          <div className="flex items-center justify-between px-4 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0 min-h-[41px]">
             <span className="text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider">
               RESULT
             </span>

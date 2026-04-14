@@ -152,7 +152,7 @@ function UrlEncoderTool() {
           className="flex flex-col border-r border-border-light dark:border-border-dark shrink-0"
           style={{ width: `${leftPanelPercent}%` }}
         >
-          <div className="flex items-center justify-between px-3 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark text-xs text-slate-500 dark:text-slate-400 shrink-0">
+          <div className="flex items-center justify-between px-3 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark text-xs text-slate-500 dark:text-slate-400 shrink-0 min-h-[41px]">
             <span>Lines: {lines}</span>
             <span>Chars: {charCount}</span>
           </div>

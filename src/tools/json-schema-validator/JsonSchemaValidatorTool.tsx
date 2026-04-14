@@ -9,10 +9,12 @@ import { twMerge } from "tailwind-merge";
 import { callTool } from "../../bridge";
 import { useDraftInput, useRestoreDraft } from "../../hooks/useDraftInput";
 import { useFileDrop } from "../../hooks/useFileDrop";
+import { useHistoryStore } from "../../store";
 
 const RUST_COMMAND = "tool_json_schema_validate";
 const TOOL_ID = "json-schema-validator";
 const DEBOUNCE_MS = 300;
+const HISTORY_DEBOUNCE_MS = 1500;
 
 type Draft = "draft7" | "2019-09" | "2020-12";
 
@@ -55,6 +57,8 @@ function JsonSchemaValidatorTool() {
   });
 
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
 
   const runValidate = useCallback(
     async (doc: string, sch: string, draft: Draft) => {
@@ -67,15 +71,32 @@ function JsonSchemaValidatorTool() {
           document: doc,
           schema: sch,
           draft,
-        })) as ValidateOutput;
+        }, { skipHistory: true })) as ValidateOutput;
         setOutput(result);
+        if (result.valid) {
+          if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
+          historyDebounceRef.current = setTimeout(() => {
+            addHistoryEntry(TOOL_ID, {
+              input: { document: doc, schema: sch, draft },
+              output: result,
+              timestamp: Date.now(),
+            });
+            historyDebounceRef.current = null;
+          }, HISTORY_DEBOUNCE_MS);
+        }
       } catch (e) {
         const msg = e instanceof Error ? e.message : String(e ?? "");
         setOutput({ valid: false, errorCount: 0, issues: [], parseError: msg });
       }
     },
-    []
+    [addHistoryEntry]
   );
+
+  useEffect(() => {
+    return () => {
+      if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
+    };
+  }, []);
 
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -126,6 +147,9 @@ function JsonSchemaValidatorTool() {
         setDocument(text);
         setDraft({ document: text, schema, draft: selectedDraft });
       };
+      reader.onerror = () => {
+        setDocumentFileDropError("Failed to read file — it may be locked or unreadable.");
+      };
       reader.readAsText(file);
       e.target.value = "";
     },
@@ -142,6 +166,9 @@ function JsonSchemaValidatorTool() {
         const text = ev.target?.result as string;
         setSchema(text);
         setDraft({ document, schema: text, draft: selectedDraft });
+      };
+      reader.onerror = () => {
+        setSchemaFileDropError("Failed to read file — it may be locked or unreadable.");
       };
       reader.readAsText(file);
       e.target.value = "";
@@ -343,8 +370,8 @@ function JsonSchemaValidatorTool() {
                 </span>
               </div>
               <div className="divide-y divide-border-light dark:divide-border-dark">
-                {output.issues.map((issue, i) => (
-                  <div key={i} className="px-4 py-3">
+                {output.issues.map((issue) => (
+                  <div key={`${issue.instancePath}-${issue.schemaPath}`} className="px-4 py-3">
                     <div className="flex items-start gap-2">
                       <span className="mt-0.5 shrink-0 text-xs text-red-400">
                         ✗

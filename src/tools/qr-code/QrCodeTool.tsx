@@ -11,12 +11,14 @@ const TOOL_ID = "qr-code";
 const RUST_COMMAND = "qr_generate";
 const DEBOUNCE_MS = 150;
 const HISTORY_DEBOUNCE_MS = 1500;
+const DEFAULT_EC_LEVEL: QrEcLevel = "medium";
+const DEFAULT_MODULE_SIZE = 10;
 
 function QrCodeTool() {
   const { setDraft } = useDraftInput(TOOL_ID);
   const [text, setText] = useState("");
-  const [ecLevel, setEcLevel] = useState<QrEcLevel>("medium");
-  const [moduleSize, setModuleSize] = useState(10);
+  const [ecLevel, setEcLevel] = useState<QrEcLevel>(DEFAULT_EC_LEVEL);
+  const [moduleSize, setModuleSize] = useState(DEFAULT_MODULE_SIZE);
   const [fgColor, setFgColor] = useState("#000000");
   const [bgColor, setBgColor] = useState("#ffffff");
   const [margin, setMargin] = useState(4);
@@ -76,6 +78,23 @@ function QrCodeTool() {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
   }, [text, ecLevel, moduleSize, fgColor, bgColor, margin, run]);
+
+  useEffect(() => {
+    return () => {
+      if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
+    };
+  }, []);
+
+  const handleClear = useCallback(() => {
+    setText("");
+    setEcLevel(DEFAULT_EC_LEVEL);
+    setModuleSize(DEFAULT_MODULE_SIZE);
+    setFgColor("#000000");
+    setBgColor("#ffffff");
+    setMargin(4);
+    setDraft("");
+    setOutput(null);
+  }, [setDraft]);
 
   const downloadHref = useMemo(() => {
     if (!output?.svg) return "";
@@ -320,14 +339,7 @@ function QrCodeTool() {
                 </button>
                 <button
                   type="button"
-                  onClick={() => {
-                    setText("");
-                    setFgColor("#000000");
-                    setBgColor("#ffffff");
-                    setMargin(4);
-                    setDraft("");
-                    setOutput(null);
-                  }}
+                  onClick={handleClear}
                   className="rounded-lg border border-border-light bg-panel-light px-3 py-1.5 text-xs text-slate-500 transition-colors hover:text-slate-700 dark:border-border-dark dark:bg-panel-dark dark:text-slate-400 dark:hover:text-slate-200"
                 >
                   Clear

@@ -8,6 +8,7 @@ import { CopyButton, PanelHeader, ToolbarFooter } from "../../components/tool";
 import { callTool } from "../../bridge";
 import { useDraftInput, useRestoreDraft } from "../../hooks/useDraftInput";
 import { useFileDrop } from "../../hooks/useFileDrop";
+import { useHistoryStore } from "../../store";
 import type { AnnotatedLine } from "../../bindings/JsonDiffAnnotatedLine";
 import type { JsonDiffOutput } from "../../bindings/JsonDiffOutput";
 import type { LineAnnotation } from "../../bindings/JsonDiffLineAnnotation";
@@ -15,6 +16,7 @@ import type { LineAnnotation } from "../../bindings/JsonDiffLineAnnotation";
 const RUST_COMMAND = "tool_json_diff";
 const TOOL_ID = "json-diff";
 const DEBOUNCE_MS = 300;
+const HISTORY_DEBOUNCE_MS = 1500;
 const TRUNCATE_LEN = 40;
 
 function truncate(str: string, len: number): string {
@@ -61,9 +63,11 @@ function JsonDiffTool() {
   const [leftFileDropError, setLeftFileDropError] = useState<string | null>(null);
   const [rightFileDropError, setRightFileDropError] = useState<string | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const leftRef = useRef<HTMLDivElement>(null);
   const rightRef = useRef<HTMLDivElement>(null);
   const isSyncing = useRef(false);
+  const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
 
   const handleLeftScroll = useCallback(() => {
     if (isSyncing.current || !rightRef.current || !leftRef.current) return;
@@ -95,8 +99,19 @@ function JsonDiffTool() {
         const result = (await callTool(RUST_COMMAND, {
           left: currentLeft,
           right: currentRight,
-        })) as JsonDiffOutput;
+        }, { skipHistory: true })) as JsonDiffOutput;
         setOutput(result);
+        if (result.leftValid && result.rightValid) {
+          if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
+          historyDebounceRef.current = setTimeout(() => {
+            addHistoryEntry(TOOL_ID, {
+              input: { left: currentLeft, right: currentRight },
+              output: result,
+              timestamp: Date.now(),
+            });
+            historyDebounceRef.current = null;
+          }, HISTORY_DEBOUNCE_MS);
+        }
       } catch (e) {
         const message =
           e instanceof Error ? e.message : String(e ?? "Diff failed");
@@ -115,8 +130,14 @@ function JsonDiffTool() {
         });
       }
     },
-    []
+    [addHistoryEntry]
   );
+
+  useEffect(() => {
+    return () => {
+      if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
+    };
+  }, []);
 
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -316,9 +337,9 @@ function JsonDiffTool() {
                   {toAnnotatedLines(output?.leftAnnotated).length === 0 && (
                     <span className="text-slate-500">—</span>
                   )}
-                  {toAnnotatedLines(output?.leftAnnotated).map((line, i) => (
+                  {toAnnotatedLines(output?.leftAnnotated).map((line) => (
                     <div
-                      key={i}
+                      key={`left-${line.lineNumber}-${line.annotation}`}
                       className={lineClassForAnnotation(line.annotation, "left")}
                     >
                       <span className="select-none text-slate-700 w-8 text-right mr-3 flex-shrink-0 inline-block">
@@ -341,9 +362,9 @@ function JsonDiffTool() {
                   {toAnnotatedLines(output?.rightAnnotated).length === 0 && (
                     <span className="text-slate-500">—</span>
                   )}
-                  {toAnnotatedLines(output?.rightAnnotated).map((line, i) => (
+                  {toAnnotatedLines(output?.rightAnnotated).map((line) => (
                     <div
-                      key={i}
+                      key={`right-${line.lineNumber}-${line.annotation}`}
                       className={lineClassForAnnotation(line.annotation, "right")}
                     >
                       <span className="select-none text-slate-700 w-8 text-right mr-3 flex-shrink-0 inline-block">
@@ -377,7 +398,7 @@ function JsonDiffTool() {
                   <div className="max-h-48 overflow-auto custom-scrollbar px-4 pb-4 space-y-2">
                     {output?.changes?.map((c, i) => (
                       <div
-                        key={i}
+                        key={`${c.changeType}-${c.path}-${i}`}
                         className="flex flex-wrap items-center gap-2 text-xs"
                       >
                         <span

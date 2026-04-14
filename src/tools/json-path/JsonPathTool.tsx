@@ -9,6 +9,7 @@ import { callTool } from "../../bridge";
 import { CopyButton } from "../../components/tool";
 import { CodeBlock } from "../../components/ui/CodeBlock";
 import { useDraftInput, useRestoreDraft } from "../../hooks/useDraftInput";
+import { useHistoryStore } from "../../store";
 import type { JsonPathInput } from "../../bindings/JsonPathInput";
 import type { JsonPathMatch } from "../../bindings/JsonPathMatch";
 import type { JsonPathOutput } from "../../bindings/JsonPathOutput";
@@ -16,6 +17,7 @@ import type { JsonPathOutput } from "../../bindings/JsonPathOutput";
 const RUST_COMMAND = "tool_json_path";
 const TOOL_ID = "json-path";
 const DEBOUNCE_MS = 300;
+const HISTORY_DEBOUNCE_MS = 1500;
 
 function isJsonPathDraft(
   raw: unknown
@@ -57,6 +59,8 @@ function JsonPathTool() {
   const [output, setOutput] = useState<JsonPathOutput | null>(null);
   const [fullDocOpen, setFullDocOpen] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
 
   const runProcess = useCallback(
     async (currentQuery: string, currentJson: string) => {
@@ -71,11 +75,21 @@ function JsonPathTool() {
           value: currentJson,
           query: currentQuery,
         };
-        const result = (await callTool(
-          RUST_COMMAND,
-          payload
-        )) as JsonPathOutput;
+        const result = (await callTool(RUST_COMMAND, payload, {
+          skipHistory: true,
+        })) as JsonPathOutput;
         setOutput(result);
+        if (result.isValidJson && result.isValidQuery) {
+          if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
+          historyDebounceRef.current = setTimeout(() => {
+            addHistoryEntry(TOOL_ID, {
+              input: payload,
+              output: result,
+              timestamp: Date.now(),
+            });
+            historyDebounceRef.current = null;
+          }, HISTORY_DEBOUNCE_MS);
+        }
       } catch (e) {
         const message =
           e instanceof Error ? e.message : String(e ?? "JSONPath query failed");
@@ -89,8 +103,14 @@ function JsonPathTool() {
         });
       }
     },
-    []
+    [addHistoryEntry]
   );
+
+  useEffect(() => {
+    return () => {
+      if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
+    };
+  }, []);
 
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -173,7 +193,7 @@ function JsonPathTool() {
       <div className="flex flex-1 min-h-0">
         {/* Left — JSON document input */}
         <div className="flex flex-col flex-1 min-w-0 border-r border-border-light dark:border-border-dark">
-          <div className="flex items-center justify-between px-4 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0">
+          <div className="flex items-center justify-between px-4 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0 min-h-[41px]">
             <span className="text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider">
               JSON DOCUMENT
             </span>
@@ -198,7 +218,7 @@ function JsonPathTool() {
 
         {/* Right — Results */}
         <div className="flex flex-col flex-1 min-w-0">
-          <div className="flex items-center justify-between px-4 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0">
+          <div className="flex items-center justify-between px-4 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0 min-h-[41px]">
             <span className="text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider">
               RESULTS
             </span>

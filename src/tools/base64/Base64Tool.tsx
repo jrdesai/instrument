@@ -116,6 +116,9 @@ function Base64Tool() {
           setInput(binary);
           setDraft(binary);
         };
+        reader.onerror = () => {
+          setFileDropError("Failed to read file — it may be locked or unreadable.");
+        };
         reader.readAsArrayBuffer(file);
       } else {
         const reader = new FileReader();
@@ -123,6 +126,9 @@ function Base64Tool() {
           const text = (ev.target?.result as string).trim();
           setInput(text);
           setDraft(text);
+        };
+        reader.onerror = () => {
+          setFileDropError("Failed to read file — it may be locked or unreadable.");
         };
         reader.readAsText(file);
       }
@@ -242,12 +248,7 @@ function Base64Tool() {
               {fileName ? (
                 <button
                   type="button"
-                  onClick={() => {
-                    setFileName(null);
-                    setFileDropError(null);
-                    setInput("");
-                    setDraft("");
-                  }}
+                  onClick={handleClear}
                   className="text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
                 >
                   ✕
