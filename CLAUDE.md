@@ -90,6 +90,8 @@ Tools that run on every keystroke (e.g. base64, JSON formatter) must:
 - Use 150ms debounce for computation
 - Use 1500ms debounce for history capture (or `skipHistory: true` if history is not needed)
 - Pass `{ skipHistory: true }` to `callTool()` for the fast computation call
+- Record history via `addHistoryEntry()` inside a `setTimeout` — **never** by making a second `callTool()` call
+- Cancel the history debounce on unmount: `useEffect(() => () => { if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current); }, [])`
 - See `src/tools/base64/` for the reference implementation
 
 ### 5. Sensitive tools — never log or store content
