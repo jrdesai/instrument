@@ -33,16 +33,21 @@ const result = await callTool(RUST_COMMAND, payload, { skipHistory: true }); // 
 setOutput(result);
 
 // History capture — use addHistoryEntry directly, NEVER a second callTool()
-if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
-historyDebounceRef.current = setTimeout(() => {
-  addHistoryEntry(TOOL_ID, { input: payload, output: result, timestamp: Date.now() });
-  historyDebounceRef.current = null;
-}, HISTORY_DEBOUNCE_MS);
+// Guard: only record when result is valid (skip on error or empty output)
+if (!result.error && result.someOutputField.length > 0) {
+  if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
+  historyDebounceRef.current = setTimeout(() => {
+    addHistoryEntry(TOOL_ID, { input: payload, output: result, timestamp: Date.now() });
+    historyDebounceRef.current = null;
+  }, HISTORY_DEBOUNCE_MS);
+}
 ```
 
 **Draft persistence is mandatory** for every tool that accepts user-typed input, except:
 - Sensitive tools (JWT, AES, TOTP, Password, Basic Auth) — see sensitive pattern below
-- Pure generator tools where there is no user-typed content (e.g. Lorem Ipsum, UUID)
+- Pure generator tools where ALL inputs are selects/checkboxes/sliders with no free-text field
+
+**Generator tools nuance:** If a generator has even one user-typed text field (e.g. NanoId's custom alphabet, a prefix input), that field MUST be persisted. "Pure generator" only applies when there is literally no field the user types into.
 
 See `src/tools/base64/` for the canonical reference.
 
@@ -186,6 +191,27 @@ function OptionPill({ active, onClick, children }: { active: boolean; onClick: (
 </div>
 ```
 
+## Sensitive values in list renders
+
+For tools that generate secrets (passwords, passphrases, API keys), **do NOT use the generated value as the React `key`** — use a stable positional prefix instead:
+
+```tsx
+// ❌ Wrong — exposes secret as React internals key
+{passwords.map((pw) => <div key={pw} ...>)}
+
+// ✅ Correct — positional prefix, never the secret value
+{passwords.map((pw, i) => <div key={`pw-${i}`} ...>)}
+{passphrases.map((p, i) => <div key={`phrase-${i}`} ...>)}
+{apiKeys.map((k, i) => <div key={`key-${i}`} ...>)}
+```
+
+For non-sensitive unique IDs (UUID, ULID, NanoId), the value itself IS the stable key:
+```tsx
+{uuids.map((id) => <div key={id} ...>)}  // ✅ UUIDs are unique and non-sensitive
+```
+
+---
+
 ## List rendering — stable keys
 
 Never use `key={i}` (array index) for dynamically-rendered lists whose content can change (diff lines, search results, validation issues). Use a stable composite key derived from the item's content:
@@ -222,6 +248,32 @@ useEffect(() => {
 ```
 
 Wrap both the trigger button and the popover content in the same `<div ref={pickerRef}>`.
+
+## Partial-sensitive tools (non-sensitive tool with one secret field)
+
+Some tools are `sensitive: false` overall but have one optional secret field (e.g. HashTool's HMAC key). The rules:
+
+1. **Draft**: persist the non-secret input (e.g. the text to hash) via `useDraftInput`. Do NOT call `setDraft` on the secret field's `onChange`.
+2. **History**: use a `historySafeInput()` helper that redacts the secret before passing to `addHistoryEntry`. Example: replace `hmacKey` with `"[redacted]"` when non-empty.
+3. **`sensitive` in registry**: keep `false` — the tool is not primarily a secrets handler.
+
+See `src/tools/hash/HashTool.tsx` for the reference implementation.
+
+## `useDebouncedCallback` and historyDebounceRef
+
+If a tool uses the third-party `useDebouncedCallback` hook instead of a manual `debounceRef + useEffect` pattern, `useEffect` may not be imported at all. **The `historyDebounceRef` unmount cleanup still requires a `useEffect`** — import it explicitly even if it's the only effect in the file:
+
+```ts
+// Even if useDebouncedCallback handles the compute debounce, the
+// historyDebounceRef (set inside the callback) needs its own cleanup:
+useEffect(() => {
+  return () => {
+    if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
+  };
+}, []);
+```
+
+See `src/tools/regex-tester/RegexTesterTool.tsx` for the reference.
 
 ## Tray popover tools
 

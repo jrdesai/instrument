@@ -91,8 +91,10 @@ Tools that run on every keystroke (e.g. base64, JSON formatter) must:
 - Use 1500ms debounce for history capture (or `skipHistory: true` if history is not needed)
 - Pass `{ skipHistory: true }` to `callTool()` for the fast computation call
 - Record history via `addHistoryEntry()` inside a `setTimeout` — **never** by making a second `callTool()` call
+- Guard the history debounce: only call `addHistoryEntry` when the result is valid (no error, non-empty output) — don't record failed or empty runs
 - Cancel the history debounce on unmount: `useEffect(() => () => { if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current); }, [])`
-- See `src/tools/base64/` for the reference implementation
+- This unmount cleanup is required even when using `useDebouncedCallback` — import `useEffect` explicitly if needed
+- See `src/tools/html-formatter/HtmlFormatterTool.tsx` for the reference implementation (formatters); `src/tools/base64/` for encode/decode tools
 
 ### 5. Sensitive tools — never log or store content
 Tools handling secrets (JWT, API keys, passwords) must have `sensitive: true` in their registry entry.
