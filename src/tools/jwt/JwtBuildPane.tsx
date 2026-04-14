@@ -6,6 +6,7 @@ import {
   useState,
 } from "react";
 import { callTool } from "../../bridge";
+import { extractErrorMessage } from "../../lib/extractErrorMessage";
 import type { JwtAlgorithm } from "../../bindings/JwtAlgorithm";
 import type { JwtBuildInput } from "../../bindings/JwtBuildInput";
 import type { JwtBuildOutput } from "../../bindings/JwtBuildOutput";
@@ -155,12 +156,7 @@ export function JwtBuildPane({ onOpenInDecodeTab }: JwtBuildPaneProps) {
       })) as JwtBuildOutput;
       setOutput(result);
     } catch (e) {
-      const message =
-        e instanceof Error
-          ? e.message
-          : typeof e === "string"
-            ? e
-            : "Failed to run tool";
+      const message = extractErrorMessage(e, "Failed to run tool");
       setOutput({
         token: "",
         headerJson: "",

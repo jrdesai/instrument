@@ -149,6 +149,9 @@ function HashTool() {
           setDraft(text);
         }
       };
+      reader.onerror = () => {
+        setFileDropError("Failed to read file — it may be locked or unreadable.");
+      };
       reader.readAsText(file);
       e.target.value = "";
     },
@@ -204,12 +207,7 @@ function HashTool() {
             {fileName ? (
               <button
                 type="button"
-                onClick={() => {
-                  setFileName(null);
-                  setFileDropError(null);
-                  setInput("");
-                  setDraft("");
-                }}
+                onClick={handleClear}
                 className="text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
               >
                 ✕

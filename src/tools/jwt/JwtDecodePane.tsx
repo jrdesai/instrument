@@ -5,6 +5,7 @@ import {
   useState,
 } from "react";
 import { callTool } from "../../bridge";
+import { extractErrorMessage } from "../../lib/extractErrorMessage";
 import { usePopoverBootstrapStore } from "../../store";
 import type { JwtDecodeInput } from "../../bindings/JwtDecodeInput";
 import type { JwtDecodeOutput } from "../../bindings/JwtDecodeOutput";
@@ -146,14 +147,7 @@ export function JwtDecodePane() {
         })) as JwtDecodeOutput;
         setOutput(result);
       } catch (e) {
-        const message =
-          e instanceof Error
-            ? e.message
-            : typeof e === "string"
-              ? e
-              : e && typeof e === "object" && "message" in e
-                ? String((e as { message: unknown }).message)
-                : "Failed to run tool";
+        const message = extractErrorMessage(e, "Failed to run tool");
         setOutput({
           headerRaw: "",
           payloadRaw: "",
