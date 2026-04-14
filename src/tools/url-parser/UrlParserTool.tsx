@@ -232,7 +232,7 @@ function UrlParserTool() {
                     <tbody>
                       {output.params.map((p, i) => (
                         <tr
-                          key={i}
+                          key={`param-${i}-${p.key}`}
                           className="border-b border-border-light dark:border-border-dark last:border-b-0"
                         >
                           <td className="py-2 px-3 font-mono text-slate-800 dark:text-slate-200">

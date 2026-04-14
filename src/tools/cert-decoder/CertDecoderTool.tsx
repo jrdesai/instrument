@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type ChangeEvent } from "react";
 import { callTool } from "../../bridge";
 import { CopyButton, PanelHeader, ToolbarFooter } from "../../components/tool";
 import { useFileDrop } from "../../hooks/useFileDrop";
@@ -17,9 +17,9 @@ function DnTable({ fields, label }: { fields: DnField[]; label: string }) {
         {label}
       </div>
       <div className="space-y-0.5 rounded border border-border-light bg-background-light/40 dark:border-border-dark dark:bg-background-dark/40">
-        {fields.map((f, i) => (
+        {fields.map((f) => (
           <div
-            key={i}
+            key={f.label}
             className="grid grid-cols-[56px,1fr] items-center gap-2 px-2 py-1 text-xs"
           >
             <span className="font-mono text-[10px] text-slate-500">{f.label}</span>
@@ -68,6 +68,24 @@ function CertDecoderTool() {
     onError: (msg) => setFileDropError(msg),
   });
 
+  const handleFileUpload = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setFileDropError(null);
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const text = ev.target?.result;
+      if (typeof text === "string") {
+        setPem(text);
+      }
+    };
+    reader.onerror = () => {
+      setFileDropError("Failed to read file — it may be locked or unreadable.");
+    };
+    reader.readAsText(file);
+    e.target.value = "";
+  }, []);
+
   return (
     <div className="flex h-full flex-col bg-background-light font-display text-slate-100 dark:bg-background-dark">
       <div className="flex min-h-0 flex-1">
@@ -91,7 +109,17 @@ function CertDecoderTool() {
               {fileDropError}
             </p>
           ) : null}
-          <PanelHeader label="Input (PEM or DER base64)" />
+          <PanelHeader label="Input (PEM or DER base64)">
+            <label className="cursor-pointer rounded-lg border border-border-light bg-panel-light px-2.5 py-1 text-xs text-slate-500 transition-colors hover:text-slate-700 dark:border-border-dark dark:bg-panel-dark dark:text-slate-400 dark:hover:text-slate-200">
+              Upload file
+              <input
+                type="file"
+                className="sr-only"
+                accept=".pem,.crt,.cer,.txt,text/plain,application/x-pem-file,application/pkix-cert"
+                onChange={handleFileUpload}
+              />
+            </label>
+          </PanelHeader>
           <textarea
             value={pem}
             onChange={(e) => {
@@ -107,7 +135,7 @@ function CertDecoderTool() {
           {output?.error && <p className="mb-3 text-sm text-red-400">{output.error}</p>}
           {output?.certificates.map((cert, i) => (
             <div
-              key={i}
+              key={cert.serialNumber}
               className="mb-3 overflow-hidden rounded-lg border border-border-light bg-panel-light dark:border-border-dark dark:bg-panel-dark"
             >
               <div className="flex items-center justify-between border-b border-border-light px-4 py-2 dark:border-border-dark">
@@ -211,9 +239,9 @@ function CertDecoderTool() {
 
                 {cert.sans.length > 0 && (
                   <div className="flex flex-wrap gap-1">
-                    {cert.sans.map((san, idx) => (
+                    {cert.sans.map((san) => (
                       <span
-                        key={idx}
+                        key={san}
                         className="rounded bg-slate-500/20 px-2 py-0.5 font-mono text-[10px] text-slate-300"
                       >
                         {san}
@@ -223,17 +251,17 @@ function CertDecoderTool() {
                 )}
 
                 <div className="flex flex-wrap gap-1">
-                  {cert.keyUsages.map((u, idx) => (
+                  {cert.keyUsages.map((u) => (
                     <span
-                      key={idx}
+                      key={u}
                       className="rounded bg-slate-700 px-2 py-0.5 text-[10px] text-slate-300"
                     >
                       {u}
                     </span>
                   ))}
-                  {cert.extendedKeyUsages.map((u, idx) => (
+                  {cert.extendedKeyUsages.map((u) => (
                     <span
-                      key={`e${idx}`}
+                      key={`eku-${u}`}
                       className="rounded bg-slate-700 px-2 py-0.5 text-[10px] text-slate-400"
                     >
                       {u}

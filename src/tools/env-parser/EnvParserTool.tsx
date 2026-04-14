@@ -144,6 +144,9 @@ function EnvParserTool() {
           setDraft(text);
         }
       };
+      reader.onerror = () => {
+        setFileDropError("Failed to read file — it may be locked or unreadable.");
+      };
       reader.readAsText(file);
       e.target.value = "";
     },

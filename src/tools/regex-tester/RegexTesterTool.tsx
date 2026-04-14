@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useDebouncedCallback } from "use-debounce";
 import { useDraftInput, useRestoreDraft } from "../../hooks/useDraftInput";
 import { useHistoryStore } from "../../store";
@@ -496,6 +496,12 @@ const RegexTesterTool: React.FC = () => {
   const { setDraft } = useDraftInput(REGEX_TESTER_TOOL_ID);
   const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
   const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
+    };
+  }, []);
 
   const patternInputRef = useRef<HTMLInputElement | null>(null);
   const languageManuallySet = useRef(false);
