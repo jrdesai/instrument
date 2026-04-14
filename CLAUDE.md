@@ -181,6 +181,29 @@ Zustand devtools are only active in `import.meta.env.DEV` to avoid bundle bloat.
 - **Web**: Push to `main` → GitHub Actions builds → Cloudflare Pages auto-deploys
 - **CI jobs**: typecheck, lint, test:ts, rust tests, web build, wasm-sync check
 - **wasm-sync CI**: fails if `public/wasm-pkg/` differs from a fresh `pnpm run build:wasm` — prevents stale WASM being shipped
+- **Check CI after push**: use the GitHub MCP tool — do not use `gh` (not installed)
+
+---
+
+## GitHub integration
+
+GitHub MCP is configured for this project via `.mcp.json` (gitignored — contains token, never commit).
+`gh` CLI is **not installed** — use GitHub MCP tools for all GitHub API operations.
+
+| Task | Tool |
+|---|---|
+| Check CI status after push | `mcp__github__list_workflow_runs` |
+| Create a pull request | `mcp__github__create_pull_request` |
+| Read / create issues | `mcp__github__list_issues` / `mcp__github__add_issue_comment` |
+| View open PRs | `mcp__github__list_pull_requests` |
+| Check latest release | `mcp__github__get_latest_release` |
+| Scan for leaked secrets | `mcp__github__run_secret_scanning` |
+
+**PR creation format** — always include:
+```
+title: conventional commit style, under 70 chars
+body:  ## Summary (bullets) · ## Test plan (checklist) · 🤖 Generated with Claude Code
+```
 
 ---
 
