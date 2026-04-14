@@ -4,7 +4,7 @@
 
 **Instrument** is a privacy-first developer toolkit — a cross-platform desktop app (Tauri + React + TypeScript) with a web version deployed to Cloudflare Pages. All tool logic runs locally: on desktop via native Rust, on web via WebAssembly compiled from the same Rust code. No data ever leaves the user's device.
 
-Current version: **1.0.0**
+Current version: **1.2.0**
 Web: https://instrument-wqt.pages.dev
 Stack: Tauri 2 · React 18 · TypeScript · Vite · Zustand · Rust (Cargo workspace) · wasm-pack
 
@@ -30,7 +30,8 @@ instrument/
 ├── src-core/                   # Rust workspace
 │   ├── instrument-core/        # Pure Rust — all tool logic, no Tauri/WASM deps
 │   ├── instrument-desktop/     # Tauri command wrappers → delegates to instrument-core
-│   └── instrument-web/         # wasm-bindgen wrappers → delegates to instrument-core
+│   ├── instrument-web/         # wasm-bindgen wrappers → delegates to instrument-core
+│   └── regex-core/             # Regex engine (multi-engine match + explain), shared by desktop + web
 ├── src-tauri/                  # Tauri app shell (config, icons, binary)
 ├── public/wasm-pkg/            # ⚠️ COMMITTED — WASM binary served by Cloudflare
 ├── docs/
@@ -94,6 +95,10 @@ Tools that run on every keystroke (e.g. base64, JSON formatter) must:
 ### 5. Sensitive tools — never log or store content
 Tools handling secrets (JWT, API keys, passwords) must have `sensitive: true` in their registry entry.
 The bridge automatically skips history for sensitive tools.
+**Component rules for sensitive tools:**
+- Do NOT use `useDraftInput` or `useRestoreStringDraft` — these persist input to localStorage
+- Do NOT call `addHistoryEntry` manually — the bridge skip is the only history guard needed
+- Always pass `{ skipHistory: true }` to every `callTool()` call (belt-and-suspenders)
 **Logging rule**: never log input or output values anywhere in the Rust command handlers.
 Only log: tool name, duration, error message text. See `src-core/instrument-desktop/src/command_log.rs`.
 
@@ -108,7 +113,17 @@ Every tool needs an entry in `src/registry/index.ts`. The registry drives:
 - Use `platforms: ["desktop"]` for tools that need native OS access or lack WASM support
 - The Library, Search, and Dashboard automatically filter by platform — no component-level checks needed
 
-### 8. sqlformat is optional in WASM
+### 8. Result-returning desktop commands — unwrap Specta wrapper
+Desktop commands declared as `-> Result<T, String>` (currently only `tool_regex_test` and
+`tool_regex_explain` in `regex-core`) are wrapped by Specta as `{ status: "ok", data: T }` on
+desktop but return `T` directly on web/WASM. Always unwrap with:
+```ts
+import { unwrapSpectaCommandResult } from "../hooks/unwrapSpectaCommandResult";
+const value = unwrapSpectaCommandResult<T>(await callTool(..., { skipHistory: true }));
+```
+Do NOT skip this for any command that returns `Result` — the raw object will crash if used as `T`.
+
+### 9. sqlformat is optional in WASM
 `instrument-core` has a `sql` feature flag. `instrument-web` explicitly enables it (`features = ["sql"]`). If you need to exclude sqlformat from WASM again, set `default-features = false` in `instrument-web/Cargo.toml`.
 
 ---
