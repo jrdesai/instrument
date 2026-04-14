@@ -27,7 +27,9 @@ pub struct AesOutput {
     pub error: Option<String>,
 }
 
-const PBKDF2_ITERATIONS: u32 = 100_000;
+const PBKDF2_ITERATIONS: u32 = 300_000;
+/// Reject stored iteration counts outside this range (avoids DoS from bogus headers).
+const MAX_STORED_PBKDF2_ITERATIONS: u32 = 2_000_000;
 const SALT_LEN: usize = 16;
 const NONCE_LEN: usize = 12;
 
@@ -42,8 +44,8 @@ pub fn process(input: AesInput) -> AesOutput {
     }
 }
 
-fn derive_key(passphrase: &str, salt: &[u8]) -> [u8; 32] {
-    pbkdf2_hmac_array::<Sha256, 32>(passphrase.as_bytes(), salt, PBKDF2_ITERATIONS)
+fn derive_key(passphrase: &str, salt: &[u8], iterations: u32) -> [u8; 32] {
+    pbkdf2_hmac_array::<Sha256, 32>(passphrase.as_bytes(), salt, iterations)
 }
 
 fn encrypt(plaintext: &str, passphrase: &str) -> AesOutput {
@@ -52,7 +54,7 @@ fn encrypt(plaintext: &str, passphrase: &str) -> AesOutput {
     OsRng.fill_bytes(&mut salt);
     OsRng.fill_bytes(&mut nonce_bytes);
 
-    let key = derive_key(passphrase, &salt);
+    let key = derive_key(passphrase, &salt, PBKDF2_ITERATIONS);
     let Ok(cipher) = Aes256Gcm::new_from_slice(&key) else {
         return AesOutput {
             result: String::new(),
@@ -63,7 +65,9 @@ fn encrypt(plaintext: &str, passphrase: &str) -> AesOutput {
 
     match cipher.encrypt(nonce, plaintext.as_bytes()) {
         Ok(ciphertext) => {
-            let mut combined = Vec::with_capacity(SALT_LEN + NONCE_LEN + ciphertext.len());
+            let iter_bytes = PBKDF2_ITERATIONS.to_le_bytes();
+            let mut combined = Vec::with_capacity(4 + SALT_LEN + NONCE_LEN + ciphertext.len());
+            combined.extend_from_slice(&iter_bytes);
             combined.extend_from_slice(&salt);
             combined.extend_from_slice(&nonce_bytes);
             combined.extend_from_slice(&ciphertext);
@@ -90,18 +94,34 @@ fn decrypt(hex_input: &str, passphrase: &str) -> AesOutput {
         }
     };
 
-    if bytes.len() < SALT_LEN + NONCE_LEN + 1 {
+    // New format: iterations (4B LE) || salt (16B) || nonce (12B) || ciphertext
+    // Minimum valid length: 4 + 16 + 12 + 16 (GCM tag) = 48 bytes
+    if bytes.len() < 4 + SALT_LEN + NONCE_LEN + 16 {
         return AesOutput {
             result: String::new(),
-            error: Some("Input too short — must be AES-GCM encrypted hex".into()),
+            error: Some(
+                "Ciphertext format not recognised — was it encrypted with an older version?"
+                    .into(),
+            ),
         };
     }
 
-    let salt = &bytes[..SALT_LEN];
-    let nonce_bytes = &bytes[SALT_LEN..SALT_LEN + NONCE_LEN];
-    let ciphertext = &bytes[SALT_LEN + NONCE_LEN..];
+    let iterations = u32::from_le_bytes([bytes[0], bytes[1], bytes[2], bytes[3]]);
+    if iterations == 0 || iterations > MAX_STORED_PBKDF2_ITERATIONS {
+        return AesOutput {
+            result: String::new(),
+            error: Some(
+                "Ciphertext format not recognised — was it encrypted with an older version?"
+                    .into(),
+            ),
+        };
+    }
 
-    let key = derive_key(passphrase, salt);
+    let salt = &bytes[4..4 + SALT_LEN];
+    let nonce_bytes = &bytes[4 + SALT_LEN..4 + SALT_LEN + NONCE_LEN];
+    let ciphertext = &bytes[4 + SALT_LEN + NONCE_LEN..];
+
+    let key = derive_key(passphrase, salt, iterations);
     let Ok(cipher) = Aes256Gcm::new_from_slice(&key) else {
         return AesOutput {
             result: String::new(),

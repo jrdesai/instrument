@@ -209,21 +209,27 @@ pub(crate) fn decode_secret(secret: &str, enc: SecretEncoding) -> Result<Vec<u8>
 
 fn verify_hmac_sha256(secret: &[u8], message: &[u8], signature: &[u8]) -> bool {
     type HmacSha256 = Hmac<Sha256>;
-    let mut mac = HmacSha256::new_from_slice(secret).expect("HMAC key length");
+    let Ok(mut mac) = HmacSha256::new_from_slice(secret) else {
+        return false;
+    };
     mac.update(message);
     mac.verify_slice(signature).is_ok()
 }
 
 fn verify_hmac_sha384(secret: &[u8], message: &[u8], signature: &[u8]) -> bool {
     type HmacSha384 = Hmac<Sha384>;
-    let mut mac = HmacSha384::new_from_slice(secret).expect("HMAC key length");
+    let Ok(mut mac) = HmacSha384::new_from_slice(secret) else {
+        return false;
+    };
     mac.update(message);
     mac.verify_slice(signature).is_ok()
 }
 
 fn verify_hmac_sha512(secret: &[u8], message: &[u8], signature: &[u8]) -> bool {
     type HmacSha512 = Hmac<Sha512>;
-    let mut mac = HmacSha512::new_from_slice(secret).expect("HMAC key length");
+    let Ok(mut mac) = HmacSha512::new_from_slice(secret) else {
+        return false;
+    };
     mac.update(message);
     mac.verify_slice(signature).is_ok()
 }

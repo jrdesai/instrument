@@ -85,21 +85,27 @@ fn base64url_encode(bytes: &[u8]) -> String {
 
 fn sign_hmac_sha256(secret: &[u8], message: &[u8]) -> Vec<u8> {
     type HmacSha256 = Hmac<Sha256>;
-    let mut mac = HmacSha256::new_from_slice(secret).expect("HMAC key length");
+    let Ok(mut mac) = HmacSha256::new_from_slice(secret) else {
+        return Vec::new();
+    };
     mac.update(message);
     mac.finalize().into_bytes().to_vec()
 }
 
 fn sign_hmac_sha384(secret: &[u8], message: &[u8]) -> Vec<u8> {
     type HmacSha384 = Hmac<Sha384>;
-    let mut mac = HmacSha384::new_from_slice(secret).expect("HMAC key length");
+    let Ok(mut mac) = HmacSha384::new_from_slice(secret) else {
+        return Vec::new();
+    };
     mac.update(message);
     mac.finalize().into_bytes().to_vec()
 }
 
 fn sign_hmac_sha512(secret: &[u8], message: &[u8]) -> Vec<u8> {
     type HmacSha512 = Hmac<Sha512>;
-    let mut mac = HmacSha512::new_from_slice(secret).expect("HMAC key length");
+    let Ok(mut mac) = HmacSha512::new_from_slice(secret) else {
+        return Vec::new();
+    };
     mac.update(message);
     mac.finalize().into_bytes().to_vec()
 }
