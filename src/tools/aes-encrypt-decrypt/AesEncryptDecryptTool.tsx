@@ -11,6 +11,8 @@ import type { AesOutput } from "../../bindings/AesOutput";
 const RUST_COMMAND = "aes_process";
 const DEBOUNCE_MS = 150;
 const COPIED_DURATION_MS = 1500;
+const MAX_PASSPHRASE_CHARS = 10_000;
+const MAX_INPUT_BYTES = 10 * 1024 * 1024; // 10 MB
 
 function AesEncryptDecryptTool() {
   const [input, setInput] = useState("");
@@ -28,6 +30,18 @@ function AesEncryptDecryptTool() {
       if (pass === "") {
         setOutput("");
         setError(null);
+        return;
+      }
+      if (pass.length > MAX_PASSPHRASE_CHARS) {
+        setError(
+          `Passphrase too long (max ${MAX_PASSPHRASE_CHARS.toLocaleString()} characters)`
+        );
+        setOutput("");
+        return;
+      }
+      if (new TextEncoder().encode(text).length > MAX_INPUT_BYTES) {
+        setError("Input too large (max 10 MB)");
+        setOutput("");
         return;
       }
       setIsLoading(true);

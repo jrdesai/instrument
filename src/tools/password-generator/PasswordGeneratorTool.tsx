@@ -141,7 +141,7 @@ function PasswordGeneratorTool() {
 
   const handleCountChange = useCallback((value: number) => {
     if (Number.isNaN(value)) return;
-    setCount(Math.min(10, Math.max(1, value)));
+    setCount(Math.min(50, Math.max(1, value)));
   }, []);
 
   const handleToggleSymbols = useCallback((checked: boolean) => {
@@ -353,7 +353,7 @@ function PasswordGeneratorTool() {
           <input
             type="number"
             min={1}
-            max={10}
+            max={50}
             value={count}
             onChange={(e) => handleCountChange(Number(e.target.value))}
             className="w-14 px-2 py-1 text-xs bg-background-light dark:bg-background-dark border border-border-light dark:border-border-dark rounded-lg text-center text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-primary"

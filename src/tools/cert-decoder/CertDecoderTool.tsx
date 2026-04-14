@@ -1,17 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { callTool } from "../../bridge";
 import { CopyButton, PanelHeader, ToolbarFooter } from "../../components/tool";
-import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useFileDrop } from "../../hooks/useFileDrop";
-import { useHistoryStore } from "../../store";
 import type { CertDecodeInput } from "../../bindings/CertDecodeInput";
 import type { CertDecodeOutput } from "../../bindings/CertDecodeOutput";
 import type { DnField } from "../../bindings/DnField";
 
-const TOOL_ID = "cert-decoder";
 const RUST_COMMAND = "cert_decode";
 const DEBOUNCE_MS = 150;
-const HISTORY_DEBOUNCE_MS = 1500;
 
 function DnTable({ fields, label }: { fields: DnField[]; label: string }) {
   if (fields.length === 0) return null;
@@ -36,38 +32,22 @@ function DnTable({ fields, label }: { fields: DnField[]; label: string }) {
 }
 
 function CertDecoderTool() {
-  const { setDraft } = useDraftInput(TOOL_ID);
   const [pem, setPem] = useState("");
   const [fileDropError, setFileDropError] = useState<string | null>(null);
   const [output, setOutput] = useState<CertDecodeOutput | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
-  useRestoreStringDraft(TOOL_ID, setPem);
 
-  const run = useCallback(
-    async (currentPem: string) => {
-      if (!currentPem.trim()) {
-        setOutput(null);
-        return;
-      }
-      const payload: CertDecodeInput = { pem: currentPem };
-      const result = (await callTool(RUST_COMMAND, payload, {
-        skipHistory: true,
-      })) as CertDecodeOutput;
-      setOutput(result);
-      if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
-      historyDebounceRef.current = setTimeout(() => {
-        addHistoryEntry(TOOL_ID, {
-          input: payload,
-          output: result,
-          timestamp: Date.now(),
-        });
-        historyDebounceRef.current = null;
-      }, HISTORY_DEBOUNCE_MS);
-    },
-    [addHistoryEntry]
-  );
+  const run = useCallback(async (currentPem: string) => {
+    if (!currentPem.trim()) {
+      setOutput(null);
+      return;
+    }
+    const payload: CertDecodeInput = { pem: currentPem };
+    const result = (await callTool(RUST_COMMAND, payload, {
+      skipHistory: true,
+    })) as CertDecodeOutput;
+    setOutput(result);
+  }, []);
 
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -84,7 +64,6 @@ function CertDecoderTool() {
     onFile: (text) => {
       setFileDropError(null);
       setPem(text);
-      setDraft(text);
     },
     onError: (msg) => setFileDropError(msg),
   });
@@ -118,7 +97,6 @@ function CertDecoderTool() {
             onChange={(e) => {
               setFileDropError(null);
               setPem(e.target.value);
-              setDraft(e.target.value);
             }}
             placeholder="Paste PEM certificate, PEM chain, or base64-encoded DER..."
             className="min-h-0 flex-1 resize-none bg-transparent p-4 font-mono text-xs text-slate-300 focus:outline-none"
@@ -277,7 +255,6 @@ function CertDecoderTool() {
                 onClick={() => {
                   setPem("");
                   setFileDropError(null);
-                  setDraft("");
                   setOutput(null);
                 }}
                 className="rounded-lg border border-border-light bg-panel-light px-3 py-1.5 text-xs text-slate-500 dark:border-border-dark dark:bg-panel-dark dark:text-slate-400"

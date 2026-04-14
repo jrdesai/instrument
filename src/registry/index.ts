@@ -544,7 +544,7 @@ export const tools: Tool[] = [
     icon: "password",
     platforms: ["desktop", "web"],
     rustCommand: "password_process",
-    sensitive: false,
+    sensitive: true,
     keywords: [
       "password",
       "generate",
@@ -577,7 +577,7 @@ export const tools: Tool[] = [
     icon: "abc",
     platforms: ["desktop", "web"],
     rustCommand: "passphrase_process",
-    sensitive: false,
+    sensitive: true,
     keywords: [
       "passphrase",
       "password",
