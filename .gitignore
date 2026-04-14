@@ -71,3 +71,6 @@ src-tauri/WixTools/  ← Windows installer tools downloaded by Tauri
 !.cursor/rules/
 # Local temp specs
 temp/
+
+# MCP server config (contains tokens, machine-specific)
+.mcp.json

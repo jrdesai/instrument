@@ -4,6 +4,7 @@ import { CopyButton } from "../../components/tool";
 import type { LoremIpsumInput } from "../../bindings/LoremIpsumInput";
 import type { LoremIpsumOutput } from "../../bindings/LoremIpsumOutput";
 import type { LoremOutputType } from "../../bindings/LoremOutputType";
+import { extractErrorMessage } from "../../lib/extractErrorMessage";
 
 const RUST_COMMAND = "lorem_ipsum_process";
 export const TOOL_ID = "lorem-ipsum";
@@ -35,16 +36,7 @@ function LoremIpsumTool() {
         )) as LoremIpsumOutput;
         setOutput(result);
       } catch (e) {
-        const message =
-          e instanceof Error
-            ? e.message
-            : typeof e === "string"
-              ? e
-              : e && typeof e === "object" && "message" in e
-                ? String((e as { message: unknown }).message)
-                : e != null
-                  ? String(e)
-                  : "Failed to run tool";
+        const message = extractErrorMessage(e, "Failed to run tool");
         setOutput({
           result: "",
           wordCount: 0,

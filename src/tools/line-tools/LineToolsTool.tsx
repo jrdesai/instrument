@@ -83,6 +83,12 @@ function LineToolsTool() {
     };
   }, [text, operations, runProcess]);
 
+  useEffect(() => {
+    return () => {
+      if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
+    };
+  }, []);
+
   const hasSortOrDedup = operations.some((op) =>
     [
       "sortAsc",

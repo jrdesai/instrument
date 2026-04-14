@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { callTool } from "../../bridge";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
+import { extractErrorMessage } from "../../lib/extractErrorMessage";
 import { useHistoryStore } from "../../store";
 import type { WordCounterInput } from "../../bindings/WordCounterInput";
 import type { WordCounterOutput } from "../../bindings/WordCounterOutput";
@@ -97,16 +98,7 @@ function WordCounterTool() {
           }, HISTORY_DEBOUNCE_MS);
         }
       } catch (e) {
-        const message =
-          e instanceof Error
-            ? e.message
-            : typeof e === "string"
-              ? e
-              : e && typeof e === "object" && "message" in e
-                ? String((e as { message: unknown }).message)
-                : e != null
-                  ? String(e)
-                  : "Failed to run tool";
+        const message = extractErrorMessage(e, "Failed to run tool");
         setError(message);
         setOutput(null);
       } finally {

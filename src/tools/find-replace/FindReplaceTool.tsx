@@ -7,6 +7,7 @@ import {
 import { callTool } from "../../bridge";
 import { CopyButton } from "../../components/tool";
 import { useDraftInput, useRestoreDraft } from "../../hooks/useDraftInput";
+import { extractErrorMessage } from "../../lib/extractErrorMessage";
 import { useHistoryStore } from "../../store";
 import type { FindReplaceInput } from "../../bindings/FindReplaceInput";
 import type { FindReplaceOutput } from "../../bindings/FindReplaceOutput";
@@ -147,16 +148,7 @@ function FindReplaceTool() {
           }, HISTORY_DEBOUNCE_MS);
         }
       } catch (e) {
-        const message =
-          e instanceof Error
-            ? e.message
-            : typeof e === "string"
-              ? e
-              : e && typeof e === "object" && "message" in e
-                ? String((e as { message: unknown }).message)
-                : e != null
-                  ? String(e)
-                  : "Failed to run tool";
+        const message = extractErrorMessage(e, "Failed to run tool");
         setOutput({
           result: currentText,
           matchCount: 0,

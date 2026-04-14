@@ -13,6 +13,7 @@ import hljs from "highlight.js";
 import hljsGitHubLight from "highlight.js/styles/github.css?url";
 import hljsGitHubDark from "highlight.js/styles/github-dark.css?url";
 import { CopyButton } from "../../components/tool";
+import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useFileDrop } from "../../hooks/useFileDrop";
 import { usePreferenceStore } from "../../store";
 
@@ -91,8 +92,10 @@ type ToolbarItem =
 function MarkdownEditorTool() {
   const isDark = useEffectiveDark();
   useHljsStylesheet(isDark);
+  const { setDraft } = useDraftInput("markdown-editor");
 
   const [source, setSource] = useState("");
+  useRestoreStringDraft("markdown-editor", setSource);
   const [html, setHtml] = useState("");
   const [viewMode, setViewMode] = useState<ViewMode>("split");
   const [wordWrap, setWordWrap] = useState(true);
@@ -132,6 +135,7 @@ function MarkdownEditorTool() {
       setFileDropError(null);
       setFileName(filename);
       setSource(text);
+      setDraft(text);
     },
     onError: (msg) => setFileDropError(msg),
   });
@@ -142,10 +146,17 @@ function MarkdownEditorTool() {
     setFileDropError(null);
     setFileName(file.name);
     const reader = new FileReader();
-    reader.onload = (ev) => setSource(ev.target?.result as string);
+    reader.onload = (ev) => {
+      const text = ev.target?.result as string;
+      setSource(text);
+      setDraft(text ?? "");
+    };
+    reader.onerror = () => {
+      setFileDropError("Failed to read file — it may be locked or unreadable.");
+    };
     reader.readAsText(file);
     e.target.value = "";
-  }, []);
+  }, [setDraft]);
 
   const downloadMd = useCallback(() => {
     const blob = new Blob([source], { type: "text/markdown" });
@@ -423,6 +434,7 @@ function MarkdownEditorTool() {
               onChange={(e) => {
                 setFileDropError(null);
                 setSource(e.target.value);
+                setDraft(e.target.value);
               }}
               onScroll={viewMode === "split" ? handleEditorScroll : undefined}
               onKeyDown={handleKeyDown}

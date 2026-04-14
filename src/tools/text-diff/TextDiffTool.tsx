@@ -9,6 +9,7 @@ import { CopyButton, ToolbarFooter } from "../../components/tool";
 import { callTool } from "../../bridge";
 import { useDraftInput, useRestoreDraft } from "../../hooks/useDraftInput";
 import { useFileDrop } from "../../hooks/useFileDrop";
+import { extractErrorMessage } from "../../lib/extractErrorMessage";
 import { useHistoryStore } from "../../store";
 import type { AnnotatedLine } from "../../bindings/TextDiffAnnotatedLine";
 import type { DiffGranularity } from "../../bindings/DiffGranularity";
@@ -135,6 +136,9 @@ function TextDiffTool() {
           setDraft({ left: text, right: rightInput });
         }
       };
+      reader.onerror = () => {
+        setLeftFileDropError("Failed to read file — it may be locked or unreadable.");
+      };
       reader.readAsText(file);
       e.target.value = "";
     },
@@ -154,6 +158,9 @@ function TextDiffTool() {
           setRightInput(text);
           setDraft({ left: leftInput, right: text });
         }
+      };
+      reader.onerror = () => {
+        setRightFileDropError("Failed to read file — it may be locked or unreadable.");
       };
       reader.readAsText(file);
       e.target.value = "";
@@ -216,16 +223,7 @@ function TextDiffTool() {
           historyDebounceRef.current = null;
         }, HISTORY_DEBOUNCE_MS);
       } catch (e) {
-        const message =
-          e instanceof Error
-            ? e.message
-            : typeof e === "string"
-              ? e
-              : e && typeof e === "object" && "message" in e
-                ? String((e as { message: unknown }).message)
-                : e != null
-                  ? String(e)
-                  : "Diff failed";
+        const message = extractErrorMessage(e, "Diff failed");
         setError(message);
         setOutput(null);
       }
@@ -514,8 +512,11 @@ function TextDiffTool() {
                 {toAnnotatedLines(output?.leftAnnotated).length === 0 && (
                   <span className="text-slate-500">—</span>
                 )}
-                {toAnnotatedLines(output?.leftAnnotated).map((line, i) => (
-                  <div key={i} className={lineClass(line.annotation, "left", line.spans.length > 0 && !line.fellBack)}>
+                {toAnnotatedLines(output?.leftAnnotated).map((line) => (
+                  <div
+                    key={`left-${line.lineNumber}-${line.annotation}`}
+                    className={lineClass(line.annotation, "left", line.spans.length > 0 && !line.fellBack)}
+                  >
                     <span className="select-none text-slate-700 w-8 text-right mr-3 flex-shrink-0 inline-block">
                       {line.lineNumber}
                     </span>
@@ -546,8 +547,11 @@ function TextDiffTool() {
                 {toAnnotatedLines(output?.rightAnnotated).length === 0 && (
                   <span className="text-slate-500">—</span>
                 )}
-                {toAnnotatedLines(output?.rightAnnotated).map((line, i) => (
-                  <div key={i} className={lineClass(line.annotation, "right", line.spans.length > 0 && !line.fellBack)}>
+                {toAnnotatedLines(output?.rightAnnotated).map((line) => (
+                  <div
+                    key={`right-${line.lineNumber}-${line.annotation}`}
+                    className={lineClass(line.annotation, "right", line.spans.length > 0 && !line.fellBack)}
+                  >
                     <span className="select-none text-slate-700 w-8 text-right mr-3 flex-shrink-0 inline-block">
                       {line.lineNumber}
                     </span>
