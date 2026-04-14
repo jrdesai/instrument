@@ -14,7 +14,7 @@ import { APP_VERSION } from "../../version";
 
 const MAX_RECENT = 8;
 
-const ROLES = ["All", "Frontend", "Backend", "DevOps", "Security", "Data"] as const;
+const ROLES = ["All", "Frontend", "Backend", "DevOps", "Security", "Data", "General"] as const;
 type RoleFilter = (typeof ROLES)[number];
 
 type HomeView =
@@ -76,15 +76,17 @@ function WelcomeCard({ onDismiss }: { onDismiss: () => void }) {
 
       <div className="flex flex-wrap items-center justify-center gap-2.5">
         {isWeb && (
-          <span
-            title="Desktop app coming soon"
-            className="flex cursor-not-allowed items-center gap-1.5 rounded-lg bg-slate-200 px-4 py-2 text-sm font-semibold text-slate-400 dark:bg-slate-700 dark:text-slate-500"
+          <a
+            href="https://github.com/jrdesai/instrument/releases"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1.5 rounded-lg bg-white px-4 py-2 text-sm font-semibold text-slate-700 ring-1 ring-slate-200 transition-colors hover:ring-slate-300 dark:bg-slate-800 dark:text-slate-300 dark:ring-slate-700 dark:hover:ring-slate-600"
           >
             <span className="material-symbols-outlined text-[16px]" aria-hidden>
               download
             </span>
-            Desktop App — Coming Soon
-          </span>
+            Download Desktop App
+          </a>
         )}
         <a
           href="https://github.com/jrdesai/instrument"

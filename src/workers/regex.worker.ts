@@ -3,9 +3,10 @@ import { callToolWeb } from "../bridge/web";
 interface RegexWorkerRequest {
   id: string;
   pattern: string;
-  text: string;
   engine: string;
+  text?: string;
   flags?: string;
+  explain?: boolean;
 }
 
 interface RegexWorkerSuccessResponse {
@@ -26,13 +27,29 @@ type RegexWorkerResponse = RegexWorkerSuccessResponse | RegexWorkerErrorResponse
 // We delegate to the generic WASM bridge so initialization and caching are handled there.
 
 self.onmessage = async (e: MessageEvent<RegexWorkerRequest>) => {
-  const { id, pattern, text, engine, flags } = e.data;
+  const { id, pattern, text, engine, flags, explain } = e.data;
 
   try {
+    if (explain) {
+      const result = await callToolWeb("tool_regex_explain", {
+        pattern,
+        engine,
+      });
+
+      const response: RegexWorkerResponse = {
+        id,
+        success: true,
+        result,
+      };
+
+      (self as unknown as Worker).postMessage(response);
+      return;
+    }
+
     // This expects a wasm-bindgen export named "regex_match" to exist in instrument-web.
     const result = (await callToolWeb("regex_match", {
       pattern,
-      text,
+      text: text ?? "",
       engine,
       flags,
     })) as Array<{ start: number; end: number; value: string; groups?: (string | null)[] }>;

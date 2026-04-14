@@ -103,12 +103,6 @@ function PassphraseGeneratorTool() {
   );
 
   useEffect(() => {
-    runGenerate(wordCount, count, separator, capitalize, includeNumber, includeSymbol, {
-      skipHistory: true,
-    });
-  }, []);
-
-  useEffect(() => {
     scheduleGenerate(wordCount, count, separator, capitalize, includeNumber, includeSymbol);
   }, [
     wordCount,

@@ -52,7 +52,7 @@ export function HistoryPage() {
             History
           </h1>
           <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
-            Session only — cleared when the app closes
+            Preserved across sessions · max 100 entries per tool · never leaves your device
           </p>
         </div>
         {allEntries.length > 0 && (
@@ -79,13 +79,13 @@ export function HistoryPage() {
           </div>
         ) : (
           <div className="px-8 py-6 space-y-2">
-            {allEntries.map((entry, idx) => {
+            {allEntries.map((entry) => {
               const tool = getToolById(entry.toolId);
 
               if (!tool) {
                 return (
                   <div
-                    key={idx}
+                    key={`${entry.toolId}-${entry.timestamp}`}
                     title="Tool no longer available"
                     className="flex items-start gap-4 p-4 rounded-lg border border-dashed border-slate-200 dark:border-slate-700 bg-panel-light/80 dark:bg-panel-dark/80"
                   >
@@ -121,7 +121,7 @@ export function HistoryPage() {
 
               return (
                 <div
-                  key={idx}
+                  key={`${entry.toolId}-${entry.timestamp}`}
                   className="group relative flex items-start gap-4 p-4 rounded-lg border border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark transition-colors hover:border-primary/40"
                 >
                   <button

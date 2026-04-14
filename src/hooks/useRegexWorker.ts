@@ -75,6 +75,10 @@ export function useRegexWorker() {
     worker.onerror = (e) => {
       // eslint-disable-next-line no-console
       console.error("Regex worker crashed:", e.message);
+      // Reject all in-flight promises so callers don't hang forever.
+      pendingRef.current.forEach((cb) => cb(null, e.message ?? "Regex worker crashed"));
+      pendingRef.current.clear();
+      workerRef.current = null;
     };
 
     return () => {
