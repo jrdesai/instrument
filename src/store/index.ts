@@ -183,7 +183,7 @@ export const useHistoryStore = create<HistoryState>()(
 // ---------------------------------------------------------------------------
 
 function generateId(): string {
-  return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+  return crypto.randomUUID();
 }
 
 interface ChainState {
@@ -197,17 +197,22 @@ interface ChainState {
 }
 
 /**
- * Checks whether the output shape of stepA can feed into stepB (stepB accepts
- * a field from stepA's output as input). Stub: refine when tool I/O types exist.
+ * @internal Stub — always returns true until tool I/O types are defined. Do not use in UI logic.
  */
-export function areStepsCompatible(_stepA: Tool, _stepB: Tool): boolean {
+function areStepsCompatible(_stepA: Tool, _stepB: Tool): boolean {
   // TODO: when ToolInputMap / output types exist, check stepA output has a field stepB accepts
   return true;
 }
 
+void areStepsCompatible;
+
 /**
  * Store for chains (sequences of tools). Create chains, add/remove steps,
  * and run a chain. activeChain is the one currently being edited or viewed.
+ *
+ * Intentionally NOT persisted: chain execution (runChain) is not yet implemented,
+ * and chain data structures may change significantly before the feature ships.
+ * Add persist() here once chains are stable.
  */
 const chainStoreImpl = immer<ChainState>((set, get) => ({
   chains: [],
@@ -251,6 +256,9 @@ const chainStoreImpl = immer<ChainState>((set, get) => ({
     const chain = get().chains.find((c: Chain) => c.id === chainId);
     if (!chain) return;
     // TODO: iterate steps, call callTool for each, pass previous output into next step
+    throw new Error(
+      `runChain: chain execution is not yet implemented (chain: "${chain.name}")`
+    );
   },
 
   setActiveChain: (chain) =>

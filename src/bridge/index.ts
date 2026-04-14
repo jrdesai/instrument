@@ -7,7 +7,6 @@
  * usePlatform() from this file so the UI stays platform-agnostic and testable.
  */
 
-import { useMemo } from "react";
 import { getToolByRustCommand } from "../registry";
 import { useHistoryStore } from "../store";
 
@@ -53,7 +52,14 @@ export async function callTool(
       result = await callToolDesktop(toolId, input);
     } else {
       const { callToolWeb } = await import("./web");
-      result = await callToolWeb(tool?.wasmExport ?? toolId, input);
+      const wasmExportName = tool?.wasmExport ?? toolId;
+      if (import.meta.env.DEV && tool && !tool.wasmExport) {
+        console.warn(
+          `[bridge] "${toolId}" has no wasmExport in registry — falling back to command name. ` +
+            `Add wasmExport if the WASM export name differs.`
+        );
+      }
+      result = await callToolWeb(wasmExportName, input);
     }
     const duration = performance.now() - start;
     if (import.meta.env.DEV) {
@@ -93,29 +99,5 @@ export async function callTool(
  * Use this in components when you need to branch on desktop vs web.
  */
 export function usePlatform(): { isDesktop: boolean; isWeb: boolean } {
-  return useMemo(
-    () => ({
-      isDesktop,
-      isWeb,
-    }),
-    []
-  );
+  return { isDesktop, isWeb };
 }
-
-// tray-icon temporarily disabled — re-enable by uncommenting below
-// export async function updateTrayMenu(tools: TrayToolItem[]): Promise<void> {
-//   if (!isDesktop) return;
-//   const { invoke } = await import("@tauri-apps/api/core");
-//   await invoke("update_tray_menu", { tools }).catch(() => {});
-// }
-// export function onTrayNavigateToTool(handler: (toolId: string) => void): () => void {
-//   if (!isDesktop) return () => {};
-//   let cancelled = false;
-//   let unlisten: (() => void) | undefined;
-//   void import("@tauri-apps/api/event").then(({ listen }) => {
-//     if (cancelled) return;
-//     void listen<string>("navigate-to-tool", (event) => { handler(event.payload); })
-//       .then((fn) => { if (!cancelled) unlisten = fn; });
-//   });
-//   return () => { cancelled = true; unlisten?.(); };
-// }

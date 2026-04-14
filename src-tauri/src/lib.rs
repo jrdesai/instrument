@@ -13,16 +13,22 @@ use tauri_specta::{collect_commands, Builder};
 
 /// `tauri-specta` emits imports/helpers at EOF that trip `tsc` `noUnusedLocals` when no events exist.
 fn prepend_ts_nocheck_if_needed(path: &Path) {
-    let Ok(content) = std::fs::read_to_string(path) else {
-        return;
+    let content = match std::fs::read_to_string(path) {
+        Ok(c) => c,
+        Err(e) => {
+            eprintln!(
+                "WARN prepend_ts_nocheck: could not read {}: {} \
+                 (tsc may fail with noUnusedLocals errors)",
+                path.display(),
+                e
+            );
+            return;
+        }
     };
     if content.starts_with("// @ts-nocheck") {
         return;
     }
-    let _ = std::fs::write(
-        path,
-        format!("// @ts-nocheck\n{content}"),
-    );
+    let _ = std::fs::write(path, format!("// @ts-nocheck\n{content}"));
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -146,7 +152,9 @@ pub fn run() {
 
             let initial_menu = tray::build_tray_menu(app.handle(), &[])?;
             let Some(icon) = app.default_window_icon().cloned() else {
-                log::warn!("Tray skipped: no default window icon configured");
+                log::error!(
+                    "Tray skipped: no default window icon configured — check tauri.conf.json"
+                );
                 return Ok(());
             };
             TrayIconBuilder::with_id("main-tray")
@@ -171,9 +179,8 @@ pub fn run() {
                 })
                 .build(app)?;
 
-            let app_handle = app.handle().clone();
-            let hotkey_handle = app_handle.clone();
-            if let Err(e) = app_handle.global_shortcut().on_shortcut(
+            let hotkey_handle = app.handle().clone();
+            if let Err(e) = app.handle().global_shortcut().on_shortcut(
                 hotkey::POPOVER_HOTKEY,
                 move |_app, _shortcut, event| {
                     if event.state == ShortcutState::Pressed {

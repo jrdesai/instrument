@@ -11,7 +11,6 @@ export type ToolCategory =
   | "numbers"
   | "code"
   | "network"
-  | "design"
   | "data"
   | "media";
 

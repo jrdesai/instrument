@@ -1,134 +1,132 @@
 //! WASM bindings for Instrument tools. Each export mirrors a Tauri command or shared core API.
 
 use instrument_core::auth::basic_auth::{
-    process as basic_auth_core, BasicAuthInput, BasicAuthOutput,
+    process as basic_auth_core, BasicAuthInput,
 };
 use instrument_core::auth::jwt_builder::{
-    process as jwt_build_process_core, JwtBuildInput, JwtBuildOutput,
+    process as jwt_build_process_core, JwtBuildInput,
 };
 use instrument_core::auth::jwt_decoder::{
-    process as jwt_decode_process_core, JwtDecodeInput, JwtDecodeOutput,
+    process as jwt_decode_process_core, JwtDecodeInput,
 };
-use instrument_core::crypto::aes::{process as aes_process_core, AesInput, AesOutput};
+use instrument_core::crypto::aes::{process as aes_process_core, AesInput};
 use instrument_core::crypto::api_key::{
-    process as api_key_process_core, ApiKeyInput, ApiKeyOutput,
+    process as api_key_process_core, ApiKeyInput,
 };
 use instrument_core::crypto::cert::{
-    process as cert_decode_core, CertDecodeInput, CertDecodeOutput,
+    process as cert_decode_core, CertDecodeInput,
 };
-use instrument_core::crypto::hash::{process as hash_process_core, HashInput, HashOutput};
-use instrument_core::crypto::nanoid::{process as nanoid_process_core, NanoIdInput, NanoIdOutput};
+use instrument_core::crypto::hash::{process as hash_process_core, HashInput};
+use instrument_core::crypto::nanoid::{process as nanoid_process_core, NanoIdInput};
 use instrument_core::crypto::passphrase::{
-    process as passphrase_process_core, PassphraseInput, PassphraseOutput,
+    process as passphrase_process_core, PassphraseInput,
 };
 use instrument_core::crypto::password::{
-    process as password_process_core, PasswordInput, PasswordOutput,
+    process as password_process_core, PasswordInput,
 };
-use instrument_core::crypto::totp::{process as totp_process_core, TotpInput, TotpOutput};
+use instrument_core::crypto::totp::{process as totp_process_core, TotpInput};
 use instrument_core::crypto::ulid::{
     inspect as ulid_inspect_core, process as ulid_process_core, UlidInput, UlidInspectInput,
-    UlidInspectOutput, UlidOutput,
 };
 use instrument_core::crypto::uuid_gen::{
     inspect as uuid_inspect_core, process as uuid_process_core, UuidInput, UuidInspectInput,
-    UuidInspectOutput, UuidOutput,
 };
 use instrument_core::csv::{
     process as csv_to_json_process_core, process_json_to_csv as json_to_csv_process_core,
-    CsvToJsonInput, CsvToJsonOutput, JsonToCsvInput, JsonToCsvOutput,
+    CsvToJsonInput, JsonToCsvInput,
 };
-use instrument_core::datetime::cron::{process as cron_process_core, CronInput, CronOutput};
+use instrument_core::datetime::cron::{process as cron_process_core, CronInput};
 use instrument_core::datetime::iso8601::{
-    process as iso8601_process_core, Iso8601Input, Iso8601Output,
+    process as iso8601_process_core, Iso8601Input,
 };
 use instrument_core::datetime::timestamp::{
-    process as timestamp_process_core, TimestampInput, TimestampOutput,
+    process as timestamp_process_core, TimestampInput,
 };
 use instrument_core::datetime::timezone::{
-    process as timezone_process_core, TimezoneInput, TimezoneOutput,
+    process as timezone_process_core, TimezoneInput,
 };
 use instrument_core::encoding::base64::{process, Base64Input};
 use instrument_core::encoding::color::{process as color_process_core, ColorInput};
-use instrument_core::encoding::hex::{process as hex_process_core, HexInput, HexOutput};
+use instrument_core::encoding::hex::{process as hex_process_core, HexInput};
 use instrument_core::encoding::html_entity::{
-    process as html_entity_process_core, HtmlEntityInput, HtmlEntityOutput,
+    process as html_entity_process_core, HtmlEntityInput,
 };
-use instrument_core::encoding::qrcode::{process as qr_process_core, QrCodeInput, QrCodeOutput};
-use instrument_core::encoding::url::{process as url_process, UrlEncodeInput, UrlEncodeOutput};
+use instrument_core::encoding::qrcode::{process as qr_process_core, QrCodeInput};
+use instrument_core::encoding::url::{process as url_process, UrlEncodeInput};
 use instrument_core::expression::{
-    process as expression_eval_process_core, ExprEvalInput, ExprEvalOutput,
+    process as expression_eval_process_core, ExprEvalInput,
 };
 use instrument_core::json::config_converter::{
-    process as config_convert_core, ConfigConvertInput, ConfigConvertOutput,
+    process as config_convert_core, ConfigConvertInput,
 };
 use instrument_core::json::converter::{
-    process as json_convert_process_core, JsonConvertInput, JsonConvertOutput,
+    process as json_convert_process_core, JsonConvertInput,
 };
 use instrument_core::json::diff::{
-    process as json_diff_process_core, JsonDiffInput, JsonDiffOutput,
+    process as json_diff_process_core, JsonDiffInput,
 };
 use instrument_core::json::formatter::{
-    process as json_format_process_core, JsonFormatInput, JsonFormatOutput,
+    process as json_format_process_core, JsonFormatInput,
 };
 use instrument_core::json::path::{
-    process as json_path_process_core, JsonPathInput, JsonPathOutput,
+    process as json_path_process_core, JsonPathInput,
 };
 use instrument_core::json::schema_validator::{
-    process as json_schema_validate_core, JsonSchemaValidateInput, JsonSchemaValidateOutput,
+    process as json_schema_validate_core, JsonSchemaValidateInput,
 };
 use instrument_core::json::validator::{
-    process as json_validate_process_core, JsonValidateInput, JsonValidateOutput,
+    process as json_validate_process_core, JsonValidateInput,
 };
-use instrument_core::network::cidr::{process as cidr_process_core, CidrInput, CidrOutput};
+use instrument_core::network::cidr::{process as cidr_process_core, CidrInput};
 use instrument_core::network::user_agent::{
-    process as ua_parse_process_core, UaParseInput, UaParseOutput,
+    process as ua_parse_process_core, UaParseInput,
 };
-use instrument_core::network::{process as url_parse_process, UrlParseInput, UrlParseOutput};
+use instrument_core::network::{process as url_parse_process, UrlParseInput};
 use instrument_core::numbers::base_converter::{
-    process as base_converter_process_core, BaseConverterInput, BaseConverterOutput,
+    process as base_converter_process_core, BaseConverterInput,
 };
 use instrument_core::numbers::bitwise::{
-    process as bitwise_process_core, BitwiseInput, BitwiseOutput,
+    process as bitwise_process_core, BitwiseInput,
 };
-use instrument_core::numbers::chmod::{process as chmod_process_core, ChmodInput, ChmodOutput};
-use instrument_core::numbers::semver::{process as semver_process_core, SemverInput, SemverOutput};
+use instrument_core::numbers::chmod::{process as chmod_process_core, ChmodInput};
+use instrument_core::numbers::semver::{process as semver_process_core, SemverInput};
 use instrument_core::numbers::unit_converter::{
-    process as unit_convert_core, UnitConverterInput, UnitConverterOutput,
+    process as unit_convert_core, UnitConverterInput,
 };
-use instrument_core::sql::{process as sql_format_process_core, SqlFormatInput, SqlFormatOutput};
-use instrument_core::text::case::{process as case_process_core, CaseInput, CaseOutput};
+use instrument_core::sql::{process as sql_format_process_core, SqlFormatInput};
+use instrument_core::text::case::{process as case_process_core, CaseInput};
 use instrument_core::text::diff::{
-    process as text_diff_process_core, TextDiffInput, TextDiffOutput,
+    process as text_diff_process_core, TextDiffInput,
 };
 use instrument_core::text::env_parser::{
-    process as env_parse_process_core, EnvParseInput, EnvParseOutput,
+    process as env_parse_process_core, EnvParseInput,
 };
 use instrument_core::text::find_replace::{
-    process as find_replace_process_core, FindReplaceInput, FindReplaceOutput,
+    process as find_replace_process_core, FindReplaceInput,
 };
 use instrument_core::text::line_tools::{
-    process as line_tools_process_core, LineToolsInput, LineToolsOutput,
+    process as line_tools_process_core, LineToolsInput,
 };
 use instrument_core::text::lorem_ipsum::{
-    process as lorem_ipsum_process_core, LoremIpsumInput, LoremIpsumOutput,
+    process as lorem_ipsum_process_core, LoremIpsumInput,
 };
-use instrument_core::text::slug::{process as slug_generate_core, SlugInput, SlugOutput};
+use instrument_core::text::slug::{process as slug_generate_core, SlugInput};
 use instrument_core::text::string_escaper::{
-    process as string_escaper_process_core, StringEscaperInput, StringEscaperOutput,
+    process as string_escaper_process_core, StringEscaperInput,
 };
 use instrument_core::text::unicode::{
-    process as unicode_inspect_core, UnicodeInspectInput, UnicodeInspectOutput,
+    process as unicode_inspect_core, UnicodeInspectInput,
 };
 use instrument_core::text::word_counter::{
-    process as word_counter_process_core, WordCounterInput, WordCounterOutput,
+    process as word_counter_process_core, WordCounterInput,
 };
 use instrument_core::text::fake_data::{
-    process as fake_data_process_core, FakeDataInput, FakeDataOutput,
+    process as fake_data_process_core, FakeDataInput,
 };
-use instrument_core::html::{process as html_format_process_core, HtmlFormatInput, HtmlFormatOutput};
-use instrument_core::xml::{process as xml_format_process_core, XmlFormatInput, XmlFormatOutput};
+use instrument_core::html::{process as html_format_process_core, HtmlFormatInput};
+use instrument_core::xml::{process as xml_format_process_core, XmlFormatInput};
 use instrument_core::yaml_fmt::{
-    process as yaml_format_process_core, YamlFormatInput, YamlFormatOutput,
+    process as yaml_format_process_core, YamlFormatInput,
 };
 use regex_core::router as regex_router;
 use regex_core::types::{
@@ -138,509 +136,106 @@ use regex_core::types::{
 use serde_wasm_bindgen::{from_value, to_value};
 use wasm_bindgen::prelude::*;
 
-/// Base64 encode/decode. Receives a Base64Input (camelCase) and returns a Base64Output (camelCase).
-#[wasm_bindgen(js_name = base64_process)]
-pub fn base64_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: Base64Input = from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
-    let output = process(input);
-    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
+/// Generates a wasm-bindgen export for a tool that takes a single serialisable
+/// input and returns a single serialisable output.
+///
+/// Usage:
+///   tool_binding!(js_name_str, wasm_fn_ident, InputType, core_fn_path);
+macro_rules! tool_binding {
+    ($js_name:literal, $fn_name:ident, $input_ty:ty, $core_fn:path) => {
+        #[wasm_bindgen(js_name = $js_name)]
+        pub fn $fn_name(js_input: JsValue) -> Result<JsValue, JsValue> {
+            let input: $input_ty = from_value(js_input)
+                .map_err(|e| JsValue::from_str(&e.to_string()))?;
+            let output = $core_fn(input);
+            to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
+        }
+    };
 }
 
-/// URL percent-encode/decode. Receives UrlEncodeInput (camelCase) and returns UrlEncodeOutput (camelCase).
-#[wasm_bindgen(js_name = url_encode_process)]
-pub fn url_encode_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: UrlEncodeInput =
-        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
-    let output: UrlEncodeOutput = url_process(input);
-    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
-}
-
-/// URL parser. Receives UrlParseInput (camelCase) and returns UrlParseOutput (camelCase).
-#[wasm_bindgen(js_name = tool_url_parse)]
-pub fn tool_url_parse_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: UrlParseInput =
-        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
-    let output: UrlParseOutput = url_parse_process(input);
-    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
-}
-
-/// CIDR calculator. Receives CidrInput and returns CidrOutput.
-#[wasm_bindgen(js_name = cidr_calculate)]
-pub fn cidr_calculate_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: CidrInput = from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
-    let output: CidrOutput = cidr_process_core(input);
-    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
-}
-
-/// User-Agent parser. Receives UaParseInput (camelCase) and returns UaParseOutput (camelCase).
-#[wasm_bindgen(js_name = ua_parse)]
-pub fn ua_parse_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: UaParseInput =
-        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
-    let output: UaParseOutput = ua_parse_process_core(input);
-    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
-}
-
-/// CSV → JSON converter. Receives CsvToJsonInput (camelCase) and returns CsvToJsonOutput (camelCase).
-#[wasm_bindgen(js_name = tool_csv_to_json)]
-pub fn tool_csv_to_json_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: CsvToJsonInput =
-        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
-    let output: CsvToJsonOutput = csv_to_json_process_core(input);
-    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
-}
-
-/// JSON → CSV converter. Receives JsonToCsvInput (camelCase) and returns JsonToCsvOutput (camelCase).
-#[wasm_bindgen(js_name = tool_json_to_csv)]
-pub fn tool_json_to_csv_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: JsonToCsvInput =
-        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
-    let output: JsonToCsvOutput = json_to_csv_process_core(input);
-    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
-}
-
-/// HTML formatter. Receives HtmlFormatInput (camelCase) and returns HtmlFormatOutput (camelCase).
-#[wasm_bindgen(js_name = html_format)]
-pub fn html_format_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: HtmlFormatInput =
-        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
-    let output: HtmlFormatOutput = html_format_process_core(input);
-    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
-}
-
-/// XML formatter. Receives XmlFormatInput (camelCase) and returns XmlFormatOutput (camelCase).
-#[wasm_bindgen(js_name = tool_xml_format)]
-pub fn tool_xml_format_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: XmlFormatInput =
-        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
-    let output: XmlFormatOutput = xml_format_process_core(input);
-    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
-}
-
-/// YAML formatter. Receives YamlFormatInput (camelCase) and returns YamlFormatOutput (camelCase).
-#[wasm_bindgen(js_name = tool_yaml_format)]
-pub fn tool_yaml_format_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: YamlFormatInput =
-        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
-    let output: YamlFormatOutput = yaml_format_process_core(input);
-    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
-}
-
-/// SQL formatter. Receives SqlFormatInput (camelCase) and returns SqlFormatOutput (camelCase).
-#[wasm_bindgen(js_name = tool_sql_format)]
-pub fn tool_sql_format_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: SqlFormatInput =
-        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
-    let output: SqlFormatOutput = sql_format_process_core(input);
-    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
-}
-
-/// Expression evaluator. Receives ExprEvalInput (camelCase) and returns ExprEvalOutput (camelCase).
-#[wasm_bindgen(js_name = tool_expression_eval)]
-pub fn tool_expression_eval_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: ExprEvalInput =
-        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
-    let output: ExprEvalOutput = expression_eval_process_core(input);
-    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
-}
-
-/// HTML entity encode/decode. Receives HtmlEntityInput (camelCase) and returns HtmlEntityOutput (camelCase).
-#[wasm_bindgen(js_name = html_entity_process)]
-pub fn html_entity_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: HtmlEntityInput =
-        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
-    let output: HtmlEntityOutput = html_entity_process_core(input);
-    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
-}
-
-/// Hex encode/decode. Receives HexInput (camelCase) and returns HexOutput (camelCase).
-#[wasm_bindgen(js_name = hex_process)]
-pub fn hex_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: HexInput = from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
-    let output: HexOutput = hex_process_core(input);
-    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
-}
-
-/// Colour converter. Receives ColorInput (camelCase) and returns ColorOutput (camelCase).
-#[wasm_bindgen(js_name = color_convert)]
-pub fn color_convert_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: ColorInput = from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
-    let output = color_process_core(input);
-    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
-}
-
-/// QR code generator.
-#[wasm_bindgen(js_name = qr_generate)]
-pub fn qr_generate_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: QrCodeInput = from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
-    let output: QrCodeOutput = qr_process_core(input);
-    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
-}
-
-/// Combined hash. Receives HashInput (camelCase) and returns HashOutput (camelCase).
-#[wasm_bindgen(js_name = hash_process)]
-pub fn hash_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: HashInput = from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
-    let output: HashOutput = hash_process_core(input);
-    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
-}
-
-/// UUID generation. Receives UuidInput (camelCase) and returns UuidOutput (camelCase).
-#[wasm_bindgen(js_name = uuid_process)]
-pub fn uuid_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: UuidInput = from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
-    let output: UuidOutput = uuid_process_core(input);
-    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
-}
-
-/// UUID inspection. Receives UuidInspectInput (camelCase) and returns UuidInspectOutput (camelCase).
-#[wasm_bindgen(js_name = uuid_inspect)]
-pub fn uuid_inspect_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: UuidInspectInput =
-        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
-    let output: UuidInspectOutput = uuid_inspect_core(input);
-    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
-}
-
-/// ULID generation. Receives UlidInput (camelCase) and returns UlidOutput (camelCase).
-#[wasm_bindgen(js_name = ulid_process)]
-pub fn ulid_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: UlidInput = from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
-    let output: UlidOutput = ulid_process_core(input);
-    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
-}
-
-/// ULID inspection. Receives UlidInspectInput (camelCase) and returns UlidInspectOutput (camelCase).
-#[wasm_bindgen(js_name = ulid_inspect)]
-pub fn ulid_inspect_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: UlidInspectInput =
-        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
-    let output: UlidInspectOutput = ulid_inspect_core(input);
-    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
-}
-
-/// Text case converter. Receives CaseInput (camelCase) and returns CaseOutput (camelCase).
-#[wasm_bindgen(js_name = case_process)]
-pub fn case_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: CaseInput = from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
-    let output: CaseOutput = case_process_core(input);
-    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
-}
-
-/// API key generation. Receives ApiKeyInput (camelCase) and returns ApiKeyOutput (camelCase).
-#[wasm_bindgen(js_name = api_key_process)]
-pub fn api_key_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: ApiKeyInput = from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
-    let output: ApiKeyOutput = api_key_process_core(input);
-    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
-}
-
-/// X.509 / PEM certificate decoder.
-#[wasm_bindgen(js_name = cert_decode)]
-pub fn cert_decode_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: CertDecodeInput =
-        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
-    let output: CertDecodeOutput = cert_decode_core(input);
-    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
-}
-
-/// Password generation. Receives PasswordInput (camelCase) and returns PasswordOutput (camelCase).
-#[wasm_bindgen(js_name = password_process)]
-pub fn password_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: PasswordInput =
-        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
-    let output: PasswordOutput = password_process_core(input);
-    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
-}
-
-/// Passphrase generation. Receives PassphraseInput (camelCase) and returns PassphraseOutput (camelCase).
-#[wasm_bindgen(js_name = passphrase_process)]
-pub fn passphrase_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: PassphraseInput =
-        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
-    let output: PassphraseOutput = passphrase_process_core(input);
-    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
-}
-
-/// Nano ID generation. Receives NanoIdInput (camelCase) and returns NanoIdOutput (camelCase).
-#[wasm_bindgen(js_name = nanoid_process)]
-pub fn nanoid_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: NanoIdInput = from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
-    let output: NanoIdOutput = nanoid_process_core(input);
-    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
-}
-
-/// AES-256-GCM encrypt/decrypt. Receives AesInput (camelCase) and returns AesOutput (camelCase).
-#[wasm_bindgen(js_name = aes_process)]
-pub fn aes_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: AesInput = from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
-    let output: AesOutput = aes_process_core(input);
-    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
-}
-
-/// TOTP generator. Receives TotpInput (camelCase) and returns TotpOutput (camelCase).
-#[wasm_bindgen(js_name = tool_totp_generate)]
-pub fn tool_totp_generate_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: TotpInput = from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
-    let output: TotpOutput = totp_process_core(input);
-    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
-}
-
-/// JWT decoder. Receives JwtDecodeInput (camelCase) and returns JwtDecodeOutput (camelCase).
-#[wasm_bindgen(js_name = tool_jwt_decode)]
-pub fn tool_jwt_decode_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: JwtDecodeInput =
-        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
-    let output: JwtDecodeOutput = jwt_decode_process_core(input);
-    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
-}
-
-/// JWT builder. Receives JwtBuildInput (camelCase) and returns JwtBuildOutput (camelCase).
-#[wasm_bindgen(js_name = tool_jwt_build)]
-pub fn tool_jwt_build_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: JwtBuildInput =
-        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
-    let output: JwtBuildOutput = jwt_build_process_core(input);
-    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
-}
-
-/// HTTP Basic Authorization header encode/decode.
-#[wasm_bindgen(js_name = tool_basic_auth)]
-pub fn tool_basic_auth_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: BasicAuthInput =
-        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
-    let output: BasicAuthOutput = basic_auth_core(input);
-    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
-}
-
-/// JSON formatter. Receives JsonFormatInput (camelCase) and returns JsonFormatOutput (camelCase).
-#[wasm_bindgen(js_name = tool_json_format)]
-pub fn tool_json_format_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: JsonFormatInput =
-        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
-    let output: JsonFormatOutput = json_format_process_core(input);
-    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
-}
-
-/// JSON validator. Receives JsonValidateInput (camelCase) and returns JsonValidateOutput (camelCase).
-#[wasm_bindgen(js_name = tool_json_validate)]
-pub fn tool_json_validate_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: JsonValidateInput =
-        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
-    let output: JsonValidateOutput = json_validate_process_core(input);
-    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
-}
-
-/// JSON Schema Validator. Receives JsonSchemaValidateInput and returns JsonSchemaValidateOutput (camelCase).
-#[wasm_bindgen(js_name = tool_json_schema_validate)]
-pub fn tool_json_schema_validate_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: JsonSchemaValidateInput =
-        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
-    let output: JsonSchemaValidateOutput = json_schema_validate_core(input);
-    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
-}
-
-/// JSON diff. Receives JsonDiffInput (camelCase) and returns JsonDiffOutput (camelCase).
-#[wasm_bindgen(js_name = tool_json_diff)]
-pub fn tool_json_diff_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: JsonDiffInput =
-        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
-    let output: JsonDiffOutput = json_diff_process_core(input);
-    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
-}
-
-/// JSON path query. Receives JsonPathInput (camelCase) and returns JsonPathOutput (camelCase).
-#[wasm_bindgen(js_name = tool_json_path)]
-pub fn tool_json_path_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: JsonPathInput =
-        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
-    let output: JsonPathOutput = json_path_process_core(input);
-    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
-}
-
-/// JSON converter. Receives JsonConvertInput (camelCase) and returns JsonConvertOutput (camelCase).
-#[wasm_bindgen(js_name = tool_json_convert)]
-pub fn tool_json_convert_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: JsonConvertInput =
-        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
-    let output: JsonConvertOutput = json_convert_process_core(input);
-    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
-}
-
-/// Config converter (JSON ↔ YAML ↔ TOML). Receives ConfigConvertInput and returns ConfigConvertOutput (camelCase).
-#[wasm_bindgen(js_name = tool_config_convert)]
-pub fn tool_config_convert_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: ConfigConvertInput =
-        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
-    let output: ConfigConvertOutput = config_convert_core(input);
-    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
-}
-
-/// Timestamp converter. Receives TimestampInput (camelCase) and returns TimestampOutput (camelCase).
-#[wasm_bindgen(js_name = timestamp_process)]
-pub fn timestamp_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: TimestampInput =
-        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
-    let output: TimestampOutput = timestamp_process_core(input);
-    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
-}
-
-/// Timezone converter. Receives TimezoneInput (camelCase) and returns TimezoneOutput (camelCase).
-#[wasm_bindgen(js_name = timezone_process)]
-pub fn timezone_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: TimezoneInput =
-        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
-    let output: TimezoneOutput = timezone_process_core(input);
-    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
-}
-
-/// ISO 8601 formatter. Receives Iso8601Input (camelCase) and returns Iso8601Output (camelCase).
-#[wasm_bindgen(js_name = iso8601_process)]
-pub fn iso8601_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: Iso8601Input =
-        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
-    let output: Iso8601Output = iso8601_process_core(input);
-    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
-}
-
-/// Cron expression parser. Receives CronInput (camelCase) and returns CronOutput (camelCase).
-#[wasm_bindgen(js_name = cron_process)]
-pub fn cron_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: CronInput = from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
-    let output: CronOutput = cron_process_core(input);
-    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
-}
-
-/// Number base converter. Receives BaseConverterInput (camelCase) and returns BaseConverterOutput (camelCase).
-#[wasm_bindgen(js_name = base_converter_process)]
-pub fn base_converter_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: BaseConverterInput =
-        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
-    let output: BaseConverterOutput = base_converter_process_core(input);
-    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
-}
-
-/// Bitwise calculator. Receives BitwiseInput (camelCase) and returns BitwiseOutput (camelCase).
-#[wasm_bindgen(js_name = bitwise_process)]
-pub fn bitwise_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: BitwiseInput =
-        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
-    let output: BitwiseOutput = bitwise_process_core(input);
-    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
-}
-
-/// chmod / Unix permissions calculator. Receives ChmodInput and returns ChmodOutput (camelCase).
-#[wasm_bindgen(js_name = chmod_process)]
-pub fn chmod_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: ChmodInput = from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
-    let output: ChmodOutput = chmod_process_core(input);
-    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
-}
-
-/// Semantic versioning: parse, compare, range check, next major/minor/patch.
-#[wasm_bindgen(js_name = semver_process)]
-pub fn semver_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: SemverInput = from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
-    let output: SemverOutput = semver_process_core(input);
-    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
-}
-
-/// Unit converter (data size, time, temperature, length, weight, speed).
-#[wasm_bindgen(js_name = unit_convert)]
-pub fn unit_convert_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: UnitConverterInput =
-        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
-    let output: UnitConverterOutput = unit_convert_core(input);
-    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
-}
-
-/// Word counter. Receives WordCounterInput (camelCase) and returns WordCounterOutput (camelCase).
-#[wasm_bindgen(js_name = word_counter_process)]
-pub fn word_counter_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: WordCounterInput =
-        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
-    let output: WordCounterOutput = word_counter_process_core(input);
-    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
-}
-
-/// Fake data generator. Receives FakeDataInput and returns FakeDataOutput.
-#[wasm_bindgen(js_name = fake_data_process)]
-pub fn fake_data_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: FakeDataInput = from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
-    let output: FakeDataOutput = fake_data_process_core(input);
-    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
-}
-
-/// Unicode Inspector. Receives UnicodeInspectInput and returns UnicodeInspectOutput.
-#[wasm_bindgen(js_name = tool_unicode_inspect)]
-pub fn tool_unicode_inspect_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: UnicodeInspectInput =
-        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
-    let output: UnicodeInspectOutput = unicode_inspect_core(input);
-    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
-}
-
-/// Slug generator. Receives SlugInput and returns SlugOutput.
-#[wasm_bindgen(js_name = tool_slug_generate)]
-pub fn tool_slug_generate_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: SlugInput = from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
-    let output: SlugOutput = slug_generate_core(input);
-    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
-}
-
-/// String escaper. Receives StringEscaperInput (camelCase) and returns StringEscaperOutput (camelCase).
-#[wasm_bindgen(js_name = string_escaper_process)]
-pub fn string_escaper_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: StringEscaperInput =
-        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
-    let output: StringEscaperOutput = string_escaper_process_core(input);
-    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
-}
-
-/// Find & replace. Receives FindReplaceInput (camelCase) and returns FindReplaceOutput (camelCase).
-#[wasm_bindgen(js_name = find_replace_process)]
-pub fn find_replace_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: FindReplaceInput =
-        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
-    let output: FindReplaceOutput = find_replace_process_core(input);
-    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
-}
-
-/// Text diff. Receives TextDiffInput (camelCase) and returns TextDiffOutput (camelCase).
-#[wasm_bindgen(js_name = text_diff_process)]
-pub fn text_diff_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: TextDiffInput =
-        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
-    let output: TextDiffOutput = text_diff_process_core(input);
-    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
-}
-
-/// Line-level text operations.
-#[wasm_bindgen(js_name = line_tools_process)]
-pub fn line_tools_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: LineToolsInput =
-        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
-    let output: LineToolsOutput = line_tools_process_core(input);
-    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
-}
-
-/// .env parser and validator.
-#[wasm_bindgen(js_name = env_parse)]
-pub fn env_parse_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: EnvParseInput =
-        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
-    let output: EnvParseOutput = env_parse_process_core(input);
-    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
-}
-
-/// Lorem ipsum generator. Receives LoremIpsumInput (camelCase) and returns LoremIpsumOutput (camelCase).
-#[wasm_bindgen(js_name = lorem_ipsum_process)]
-pub fn lorem_ipsum_process_wasm(js_input: JsValue) -> Result<JsValue, JsValue> {
-    let input: LoremIpsumInput =
-        from_value(js_input).map_err(|e| JsValue::from_str(&e.to_string()))?;
-    let output: LoremIpsumOutput = lorem_ipsum_process_core(input);
-    to_value(&output).map_err(|e| JsValue::from_str(&e.to_string()))
-}
+tool_binding!("base64_process", base64_process_wasm, Base64Input, process);
+tool_binding!("url_encode_process", url_encode_process_wasm, UrlEncodeInput, url_process);
+tool_binding!("tool_url_parse", tool_url_parse_wasm, UrlParseInput, url_parse_process);
+tool_binding!("cidr_calculate", cidr_calculate_wasm, CidrInput, cidr_process_core);
+tool_binding!("ua_parse", ua_parse_wasm, UaParseInput, ua_parse_process_core);
+tool_binding!("tool_csv_to_json", tool_csv_to_json_wasm, CsvToJsonInput, csv_to_json_process_core);
+tool_binding!("tool_json_to_csv", tool_json_to_csv_wasm, JsonToCsvInput, json_to_csv_process_core);
+tool_binding!("html_format", html_format_wasm, HtmlFormatInput, html_format_process_core);
+tool_binding!("tool_xml_format", tool_xml_format_wasm, XmlFormatInput, xml_format_process_core);
+tool_binding!("tool_yaml_format", tool_yaml_format_wasm, YamlFormatInput, yaml_format_process_core);
+tool_binding!("tool_sql_format", tool_sql_format_wasm, SqlFormatInput, sql_format_process_core);
+tool_binding!(
+    "tool_expression_eval",
+    tool_expression_eval_wasm,
+    ExprEvalInput,
+    expression_eval_process_core
+);
+tool_binding!("html_entity_process", html_entity_process_wasm, HtmlEntityInput, html_entity_process_core);
+tool_binding!("hex_process", hex_process_wasm, HexInput, hex_process_core);
+tool_binding!("color_convert", color_convert_wasm, ColorInput, color_process_core);
+tool_binding!("qr_generate", qr_generate_wasm, QrCodeInput, qr_process_core);
+tool_binding!("hash_process", hash_process_wasm, HashInput, hash_process_core);
+tool_binding!("uuid_process", uuid_process_wasm, UuidInput, uuid_process_core);
+tool_binding!("uuid_inspect", uuid_inspect_wasm, UuidInspectInput, uuid_inspect_core);
+tool_binding!("ulid_process", ulid_process_wasm, UlidInput, ulid_process_core);
+tool_binding!("ulid_inspect", ulid_inspect_wasm, UlidInspectInput, ulid_inspect_core);
+tool_binding!("case_process", case_process_wasm, CaseInput, case_process_core);
+tool_binding!("api_key_process", api_key_process_wasm, ApiKeyInput, api_key_process_core);
+tool_binding!("cert_decode", cert_decode_wasm, CertDecodeInput, cert_decode_core);
+tool_binding!("password_process", password_process_wasm, PasswordInput, password_process_core);
+tool_binding!("passphrase_process", passphrase_process_wasm, PassphraseInput, passphrase_process_core);
+tool_binding!("nanoid_process", nanoid_process_wasm, NanoIdInput, nanoid_process_core);
+tool_binding!("aes_process", aes_process_wasm, AesInput, aes_process_core);
+tool_binding!("tool_totp_generate", tool_totp_generate_wasm, TotpInput, totp_process_core);
+tool_binding!("tool_jwt_decode", tool_jwt_decode_wasm, JwtDecodeInput, jwt_decode_process_core);
+tool_binding!("tool_jwt_build", tool_jwt_build_wasm, JwtBuildInput, jwt_build_process_core);
+tool_binding!("tool_basic_auth", tool_basic_auth_wasm, BasicAuthInput, basic_auth_core);
+tool_binding!("tool_json_format", tool_json_format_wasm, JsonFormatInput, json_format_process_core);
+tool_binding!("tool_json_validate", tool_json_validate_wasm, JsonValidateInput, json_validate_process_core);
+tool_binding!(
+    "tool_json_schema_validate",
+    tool_json_schema_validate_wasm,
+    JsonSchemaValidateInput,
+    json_schema_validate_core
+);
+tool_binding!("tool_json_diff", tool_json_diff_wasm, JsonDiffInput, json_diff_process_core);
+tool_binding!("tool_json_path", tool_json_path_wasm, JsonPathInput, json_path_process_core);
+tool_binding!("tool_json_convert", tool_json_convert_wasm, JsonConvertInput, json_convert_process_core);
+tool_binding!("tool_config_convert", tool_config_convert_wasm, ConfigConvertInput, config_convert_core);
+tool_binding!("timestamp_process", timestamp_process_wasm, TimestampInput, timestamp_process_core);
+tool_binding!("timezone_process", timezone_process_wasm, TimezoneInput, timezone_process_core);
+tool_binding!("iso8601_process", iso8601_process_wasm, Iso8601Input, iso8601_process_core);
+tool_binding!("cron_process", cron_process_wasm, CronInput, cron_process_core);
+tool_binding!(
+    "base_converter_process",
+    base_converter_process_wasm,
+    BaseConverterInput,
+    base_converter_process_core
+);
+tool_binding!("bitwise_process", bitwise_process_wasm, BitwiseInput, bitwise_process_core);
+tool_binding!("chmod_process", chmod_process_wasm, ChmodInput, chmod_process_core);
+tool_binding!("semver_process", semver_process_wasm, SemverInput, semver_process_core);
+tool_binding!("unit_convert", unit_convert_wasm, UnitConverterInput, unit_convert_core);
+tool_binding!("word_counter_process", word_counter_process_wasm, WordCounterInput, word_counter_process_core);
+tool_binding!("fake_data_process", fake_data_process_wasm, FakeDataInput, fake_data_process_core);
+tool_binding!(
+    "tool_unicode_inspect",
+    tool_unicode_inspect_wasm,
+    UnicodeInspectInput,
+    unicode_inspect_core
+);
+tool_binding!("tool_slug_generate", tool_slug_generate_wasm, SlugInput, slug_generate_core);
+tool_binding!(
+    "string_escaper_process",
+    string_escaper_process_wasm,
+    StringEscaperInput,
+    string_escaper_process_core
+);
+tool_binding!("find_replace_process", find_replace_process_wasm, FindReplaceInput, find_replace_process_core);
+tool_binding!("text_diff_process", text_diff_process_wasm, TextDiffInput, text_diff_process_core);
+tool_binding!("line_tools_process", line_tools_process_wasm, LineToolsInput, line_tools_process_core);
+tool_binding!("env_parse", env_parse_wasm, EnvParseInput, env_parse_process_core);
+tool_binding!("lorem_ipsum_process", lorem_ipsum_process_wasm, LoremIpsumInput, lorem_ipsum_process_core);
 
 /// Regex matcher. Receives RegexRequest (camelCase) and returns Vec<MatchResult> (camelCase).
 #[wasm_bindgen(js_name = regex_match)]
