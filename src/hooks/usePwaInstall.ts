@@ -40,11 +40,16 @@ export function usePwaInstall(): UsePwaInstallReturn {
 
   const triggerInstall = useCallback(async () => {
     if (!deferredPrompt) return;
-    await deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    if (outcome === "accepted") {
+    try {
+      await deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === "accepted") {
+        setIsInstalled(true);
+      }
+    } catch {
+      // Browser rejected the prompt — clear it so the install banner disappears.
+    } finally {
       setDeferredPrompt(null);
-      setIsInstalled(true);
     }
   }, [deferredPrompt]);
 

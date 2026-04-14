@@ -2,16 +2,33 @@ import { useCallback, useRef, useState, type DragEvent } from "react";
 
 const MAX_BYTES = 2 * 1024 * 1024; // 2 MB hard limit
 
+/** Same semantics as `<input accept>` — extensions (`.json`), MIME types, or `type/*`. */
+function fileMatchesAccept(file: File, accept: string): boolean {
+  return accept.split(",").some((token) => {
+    const t = token.trim().toLowerCase();
+    if (t.startsWith(".")) {
+      return file.name.toLowerCase().endsWith(t);
+    }
+    if (t.endsWith("/*")) {
+      return file.type.startsWith(t.slice(0, -1));
+    }
+    return file.type === t;
+  });
+}
+
 export type UseFileDropOptions =
   | {
       onError?: (message: string) => void;
       onFile: (text: string, filename: string) => void;
       onFileRaw?: undefined;
+      /** Optional: comma-separated extensions or MIME types, e.g. `.json,.txt` or `text/plain`. */
+      accept?: string;
     }
   | {
       onError?: (message: string) => void;
       onFile?: undefined;
       onFileRaw: (file: File) => void;
+      accept?: string;
     };
 
 export interface UseFileDropReturn {
@@ -60,10 +77,22 @@ export function useFileDrop(opts: UseFileDropOptions): UseFileDropReturn {
       const file = e.dataTransfer.files[0];
       if (!file) return;
 
+      if (e.dataTransfer.files.length > 1) {
+        optsRef.current.onError?.(
+          `Multiple files dropped — only the first file ("${file.name}") was used.`
+        );
+      }
+
       if (file.size > MAX_BYTES) {
         optsRef.current.onError?.(
           `File too large (${(file.size / 1024 / 1024).toFixed(1)} MB). Maximum is 2 MB.`
         );
+        return;
+      }
+
+      const accept = optsRef.current.accept;
+      if (accept && !fileMatchesAccept(file, accept)) {
+        optsRef.current.onError?.(`File type not accepted. Expected: ${accept}`);
         return;
       }
 
@@ -82,6 +111,9 @@ export function useFileDrop(opts: UseFileDropOptions): UseFileDropReturn {
         if (typeof text === "string") {
           onFile(text, file.name);
         }
+      };
+      reader.onerror = () => {
+        optsRef.current.onError?.("Failed to read file.");
       };
       reader.readAsText(file);
     },

@@ -18,13 +18,13 @@ export function StorageBadge({ tool }: { tool: Tool }) {
 
   return (
     <span
-      title="Tool runs are kept in memory for this session only. Nothing is written to disk or localStorage."
+      title="Runs: kept in memory for this session only. Last-typed input: saved to localStorage as a draft."
       className="inline-flex cursor-default select-none items-center gap-1 rounded-full border border-slate-200 bg-slate-100 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-slate-400 dark:border-slate-700/50 dark:bg-slate-800/50 dark:text-slate-500"
     >
       <span className="material-symbols-outlined text-[11px]" aria-hidden>
         timer
       </span>
-      Session only
+      Runs: session only
     </span>
   );
 }

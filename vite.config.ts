@@ -27,7 +27,6 @@ export default defineConfig(async ({ command, mode }) => ({
               theme_color: "#306ee8",
               background_color: "#1B1D21",
               display: "standalone",
-              orientation: "portrait-primary",
               scope: "/",
               start_url: "/",
               icons: [
@@ -57,10 +56,12 @@ export default defineConfig(async ({ command, mode }) => ({
               runtimeCaching: [
                 {
                   urlPattern: /\/wasm-pkg\/.*/,
-                  handler: "NetworkFirst",
+                  handler: "CacheFirst",
                   options: {
                     cacheName: "wasm-cache",
-                    networkTimeoutSeconds: 10,
+                    expiration: {
+                      maxAgeSeconds: 7 * 24 * 60 * 60,
+                    },
                   },
                 },
               ],

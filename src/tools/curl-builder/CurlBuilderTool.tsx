@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CopyButton } from "../../components/tool";
 
 type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE" | "HEAD" | "OPTIONS";
@@ -43,6 +43,23 @@ interface FormState {
   auth: Auth;
   body: Body;
   options: Options;
+}
+
+function isCurlState(raw: unknown): raw is FormState {
+  if (!raw || typeof raw !== "object") return false;
+  const r = raw as Record<string, unknown>;
+  return (
+    typeof r.method === "string" &&
+    typeof r.url === "string" &&
+    Array.isArray(r.queryParams) &&
+    Array.isArray(r.headers) &&
+    typeof r.auth === "object" &&
+    r.auth !== null &&
+    typeof r.body === "object" &&
+    r.body !== null &&
+    typeof r.options === "object" &&
+    r.options !== null
+  );
 }
 
 function createDefaultState(): FormState {
@@ -98,7 +115,7 @@ function buildCurlCommand(state: FormState): string {
     parts.push(`-X ${method}`);
   }
 
-  parts.push(`"${fullUrl}"`);
+  parts.push(`"${fullUrl.replace(/"/g, '\\"')}"`);
 
   if (auth.type === "bearer" && auth.token.trim()) {
     parts.push(`-H "Authorization: Bearer ${auth.token.trim()}"`);
@@ -166,9 +183,16 @@ export default function CurlBuilderTool() {
   useEffect(() => {
     try {
       const saved = sessionStorage.getItem(SESSION_KEY);
-      if (saved) setState(JSON.parse(saved) as FormState);
+      if (saved) {
+        const parsed: unknown = JSON.parse(saved);
+        if (isCurlState(parsed)) {
+          setState(parsed);
+        } else {
+          sessionStorage.removeItem(SESSION_KEY);
+        }
+      }
     } catch {
-      /* ignore */
+      sessionStorage.removeItem(SESSION_KEY);
     }
   }, []);
 
@@ -182,7 +206,7 @@ export default function CurlBuilderTool() {
 
   const curlOutput = useMemo(() => buildCurlCommand(state), [state]);
 
-  const addQueryParam = () => {
+  const addQueryParam = useCallback(() => {
     setState((s) => ({
       ...s,
       queryParams: [
@@ -190,42 +214,42 @@ export default function CurlBuilderTool() {
         { id: crypto.randomUUID(), key: "", value: "", enabled: true },
       ],
     }));
-  };
+  }, []);
 
-  const addHeader = () => {
+  const addHeader = useCallback(() => {
     setState((s) => ({
       ...s,
       headers: [...s.headers, { id: crypto.randomUUID(), key: "", value: "", enabled: true }],
     }));
-  };
+  }, []);
 
-  const updateQueryParam = (id: string, patch: Partial<KVPair>) => {
+  const updateQueryParam = useCallback((id: string, patch: Partial<KVPair>) => {
     setState((s) => ({
       ...s,
       queryParams: s.queryParams.map((p) => (p.id === id ? { ...p, ...patch } : p)),
     }));
-  };
+  }, []);
 
-  const removeQueryParam = (id: string) => {
+  const removeQueryParam = useCallback((id: string) => {
     setState((s) => ({
       ...s,
       queryParams: s.queryParams.filter((p) => p.id !== id),
     }));
-  };
+  }, []);
 
-  const updateHeader = (id: string, patch: Partial<KVPair>) => {
+  const updateHeader = useCallback((id: string, patch: Partial<KVPair>) => {
     setState((s) => ({
       ...s,
       headers: s.headers.map((h) => (h.id === id ? { ...h, ...patch } : h)),
     }));
-  };
+  }, []);
 
-  const removeHeader = (id: string) => {
+  const removeHeader = useCallback((id: string) => {
     setState((s) => ({
       ...s,
       headers: s.headers.filter((h) => h.id !== id),
     }));
-  };
+  }, []);
 
   const { method, url, queryParams, headers, auth, body, options } = state;
 
@@ -413,7 +437,7 @@ export default function CurlBuilderTool() {
                         ? "key=value&another=123"
                         : "Raw body content"
                   }
-                  value={body.content ?? ""}
+                  value={body.content}
                   onChange={(e) =>
                     setState((s) => ({ ...s, body: { ...s.body, content: e.target.value } }))
                   }
@@ -586,7 +610,6 @@ export default function CurlBuilderTool() {
               onClick={() => {
                 setState(createDefaultState());
                 sessionStorage.removeItem(SESSION_KEY);
-                skipPersistRef.current = true;
               }}
               className="rounded-lg px-3 py-0.5 text-sm text-slate-600 transition-colors hover:bg-slate-100 hover:text-primary dark:text-slate-400 dark:hover:bg-slate-800"
             >

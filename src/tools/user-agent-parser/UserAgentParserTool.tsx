@@ -51,7 +51,6 @@ function UserAgentParserTool() {
   const [input, setInput] = useState("");
   useRestoreStringDraft(TOOL_ID, setInput);
   const [output, setOutput] = useState<UaParseOutput | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
@@ -62,11 +61,9 @@ function UserAgentParserTool() {
       if (!trimmed) {
         if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
         setOutput(null);
-        setIsLoading(false);
         return;
       }
 
-      setIsLoading(true);
       try {
         const payload: UaParseInput = { ua: trimmed };
         const result = (await callTool(RUST_COMMAND, payload, {
@@ -98,8 +95,6 @@ function UserAgentParserTool() {
           category: "",
           error: getErrorMessage(error),
         });
-      } finally {
-        setIsLoading(false);
       }
     },
     [addHistoryEntry]
@@ -132,11 +127,11 @@ function UserAgentParserTool() {
   );
 
   const handleClear = useCallback(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
     if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
     setInput("");
     setDraft("");
     setOutput(null);
-    setIsLoading(false);
   }, [setDraft]);
 
   return (
@@ -192,8 +187,6 @@ function UserAgentParserTool() {
       <div className="flex-1 px-6 py-5">
         {!input.trim() ? (
           <EmptyState />
-        ) : isLoading ? (
-          <LoadingState />
         ) : output?.error ? (
           <ErrorState message={output.error} />
         ) : output ? (
@@ -288,14 +281,6 @@ function EmptyState() {
       <p className="text-sm text-slate-400 dark:text-slate-600">
         Paste a User-Agent string or pick an example above
       </p>
-    </div>
-  );
-}
-
-function LoadingState() {
-  return (
-    <div className="flex items-center justify-center py-16">
-      <span className="text-sm text-slate-400 dark:text-slate-600">Parsing...</span>
     </div>
   );
 }

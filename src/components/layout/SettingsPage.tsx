@@ -1,4 +1,4 @@
-import { isDesktop, isWeb } from "../../bridge";
+import { callTool, isDesktop, isWeb } from "../../bridge";
 import { useHistoryStore, usePreferenceStore, useToolStore } from "../../store";
 import { APP_VERSION } from "../../version";
 import { ConfirmButton } from "../ui/ConfirmButton";
@@ -204,9 +204,24 @@ export function SettingsPage() {
                       onClick={() => {
                         const next = !globalHotkeyEnabled;
                         setGlobalHotkeyEnabled(next);
-                        void import("@tauri-apps/api/core").then(({ invoke }) => {
-                          void invoke("set_global_hotkey_enabled", { enabled: next });
-                        });
+                        if (isDesktop) {
+                          void callTool("set_global_hotkey_enabled", next, {
+                            skipHistory: true,
+                          })
+                            .then((result) => {
+                              if (
+                                result &&
+                                typeof result === "object" &&
+                                "status" in result &&
+                                (result as { status: string }).status === "error"
+                              ) {
+                                setGlobalHotkeyEnabled(!next);
+                              }
+                            })
+                            .catch(() => {
+                              setGlobalHotkeyEnabled(!next);
+                            });
+                        }
                       }}
                       className={`relative ml-4 h-6 w-11 shrink-0 rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
                         globalHotkeyEnabled
@@ -354,13 +369,12 @@ export function SettingsPage() {
                     Removes last-typed drafts stored for each tool (not session history)
                   </p>
                 </div>
-                <button
-                  type="button"
-                  onClick={clearDraftInputs}
-                  className="ml-4 shrink-0 rounded-md bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-600 transition-colors hover:bg-red-50 hover:text-red-600 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-red-900/20 dark:hover:text-red-400"
-                >
-                  Clear
-                </button>
+                <ConfirmButton
+                  label="Clear"
+                  confirmLabel="Clear inputs"
+                  onConfirm={clearDraftInputs}
+                  className="rounded-md bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-600 transition-colors hover:bg-red-50 hover:text-red-600 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-red-900/20 dark:hover:text-red-400"
+                />
               </div>
 
               {/* Clear All Data */}
@@ -413,15 +427,17 @@ export function SettingsPage() {
                       Download the native app for faster, fully offline use
                     </p>
                   </div>
-                  <span
-                    title="Desktop app coming soon"
-                    className="ml-4 flex shrink-0 cursor-not-allowed items-center gap-1 text-xs text-slate-400 dark:text-slate-500"
+                  <a
+                    href="https://github.com/jrdesai/instrument/releases"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="ml-4 flex shrink-0 items-center gap-1 text-xs text-primary hover:underline"
                   >
                     <span className="material-symbols-outlined text-[14px]" aria-hidden>
-                      schedule
+                      download
                     </span>
-                    Coming Soon
-                  </span>
+                    Download
+                  </a>
                 </div>
               )}
               <div className="flex items-center justify-between px-4 py-3 bg-panel-light dark:bg-panel-dark border-t border-border-light dark:border-border-dark">
