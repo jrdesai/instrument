@@ -45,26 +45,33 @@ export function SearchModal({
     []
   );
 
-  const allImplemented = platformTools.filter((t) => t.implemented);
+  const allImplemented = useMemo(
+    () => platformTools.filter((t) => t.implemented),
+    [platformTools]
+  );
 
-  const results: Tool[] = query.trim()
-    ? allImplemented
+  const results = useMemo<Tool[]>(() => {
+    if (query.trim()) {
+      return allImplemented
         .map((t) => ({ tool: t, score: scoreMatch(t, query) }))
         .filter(({ score }) => score > 0)
         .sort((a, b) => b.score - a.score)
         .slice(0, 8)
-        .map(({ tool }) => tool)
-    : [
-        ...recentToolIds
-          .slice(0, 5)
-          .map((id) => allImplemented.find((t) => t.id === id))
-          .filter((t): t is Tool => !!t),
-        ...favouriteToolIds
-          .filter((id) => !recentToolIds.slice(0, 5).includes(id))
-          .slice(0, 3)
-          .map((id) => allImplemented.find((t) => t.id === id))
-          .filter((t): t is Tool => !!t),
-      ];
+        .map(({ tool }) => tool);
+    }
+
+    return [
+      ...recentToolIds
+        .slice(0, 5)
+        .map((id) => allImplemented.find((t) => t.id === id))
+        .filter((t): t is Tool => !!t),
+      ...favouriteToolIds
+        .filter((id) => !recentToolIds.slice(0, 5).includes(id))
+        .slice(0, 3)
+        .map((id) => allImplemented.find((t) => t.id === id))
+        .filter((t): t is Tool => !!t),
+    ];
+  }, [query, recentToolIds, favouriteToolIds, allImplemented]);
 
   useEffect(() => {
     setSelectedIndex(0);
@@ -74,7 +81,7 @@ export function SearchModal({
     if (isOpen) {
       setQuery("");
       setSelectedIndex(0);
-      setTimeout(() => inputRef.current?.focus(), 0);
+      requestAnimationFrame(() => inputRef.current?.focus());
     }
   }, [isOpen]);
 
@@ -132,7 +139,7 @@ export function SearchModal({
       }}
     >
       <div
-        className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+        className="absolute inset-0 bg-black/40 backdrop-blur-sm pointer-events-none"
         aria-hidden
       />
       <div
