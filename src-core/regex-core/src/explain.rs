@@ -132,6 +132,32 @@ fn walk_hir(hir: &Hir, depth: u32, tokens: &mut Vec<ExplainToken>) {
     }
 }
 
+/// Render a single Unicode range inside a character class label.
+///
+/// Rules:
+/// - `-` is always escaped as `\-` (avoids ambiguous `--` sequences).
+/// - `\` and `]` are escaped so the label stays syntactically valid.
+/// - A 2-char range whose chars are adjacent codepoints (e.g. `-` U+002D and `.` U+002E)
+///   is rendered as two individual escaped chars rather than `x-y` range notation,
+///   which would produce confusing output like `--.`.
+fn render_class_range(s: char, e: char) -> String {
+    let fmt = |c: char| match c {
+        '-' => "\\-".to_string(),
+        '\\' => "\\\\".to_string(),
+        ']' => "\\]".to_string(),
+        c => c.to_string(),
+    };
+    if s == e {
+        fmt(s)
+    } else if e as u32 == s as u32 + 1 {
+        // Adjacent codepoints: render as two individual chars to avoid `x-y` range
+        // notation where the start or end is `-` (e.g. `--.` → `\-.`).
+        format!("{}{}", fmt(s), fmt(e))
+    } else {
+        format!("{}-{}", fmt(s), fmt(e))
+    }
+}
+
 fn describe_class(class: &Class) -> (String, String) {
     match class {
         Class::Unicode(cls) => {
@@ -208,20 +234,12 @@ fn describe_class(class: &Class) -> (String, String) {
                 }
 
                 // Small explicit class — render it
-                if ranges.len() <= 6 {
+                if ranges.len() <= 12 {
                     let label = format!(
                         "[{}]",
                         ranges
                             .iter()
-                            .map(|r| {
-                                let s = r.start();
-                                let e = r.end();
-                                if s == e {
-                                    format!("{}", s)
-                                } else {
-                                    format!("{}-{}", s, e)
-                                }
-                            })
+                            .map(|r| render_class_range(r.start(), r.end()))
                             .collect::<Vec<_>>()
                             .join("")
                     );
