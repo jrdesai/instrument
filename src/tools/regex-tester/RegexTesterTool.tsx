@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import { useDebouncedCallback } from "use-debounce";
 import { useDraftInput, useRestoreDraft } from "../../hooks/useDraftInput";
+import { useHistoryStore } from "../../store";
 import { useRegexWorker, MatchResult } from "../../hooks/useRegexWorker";
 import {
   explainPattern,
@@ -488,9 +489,13 @@ const KIND_STYLES: Record<string, string> = {
   meta: "text-slate-500",
 };
 
+const HISTORY_DEBOUNCE_MS = 1500;
+
 const RegexTesterTool: React.FC = () => {
   const { runRegex } = useRegexWorker();
   const { setDraft } = useDraftInput(REGEX_TESTER_TOOL_ID);
+  const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
+  const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const patternInputRef = useRef<HTMLInputElement | null>(null);
   const languageManuallySet = useRef(false);
@@ -579,6 +584,19 @@ const RegexTesterTool: React.FC = () => {
       }
 
       setIsRunning(false);
+
+      // Record history after the user pauses — 1500ms debounce, regex-tester tool only
+      if (nextPattern.trim()) {
+        if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
+        historyDebounceRef.current = setTimeout(() => {
+          addHistoryEntry(REGEX_TESTER_TOOL_ID, {
+            input: { pattern: nextPattern, engine: nextEngine, flags, text: nextText },
+            output: { matchCount: matches.length },
+            timestamp: Date.now(),
+          });
+          historyDebounceRef.current = null;
+        }, HISTORY_DEBOUNCE_MS);
+      }
     },
     150
   );
