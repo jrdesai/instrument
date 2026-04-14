@@ -199,7 +199,9 @@ GitHub MCP is configured for this project via `.mcp.json` (gitignored — contai
 | Check latest release | `mcp__github__get_latest_release` |
 | Scan for leaked secrets | `mcp__github__run_secret_scanning` |
 
-**PR creation format** — always include:
+**PR creation** — `gh` CLI is not installed. Use `mcp__github__create_pull_request` directly.
+Do NOT attempt `gh pr create` — it will fail. Always use the GitHub MCP tool instead.
+
 ```
 title: conventional commit style, under 70 chars
 body:  ## Summary (bullets) · ## Test plan (checklist) · 🤖 Generated with Claude Code
