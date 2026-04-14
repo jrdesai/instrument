@@ -130,6 +130,12 @@ function PasswordGeneratorTool() {
     scheduleGenerate(length, count, includeUppercase, includeLowercase, includeNumbers, includeSymbols, excludeAmbiguous, symbols);
   }, [length, count, includeUppercase, includeLowercase, includeNumbers, includeSymbols, excludeAmbiguous, symbols, scheduleGenerate]);
 
+  useEffect(() => {
+    return () => {
+      if (debounceTimer.current !== null) clearTimeout(debounceTimer.current);
+    };
+  }, []);
+
   const handleRegenerate = useCallback(() => {
     runGenerate(length, count, includeUppercase, includeLowercase, includeNumbers, includeSymbols, excludeAmbiguous, symbols);
   }, [length, count, includeUppercase, includeLowercase, includeNumbers, includeSymbols, excludeAmbiguous, symbols, runGenerate]);
@@ -233,7 +239,7 @@ function PasswordGeneratorTool() {
             <ul className="space-y-2">
               {passwords.map((pw, index) => (
                 <li
-                  key={index}
+                  key={`pw-${index}`}
                   className="flex items-center justify-between gap-3 px-3 py-2 border border-border-light dark:border-border-dark rounded-lg bg-panel-light dark:bg-panel-dark"
                 >
                   <span className="font-mono text-sm text-slate-700 dark:text-slate-300 break-all select-all">

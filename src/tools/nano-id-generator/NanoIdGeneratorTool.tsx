@@ -1,5 +1,6 @@
 import { useCallback, useState } from "react";
 import { callTool } from "../../bridge";
+import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import type { NanoIdInput } from "../../bindings/NanoIdInput";
 import type { NanoIdOutput } from "../../bindings/NanoIdOutput";
 
@@ -44,6 +45,8 @@ function NanoIdGeneratorTool() {
   const [size, setSize] = useState(DEFAULT_SIZE);
   const [preset, setPreset] = useState<AlphabetPreset>("default");
   const [customAlphabet, setCustomAlphabet] = useState("");
+  const { setDraft } = useDraftInput("nano-id-generator");
+  useRestoreStringDraft("nano-id-generator", setCustomAlphabet);
   const [ids, setIds] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -173,7 +176,10 @@ function NanoIdGeneratorTool() {
             <input
               type="text"
               value={customAlphabet}
-              onChange={(e) => setCustomAlphabet(e.target.value)}
+              onChange={(e) => {
+                setCustomAlphabet(e.target.value);
+                setDraft(e.target.value);
+              }}
               placeholder="e.g. ABCDEF0123456789"
               className="w-full px-3 py-2 text-sm font-mono bg-background-light dark:bg-background-dark border border-border-light dark:border-border-dark rounded-lg text-slate-900 dark:text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-primary"
             />
@@ -200,7 +206,7 @@ function NanoIdGeneratorTool() {
           <ul className="space-y-2">
             {ids.map((id, index) => (
               <li
-                key={index}
+                key={id}
                 className="flex items-center justify-between gap-3 px-3 py-2 border border-border-light dark:border-border-dark rounded-lg bg-panel-light dark:bg-panel-dark"
               >
                 <span className="font-mono text-sm text-slate-700 dark:text-slate-300 break-all">

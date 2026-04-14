@@ -213,7 +213,7 @@ function PassphraseGeneratorTool() {
             <ul className="space-y-2">
               {passphrases.map((phrase, index) => (
                 <li
-                  key={index}
+                  key={`phrase-${index}`}
                   className="flex items-center justify-between gap-3 px-3 py-2 border border-border-light dark:border-border-dark rounded-lg bg-panel-light dark:bg-panel-dark"
                 >
                   <span className="font-mono text-sm text-slate-700 dark:text-slate-300 break-all select-all">
