@@ -1,4 +1,5 @@
 import { callTool } from "../bridge";
+import { unwrapSpectaCommandResult } from "./unwrapSpectaCommandResult";
 
 export type ExplainToken = {
   kind:
@@ -37,5 +38,6 @@ export async function explainPattern(
     pattern: trimmed,
     engine,
   });
-  return (result as ExplainToken[]) ?? [];
+  const tokens = unwrapSpectaCommandResult<ExplainToken[]>(result);
+  return Array.isArray(tokens) ? tokens : [];
 }

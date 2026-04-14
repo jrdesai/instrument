@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef } from "react";
 import { callTool, isDesktop } from "../bridge";
+import { unwrapSpectaCommandResult } from "./unwrapSpectaCommandResult";
 
 export type MatchResult = {
   start: number;
@@ -86,13 +87,14 @@ export function useRegexWorker() {
   const runRegex = useCallback(
     async (req: RegexRequest): Promise<MatchResult[]> => {
       if (isDesktop) {
-        const result = (await callTool("tool_regex_test", {
+        const raw = await callTool("tool_regex_test", {
           pattern: req.pattern,
           text: req.text,
           engine: req.engine,
           flags: req.flags ?? undefined,
-        })) as RawMatchResult[];
-        return normaliseGroups(result ?? []);
+        });
+        const result = unwrapSpectaCommandResult<RawMatchResult[]>(raw);
+        return normaliseGroups(Array.isArray(result) ? result : []);
       }
 
       return new Promise((resolve, reject) => {
