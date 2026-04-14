@@ -1,129 +1,54 @@
 /* tslint:disable */
 /* eslint-disable */
 
-/**
- * AES-256-GCM encrypt/decrypt. Receives AesInput (camelCase) and returns AesOutput (camelCase).
- */
 export function aes_process(js_input: any): any;
 
-/**
- * API key generation. Receives ApiKeyInput (camelCase) and returns ApiKeyOutput (camelCase).
- */
 export function api_key_process(js_input: any): any;
 
-/**
- * Base64 encode/decode. Receives a Base64Input (camelCase) and returns a Base64Output (camelCase).
- */
 export function base64_process(js_input: any): any;
 
-/**
- * Number base converter. Receives BaseConverterInput (camelCase) and returns BaseConverterOutput (camelCase).
- */
 export function base_converter_process(js_input: any): any;
 
-/**
- * Bitwise calculator. Receives BitwiseInput (camelCase) and returns BitwiseOutput (camelCase).
- */
 export function bitwise_process(js_input: any): any;
 
-/**
- * Text case converter. Receives CaseInput (camelCase) and returns CaseOutput (camelCase).
- */
 export function case_process(js_input: any): any;
 
-/**
- * X.509 / PEM certificate decoder.
- */
 export function cert_decode(js_input: any): any;
 
-/**
- * chmod / Unix permissions calculator. Receives ChmodInput and returns ChmodOutput (camelCase).
- */
 export function chmod_process(js_input: any): any;
 
-/**
- * CIDR calculator. Receives CidrInput and returns CidrOutput.
- */
 export function cidr_calculate(js_input: any): any;
 
-/**
- * Colour converter. Receives ColorInput (camelCase) and returns ColorOutput (camelCase).
- */
 export function color_convert(js_input: any): any;
 
-/**
- * Cron expression parser. Receives CronInput (camelCase) and returns CronOutput (camelCase).
- */
 export function cron_process(js_input: any): any;
 
-/**
- * .env parser and validator.
- */
 export function env_parse(js_input: any): any;
 
-/**
- * Fake data generator. Receives FakeDataInput and returns FakeDataOutput.
- */
 export function fake_data_process(js_input: any): any;
 
-/**
- * Find & replace. Receives FindReplaceInput (camelCase) and returns FindReplaceOutput (camelCase).
- */
 export function find_replace_process(js_input: any): any;
 
-/**
- * Combined hash. Receives HashInput (camelCase) and returns HashOutput (camelCase).
- */
 export function hash_process(js_input: any): any;
 
-/**
- * Hex encode/decode. Receives HexInput (camelCase) and returns HexOutput (camelCase).
- */
 export function hex_process(js_input: any): any;
 
-/**
- * HTML entity encode/decode. Receives HtmlEntityInput (camelCase) and returns HtmlEntityOutput (camelCase).
- */
 export function html_entity_process(js_input: any): any;
 
-/**
- * HTML formatter. Receives HtmlFormatInput (camelCase) and returns HtmlFormatOutput (camelCase).
- */
 export function html_format(js_input: any): any;
 
-/**
- * ISO 8601 formatter. Receives Iso8601Input (camelCase) and returns Iso8601Output (camelCase).
- */
 export function iso8601_process(js_input: any): any;
 
-/**
- * Line-level text operations.
- */
 export function line_tools_process(js_input: any): any;
 
-/**
- * Lorem ipsum generator. Receives LoremIpsumInput (camelCase) and returns LoremIpsumOutput (camelCase).
- */
 export function lorem_ipsum_process(js_input: any): any;
 
-/**
- * Nano ID generation. Receives NanoIdInput (camelCase) and returns NanoIdOutput (camelCase).
- */
 export function nanoid_process(js_input: any): any;
 
-/**
- * Passphrase generation. Receives PassphraseInput (camelCase) and returns PassphraseOutput (camelCase).
- */
 export function passphrase_process(js_input: any): any;
 
-/**
- * Password generation. Receives PasswordInput (camelCase) and returns PasswordOutput (camelCase).
- */
 export function password_process(js_input: any): any;
 
-/**
- * QR code generator.
- */
 export function qr_generate(js_input: any): any;
 
 /**
@@ -136,169 +61,70 @@ export function regex_explain(js_input: any): any;
  */
 export function regex_match(js_input: any): any;
 
-/**
- * Semantic versioning: parse, compare, range check, next major/minor/patch.
- */
 export function semver_process(js_input: any): any;
 
-/**
- * String escaper. Receives StringEscaperInput (camelCase) and returns StringEscaperOutput (camelCase).
- */
 export function string_escaper_process(js_input: any): any;
 
-/**
- * Text diff. Receives TextDiffInput (camelCase) and returns TextDiffOutput (camelCase).
- */
 export function text_diff_process(js_input: any): any;
 
-/**
- * Timestamp converter. Receives TimestampInput (camelCase) and returns TimestampOutput (camelCase).
- */
 export function timestamp_process(js_input: any): any;
 
-/**
- * Timezone converter. Receives TimezoneInput (camelCase) and returns TimezoneOutput (camelCase).
- */
 export function timezone_process(js_input: any): any;
 
-/**
- * HTTP Basic Authorization header encode/decode.
- */
 export function tool_basic_auth(js_input: any): any;
 
-/**
- * Config converter (JSON ↔ YAML ↔ TOML). Receives ConfigConvertInput and returns ConfigConvertOutput (camelCase).
- */
 export function tool_config_convert(js_input: any): any;
 
-/**
- * CSV → JSON converter. Receives CsvToJsonInput (camelCase) and returns CsvToJsonOutput (camelCase).
- */
 export function tool_csv_to_json(js_input: any): any;
 
-/**
- * Expression evaluator. Receives ExprEvalInput (camelCase) and returns ExprEvalOutput (camelCase).
- */
 export function tool_expression_eval(js_input: any): any;
 
-/**
- * JSON converter. Receives JsonConvertInput (camelCase) and returns JsonConvertOutput (camelCase).
- */
 export function tool_json_convert(js_input: any): any;
 
-/**
- * JSON diff. Receives JsonDiffInput (camelCase) and returns JsonDiffOutput (camelCase).
- */
 export function tool_json_diff(js_input: any): any;
 
-/**
- * JSON formatter. Receives JsonFormatInput (camelCase) and returns JsonFormatOutput (camelCase).
- */
 export function tool_json_format(js_input: any): any;
 
-/**
- * JSON path query. Receives JsonPathInput (camelCase) and returns JsonPathOutput (camelCase).
- */
 export function tool_json_path(js_input: any): any;
 
-/**
- * JSON Schema Validator. Receives JsonSchemaValidateInput and returns JsonSchemaValidateOutput (camelCase).
- */
 export function tool_json_schema_validate(js_input: any): any;
 
-/**
- * JSON → CSV converter. Receives JsonToCsvInput (camelCase) and returns JsonToCsvOutput (camelCase).
- */
 export function tool_json_to_csv(js_input: any): any;
 
-/**
- * JSON validator. Receives JsonValidateInput (camelCase) and returns JsonValidateOutput (camelCase).
- */
 export function tool_json_validate(js_input: any): any;
 
-/**
- * JWT builder. Receives JwtBuildInput (camelCase) and returns JwtBuildOutput (camelCase).
- */
 export function tool_jwt_build(js_input: any): any;
 
-/**
- * JWT decoder. Receives JwtDecodeInput (camelCase) and returns JwtDecodeOutput (camelCase).
- */
 export function tool_jwt_decode(js_input: any): any;
 
-/**
- * Slug generator. Receives SlugInput and returns SlugOutput.
- */
 export function tool_slug_generate(js_input: any): any;
 
-/**
- * SQL formatter. Receives SqlFormatInput (camelCase) and returns SqlFormatOutput (camelCase).
- */
 export function tool_sql_format(js_input: any): any;
 
-/**
- * TOTP generator. Receives TotpInput (camelCase) and returns TotpOutput (camelCase).
- */
 export function tool_totp_generate(js_input: any): any;
 
-/**
- * Unicode Inspector. Receives UnicodeInspectInput and returns UnicodeInspectOutput.
- */
 export function tool_unicode_inspect(js_input: any): any;
 
-/**
- * URL parser. Receives UrlParseInput (camelCase) and returns UrlParseOutput (camelCase).
- */
 export function tool_url_parse(js_input: any): any;
 
-/**
- * XML formatter. Receives XmlFormatInput (camelCase) and returns XmlFormatOutput (camelCase).
- */
 export function tool_xml_format(js_input: any): any;
 
-/**
- * YAML formatter. Receives YamlFormatInput (camelCase) and returns YamlFormatOutput (camelCase).
- */
 export function tool_yaml_format(js_input: any): any;
 
-/**
- * User-Agent parser. Receives UaParseInput (camelCase) and returns UaParseOutput (camelCase).
- */
 export function ua_parse(js_input: any): any;
 
-/**
- * ULID inspection. Receives UlidInspectInput (camelCase) and returns UlidInspectOutput (camelCase).
- */
 export function ulid_inspect(js_input: any): any;
 
-/**
- * ULID generation. Receives UlidInput (camelCase) and returns UlidOutput (camelCase).
- */
 export function ulid_process(js_input: any): any;
 
-/**
- * Unit converter (data size, time, temperature, length, weight, speed).
- */
 export function unit_convert(js_input: any): any;
 
-/**
- * URL percent-encode/decode. Receives UrlEncodeInput (camelCase) and returns UrlEncodeOutput (camelCase).
- */
 export function url_encode_process(js_input: any): any;
 
-/**
- * UUID inspection. Receives UuidInspectInput (camelCase) and returns UuidInspectOutput (camelCase).
- */
 export function uuid_inspect(js_input: any): any;
 
-/**
- * UUID generation. Receives UuidInput (camelCase) and returns UuidOutput (camelCase).
- */
 export function uuid_process(js_input: any): any;
 
-/**
- * Word counter. Receives WordCounterInput (camelCase) and returns WordCounterOutput (camelCase).
- */
 export function word_counter_process(js_input: any): any;
 
 export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembly.Module;

@@ -1,7 +1,6 @@
 /* @ts-self-types="./instrument_web.d.ts" */
 
 /**
- * AES-256-GCM encrypt/decrypt. Receives AesInput (camelCase) and returns AesOutput (camelCase).
  * @param {any} js_input
  * @returns {any}
  */
@@ -14,7 +13,6 @@ export function aes_process(js_input) {
 }
 
 /**
- * API key generation. Receives ApiKeyInput (camelCase) and returns ApiKeyOutput (camelCase).
  * @param {any} js_input
  * @returns {any}
  */
@@ -27,7 +25,6 @@ export function api_key_process(js_input) {
 }
 
 /**
- * Base64 encode/decode. Receives a Base64Input (camelCase) and returns a Base64Output (camelCase).
  * @param {any} js_input
  * @returns {any}
  */
@@ -40,7 +37,6 @@ export function base64_process(js_input) {
 }
 
 /**
- * Number base converter. Receives BaseConverterInput (camelCase) and returns BaseConverterOutput (camelCase).
  * @param {any} js_input
  * @returns {any}
  */
@@ -53,7 +49,6 @@ export function base_converter_process(js_input) {
 }
 
 /**
- * Bitwise calculator. Receives BitwiseInput (camelCase) and returns BitwiseOutput (camelCase).
  * @param {any} js_input
  * @returns {any}
  */
@@ -66,7 +61,6 @@ export function bitwise_process(js_input) {
 }
 
 /**
- * Text case converter. Receives CaseInput (camelCase) and returns CaseOutput (camelCase).
  * @param {any} js_input
  * @returns {any}
  */
@@ -79,7 +73,6 @@ export function case_process(js_input) {
 }
 
 /**
- * X.509 / PEM certificate decoder.
  * @param {any} js_input
  * @returns {any}
  */
@@ -92,7 +85,6 @@ export function cert_decode(js_input) {
 }
 
 /**
- * chmod / Unix permissions calculator. Receives ChmodInput and returns ChmodOutput (camelCase).
  * @param {any} js_input
  * @returns {any}
  */
@@ -105,7 +97,6 @@ export function chmod_process(js_input) {
 }
 
 /**
- * CIDR calculator. Receives CidrInput and returns CidrOutput.
  * @param {any} js_input
  * @returns {any}
  */
@@ -118,7 +109,6 @@ export function cidr_calculate(js_input) {
 }
 
 /**
- * Colour converter. Receives ColorInput (camelCase) and returns ColorOutput (camelCase).
  * @param {any} js_input
  * @returns {any}
  */
@@ -131,7 +121,6 @@ export function color_convert(js_input) {
 }
 
 /**
- * Cron expression parser. Receives CronInput (camelCase) and returns CronOutput (camelCase).
  * @param {any} js_input
  * @returns {any}
  */
@@ -144,7 +133,6 @@ export function cron_process(js_input) {
 }
 
 /**
- * .env parser and validator.
  * @param {any} js_input
  * @returns {any}
  */
@@ -157,7 +145,6 @@ export function env_parse(js_input) {
 }
 
 /**
- * Fake data generator. Receives FakeDataInput and returns FakeDataOutput.
  * @param {any} js_input
  * @returns {any}
  */
@@ -170,7 +157,6 @@ export function fake_data_process(js_input) {
 }
 
 /**
- * Find & replace. Receives FindReplaceInput (camelCase) and returns FindReplaceOutput (camelCase).
  * @param {any} js_input
  * @returns {any}
  */
@@ -183,7 +169,6 @@ export function find_replace_process(js_input) {
 }
 
 /**
- * Combined hash. Receives HashInput (camelCase) and returns HashOutput (camelCase).
  * @param {any} js_input
  * @returns {any}
  */
@@ -196,7 +181,6 @@ export function hash_process(js_input) {
 }
 
 /**
- * Hex encode/decode. Receives HexInput (camelCase) and returns HexOutput (camelCase).
  * @param {any} js_input
  * @returns {any}
  */
@@ -209,7 +193,6 @@ export function hex_process(js_input) {
 }
 
 /**
- * HTML entity encode/decode. Receives HtmlEntityInput (camelCase) and returns HtmlEntityOutput (camelCase).
  * @param {any} js_input
  * @returns {any}
  */
@@ -222,7 +205,6 @@ export function html_entity_process(js_input) {
 }
 
 /**
- * HTML formatter. Receives HtmlFormatInput (camelCase) and returns HtmlFormatOutput (camelCase).
  * @param {any} js_input
  * @returns {any}
  */
@@ -235,7 +217,6 @@ export function html_format(js_input) {
 }
 
 /**
- * ISO 8601 formatter. Receives Iso8601Input (camelCase) and returns Iso8601Output (camelCase).
  * @param {any} js_input
  * @returns {any}
  */
@@ -248,7 +229,6 @@ export function iso8601_process(js_input) {
 }
 
 /**
- * Line-level text operations.
  * @param {any} js_input
  * @returns {any}
  */
@@ -261,7 +241,6 @@ export function line_tools_process(js_input) {
 }
 
 /**
- * Lorem ipsum generator. Receives LoremIpsumInput (camelCase) and returns LoremIpsumOutput (camelCase).
  * @param {any} js_input
  * @returns {any}
  */
@@ -274,7 +253,6 @@ export function lorem_ipsum_process(js_input) {
 }
 
 /**
- * Nano ID generation. Receives NanoIdInput (camelCase) and returns NanoIdOutput (camelCase).
  * @param {any} js_input
  * @returns {any}
  */
@@ -287,7 +265,6 @@ export function nanoid_process(js_input) {
 }
 
 /**
- * Passphrase generation. Receives PassphraseInput (camelCase) and returns PassphraseOutput (camelCase).
  * @param {any} js_input
  * @returns {any}
  */
@@ -300,7 +277,6 @@ export function passphrase_process(js_input) {
 }
 
 /**
- * Password generation. Receives PasswordInput (camelCase) and returns PasswordOutput (camelCase).
  * @param {any} js_input
  * @returns {any}
  */
@@ -313,7 +289,6 @@ export function password_process(js_input) {
 }
 
 /**
- * QR code generator.
  * @param {any} js_input
  * @returns {any}
  */
@@ -352,7 +327,6 @@ export function regex_match(js_input) {
 }
 
 /**
- * Semantic versioning: parse, compare, range check, next major/minor/patch.
  * @param {any} js_input
  * @returns {any}
  */
@@ -365,7 +339,6 @@ export function semver_process(js_input) {
 }
 
 /**
- * String escaper. Receives StringEscaperInput (camelCase) and returns StringEscaperOutput (camelCase).
  * @param {any} js_input
  * @returns {any}
  */
@@ -378,7 +351,6 @@ export function string_escaper_process(js_input) {
 }
 
 /**
- * Text diff. Receives TextDiffInput (camelCase) and returns TextDiffOutput (camelCase).
  * @param {any} js_input
  * @returns {any}
  */
@@ -391,7 +363,6 @@ export function text_diff_process(js_input) {
 }
 
 /**
- * Timestamp converter. Receives TimestampInput (camelCase) and returns TimestampOutput (camelCase).
  * @param {any} js_input
  * @returns {any}
  */
@@ -404,7 +375,6 @@ export function timestamp_process(js_input) {
 }
 
 /**
- * Timezone converter. Receives TimezoneInput (camelCase) and returns TimezoneOutput (camelCase).
  * @param {any} js_input
  * @returns {any}
  */
@@ -417,7 +387,6 @@ export function timezone_process(js_input) {
 }
 
 /**
- * HTTP Basic Authorization header encode/decode.
  * @param {any} js_input
  * @returns {any}
  */
@@ -430,7 +399,6 @@ export function tool_basic_auth(js_input) {
 }
 
 /**
- * Config converter (JSON ↔ YAML ↔ TOML). Receives ConfigConvertInput and returns ConfigConvertOutput (camelCase).
  * @param {any} js_input
  * @returns {any}
  */
@@ -443,7 +411,6 @@ export function tool_config_convert(js_input) {
 }
 
 /**
- * CSV → JSON converter. Receives CsvToJsonInput (camelCase) and returns CsvToJsonOutput (camelCase).
  * @param {any} js_input
  * @returns {any}
  */
@@ -456,7 +423,6 @@ export function tool_csv_to_json(js_input) {
 }
 
 /**
- * Expression evaluator. Receives ExprEvalInput (camelCase) and returns ExprEvalOutput (camelCase).
  * @param {any} js_input
  * @returns {any}
  */
@@ -469,7 +435,6 @@ export function tool_expression_eval(js_input) {
 }
 
 /**
- * JSON converter. Receives JsonConvertInput (camelCase) and returns JsonConvertOutput (camelCase).
  * @param {any} js_input
  * @returns {any}
  */
@@ -482,7 +447,6 @@ export function tool_json_convert(js_input) {
 }
 
 /**
- * JSON diff. Receives JsonDiffInput (camelCase) and returns JsonDiffOutput (camelCase).
  * @param {any} js_input
  * @returns {any}
  */
@@ -495,7 +459,6 @@ export function tool_json_diff(js_input) {
 }
 
 /**
- * JSON formatter. Receives JsonFormatInput (camelCase) and returns JsonFormatOutput (camelCase).
  * @param {any} js_input
  * @returns {any}
  */
@@ -508,7 +471,6 @@ export function tool_json_format(js_input) {
 }
 
 /**
- * JSON path query. Receives JsonPathInput (camelCase) and returns JsonPathOutput (camelCase).
  * @param {any} js_input
  * @returns {any}
  */
@@ -521,7 +483,6 @@ export function tool_json_path(js_input) {
 }
 
 /**
- * JSON Schema Validator. Receives JsonSchemaValidateInput and returns JsonSchemaValidateOutput (camelCase).
  * @param {any} js_input
  * @returns {any}
  */
@@ -534,7 +495,6 @@ export function tool_json_schema_validate(js_input) {
 }
 
 /**
- * JSON → CSV converter. Receives JsonToCsvInput (camelCase) and returns JsonToCsvOutput (camelCase).
  * @param {any} js_input
  * @returns {any}
  */
@@ -547,7 +507,6 @@ export function tool_json_to_csv(js_input) {
 }
 
 /**
- * JSON validator. Receives JsonValidateInput (camelCase) and returns JsonValidateOutput (camelCase).
  * @param {any} js_input
  * @returns {any}
  */
@@ -560,7 +519,6 @@ export function tool_json_validate(js_input) {
 }
 
 /**
- * JWT builder. Receives JwtBuildInput (camelCase) and returns JwtBuildOutput (camelCase).
  * @param {any} js_input
  * @returns {any}
  */
@@ -573,7 +531,6 @@ export function tool_jwt_build(js_input) {
 }
 
 /**
- * JWT decoder. Receives JwtDecodeInput (camelCase) and returns JwtDecodeOutput (camelCase).
  * @param {any} js_input
  * @returns {any}
  */
@@ -586,7 +543,6 @@ export function tool_jwt_decode(js_input) {
 }
 
 /**
- * Slug generator. Receives SlugInput and returns SlugOutput.
  * @param {any} js_input
  * @returns {any}
  */
@@ -599,7 +555,6 @@ export function tool_slug_generate(js_input) {
 }
 
 /**
- * SQL formatter. Receives SqlFormatInput (camelCase) and returns SqlFormatOutput (camelCase).
  * @param {any} js_input
  * @returns {any}
  */
@@ -612,7 +567,6 @@ export function tool_sql_format(js_input) {
 }
 
 /**
- * TOTP generator. Receives TotpInput (camelCase) and returns TotpOutput (camelCase).
  * @param {any} js_input
  * @returns {any}
  */
@@ -625,7 +579,6 @@ export function tool_totp_generate(js_input) {
 }
 
 /**
- * Unicode Inspector. Receives UnicodeInspectInput and returns UnicodeInspectOutput.
  * @param {any} js_input
  * @returns {any}
  */
@@ -638,7 +591,6 @@ export function tool_unicode_inspect(js_input) {
 }
 
 /**
- * URL parser. Receives UrlParseInput (camelCase) and returns UrlParseOutput (camelCase).
  * @param {any} js_input
  * @returns {any}
  */
@@ -651,7 +603,6 @@ export function tool_url_parse(js_input) {
 }
 
 /**
- * XML formatter. Receives XmlFormatInput (camelCase) and returns XmlFormatOutput (camelCase).
  * @param {any} js_input
  * @returns {any}
  */
@@ -664,7 +615,6 @@ export function tool_xml_format(js_input) {
 }
 
 /**
- * YAML formatter. Receives YamlFormatInput (camelCase) and returns YamlFormatOutput (camelCase).
  * @param {any} js_input
  * @returns {any}
  */
@@ -677,7 +627,6 @@ export function tool_yaml_format(js_input) {
 }
 
 /**
- * User-Agent parser. Receives UaParseInput (camelCase) and returns UaParseOutput (camelCase).
  * @param {any} js_input
  * @returns {any}
  */
@@ -690,7 +639,6 @@ export function ua_parse(js_input) {
 }
 
 /**
- * ULID inspection. Receives UlidInspectInput (camelCase) and returns UlidInspectOutput (camelCase).
  * @param {any} js_input
  * @returns {any}
  */
@@ -703,7 +651,6 @@ export function ulid_inspect(js_input) {
 }
 
 /**
- * ULID generation. Receives UlidInput (camelCase) and returns UlidOutput (camelCase).
  * @param {any} js_input
  * @returns {any}
  */
@@ -716,7 +663,6 @@ export function ulid_process(js_input) {
 }
 
 /**
- * Unit converter (data size, time, temperature, length, weight, speed).
  * @param {any} js_input
  * @returns {any}
  */
@@ -729,7 +675,6 @@ export function unit_convert(js_input) {
 }
 
 /**
- * URL percent-encode/decode. Receives UrlEncodeInput (camelCase) and returns UrlEncodeOutput (camelCase).
  * @param {any} js_input
  * @returns {any}
  */
@@ -742,7 +687,6 @@ export function url_encode_process(js_input) {
 }
 
 /**
- * UUID inspection. Receives UuidInspectInput (camelCase) and returns UuidInspectOutput (camelCase).
  * @param {any} js_input
  * @returns {any}
  */
@@ -755,7 +699,6 @@ export function uuid_inspect(js_input) {
 }
 
 /**
- * UUID generation. Receives UuidInput (camelCase) and returns UuidOutput (camelCase).
  * @param {any} js_input
  * @returns {any}
  */
@@ -768,7 +711,6 @@ export function uuid_process(js_input) {
 }
 
 /**
- * Word counter. Receives WordCounterInput (camelCase) and returns WordCounterOutput (camelCase).
  * @param {any} js_input
  * @returns {any}
  */
