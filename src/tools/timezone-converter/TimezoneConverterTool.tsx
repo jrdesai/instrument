@@ -7,6 +7,8 @@ import {
 } from "react";
 import { callTool } from "../../bridge";
 import { FormatHint } from "../../components/ui/FormatHint";
+import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
+import { extractErrorMessage } from "../../lib/extractErrorMessage";
 import { useHistoryStore } from "../../store";
 import {
   formatTimezoneLabel,
@@ -147,6 +149,8 @@ function TimezoneConverterTool() {
     const s = String(now.getSeconds()).padStart(2, "0");
     return `${y}-${m}-${d} ${h}:${min}:${s}`;
   });
+  const { setDraft } = useDraftInput("timezone-converter");
+  useRestoreStringDraft("timezone-converter", setDatetime);
   const [fromTz, setFromTz] = useState("UTC");
   const [toTz, setToTz] = useState("America/New_York");
   const [output, setOutput] = useState<TimezoneOutput | null>(null);
@@ -189,16 +193,7 @@ function TimezoneConverterTool() {
           }, HISTORY_DEBOUNCE_MS);
         }
       } catch (e) {
-        const message =
-          e instanceof Error
-            ? e.message
-            : typeof e === "string"
-              ? e
-              : e && typeof e === "object" && "message" in e
-                ? String((e as { message: unknown }).message)
-                : e != null
-                  ? String(e)
-                  : "Failed to run tool";
+        const message = extractErrorMessage(e, "Failed to run tool");
         setOutput({
           result: "",
           resultIso: "",
@@ -243,8 +238,9 @@ function TimezoneConverterTool() {
 
   const handleClear = useCallback(() => {
     setDatetime("");
+    setDraft("");
     setOutput(null);
-  }, []);
+  }, [setDraft]);
 
   const handleCopyValue = useCallback(async (text: string) => {
     if (!text) return;
@@ -296,7 +292,10 @@ function TimezoneConverterTool() {
               className="flex-1 min-w-0 px-3 py-2 bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-mono text-sm outline-none focus:ring-1 focus:ring-primary border border-border-light dark:border-border-dark rounded-lg"
               placeholder="Enter date/time (e.g. 2024-03-04 12:00:00)"
               value={datetime}
-              onChange={(e) => setDatetime(e.target.value)}
+              onChange={(e) => {
+                setDatetime(e.target.value);
+                setDraft(e.target.value);
+              }}
             />
             <FormatHint
               formats={[
@@ -309,6 +308,7 @@ function TimezoneConverterTool() {
               ]}
               onSelect={(example) => {
                 setDatetime(example);
+                setDraft(example);
                 runProcess(example, fromTz, toTz);
               }}
             />

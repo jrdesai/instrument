@@ -7,6 +7,7 @@ import {
 import { callTool } from "../../bridge";
 import { FormatHint } from "../../components/ui/FormatHint";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
+import { extractErrorMessage } from "../../lib/extractErrorMessage";
 import { useHistoryStore } from "../../store";
 import type { TimestampInput } from "../../bindings/TimestampInput";
 import type { TimestampMode } from "../../bindings/TimestampMode";
@@ -80,16 +81,7 @@ function TimestampConverterTool() {
           }, HISTORY_DEBOUNCE_MS);
         }
       } catch (e) {
-        const message =
-          e instanceof Error
-            ? e.message
-            : typeof e === "string"
-              ? e
-              : e && typeof e === "object" && "message" in e
-                ? String((e as { message: unknown }).message)
-                : e != null
-                  ? String(e)
-                  : "Failed to run tool";
+        const message = extractErrorMessage(e, "Failed to run tool");
         setOutput({
           unixSeconds: 0n,
           unixMilliseconds: 0n,

@@ -99,6 +99,12 @@ function SemverTool() {
     };
   }, [version, compareWith, range, run]);
 
+  useEffect(() => {
+    return () => {
+      if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
+    };
+  }, []);
+
   const hasOk = output && !output.error;
 
   return (

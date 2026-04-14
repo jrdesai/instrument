@@ -7,6 +7,7 @@ import {
 import { callTool } from "../../bridge";
 import { FormatHint } from "../../components/ui/FormatHint";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
+import { extractErrorMessage } from "../../lib/extractErrorMessage";
 import { useHistoryStore } from "../../store";
 import type { Iso8601Input } from "../../bindings/Iso8601Input";
 import type { Iso8601Output } from "../../bindings/Iso8601Output";
@@ -93,16 +94,7 @@ function Iso8601FormatterTool() {
           }, HISTORY_DEBOUNCE_MS);
         }
       } catch (e) {
-        const message =
-          e instanceof Error
-            ? e.message
-            : typeof e === "string"
-              ? e
-              : e && typeof e === "object" && "message" in e
-                ? String((e as { message: unknown }).message)
-                : e != null
-                  ? String(e)
-                  : "Failed to run tool";
+        const message = extractErrorMessage(e, "Failed to run tool");
         setOutput({
           isValid: false,
           inputType: "Invalid",

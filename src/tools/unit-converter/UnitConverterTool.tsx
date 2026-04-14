@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { twMerge } from "tailwind-merge";
 import { callTool } from "../../bridge";
 import { CopyButton, PanelHeader, ToolbarFooter } from "../../components/tool";
+import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useHistoryStore } from "../../store";
 import type { UnitCategory } from "../../bindings/UnitCategory";
 import type { UnitConverterInput } from "../../bindings/UnitConverterInput";
@@ -113,6 +114,8 @@ function UnitConverterTool() {
   const [category, setCategory] = useState<UnitCategory>("dataSize");
   const [fromUnit, setFromUnit] = useState<string>("mb");
   const [inputValue, setInputValue] = useState<string>("1");
+  const { setDraft } = useDraftInput(TOOL_ID);
+  useRestoreStringDraft(TOOL_ID, setInputValue);
   const [output, setOutput] = useState<UnitConverterOutput | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -155,6 +158,12 @@ function UnitConverterTool() {
     };
   }, [inputValue, category, fromUnit, run]);
 
+  useEffect(() => {
+    return () => {
+      if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
+    };
+  }, []);
+
   const handleCategoryChange = (cat: UnitCategory) => {
     setCategory(cat);
     setFromUnit(CATEGORY_DEFAULT_UNIT[cat]);
@@ -194,7 +203,10 @@ function UnitConverterTool() {
         <input
           type="number"
           value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
+          onChange={(e) => {
+            setInputValue(e.target.value);
+            setDraft(e.target.value);
+          }}
           placeholder="Enter value…"
           className="w-48 rounded-lg border border-border-light bg-background-light px-3 py-2 font-mono text-sm text-slate-700 focus:outline-none focus:ring-1 focus:ring-primary dark:border-border-dark dark:bg-background-dark dark:text-slate-200"
           autoFocus
@@ -275,6 +287,7 @@ function UnitConverterTool() {
                 type="button"
                 onClick={() => {
                   setInputValue("1");
+                  setDraft("1");
                   setFromUnit(CATEGORY_DEFAULT_UNIT[category]);
                   setOutput(null);
                 }}

@@ -57,6 +57,12 @@ function CidrCalculatorTool() {
     };
   }, [cidr, run]);
 
+  useEffect(() => {
+    return () => {
+      if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
+    };
+  }, []);
+
   const scopeLabel = (scope: string) => {
     if (scope === "ula") return "ULA (Private)";
     if (scope === "link-local") return "Link-Local";
@@ -159,7 +165,10 @@ function CidrCalculatorTool() {
                 </p>
                 <div className="space-y-1">
                   {output.subnetSplit.examples.map((example, i) => (
-                    <div key={i} className="flex items-center justify-between rounded bg-panel-light px-3 py-1.5 dark:bg-panel-dark">
+                    <div
+                      key={`${example}-${i}`}
+                      className="flex items-center justify-between rounded bg-panel-light px-3 py-1.5 dark:bg-panel-dark"
+                    >
                       <span className="font-mono text-xs text-slate-300">{example}</span>
                       <CopyButton
                         value={example}
