@@ -87,12 +87,16 @@ export function useRegexWorker() {
   const runRegex = useCallback(
     async (req: RegexRequest): Promise<MatchResult[]> => {
       if (isDesktop) {
-        const raw = await callTool("tool_regex_test", {
-          pattern: req.pattern,
-          text: req.text,
-          engine: req.engine,
-          flags: req.flags ?? undefined,
-        });
+        const raw = await callTool(
+          "tool_regex_test",
+          {
+            pattern: req.pattern,
+            text: req.text,
+            engine: req.engine,
+            flags: req.flags ?? undefined,
+          },
+          { skipHistory: true }
+        );
         const result = unwrapSpectaCommandResult<RawMatchResult[]>(raw);
         return normaliseGroups(Array.isArray(result) ? result : []);
       }

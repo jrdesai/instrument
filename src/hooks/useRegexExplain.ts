@@ -34,10 +34,11 @@ export async function explainPattern(
       "Pattern cannot end with a single backslash — escape it (\\\\) or add a character after it."
     );
   }
-  const result = await callTool("tool_regex_explain", {
-    pattern: trimmed,
-    engine,
-  });
+  const result = await callTool(
+    "tool_regex_explain",
+    { pattern: trimmed, engine },
+    { skipHistory: true }
+  );
   const tokens = unwrapSpectaCommandResult<ExplainToken[]>(result);
   return Array.isArray(tokens) ? tokens : [];
 }
