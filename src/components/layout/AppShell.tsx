@@ -73,7 +73,7 @@ export function AppShell() {
               end={to === "/"}
               className={({ isActive }) =>
                 `flex size-10 items-center justify-center rounded-lg transition-colors ${
-                  isActive ? "bg-primary/10 text-primary" : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"
+                  isActive ? "bg-primary/20 text-primary" : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"
                 }`
               }
               aria-label={`${label} (${shortcut})`}

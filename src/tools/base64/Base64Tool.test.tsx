@@ -81,7 +81,7 @@ describe("Base64Tool", () => {
   it("renders without crashing with default props", () => {
     render(<Base64Tool />);
     expect(screen.getByRole("textbox", { name: /base64 input text/i })).toBeInTheDocument();
-    expect(screen.getByLabelText(/base64 output/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/base64 output/i)).toHaveTextContent("Output will appear here");
     expect(screen.getByRole("button", { name: /encode mode/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /decode mode/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /swap input and output/i })).toBeInTheDocument();
@@ -95,7 +95,7 @@ describe("Base64Tool", () => {
     render(<Base64Tool />);
     const textarea = screen.getByRole("textbox", { name: /base64 input text/i });
     await user.type(textarea, "Hello");
-    expect(screen.getByLabelText(/base64 output/i)).toHaveTextContent("");
+    expect(screen.getByLabelText(/base64 output/i)).toHaveTextContent("Output will appear here");
     await waitForProcess();
     expect(screen.getByLabelText(/base64 output/i)).toHaveTextContent(btoa("Hello"));
   });
@@ -144,7 +144,7 @@ describe("Base64Tool", () => {
     expect(screen.getByLabelText(/base64 output/i)).toHaveTextContent(btoa("foo"));
     await user.click(screen.getByRole("button", { name: /clear input and output/i }));
     expect(textarea).toHaveValue("");
-    expect(screen.getByLabelText(/base64 output/i)).toHaveTextContent("");
+    expect(screen.getByLabelText(/base64 output/i)).toHaveTextContent("Output will appear here");
   });
 
   it("mode switcher (Encode/Decode buttons) changes processing mode", async () => {

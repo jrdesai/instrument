@@ -187,7 +187,7 @@ function StringEscaperTool() {
         <button
           type="button"
           aria-label="Resize panels"
-          className="w-1 shrink-0 bg-border-light dark:bg-border-dark hover:bg-primary/50 transition-colors cursor-col-resize"
+          className="w-1 shrink-0 bg-slate-200 dark:bg-slate-700 hover:bg-primary/50 transition-colors cursor-col-resize"
           onMouseDown={handleDividerMouseDown}
         />
 
@@ -206,15 +206,25 @@ function StringEscaperTool() {
             )}
             {isLoading && <span className="text-primary">Processing…</span>}
           </div>
-          <pre
-            aria-live="polite"
-            aria-label="String escaper output"
-            className={`flex-1 p-4 overflow-auto font-mono text-sm whitespace-pre-wrap break-all ${
-              error ? "text-red-400" : "text-slate-700 dark:text-slate-300"
-            }`}
-          >
-            {error ? error : resultText || (isLoading ? "…" : "")}
-          </pre>
+          {!error && !resultText && !isLoading ? (
+            <div
+              className="flex flex-1 items-center justify-center"
+              aria-live="polite"
+              aria-label="String escaper output"
+            >
+              <span className="text-sm text-slate-400">Output will appear here</span>
+            </div>
+          ) : (
+            <pre
+              aria-live="polite"
+              aria-label="String escaper output"
+              className={`flex-1 p-4 overflow-auto font-mono text-sm whitespace-pre-wrap break-all ${
+                error ? "text-red-400" : "text-slate-700 dark:text-slate-300"
+              }`}
+            >
+              {error ? error : resultText || (isLoading ? "…" : "")}
+            </pre>
+          )}
         </div>
       </div>
 

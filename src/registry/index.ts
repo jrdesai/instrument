@@ -189,7 +189,7 @@ export const tools: Tool[] = [
     displayCategory: "Encoding",
     displayCategoryIcon: "data_array",
     roles: ["frontend", "general"],
-    icon: "html",
+    icon: "code",
     platforms: ["desktop", "web"],
     rustCommand: "tool_html_entity_process",
     keywords: [
