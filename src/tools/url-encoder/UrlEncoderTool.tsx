@@ -153,8 +153,8 @@ function UrlEncoderTool() {
           style={{ width: `${leftPanelPercent}%` }}
         >
           <div className="flex items-center justify-between px-3 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark text-xs text-slate-500 dark:text-slate-400 shrink-0 min-h-[41px]">
-            <span>Lines: {lines}</span>
-            <span>Chars: {charCount}</span>
+            <span className="font-medium text-slate-600 dark:text-slate-300">Input</span>
+            <span>Lines: {lines} · Chars: {charCount}</span>
           </div>
           <textarea
             aria-label="URL encoder input text"
@@ -184,9 +184,9 @@ function UrlEncoderTool() {
 
         {/* Output panel */}
         <div className="flex flex-col flex-1 min-w-0">
-          <div className="flex items-center justify-between px-3 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark text-xs text-slate-500 dark:text-slate-400 shrink-0">
-            <span>Output</span>
-            {isLoading && <span className="text-primary">Processing…</span>}
+          <div className="flex items-center justify-between px-3 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark text-xs text-slate-500 dark:text-slate-400 shrink-0 min-h-[41px]">
+            <span className="font-medium text-slate-600 dark:text-slate-300">Output</span>
+            {isLoading && <span className="text-primary animate-pulse">Processing…</span>}
           </div>
           <pre
             aria-live="polite"
