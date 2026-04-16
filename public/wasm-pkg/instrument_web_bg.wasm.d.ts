@@ -38,6 +38,7 @@ export const tool_jwt_decode: (a: any) => [number, number, number];
 export const tool_line_tools_process: (a: any) => [number, number, number];
 export const tool_lorem_ipsum_process: (a: any) => [number, number, number];
 export const tool_nanoid_process: (a: any) => [number, number, number];
+export const tool_nato_phonetic_process: (a: any) => [number, number, number];
 export const tool_passphrase_process: (a: any) => [number, number, number];
 export const tool_password_process: (a: any) => [number, number, number];
 export const tool_qr_generate: (a: any) => [number, number, number];

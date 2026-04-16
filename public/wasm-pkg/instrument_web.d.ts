@@ -81,6 +81,8 @@ export function tool_lorem_ipsum_process(js_input: any): any;
 
 export function tool_nanoid_process(js_input: any): any;
 
+export function tool_nato_phonetic_process(js_input: any): any;
+
 export function tool_passphrase_process(js_input: any): any;
 
 export function tool_password_process(js_input: any): any;
@@ -168,6 +170,7 @@ export interface InitOutput {
     readonly tool_line_tools_process: (a: any) => [number, number, number];
     readonly tool_lorem_ipsum_process: (a: any) => [number, number, number];
     readonly tool_nanoid_process: (a: any) => [number, number, number];
+    readonly tool_nato_phonetic_process: (a: any) => [number, number, number];
     readonly tool_passphrase_process: (a: any) => [number, number, number];
     readonly tool_password_process: (a: any) => [number, number, number];
     readonly tool_qr_generate: (a: any) => [number, number, number];

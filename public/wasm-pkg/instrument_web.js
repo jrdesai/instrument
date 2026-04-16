@@ -450,6 +450,18 @@ export function tool_nanoid_process(js_input) {
  * @param {any} js_input
  * @returns {any}
  */
+export function tool_nato_phonetic_process(js_input) {
+    const ret = wasm.tool_nato_phonetic_process(js_input);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
+ * @param {any} js_input
+ * @returns {any}
+ */
 export function tool_passphrase_process(js_input) {
     const ret = wasm.tool_passphrase_process(js_input);
     if (ret[2]) {
