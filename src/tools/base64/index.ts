@@ -17,7 +17,7 @@ export const base64ToolMeta: Pick<
   roles: ["frontend", "backend", "general"],
   icon: "data_array",
   platforms: ["desktop", "web"],
-  rustCommand: "base64_process",
+  rustCommand: "tool_base64_process",
   keywords: ["base64", "encode", "decode", "binary"],
 };
 

@@ -13,7 +13,7 @@ import type { HexMode } from "../../bindings/HexMode";
 import type { HexOutput } from "../../bindings/HexOutput";
 import type { HexSeparator } from "../../bindings/HexSeparator";
 
-const RUST_COMMAND = "hex_process";
+const RUST_COMMAND = "tool_hex_process";
 const TOOL_ID = "hex-converter";
 const DEBOUNCE_MS = 150;
 const HISTORY_DEBOUNCE_MS = 1500;

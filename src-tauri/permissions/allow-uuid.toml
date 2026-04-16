@@ -1,6 +1,6 @@
 # Allow the UUID Generator tool command to be invoked from the frontend.
 [[permission]]
 identifier = "allow-uuid"
-description = "Enables the uuid_process and uuid_inspect commands."
-commands.allow = ["uuid_process", "uuid_inspect"]
+description = "Enables the tool_uuid_process and tool_uuid_inspect commands."
+commands.allow = ["tool_uuid_process", "tool_uuid_inspect"]
 

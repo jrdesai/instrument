@@ -1,4 +1,4 @@
 [[permission]]
 identifier = "allow-unit-converter"
-description = "Enables the unit_convert command."
-commands.allow = ["unit_convert"]
+description = "Enables the tool_unit_convert command."
+commands.allow = ["tool_unit_convert"]

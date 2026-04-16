@@ -37,80 +37,80 @@ use crate::command_log::finish_ok;
 /// Runs case conversion via instrument-core.
 #[tauri::command]
 #[specta::specta]
-pub fn case_process(input: CaseInput) -> CaseOutput {
+pub fn tool_case_process(input: CaseInput) -> CaseOutput {
     let start = Instant::now();
     let output = case_process_core(input);
-    finish_ok("case_process", start);
+    finish_ok("tool_case_process", start);
     output
 }
 
 /// Runs word counting via instrument-core.
 #[tauri::command]
 #[specta::specta]
-pub fn word_counter_process(input: WordCounterInput) -> WordCounterOutput {
+pub fn tool_word_counter_process(input: WordCounterInput) -> WordCounterOutput {
     let start = Instant::now();
     let output = word_counter_process_core(input);
-    finish_ok("word_counter_process", start);
+    finish_ok("tool_word_counter_process", start);
     output
 }
 
 /// Runs string escape/unescape via instrument-core.
 #[tauri::command]
 #[specta::specta]
-pub fn string_escaper_process(input: StringEscaperInput) -> StringEscaperOutput {
+pub fn tool_string_escaper_process(input: StringEscaperInput) -> StringEscaperOutput {
     let start = Instant::now();
     let output = string_escaper_process_core(input);
-    finish_ok("string_escaper_process", start);
+    finish_ok("tool_string_escaper_process", start);
     output
 }
 
 /// Runs find and replace via instrument-core.
 #[tauri::command]
 #[specta::specta]
-pub fn find_replace_process(input: FindReplaceInput) -> FindReplaceOutput {
+pub fn tool_find_replace_process(input: FindReplaceInput) -> FindReplaceOutput {
     let start = Instant::now();
     let output = find_replace_process_core(input);
-    finish_ok("find_replace_process", start);
+    finish_ok("tool_find_replace_process", start);
     output
 }
 
 /// Runs lorem ipsum generation via instrument-core.
 #[tauri::command]
 #[specta::specta]
-pub fn lorem_ipsum_process(input: LoremIpsumInput) -> LoremIpsumOutput {
+pub fn tool_lorem_ipsum_process(input: LoremIpsumInput) -> LoremIpsumOutput {
     let start = Instant::now();
     let output = lorem_ipsum_process_core(input);
-    finish_ok("lorem_ipsum_process", start);
+    finish_ok("tool_lorem_ipsum_process", start);
     output
 }
 
 /// Runs line-by-line text diff via instrument-core.
 #[tauri::command]
 #[specta::specta]
-pub fn text_diff_process(input: TextDiffInput) -> TextDiffOutput {
+pub fn tool_text_diff_process(input: TextDiffInput) -> TextDiffOutput {
     let start = Instant::now();
     let output = text_diff_process_core(input);
-    finish_ok("text_diff_process", start);
+    finish_ok("tool_text_diff_process", start);
     output
 }
 
 /// Runs line-level text tools via instrument-core.
 #[tauri::command]
 #[specta::specta]
-pub fn line_tools_process(input: LineToolsInput) -> LineToolsOutput {
+pub fn tool_line_tools_process(input: LineToolsInput) -> LineToolsOutput {
     let start = Instant::now();
     let output = line_tools_process_core(input);
-    finish_ok("line_tools_process", start);
+    finish_ok("tool_line_tools_process", start);
     output
 }
 
 /// Parses and validates .env content via instrument-core.
 #[tauri::command]
 #[specta::specta]
-pub fn env_parse(input: EnvParseInput) -> EnvParseOutput {
+pub fn tool_env_parse(input: EnvParseInput) -> EnvParseOutput {
     let start = Instant::now();
     let output = env_parse_process_core(input);
-    finish_ok("env_parse", start);
+    finish_ok("tool_env_parse", start);
     output
 }
 
@@ -137,9 +137,9 @@ pub fn tool_slug_generate(input: SlugInput) -> SlugOutput {
 /// Generates fake records from a field schema (JSON output).
 #[tauri::command]
 #[specta::specta]
-pub fn fake_data_process(input: FakeDataInput) -> FakeDataOutput {
+pub fn tool_fake_data_process(input: FakeDataInput) -> FakeDataOutput {
     let start = Instant::now();
     let output = fake_data_process_core(input);
-    finish_ok("fake_data_process", start);
+    finish_ok("tool_fake_data_process", start);
     output
 }

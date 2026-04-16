@@ -8,7 +8,7 @@ import type { SemverInput } from "../../bindings/SemverInput";
 import type { SemverOutput } from "../../bindings/SemverOutput";
 
 const TOOL_ID = "semver";
-const RUST_COMMAND = "semver_process";
+const RUST_COMMAND = "tool_semver_process";
 const DEBOUNCE_MS = 150;
 const HISTORY_DEBOUNCE_MS = 1500;
 

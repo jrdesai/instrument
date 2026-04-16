@@ -12,7 +12,7 @@ import { useHistoryStore } from "../../store";
 import type { Iso8601Input } from "../../bindings/Iso8601Input";
 import type { Iso8601Output } from "../../bindings/Iso8601Output";
 
-const RUST_COMMAND = "iso8601_process";
+const RUST_COMMAND = "tool_iso8601_process";
 const TOOL_ID = "iso8601-formatter";
 const DEBOUNCE_MS = 150;
 const HISTORY_DEBOUNCE_MS = 1500;

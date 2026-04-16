@@ -15,7 +15,7 @@ import type { HtmlFormatInput } from "../../bindings/HtmlFormatInput";
 import type { HtmlFormatOutput } from "../../bindings/HtmlFormatOutput";
 
 const TOOL_ID = "html-formatter";
-const RUST_COMMAND = "html_format";
+const RUST_COMMAND = "tool_html_format";
 const DEBOUNCE_MS = 300;
 const HISTORY_DEBOUNCE_MS = 1500;
 

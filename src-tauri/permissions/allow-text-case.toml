@@ -1,6 +1,6 @@
 # Allow the Text Case Converter tool command to be invoked from the frontend.
 [[permission]]
 identifier = "allow-text-case"
-description = "Enables the case_process command."
-commands.allow = ["case_process"]
+description = "Enables the tool_case_process command."
+commands.allow = ["tool_case_process"]
 

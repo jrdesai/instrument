@@ -21,18 +21,18 @@ pub fn tool_url_parse(input: UrlParseInput) -> UrlParseOutput {
 
 #[tauri::command]
 #[specta::specta]
-pub fn cidr_calculate(input: CidrInput) -> CidrOutput {
+pub fn tool_cidr_calculate(input: CidrInput) -> CidrOutput {
     let start = Instant::now();
     let output = cidr_process_core(input);
-    finish_ok("cidr_calculate", start);
+    finish_ok("tool_cidr_calculate", start);
     output
 }
 
 #[tauri::command]
 #[specta::specta]
-pub fn ua_parse(input: UaParseInput) -> UaParseOutput {
+pub fn tool_ua_parse(input: UaParseInput) -> UaParseOutput {
     let start = Instant::now();
     let output = ua_parse_process_core(input);
-    finish_ok("ua_parse", start);
+    finish_ok("tool_ua_parse", start);
     output
 }

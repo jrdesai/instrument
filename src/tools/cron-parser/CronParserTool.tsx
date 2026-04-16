@@ -11,7 +11,7 @@ import { useHistoryStore } from "../../store";
 import type { CronInput } from "../../bindings/CronInput";
 import type { CronOutput } from "../../bindings/CronOutput";
 
-const RUST_COMMAND = "cron_process";
+const RUST_COMMAND = "tool_cron_process";
 const TOOL_ID = "cron-parser";
 const DEBOUNCE_MS = 150;
 const HISTORY_DEBOUNCE_MS = 1500;

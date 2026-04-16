@@ -1,5 +1,5 @@
 # Allow the Word Counter tool command to be invoked from the frontend.
 [[permission]]
 identifier = "allow-word-counter"
-description = "Enables the word_counter_process command."
-commands.allow = ["word_counter_process"]
+description = "Enables the tool_word_counter_process command."
+commands.allow = ["tool_word_counter_process"]

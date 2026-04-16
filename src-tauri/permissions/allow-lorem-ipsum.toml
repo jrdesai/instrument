@@ -1,5 +1,5 @@
 # Allow the Lorem Ipsum Generator tool command to be invoked from the frontend.
 [[permission]]
 identifier = "allow-lorem-ipsum"
-description = "Enables the lorem_ipsum_process command."
-commands.allow = ["lorem_ipsum_process"]
+description = "Enables the tool_lorem_ipsum_process command."
+commands.allow = ["tool_lorem_ipsum_process"]

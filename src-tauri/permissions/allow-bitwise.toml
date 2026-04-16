@@ -1,4 +1,4 @@
 [[permission]]
 identifier = "allow-bitwise"
-description = "Enables the bitwise_process command."
-commands.allow = ["bitwise_process"]
+description = "Enables the tool_bitwise_process command."
+commands.allow = ["tool_bitwise_process"]

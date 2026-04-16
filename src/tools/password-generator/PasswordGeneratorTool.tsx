@@ -4,7 +4,7 @@ import type { PasswordInput } from "../../bindings/PasswordInput";
 import type { PasswordOutput } from "../../bindings/PasswordOutput";
 import type { PasswordStrength } from "../../bindings/PasswordStrength";
 
-const RUST_COMMAND = "password_process";
+const RUST_COMMAND = "tool_password_process";
 const COPIED_DURATION_MS = 1500;
 const DEFAULT_SYMBOLS = "!@#$%^&*()-_=+[]{}|;:,.<>?";
 const DEBOUNCE_MS = 150;

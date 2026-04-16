@@ -4,7 +4,7 @@ import type { PassphraseInput } from "../../bindings/PassphraseInput";
 import type { PassphraseOutput } from "../../bindings/PassphraseOutput";
 import type { PassphraseSeparator } from "../../bindings/PassphraseSeparator";
 
-const RUST_COMMAND = "passphrase_process";
+const RUST_COMMAND = "tool_passphrase_process";
 const COPIED_DURATION_MS = 1500;
 const DEBOUNCE_MS = 150;
 

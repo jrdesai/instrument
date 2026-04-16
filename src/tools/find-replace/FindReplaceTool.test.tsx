@@ -165,7 +165,7 @@ describe("FindReplaceTool", () => {
 
     await waitFor(() => {
       expect(mockCallTool).toHaveBeenCalledWith(
-        "find_replace_process",
+        "tool_find_replace_process",
         expect.objectContaining({
           text: "the cat sat on the mat",
           find: "cat",

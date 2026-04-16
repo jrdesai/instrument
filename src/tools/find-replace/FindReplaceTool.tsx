@@ -12,7 +12,7 @@ import { useHistoryStore } from "../../store";
 import type { FindReplaceInput } from "../../bindings/FindReplaceInput";
 import type { FindReplaceOutput } from "../../bindings/FindReplaceOutput";
 
-const RUST_COMMAND = "find_replace_process";
+const RUST_COMMAND = "tool_find_replace_process";
 const TOOL_ID = "find-replace";
 const DEBOUNCE_MS = 150;
 const HISTORY_DEBOUNCE_MS = 1500;

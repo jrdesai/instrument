@@ -8,7 +8,7 @@ import { callTool } from "../../bridge";
 import type { AesInput } from "../../bindings/AesInput";
 import type { AesOutput } from "../../bindings/AesOutput";
 
-const RUST_COMMAND = "aes_process";
+const RUST_COMMAND = "tool_aes_process";
 const DEBOUNCE_MS = 150;
 const COPIED_DURATION_MS = 1500;
 const MAX_PASSPHRASE_CHARS = 10_000;

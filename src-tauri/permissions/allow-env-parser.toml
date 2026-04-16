@@ -1,5 +1,5 @@
 # Allow the .env Parser command to be invoked from the frontend.
 [[permission]]
 identifier = "allow-env-parser"
-description = "Enables the env_parse command."
-commands.allow = ["env_parse"]
+description = "Enables the tool_env_parse command."
+commands.allow = ["tool_env_parse"]

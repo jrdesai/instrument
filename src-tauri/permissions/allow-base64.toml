@@ -1,5 +1,5 @@
 # Allow the Base64 tool command to be invoked from the frontend.
 [[permission]]
 identifier = "allow-base64"
-description = "Enables the base64_process command for the Base64 encoder tool."
-commands.allow = ["base64_process"]
+description = "Enables the tool_base64_process command for the Base64 encoder tool."
+commands.allow = ["tool_base64_process"]

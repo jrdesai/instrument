@@ -1,0 +1,153 @@
+---
+description: React component patterns for tool UIs — error extraction, draft persistence, clear handlers, file upload, list keys, popovers
+globs: src/tools/**/*.tsx, src/tools/**/*.ts
+alwaysApply: false
+---
+
+# Component Patterns
+
+> For comprehensive snippets and layout reference, read `src/tools/CLAUDE.md`.
+> This file is the enforced checklist derived from the full code review.
+
+---
+
+## Error extraction — always use the utility
+
+Use `extractErrorMessage` from `src/lib/extractErrorMessage.ts` in all `catch` blocks.
+Never inline the verbose `e instanceof Error ? e.message : String(e ?? "...")` pattern.
+
+```ts
+import { extractErrorMessage } from "../../lib/extractErrorMessage";
+
+try { ... }
+catch (e) {
+  setError(extractErrorMessage(e, "Operation failed"));
+}
+```
+
+---
+
+## Draft persistence — required for all non-sensitive text-input tools
+
+Every tool with a user-typed text field must persist the draft across reloads:
+
+```ts
+const { setDraft } = useDraftInput(TOOL_ID);
+const [input, setInput] = useState("");
+useRestoreStringDraft(TOOL_ID, setInput);
+```
+
+Call `setDraft(value)` in the `onChange` handler alongside `setInput(value)`.
+
+**Exceptions (no draft hooks):**
+- Sensitive tools (JWT, AES, TOTP, Password, Basic Auth) — see bridge-history-privacy.mdc
+- Pure generators with no free-text field (only selects/checkboxes/sliders)
+
+If a generator has even one user-typed field (e.g. a custom alphabet input), that
+field must be persisted. "Pure generator" only applies when there is literally no
+field the user types into.
+
+---
+
+## Clear buttons — always call handleClear()
+
+✕ buttons and "Clear" links must always call the tool's `handleClear()` function.
+Never use an inline partial reset — inline resets leave `output` stale, so old
+results stay visible after the input is gone.
+
+```tsx
+// ✅ Correct
+const handleClear = useCallback(() => {
+  setInput("");
+  setDraft("");
+  setOutput(null);
+  setFileName(null);
+  setError(null);
+}, [setDraft]);
+
+<button onClick={handleClear}>✕</button>
+
+// ❌ Wrong — output not cleared, stale results remain
+<button onClick={() => { setFileName(null); setInput(""); }}>✕</button>
+```
+
+---
+
+## File upload — always handle reader.onerror
+
+Every `FileReader` usage must have an `onerror` handler. Without it, failures
+(locked file, unreadable binary) are silently swallowed.
+
+```tsx
+const reader = new FileReader();
+reader.onload = (ev) => {
+  const text = ev.target?.result as string;
+  setInputValue(text);
+  setDraft(text);
+};
+reader.onerror = () => {
+  setFileDropError("Failed to read file — it may be locked or unreadable.");
+};
+reader.readAsText(file);
+e.target.value = "";
+```
+
+---
+
+## List rendering — stable composite keys
+
+Never use `key={i}` (array index) for lists whose content can change.
+Use a stable composite key derived from the item's content:
+
+```tsx
+// ❌ Unstable — causes jank when list updates
+{lines.map((line, i) => <div key={i} ...>)}
+
+// ✅ Stable composite key
+{lines.map((line) => (
+  <div key={`${line.lineNumber}-${line.type}`} ...>
+))}
+```
+
+Index keys are only acceptable for **static** arrays that never reorder or change
+length (e.g. a fixed list of format options rendered once).
+
+For secret values (passwords, passphrases, API keys), use a positional prefix —
+never use the secret value itself as the React key:
+
+```tsx
+// ✅ positional prefix
+{passwords.map((pw, i) => <div key={`pw-${i}`} ...>)}
+
+// ❌ exposes secret in React internals
+{passwords.map((pw) => <div key={pw} ...>)}
+```
+
+For non-sensitive unique IDs (UUID, ULID, NanoId), the value itself is the stable key:
+```tsx
+{uuids.map((id) => <div key={id} ...>)}  // ✅ UUIDs are unique and non-sensitive
+```
+
+---
+
+## Popovers — always add a click-outside close handler
+
+Any custom popover, dropdown, or colour picker must close when the user clicks
+outside. Without this it stays open indefinitely.
+
+```ts
+const pickerRef = useRef<HTMLDivElement>(null);
+
+useEffect(() => {
+  if (!isOpen) return;
+  function handleMouseDown(e: MouseEvent) {
+    if (pickerRef.current && !pickerRef.current.contains(e.target as Node)) {
+      setIsOpen(false);
+    }
+  }
+  document.addEventListener("mousedown", handleMouseDown);
+  return () => document.removeEventListener("mousedown", handleMouseDown);
+}, [isOpen]);
+```
+
+Wrap both the trigger button and the popover panel in the same `<div ref={pickerRef}>`.

@@ -29,49 +29,49 @@ use crate::command_log::finish_ok;
 /// Runs base conversion via instrument-core.
 #[tauri::command]
 #[specta::specta]
-pub fn base_converter_process(input: BaseConverterInput) -> BaseConverterOutput {
+pub fn tool_base_converter_process(input: BaseConverterInput) -> BaseConverterOutput {
     let start = Instant::now();
     let output = base_converter_process_core(input);
-    finish_ok("base_converter_process", start);
+    finish_ok("tool_base_converter_process", start);
     output
 }
 
 /// Runs bitwise operations via instrument-core.
 #[tauri::command]
 #[specta::specta]
-pub fn bitwise_process(input: BitwiseInput) -> BitwiseOutput {
+pub fn tool_bitwise_process(input: BitwiseInput) -> BitwiseOutput {
     let start = Instant::now();
     let output = bitwise_process_core(input);
-    finish_ok("bitwise_process", start);
+    finish_ok("tool_bitwise_process", start);
     output
 }
 
 /// Parses Unix permission strings (octal or symbolic) via instrument-core.
 #[tauri::command]
 #[specta::specta]
-pub fn chmod_process(input: ChmodInput) -> ChmodOutput {
+pub fn tool_chmod_process(input: ChmodInput) -> ChmodOutput {
     let start = Instant::now();
     let output = chmod_process_core(input);
-    finish_ok("chmod_process", start);
+    finish_ok("tool_chmod_process", start);
     output
 }
 
 /// Parse semver, compare versions, check version ranges, and bump major/minor/patch.
 #[tauri::command]
 #[specta::specta]
-pub fn semver_process(input: SemverInput) -> SemverOutput {
+pub fn tool_semver_process(input: SemverInput) -> SemverOutput {
     let start = Instant::now();
     let output = semver_process_core(input);
-    finish_ok("semver_process", start);
+    finish_ok("tool_semver_process", start);
     output
 }
 
 /// Converts a value between units in a given category.
 #[tauri::command]
 #[specta::specta]
-pub fn unit_convert(input: UnitConverterInput) -> UnitConverterOutput {
+pub fn tool_unit_convert(input: UnitConverterInput) -> UnitConverterOutput {
     let start = Instant::now();
     let output = unit_convert_core(input);
-    finish_ok("unit_convert", start);
+    finish_ok("tool_unit_convert", start);
     output
 }

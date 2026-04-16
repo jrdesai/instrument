@@ -1,5 +1,5 @@
 # Allow the URL Encoder tool command to be invoked from the frontend.
 [[permission]]
 identifier = "allow-url-encoder"
-description = "Enables the url_encode_process command for the URL encoder tool."
-commands.allow = ["url_encode_process"]
+description = "Enables the tool_url_encode_process command for the URL encoder tool."
+commands.allow = ["tool_url_encode_process"]

@@ -17,7 +17,7 @@ import {
 import type { TimezoneInput } from "../../bindings/TimezoneInput";
 import type { TimezoneOutput } from "../../bindings/TimezoneOutput";
 
-const RUST_COMMAND = "timezone_process";
+const RUST_COMMAND = "tool_timezone_process";
 const TOOL_ID = "timezone-converter";
 const DEBOUNCE_MS = 150;
 const HISTORY_DEBOUNCE_MS = 1500;

@@ -81,6 +81,17 @@ git commit -m "chore: rebuild wasm-pkg ..."
 Components call `callTool(rustCommand, input)` from `src/bridge/index.ts` only.
 Never import `@tauri-apps/api` or the WASM module directly in any component.
 
+### 2.1 Tool command naming (Tauri + WASM)
+Tool commands are named `tool_<noun>_<verb>` (e.g. `tool_base64_process`).
+
+Every tool command name must match in all 4 places:
+- Rust desktop command function in `src-core/instrument-desktop/src/commands/*.rs`
+- Tauri `collect_commands![]` registration in `src-tauri/src/lib.rs`
+- WASM export name (`tool_binding!` `js_name`) in `src-core/instrument-web/src/lib.rs`
+- Registry `rustCommand` in `src/registry/index.ts`
+
+Exception: `tool_regex_explain` uses `wasmExport: "regex_explain"` (do not rename the WASM export).
+
 ### 3. instrument-core must stay pure
 No `std::fs`, no `tauri`, no `tokio`, no `wasm-bindgen` in `src-core/instrument-core/`.
 Run `pnpm run check:pure` to verify. This crate must compile to both native and WASM.

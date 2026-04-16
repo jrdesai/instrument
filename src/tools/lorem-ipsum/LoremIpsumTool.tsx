@@ -6,7 +6,7 @@ import type { LoremIpsumOutput } from "../../bindings/LoremIpsumOutput";
 import type { LoremOutputType } from "../../bindings/LoremOutputType";
 import { extractErrorMessage } from "../../lib/extractErrorMessage";
 
-const RUST_COMMAND = "lorem_ipsum_process";
+const RUST_COMMAND = "tool_lorem_ipsum_process";
 export const TOOL_ID = "lorem-ipsum";
 const DEFAULT_COUNT = 3;
 

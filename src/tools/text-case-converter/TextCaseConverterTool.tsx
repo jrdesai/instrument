@@ -13,7 +13,7 @@ import { useHistoryStore } from "../../store";
 import type { CaseInput } from "../../bindings/CaseInput";
 import type { CaseOutput } from "../../bindings/CaseOutput";
 
-const RUST_COMMAND = "case_process";
+const RUST_COMMAND = "tool_case_process";
 const TOOL_ID = "text-case-converter";
 const DEBOUNCE_MS = 150;
 const HISTORY_DEBOUNCE_MS = 1500;

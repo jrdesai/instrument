@@ -1,5 +1,5 @@
 # Allow the QR Code Generator command to be invoked from the frontend.
 [[permission]]
 identifier = "allow-qr-code"
-description = "Enables the qr_generate command."
-commands.allow = ["qr_generate"]
+description = "Enables the tool_qr_generate command."
+commands.allow = ["tool_qr_generate"]

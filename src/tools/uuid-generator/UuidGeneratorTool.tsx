@@ -13,8 +13,8 @@ import type { UuidVersion } from "../../bindings/UuidVersion";
 
 type TabId = "generate" | "inspect";
 
-const RUST_COMMAND_GENERATE = "uuid_process";
-const RUST_COMMAND_INSPECT = "uuid_inspect";
+const RUST_COMMAND_GENERATE = "tool_uuid_process";
+const RUST_COMMAND_INSPECT = "tool_uuid_inspect";
 export const TOOL_ID = "uuid-generator";
 const COPIED_DURATION_MS = 1500;
 const INSPECT_DEBOUNCE_MS = 150;

@@ -1,306 +1,6 @@
 /* @ts-self-types="./instrument_web.d.ts" */
 
 /**
- * @param {any} js_input
- * @returns {any}
- */
-export function aes_process(js_input) {
-    const ret = wasm.aes_process(js_input);
-    if (ret[2]) {
-        throw takeFromExternrefTable0(ret[1]);
-    }
-    return takeFromExternrefTable0(ret[0]);
-}
-
-/**
- * @param {any} js_input
- * @returns {any}
- */
-export function api_key_process(js_input) {
-    const ret = wasm.api_key_process(js_input);
-    if (ret[2]) {
-        throw takeFromExternrefTable0(ret[1]);
-    }
-    return takeFromExternrefTable0(ret[0]);
-}
-
-/**
- * @param {any} js_input
- * @returns {any}
- */
-export function base64_process(js_input) {
-    const ret = wasm.base64_process(js_input);
-    if (ret[2]) {
-        throw takeFromExternrefTable0(ret[1]);
-    }
-    return takeFromExternrefTable0(ret[0]);
-}
-
-/**
- * @param {any} js_input
- * @returns {any}
- */
-export function base_converter_process(js_input) {
-    const ret = wasm.base_converter_process(js_input);
-    if (ret[2]) {
-        throw takeFromExternrefTable0(ret[1]);
-    }
-    return takeFromExternrefTable0(ret[0]);
-}
-
-/**
- * @param {any} js_input
- * @returns {any}
- */
-export function bitwise_process(js_input) {
-    const ret = wasm.bitwise_process(js_input);
-    if (ret[2]) {
-        throw takeFromExternrefTable0(ret[1]);
-    }
-    return takeFromExternrefTable0(ret[0]);
-}
-
-/**
- * @param {any} js_input
- * @returns {any}
- */
-export function case_process(js_input) {
-    const ret = wasm.case_process(js_input);
-    if (ret[2]) {
-        throw takeFromExternrefTable0(ret[1]);
-    }
-    return takeFromExternrefTable0(ret[0]);
-}
-
-/**
- * @param {any} js_input
- * @returns {any}
- */
-export function cert_decode(js_input) {
-    const ret = wasm.cert_decode(js_input);
-    if (ret[2]) {
-        throw takeFromExternrefTable0(ret[1]);
-    }
-    return takeFromExternrefTable0(ret[0]);
-}
-
-/**
- * @param {any} js_input
- * @returns {any}
- */
-export function chmod_process(js_input) {
-    const ret = wasm.chmod_process(js_input);
-    if (ret[2]) {
-        throw takeFromExternrefTable0(ret[1]);
-    }
-    return takeFromExternrefTable0(ret[0]);
-}
-
-/**
- * @param {any} js_input
- * @returns {any}
- */
-export function cidr_calculate(js_input) {
-    const ret = wasm.cidr_calculate(js_input);
-    if (ret[2]) {
-        throw takeFromExternrefTable0(ret[1]);
-    }
-    return takeFromExternrefTable0(ret[0]);
-}
-
-/**
- * @param {any} js_input
- * @returns {any}
- */
-export function color_convert(js_input) {
-    const ret = wasm.color_convert(js_input);
-    if (ret[2]) {
-        throw takeFromExternrefTable0(ret[1]);
-    }
-    return takeFromExternrefTable0(ret[0]);
-}
-
-/**
- * @param {any} js_input
- * @returns {any}
- */
-export function cron_process(js_input) {
-    const ret = wasm.cron_process(js_input);
-    if (ret[2]) {
-        throw takeFromExternrefTable0(ret[1]);
-    }
-    return takeFromExternrefTable0(ret[0]);
-}
-
-/**
- * @param {any} js_input
- * @returns {any}
- */
-export function env_parse(js_input) {
-    const ret = wasm.env_parse(js_input);
-    if (ret[2]) {
-        throw takeFromExternrefTable0(ret[1]);
-    }
-    return takeFromExternrefTable0(ret[0]);
-}
-
-/**
- * @param {any} js_input
- * @returns {any}
- */
-export function fake_data_process(js_input) {
-    const ret = wasm.fake_data_process(js_input);
-    if (ret[2]) {
-        throw takeFromExternrefTable0(ret[1]);
-    }
-    return takeFromExternrefTable0(ret[0]);
-}
-
-/**
- * @param {any} js_input
- * @returns {any}
- */
-export function find_replace_process(js_input) {
-    const ret = wasm.find_replace_process(js_input);
-    if (ret[2]) {
-        throw takeFromExternrefTable0(ret[1]);
-    }
-    return takeFromExternrefTable0(ret[0]);
-}
-
-/**
- * @param {any} js_input
- * @returns {any}
- */
-export function hash_process(js_input) {
-    const ret = wasm.hash_process(js_input);
-    if (ret[2]) {
-        throw takeFromExternrefTable0(ret[1]);
-    }
-    return takeFromExternrefTable0(ret[0]);
-}
-
-/**
- * @param {any} js_input
- * @returns {any}
- */
-export function hex_process(js_input) {
-    const ret = wasm.hex_process(js_input);
-    if (ret[2]) {
-        throw takeFromExternrefTable0(ret[1]);
-    }
-    return takeFromExternrefTable0(ret[0]);
-}
-
-/**
- * @param {any} js_input
- * @returns {any}
- */
-export function html_entity_process(js_input) {
-    const ret = wasm.html_entity_process(js_input);
-    if (ret[2]) {
-        throw takeFromExternrefTable0(ret[1]);
-    }
-    return takeFromExternrefTable0(ret[0]);
-}
-
-/**
- * @param {any} js_input
- * @returns {any}
- */
-export function html_format(js_input) {
-    const ret = wasm.html_format(js_input);
-    if (ret[2]) {
-        throw takeFromExternrefTable0(ret[1]);
-    }
-    return takeFromExternrefTable0(ret[0]);
-}
-
-/**
- * @param {any} js_input
- * @returns {any}
- */
-export function iso8601_process(js_input) {
-    const ret = wasm.iso8601_process(js_input);
-    if (ret[2]) {
-        throw takeFromExternrefTable0(ret[1]);
-    }
-    return takeFromExternrefTable0(ret[0]);
-}
-
-/**
- * @param {any} js_input
- * @returns {any}
- */
-export function line_tools_process(js_input) {
-    const ret = wasm.line_tools_process(js_input);
-    if (ret[2]) {
-        throw takeFromExternrefTable0(ret[1]);
-    }
-    return takeFromExternrefTable0(ret[0]);
-}
-
-/**
- * @param {any} js_input
- * @returns {any}
- */
-export function lorem_ipsum_process(js_input) {
-    const ret = wasm.lorem_ipsum_process(js_input);
-    if (ret[2]) {
-        throw takeFromExternrefTable0(ret[1]);
-    }
-    return takeFromExternrefTable0(ret[0]);
-}
-
-/**
- * @param {any} js_input
- * @returns {any}
- */
-export function nanoid_process(js_input) {
-    const ret = wasm.nanoid_process(js_input);
-    if (ret[2]) {
-        throw takeFromExternrefTable0(ret[1]);
-    }
-    return takeFromExternrefTable0(ret[0]);
-}
-
-/**
- * @param {any} js_input
- * @returns {any}
- */
-export function passphrase_process(js_input) {
-    const ret = wasm.passphrase_process(js_input);
-    if (ret[2]) {
-        throw takeFromExternrefTable0(ret[1]);
-    }
-    return takeFromExternrefTable0(ret[0]);
-}
-
-/**
- * @param {any} js_input
- * @returns {any}
- */
-export function password_process(js_input) {
-    const ret = wasm.password_process(js_input);
-    if (ret[2]) {
-        throw takeFromExternrefTable0(ret[1]);
-    }
-    return takeFromExternrefTable0(ret[0]);
-}
-
-/**
- * @param {any} js_input
- * @returns {any}
- */
-export function qr_generate(js_input) {
-    const ret = wasm.qr_generate(js_input);
-    if (ret[2]) {
-        throw takeFromExternrefTable0(ret[1]);
-    }
-    return takeFromExternrefTable0(ret[0]);
-}
-
-/**
  * Regex pattern explanation (HIR tokens). Receives ExplainRequest and returns Vec<ExplainToken>.
  * @param {any} js_input
  * @returns {any}
@@ -330,8 +30,8 @@ export function regex_match(js_input) {
  * @param {any} js_input
  * @returns {any}
  */
-export function semver_process(js_input) {
-    const ret = wasm.semver_process(js_input);
+export function tool_aes_process(js_input) {
+    const ret = wasm.tool_aes_process(js_input);
     if (ret[2]) {
         throw takeFromExternrefTable0(ret[1]);
     }
@@ -342,8 +42,8 @@ export function semver_process(js_input) {
  * @param {any} js_input
  * @returns {any}
  */
-export function string_escaper_process(js_input) {
-    const ret = wasm.string_escaper_process(js_input);
+export function tool_api_key_process(js_input) {
+    const ret = wasm.tool_api_key_process(js_input);
     if (ret[2]) {
         throw takeFromExternrefTable0(ret[1]);
     }
@@ -354,8 +54,8 @@ export function string_escaper_process(js_input) {
  * @param {any} js_input
  * @returns {any}
  */
-export function text_diff_process(js_input) {
-    const ret = wasm.text_diff_process(js_input);
+export function tool_base64_process(js_input) {
+    const ret = wasm.tool_base64_process(js_input);
     if (ret[2]) {
         throw takeFromExternrefTable0(ret[1]);
     }
@@ -366,20 +66,8 @@ export function text_diff_process(js_input) {
  * @param {any} js_input
  * @returns {any}
  */
-export function timestamp_process(js_input) {
-    const ret = wasm.timestamp_process(js_input);
-    if (ret[2]) {
-        throw takeFromExternrefTable0(ret[1]);
-    }
-    return takeFromExternrefTable0(ret[0]);
-}
-
-/**
- * @param {any} js_input
- * @returns {any}
- */
-export function timezone_process(js_input) {
-    const ret = wasm.timezone_process(js_input);
+export function tool_base_converter_process(js_input) {
+    const ret = wasm.tool_base_converter_process(js_input);
     if (ret[2]) {
         throw takeFromExternrefTable0(ret[1]);
     }
@@ -402,8 +90,92 @@ export function tool_basic_auth(js_input) {
  * @param {any} js_input
  * @returns {any}
  */
+export function tool_bitwise_process(js_input) {
+    const ret = wasm.tool_bitwise_process(js_input);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
+ * @param {any} js_input
+ * @returns {any}
+ */
+export function tool_case_process(js_input) {
+    const ret = wasm.tool_case_process(js_input);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
+ * @param {any} js_input
+ * @returns {any}
+ */
+export function tool_cert_decode(js_input) {
+    const ret = wasm.tool_cert_decode(js_input);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
+ * @param {any} js_input
+ * @returns {any}
+ */
+export function tool_chmod_process(js_input) {
+    const ret = wasm.tool_chmod_process(js_input);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
+ * @param {any} js_input
+ * @returns {any}
+ */
+export function tool_cidr_calculate(js_input) {
+    const ret = wasm.tool_cidr_calculate(js_input);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
+ * @param {any} js_input
+ * @returns {any}
+ */
+export function tool_color_convert(js_input) {
+    const ret = wasm.tool_color_convert(js_input);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
+ * @param {any} js_input
+ * @returns {any}
+ */
 export function tool_config_convert(js_input) {
     const ret = wasm.tool_config_convert(js_input);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
+ * @param {any} js_input
+ * @returns {any}
+ */
+export function tool_cron_process(js_input) {
+    const ret = wasm.tool_cron_process(js_input);
     if (ret[2]) {
         throw takeFromExternrefTable0(ret[1]);
     }
@@ -426,8 +198,104 @@ export function tool_csv_to_json(js_input) {
  * @param {any} js_input
  * @returns {any}
  */
+export function tool_env_parse(js_input) {
+    const ret = wasm.tool_env_parse(js_input);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
+ * @param {any} js_input
+ * @returns {any}
+ */
 export function tool_expression_eval(js_input) {
     const ret = wasm.tool_expression_eval(js_input);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
+ * @param {any} js_input
+ * @returns {any}
+ */
+export function tool_fake_data_process(js_input) {
+    const ret = wasm.tool_fake_data_process(js_input);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
+ * @param {any} js_input
+ * @returns {any}
+ */
+export function tool_find_replace_process(js_input) {
+    const ret = wasm.tool_find_replace_process(js_input);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
+ * @param {any} js_input
+ * @returns {any}
+ */
+export function tool_hash_process(js_input) {
+    const ret = wasm.tool_hash_process(js_input);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
+ * @param {any} js_input
+ * @returns {any}
+ */
+export function tool_hex_process(js_input) {
+    const ret = wasm.tool_hex_process(js_input);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
+ * @param {any} js_input
+ * @returns {any}
+ */
+export function tool_html_entity_process(js_input) {
+    const ret = wasm.tool_html_entity_process(js_input);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
+ * @param {any} js_input
+ * @returns {any}
+ */
+export function tool_html_format(js_input) {
+    const ret = wasm.tool_html_format(js_input);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
+ * @param {any} js_input
+ * @returns {any}
+ */
+export function tool_iso8601_process(js_input) {
+    const ret = wasm.tool_iso8601_process(js_input);
     if (ret[2]) {
         throw takeFromExternrefTable0(ret[1]);
     }
@@ -546,6 +414,90 @@ export function tool_jwt_decode(js_input) {
  * @param {any} js_input
  * @returns {any}
  */
+export function tool_line_tools_process(js_input) {
+    const ret = wasm.tool_line_tools_process(js_input);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
+ * @param {any} js_input
+ * @returns {any}
+ */
+export function tool_lorem_ipsum_process(js_input) {
+    const ret = wasm.tool_lorem_ipsum_process(js_input);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
+ * @param {any} js_input
+ * @returns {any}
+ */
+export function tool_nanoid_process(js_input) {
+    const ret = wasm.tool_nanoid_process(js_input);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
+ * @param {any} js_input
+ * @returns {any}
+ */
+export function tool_passphrase_process(js_input) {
+    const ret = wasm.tool_passphrase_process(js_input);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
+ * @param {any} js_input
+ * @returns {any}
+ */
+export function tool_password_process(js_input) {
+    const ret = wasm.tool_password_process(js_input);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
+ * @param {any} js_input
+ * @returns {any}
+ */
+export function tool_qr_generate(js_input) {
+    const ret = wasm.tool_qr_generate(js_input);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
+ * @param {any} js_input
+ * @returns {any}
+ */
+export function tool_semver_process(js_input) {
+    const ret = wasm.tool_semver_process(js_input);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
+ * @param {any} js_input
+ * @returns {any}
+ */
 export function tool_slug_generate(js_input) {
     const ret = wasm.tool_slug_generate(js_input);
     if (ret[2]) {
@@ -570,8 +522,92 @@ export function tool_sql_format(js_input) {
  * @param {any} js_input
  * @returns {any}
  */
+export function tool_string_escaper_process(js_input) {
+    const ret = wasm.tool_string_escaper_process(js_input);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
+ * @param {any} js_input
+ * @returns {any}
+ */
+export function tool_text_diff_process(js_input) {
+    const ret = wasm.tool_text_diff_process(js_input);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
+ * @param {any} js_input
+ * @returns {any}
+ */
+export function tool_timestamp_process(js_input) {
+    const ret = wasm.tool_timestamp_process(js_input);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
+ * @param {any} js_input
+ * @returns {any}
+ */
+export function tool_timezone_process(js_input) {
+    const ret = wasm.tool_timezone_process(js_input);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
+ * @param {any} js_input
+ * @returns {any}
+ */
 export function tool_totp_generate(js_input) {
     const ret = wasm.tool_totp_generate(js_input);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
+ * @param {any} js_input
+ * @returns {any}
+ */
+export function tool_ua_parse(js_input) {
+    const ret = wasm.tool_ua_parse(js_input);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
+ * @param {any} js_input
+ * @returns {any}
+ */
+export function tool_ulid_inspect(js_input) {
+    const ret = wasm.tool_ulid_inspect(js_input);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
+ * @param {any} js_input
+ * @returns {any}
+ */
+export function tool_ulid_process(js_input) {
+    const ret = wasm.tool_ulid_process(js_input);
     if (ret[2]) {
         throw takeFromExternrefTable0(ret[1]);
     }
@@ -594,8 +630,68 @@ export function tool_unicode_inspect(js_input) {
  * @param {any} js_input
  * @returns {any}
  */
+export function tool_unit_convert(js_input) {
+    const ret = wasm.tool_unit_convert(js_input);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
+ * @param {any} js_input
+ * @returns {any}
+ */
+export function tool_url_encode_process(js_input) {
+    const ret = wasm.tool_url_encode_process(js_input);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
+ * @param {any} js_input
+ * @returns {any}
+ */
 export function tool_url_parse(js_input) {
     const ret = wasm.tool_url_parse(js_input);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
+ * @param {any} js_input
+ * @returns {any}
+ */
+export function tool_uuid_inspect(js_input) {
+    const ret = wasm.tool_uuid_inspect(js_input);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
+ * @param {any} js_input
+ * @returns {any}
+ */
+export function tool_uuid_process(js_input) {
+    const ret = wasm.tool_uuid_process(js_input);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
+ * @param {any} js_input
+ * @returns {any}
+ */
+export function tool_word_counter_process(js_input) {
+    const ret = wasm.tool_word_counter_process(js_input);
     if (ret[2]) {
         throw takeFromExternrefTable0(ret[1]);
     }
@@ -620,102 +716,6 @@ export function tool_xml_format(js_input) {
  */
 export function tool_yaml_format(js_input) {
     const ret = wasm.tool_yaml_format(js_input);
-    if (ret[2]) {
-        throw takeFromExternrefTable0(ret[1]);
-    }
-    return takeFromExternrefTable0(ret[0]);
-}
-
-/**
- * @param {any} js_input
- * @returns {any}
- */
-export function ua_parse(js_input) {
-    const ret = wasm.ua_parse(js_input);
-    if (ret[2]) {
-        throw takeFromExternrefTable0(ret[1]);
-    }
-    return takeFromExternrefTable0(ret[0]);
-}
-
-/**
- * @param {any} js_input
- * @returns {any}
- */
-export function ulid_inspect(js_input) {
-    const ret = wasm.ulid_inspect(js_input);
-    if (ret[2]) {
-        throw takeFromExternrefTable0(ret[1]);
-    }
-    return takeFromExternrefTable0(ret[0]);
-}
-
-/**
- * @param {any} js_input
- * @returns {any}
- */
-export function ulid_process(js_input) {
-    const ret = wasm.ulid_process(js_input);
-    if (ret[2]) {
-        throw takeFromExternrefTable0(ret[1]);
-    }
-    return takeFromExternrefTable0(ret[0]);
-}
-
-/**
- * @param {any} js_input
- * @returns {any}
- */
-export function unit_convert(js_input) {
-    const ret = wasm.unit_convert(js_input);
-    if (ret[2]) {
-        throw takeFromExternrefTable0(ret[1]);
-    }
-    return takeFromExternrefTable0(ret[0]);
-}
-
-/**
- * @param {any} js_input
- * @returns {any}
- */
-export function url_encode_process(js_input) {
-    const ret = wasm.url_encode_process(js_input);
-    if (ret[2]) {
-        throw takeFromExternrefTable0(ret[1]);
-    }
-    return takeFromExternrefTable0(ret[0]);
-}
-
-/**
- * @param {any} js_input
- * @returns {any}
- */
-export function uuid_inspect(js_input) {
-    const ret = wasm.uuid_inspect(js_input);
-    if (ret[2]) {
-        throw takeFromExternrefTable0(ret[1]);
-    }
-    return takeFromExternrefTable0(ret[0]);
-}
-
-/**
- * @param {any} js_input
- * @returns {any}
- */
-export function uuid_process(js_input) {
-    const ret = wasm.uuid_process(js_input);
-    if (ret[2]) {
-        throw takeFromExternrefTable0(ret[1]);
-    }
-    return takeFromExternrefTable0(ret[0]);
-}
-
-/**
- * @param {any} js_input
- * @returns {any}
- */
-export function word_counter_process(js_input) {
-    const ret = wasm.word_counter_process(js_input);
     if (ret[2]) {
         throw takeFromExternrefTable0(ret[1]);
     }

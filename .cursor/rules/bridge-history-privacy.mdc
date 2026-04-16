@@ -17,19 +17,70 @@ Do NOT add string special-cases to `bridge/index.ts` or `bridge/desktop.ts`.
 
 ---
 
+# Result-returning commands — Specta unwrap
+
+Commands declared as `-> Result<T, String>` (currently `tool_regex_test` and
+`tool_regex_explain` in regex-core) are wrapped by Specta as
+`{ status: "ok", data: T }` on desktop but return `T` directly on web/WASM.
+Always unwrap with:
+
+```ts
+import { unwrapSpectaCommandResult } from "../hooks/unwrapSpectaCommandResult";
+const value = unwrapSpectaCommandResult<T>(await callTool(..., { skipHistory: true }));
+```
+
+Never consume the raw return value of a `Result<T, String>` command as `T` —
+it will be `{ status: "ok", data: T }` on desktop and crash at runtime.
+
+---
+
 # History Recording
 
 ## Auto-run tools (fire on every keystroke)
-Tools that run automatically as the user types MUST use the dual debounce pattern:
-- 150ms debounce → call `callTool(cmd, input, { skipHistory: true })` (fast, no history)
-- 1500ms debounce → call `callTool(cmd, input)` (captures history entry)
 
-This prevents flooding the history store with every keystroke.
-Reference implementation: `src/tools/base64/`
+Tools that run automatically as the user types MUST use the dual debounce pattern:
+- **150ms** → `callTool(cmd, input, { skipHistory: true })` — fast compute, no history
+- **1500ms** → `addHistoryEntry()` inside a `setTimeout` — history capture
+
+**NEVER make a second `callTool()` call to record history.** Use `addHistoryEntry`
+from `useHistoryStore` directly inside a `setTimeout`:
+
+```ts
+const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
+const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+// Inside runProcess():
+const result = await callTool(RUST_COMMAND, payload, { skipHistory: true });
+setOutput(result);
+
+// Guard: only record when result is valid (no error, non-empty output)
+if (!result.error && result.someField.length > 0) {
+  if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
+  historyDebounceRef.current = setTimeout(() => {
+    addHistoryEntry(TOOL_ID, { input: payload, output: result, timestamp: Date.now() });
+    historyDebounceRef.current = null;
+  }, 1500);
+}
+```
+
+## Unmount cleanup — always required
+
+Cancel the history debounce on unmount. Required even when `useDebouncedCallback`
+handles the compute debounce — import `useEffect` explicitly if it isn't already used:
+
+```ts
+useEffect(() => {
+  return () => {
+    if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
+  };
+}, []);
+```
 
 ## History is capped
 `useHistoryStore` caps at 100 entries per tool (`MAX_HISTORY_PER_TOOL`).
 Do not implement your own history trimming in tool components.
+
+Reference implementation: `src/tools/html-formatter/HtmlFormatterTool.tsx`
 
 ---
 
@@ -41,15 +92,24 @@ in its registry entry:
 ```ts
 { id: "jwt", ..., sensitive: true }
 ```
-The bridge automatically applies `skipHistory: true` for sensitive tools — their
-input/output is never recorded in history regardless of how `callTool` is called.
+The bridge automatically applies `skipHistory: true` for sensitive tools — still pass
+`{ skipHistory: true }` explicitly on every `callTool()` call (belt-and-suspenders).
 
-Sensitive tools: jwt, api-key-generator, and any future tool
-handling passwords, tokens, private keys, or PII.
+## No draft persistence on sensitive tools
+**Do NOT use `useDraftInput` or `useRestoreStringDraft` in sensitive tool components.**
+These hooks persist input to localStorage — a privacy violation for secrets.
 
-The **JWT** tool’s registry `rustCommand` is `tool_jwt_decode`; the Build pane also calls
-`tool_jwt_build`. Both panes pass `{ skipHistory: true }` so neither command is recorded
-when the combined entry’s `sensitive` flag would not resolve `tool_jwt_build` by name.
+```ts
+// ❌ Wrong for sensitive tools
+const { setDraft } = useDraftInput(TOOL_ID);
+useRestoreStringDraft(TOOL_ID, setInput);
+
+// ✅ Correct — no draft hooks, every call gets skipHistory: true
+await callTool(RUST_COMMAND, payload, { skipHistory: true });
+```
+
+Sensitive tools: JWT, AES, TOTP, Password, Basic Auth, API Key Generator,
+and any future tool handling passwords, tokens, private keys, or PII.
 
 ---
 
@@ -64,17 +124,15 @@ Use the helpers in `src-core/instrument-desktop/src/command_log.rs`:
 **Never** log input values, output values, or any field content the user typed.
 This is a hard privacy requirement — not a style preference.
 
-Bad:
 ```rust
-log::debug!("base64 input: {}", input.value);  // ❌ logs user content
-```
+// ❌ logs user content
+log::debug!("base64 input: {}", input.value);
 
-Good:
-```rust
-command_log::finish_ok("base64_process", start);  // ✅ logs name + duration only
+// ✅ logs name + duration only
+command_log::finish_ok("base64_process", start);
 ```
 
 ## Fast completions are intentionally silent
 Calls completing in <200ms produce no log entry. This is by design — auto-run tools
-fire on every keystroke and would flood the log file with noise.
+fire on every keystroke and would flood the log file.
 Only slow calls (WARN) and errors (ERROR) are persisted to the log file.

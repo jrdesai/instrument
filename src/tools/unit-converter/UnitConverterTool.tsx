@@ -9,7 +9,7 @@ import type { UnitConverterInput } from "../../bindings/UnitConverterInput";
 import type { UnitConverterOutput } from "../../bindings/UnitConverterOutput";
 
 const TOOL_ID = "unit-converter";
-const RUST_COMMAND = "unit_convert";
+const RUST_COMMAND = "tool_unit_convert";
 const DEBOUNCE_MS = 150;
 const HISTORY_DEBOUNCE_MS = 1500;
 

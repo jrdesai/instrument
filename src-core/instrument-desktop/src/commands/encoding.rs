@@ -16,59 +16,59 @@ use crate::command_log::finish_ok;
 /// Runs Base64 encode or decode via instrument-core.
 #[tauri::command]
 #[specta::specta]
-pub fn base64_process(input: Base64Input) -> Base64Output {
+pub fn tool_base64_process(input: Base64Input) -> Base64Output {
     let start = Instant::now();
     let output = process(input);
-    finish_ok("base64_process", start);
+    finish_ok("tool_base64_process", start);
     output
 }
 
 /// Runs URL percent-encode or decode via instrument-core.
 #[tauri::command]
 #[specta::specta]
-pub fn url_encode_process(input: UrlEncodeInput) -> UrlEncodeOutput {
+pub fn tool_url_encode_process(input: UrlEncodeInput) -> UrlEncodeOutput {
     let start = Instant::now();
     let output = url_process(input);
-    finish_ok("url_encode_process", start);
+    finish_ok("tool_url_encode_process", start);
     output
 }
 
 /// Runs HTML entity encode or decode via instrument-core.
 #[tauri::command]
 #[specta::specta]
-pub fn html_entity_process(input: HtmlEntityInput) -> HtmlEntityOutput {
+pub fn tool_html_entity_process(input: HtmlEntityInput) -> HtmlEntityOutput {
     let start = Instant::now();
     let output = html_entity_process_core(input);
-    finish_ok("html_entity_process", start);
+    finish_ok("tool_html_entity_process", start);
     output
 }
 
 /// Runs Hex encode or decode via instrument-core.
 #[tauri::command]
 #[specta::specta]
-pub fn hex_process(input: HexInput) -> HexOutput {
+pub fn tool_hex_process(input: HexInput) -> HexOutput {
     let start = Instant::now();
     let output = hex_process_core(input);
-    finish_ok("hex_process", start);
+    finish_ok("tool_hex_process", start);
     output
 }
 
 /// Converts a colour string to HEX, RGB, HSL, HSB, and CSS name.
 #[tauri::command]
 #[specta::specta]
-pub fn color_convert(input: ColorInput) -> ColorOutput {
+pub fn tool_color_convert(input: ColorInput) -> ColorOutput {
     let start = Instant::now();
     let output = color_process_core(input);
-    finish_ok("color_convert", start);
+    finish_ok("tool_color_convert", start);
     output
 }
 
 /// Generates a QR code SVG from input text.
 #[tauri::command]
 #[specta::specta]
-pub fn qr_generate(input: QrCodeInput) -> QrCodeOutput {
+pub fn tool_qr_generate(input: QrCodeInput) -> QrCodeOutput {
     let start = Instant::now();
     let output = qr_process_core(input);
-    finish_ok("qr_generate", start);
+    finish_ok("tool_qr_generate", start);
     output
 }

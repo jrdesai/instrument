@@ -4,7 +4,7 @@ import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput"
 import type { NanoIdInput } from "../../bindings/NanoIdInput";
 import type { NanoIdOutput } from "../../bindings/NanoIdOutput";
 
-const RUST_COMMAND = "nanoid_process";
+const RUST_COMMAND = "tool_nanoid_process";
 export const TOOL_ID = "nano-id-generator";
 const COPIED_DURATION_MS = 1500;
 const MIN_SIZE = 4;

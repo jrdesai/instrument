@@ -15,7 +15,7 @@ import type { BitwiseOutput } from "../../bindings/BitwiseOutput";
 import type { BitwiseResult } from "../../bindings/BitwiseResult";
 import type { BitwiseWidth } from "../../bindings/BitwiseWidth";
 
-const RUST_COMMAND = "bitwise_process";
+const RUST_COMMAND = "tool_bitwise_process";
 const TOOL_ID = "bitwise-calculator";
 const DEBOUNCE_MS = 150;
 const HISTORY_DEBOUNCE_MS = 1500;

@@ -75,7 +75,7 @@ async function loadWasmModule(): Promise<WasmModule> {
 
 /**
  * Invokes the matching tool function in the WASM module.
- * @param toolId - Export name matching the wasm-bindgen function (e.g. "base64_process")
+ * @param toolId - Export name matching the wasm-bindgen function (e.g. "tool_base64_process")
  * @param input  - Serializable input passed directly to the WASM function
  * @throws If the WASM module fails to load, the export is missing, or it is not a function
  */

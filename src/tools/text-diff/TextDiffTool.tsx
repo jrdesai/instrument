@@ -18,7 +18,7 @@ import type { TextDiffOutput } from "../../bindings/TextDiffOutput";
 import type { LineAnnotation } from "../../bindings/TextDiffLineAnnotation";
 import type { InlineSpan } from "../../bindings/TextDiffSpan";
 
-const RUST_COMMAND = "text_diff_process";
+const RUST_COMMAND = "tool_text_diff_process";
 const TOOL_ID = "text-diff";
 const DEBOUNCE_MS = 300;
 const HISTORY_DEBOUNCE_MS = 1500;

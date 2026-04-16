@@ -8,7 +8,7 @@ import type { QrCodeOutput } from "../../bindings/QrCodeOutput";
 import type { QrEcLevel } from "../../bindings/QrEcLevel";
 
 const TOOL_ID = "qr-code";
-const RUST_COMMAND = "qr_generate";
+const RUST_COMMAND = "tool_qr_generate";
 const DEBOUNCE_MS = 150;
 const HISTORY_DEBOUNCE_MS = 1500;
 const DEFAULT_EC_LEVEL: QrEcLevel = "medium";

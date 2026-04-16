@@ -5,7 +5,7 @@ import type { ChmodInput } from "../../bindings/ChmodInput";
 import type { ChmodOutput } from "../../bindings/ChmodOutput";
 
 const TOOL_ID = "chmod-calculator";
-const RUST_COMMAND = "chmod_process";
+const RUST_COMMAND = "tool_chmod_process";
 
 const PRESETS = [
   { label: "755", desc: "Executable (scripts, dirs)" },

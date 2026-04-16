@@ -9,7 +9,7 @@ import type { ApiKeyFormat } from "../../bindings/ApiKeyFormat";
 import type { ApiKeyInput } from "../../bindings/ApiKeyInput";
 import type { ApiKeyOutput } from "../../bindings/ApiKeyOutput";
 
-const RUST_COMMAND = "api_key_process";
+const RUST_COMMAND = "tool_api_key_process";
 export const TOOL_ID = "api-key-generator";
 function ApiKeyGeneratorTool() {
   const [prefix, setPrefix] = useState<string>("");

@@ -1,6 +1,6 @@
 # Allow the Nano ID Generator tool command to be invoked from the frontend.
 [[permission]]
 identifier = "allow-nanoid"
-description = "Enables the nanoid_process command."
-commands.allow = ["nanoid_process"]
+description = "Enables the tool_nanoid_process command."
+commands.allow = ["tool_nanoid_process"]
 

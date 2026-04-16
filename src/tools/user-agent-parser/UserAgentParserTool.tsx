@@ -5,7 +5,7 @@ import { useHistoryStore } from "../../store";
 import type { UaParseInput } from "../../bindings/UaParseInput";
 import type { UaParseOutput } from "../../bindings/UaParseOutput";
 
-const RUST_COMMAND = "ua_parse";
+const RUST_COMMAND = "tool_ua_parse";
 const TOOL_ID = "user-agent-parser";
 const DEBOUNCE_MS = 150;
 const HISTORY_DEBOUNCE_MS = 1500;

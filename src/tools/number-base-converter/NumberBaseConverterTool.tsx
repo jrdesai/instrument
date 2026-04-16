@@ -15,7 +15,7 @@ import type { BaseConverterOutput } from "../../bindings/BaseConverterOutput";
 import type { BitWidth } from "../../bindings/BitWidth";
 import type { NumberBase } from "../../bindings/NumberBase";
 
-const RUST_COMMAND = "base_converter_process";
+const RUST_COMMAND = "tool_base_converter_process";
 const TOOL_ID = "number-base-converter";
 const DEBOUNCE_MS = 150;
 const HISTORY_DEBOUNCE_MS = 1500;

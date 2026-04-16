@@ -7,7 +7,7 @@ import type { LineOperation } from "../../bindings/LineOperation";
 import type { LineToolsInput } from "../../bindings/LineToolsInput";
 import type { LineToolsOutput } from "../../bindings/LineToolsOutput";
 
-const RUST_COMMAND = "line_tools_process";
+const RUST_COMMAND = "tool_line_tools_process";
 const TOOL_ID = "line-tools";
 const DEBOUNCE_MS = 150;
 const HISTORY_DEBOUNCE_MS = 1500;

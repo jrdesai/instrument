@@ -153,14 +153,14 @@ macro_rules! tool_binding {
     };
 }
 
-tool_binding!("base64_process", base64_process_wasm, Base64Input, process);
-tool_binding!("url_encode_process", url_encode_process_wasm, UrlEncodeInput, url_process);
+tool_binding!("tool_base64_process", base64_process_wasm, Base64Input, process);
+tool_binding!("tool_url_encode_process", url_encode_process_wasm, UrlEncodeInput, url_process);
 tool_binding!("tool_url_parse", tool_url_parse_wasm, UrlParseInput, url_parse_process);
-tool_binding!("cidr_calculate", cidr_calculate_wasm, CidrInput, cidr_process_core);
-tool_binding!("ua_parse", ua_parse_wasm, UaParseInput, ua_parse_process_core);
+tool_binding!("tool_cidr_calculate", cidr_calculate_wasm, CidrInput, cidr_process_core);
+tool_binding!("tool_ua_parse", ua_parse_wasm, UaParseInput, ua_parse_process_core);
 tool_binding!("tool_csv_to_json", tool_csv_to_json_wasm, CsvToJsonInput, csv_to_json_process_core);
 tool_binding!("tool_json_to_csv", tool_json_to_csv_wasm, JsonToCsvInput, json_to_csv_process_core);
-tool_binding!("html_format", html_format_wasm, HtmlFormatInput, html_format_process_core);
+tool_binding!("tool_html_format", html_format_wasm, HtmlFormatInput, html_format_process_core);
 tool_binding!("tool_xml_format", tool_xml_format_wasm, XmlFormatInput, xml_format_process_core);
 tool_binding!("tool_yaml_format", tool_yaml_format_wasm, YamlFormatInput, yaml_format_process_core);
 tool_binding!("tool_sql_format", tool_sql_format_wasm, SqlFormatInput, sql_format_process_core);
@@ -170,22 +170,22 @@ tool_binding!(
     ExprEvalInput,
     expression_eval_process_core
 );
-tool_binding!("html_entity_process", html_entity_process_wasm, HtmlEntityInput, html_entity_process_core);
-tool_binding!("hex_process", hex_process_wasm, HexInput, hex_process_core);
-tool_binding!("color_convert", color_convert_wasm, ColorInput, color_process_core);
-tool_binding!("qr_generate", qr_generate_wasm, QrCodeInput, qr_process_core);
-tool_binding!("hash_process", hash_process_wasm, HashInput, hash_process_core);
-tool_binding!("uuid_process", uuid_process_wasm, UuidInput, uuid_process_core);
-tool_binding!("uuid_inspect", uuid_inspect_wasm, UuidInspectInput, uuid_inspect_core);
-tool_binding!("ulid_process", ulid_process_wasm, UlidInput, ulid_process_core);
-tool_binding!("ulid_inspect", ulid_inspect_wasm, UlidInspectInput, ulid_inspect_core);
-tool_binding!("case_process", case_process_wasm, CaseInput, case_process_core);
-tool_binding!("api_key_process", api_key_process_wasm, ApiKeyInput, api_key_process_core);
-tool_binding!("cert_decode", cert_decode_wasm, CertDecodeInput, cert_decode_core);
-tool_binding!("password_process", password_process_wasm, PasswordInput, password_process_core);
-tool_binding!("passphrase_process", passphrase_process_wasm, PassphraseInput, passphrase_process_core);
-tool_binding!("nanoid_process", nanoid_process_wasm, NanoIdInput, nanoid_process_core);
-tool_binding!("aes_process", aes_process_wasm, AesInput, aes_process_core);
+tool_binding!("tool_html_entity_process", html_entity_process_wasm, HtmlEntityInput, html_entity_process_core);
+tool_binding!("tool_hex_process", hex_process_wasm, HexInput, hex_process_core);
+tool_binding!("tool_color_convert", color_convert_wasm, ColorInput, color_process_core);
+tool_binding!("tool_qr_generate", qr_generate_wasm, QrCodeInput, qr_process_core);
+tool_binding!("tool_hash_process", hash_process_wasm, HashInput, hash_process_core);
+tool_binding!("tool_uuid_process", uuid_process_wasm, UuidInput, uuid_process_core);
+tool_binding!("tool_uuid_inspect", uuid_inspect_wasm, UuidInspectInput, uuid_inspect_core);
+tool_binding!("tool_ulid_process", ulid_process_wasm, UlidInput, ulid_process_core);
+tool_binding!("tool_ulid_inspect", ulid_inspect_wasm, UlidInspectInput, ulid_inspect_core);
+tool_binding!("tool_case_process", case_process_wasm, CaseInput, case_process_core);
+tool_binding!("tool_api_key_process", api_key_process_wasm, ApiKeyInput, api_key_process_core);
+tool_binding!("tool_cert_decode", cert_decode_wasm, CertDecodeInput, cert_decode_core);
+tool_binding!("tool_password_process", password_process_wasm, PasswordInput, password_process_core);
+tool_binding!("tool_passphrase_process", passphrase_process_wasm, PassphraseInput, passphrase_process_core);
+tool_binding!("tool_nanoid_process", nanoid_process_wasm, NanoIdInput, nanoid_process_core);
+tool_binding!("tool_aes_process", aes_process_wasm, AesInput, aes_process_core);
 tool_binding!("tool_totp_generate", tool_totp_generate_wasm, TotpInput, totp_process_core);
 tool_binding!("tool_jwt_decode", tool_jwt_decode_wasm, JwtDecodeInput, jwt_decode_process_core);
 tool_binding!("tool_jwt_build", tool_jwt_build_wasm, JwtBuildInput, jwt_build_process_core);
@@ -202,22 +202,22 @@ tool_binding!("tool_json_diff", tool_json_diff_wasm, JsonDiffInput, json_diff_pr
 tool_binding!("tool_json_path", tool_json_path_wasm, JsonPathInput, json_path_process_core);
 tool_binding!("tool_json_convert", tool_json_convert_wasm, JsonConvertInput, json_convert_process_core);
 tool_binding!("tool_config_convert", tool_config_convert_wasm, ConfigConvertInput, config_convert_core);
-tool_binding!("timestamp_process", timestamp_process_wasm, TimestampInput, timestamp_process_core);
-tool_binding!("timezone_process", timezone_process_wasm, TimezoneInput, timezone_process_core);
-tool_binding!("iso8601_process", iso8601_process_wasm, Iso8601Input, iso8601_process_core);
-tool_binding!("cron_process", cron_process_wasm, CronInput, cron_process_core);
+tool_binding!("tool_timestamp_process", timestamp_process_wasm, TimestampInput, timestamp_process_core);
+tool_binding!("tool_timezone_process", timezone_process_wasm, TimezoneInput, timezone_process_core);
+tool_binding!("tool_iso8601_process", iso8601_process_wasm, Iso8601Input, iso8601_process_core);
+tool_binding!("tool_cron_process", cron_process_wasm, CronInput, cron_process_core);
 tool_binding!(
-    "base_converter_process",
+    "tool_base_converter_process",
     base_converter_process_wasm,
     BaseConverterInput,
     base_converter_process_core
 );
-tool_binding!("bitwise_process", bitwise_process_wasm, BitwiseInput, bitwise_process_core);
-tool_binding!("chmod_process", chmod_process_wasm, ChmodInput, chmod_process_core);
-tool_binding!("semver_process", semver_process_wasm, SemverInput, semver_process_core);
-tool_binding!("unit_convert", unit_convert_wasm, UnitConverterInput, unit_convert_core);
-tool_binding!("word_counter_process", word_counter_process_wasm, WordCounterInput, word_counter_process_core);
-tool_binding!("fake_data_process", fake_data_process_wasm, FakeDataInput, fake_data_process_core);
+tool_binding!("tool_bitwise_process", bitwise_process_wasm, BitwiseInput, bitwise_process_core);
+tool_binding!("tool_chmod_process", chmod_process_wasm, ChmodInput, chmod_process_core);
+tool_binding!("tool_semver_process", semver_process_wasm, SemverInput, semver_process_core);
+tool_binding!("tool_unit_convert", unit_convert_wasm, UnitConverterInput, unit_convert_core);
+tool_binding!("tool_word_counter_process", word_counter_process_wasm, WordCounterInput, word_counter_process_core);
+tool_binding!("tool_fake_data_process", fake_data_process_wasm, FakeDataInput, fake_data_process_core);
 tool_binding!(
     "tool_unicode_inspect",
     tool_unicode_inspect_wasm,
@@ -226,16 +226,16 @@ tool_binding!(
 );
 tool_binding!("tool_slug_generate", tool_slug_generate_wasm, SlugInput, slug_generate_core);
 tool_binding!(
-    "string_escaper_process",
+    "tool_string_escaper_process",
     string_escaper_process_wasm,
     StringEscaperInput,
     string_escaper_process_core
 );
-tool_binding!("find_replace_process", find_replace_process_wasm, FindReplaceInput, find_replace_process_core);
-tool_binding!("text_diff_process", text_diff_process_wasm, TextDiffInput, text_diff_process_core);
-tool_binding!("line_tools_process", line_tools_process_wasm, LineToolsInput, line_tools_process_core);
-tool_binding!("env_parse", env_parse_wasm, EnvParseInput, env_parse_process_core);
-tool_binding!("lorem_ipsum_process", lorem_ipsum_process_wasm, LoremIpsumInput, lorem_ipsum_process_core);
+tool_binding!("tool_find_replace_process", find_replace_process_wasm, FindReplaceInput, find_replace_process_core);
+tool_binding!("tool_text_diff_process", text_diff_process_wasm, TextDiffInput, text_diff_process_core);
+tool_binding!("tool_line_tools_process", line_tools_process_wasm, LineToolsInput, line_tools_process_core);
+tool_binding!("tool_env_parse", env_parse_wasm, EnvParseInput, env_parse_process_core);
+tool_binding!("tool_lorem_ipsum_process", lorem_ipsum_process_wasm, LoremIpsumInput, lorem_ipsum_process_core);
 
 /// Regex matcher. Receives RegexRequest (camelCase) and returns Vec<MatchResult> (camelCase).
 #[wasm_bindgen(js_name = regex_match)]

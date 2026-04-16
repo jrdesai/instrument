@@ -7,7 +7,7 @@ import { useHistoryStore } from "../../store";
 import type { ColorInput } from "../../bindings/ColorInput";
 import type { ColorOutput } from "../../bindings/ColorOutput";
 
-const RUST_COMMAND = "color_convert";
+const RUST_COMMAND = "tool_color_convert";
 const TOOL_ID = "color-converter";
 const DEBOUNCE_MS = 150;
 const HISTORY_DEBOUNCE_MS = 1500;

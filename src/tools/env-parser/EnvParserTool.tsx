@@ -10,7 +10,7 @@ import type { EnvParseInput } from "../../bindings/EnvParseInput";
 import type { EnvParseOutput } from "../../bindings/EnvParseOutput";
 
 const TOOL_ID = "env-parser";
-const RUST_COMMAND = "env_parse";
+const RUST_COMMAND = "tool_env_parse";
 const DEBOUNCE_MS = 150;
 const HISTORY_DEBOUNCE_MS = 1500;
 

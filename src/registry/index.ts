@@ -75,7 +75,7 @@ export const tools: Tool[] = [
     roles: ["frontend", "backend", "general"],
     icon: "data_array",
     platforms: ["desktop", "web"],
-    rustCommand: "base64_process",
+    rustCommand: "tool_base64_process",
     keywords: [
       "base64",
       "encode",
@@ -161,7 +161,7 @@ export const tools: Tool[] = [
     roles: ["frontend", "backend", "general"],
     icon: "link",
     platforms: ["desktop", "web"],
-    rustCommand: "url_encode_process",
+    rustCommand: "tool_url_encode_process",
     keywords: [
       "url",
       "encode",
@@ -191,7 +191,7 @@ export const tools: Tool[] = [
     roles: ["frontend", "general"],
     icon: "html",
     platforms: ["desktop", "web"],
-    rustCommand: "html_entity_process",
+    rustCommand: "tool_html_entity_process",
     keywords: [
       "html",
       "entity",
@@ -220,7 +220,7 @@ export const tools: Tool[] = [
     roles: ["frontend", "backend", "general"],
     icon: "calculate",
     platforms: ["desktop", "web"],
-    rustCommand: "hex_process",
+    rustCommand: "tool_hex_process",
     keywords: [
       "hex",
       "hexadecimal",
@@ -248,7 +248,7 @@ export const tools: Tool[] = [
     roles: ["frontend", "general"],
     icon: "palette",
     platforms: ["desktop", "web"],
-    rustCommand: "color_convert",
+    rustCommand: "tool_color_convert",
     keywords: [
       "color",
       "colour",
@@ -284,7 +284,7 @@ export const tools: Tool[] = [
     roles: ["frontend", "backend", "general"],
     icon: "qr_code",
     platforms: ["desktop", "web"],
-    rustCommand: "qr_generate",
+    rustCommand: "tool_qr_generate",
     keywords: [
       "qr",
       "qrcode",
@@ -315,7 +315,7 @@ export const tools: Tool[] = [
     roles: ["backend", "security", "general"],
     icon: "tag",
     platforms: ["desktop", "web"],
-    rustCommand: "hash_process",
+    rustCommand: "tool_hash_process",
     sensitive: false,
     keywords: [
       "hash",
@@ -352,7 +352,7 @@ export const tools: Tool[] = [
     roles: ["devops", "security"],
     icon: "verified",
     platforms: ["desktop", "web"],
-    rustCommand: "cert_decode",
+    rustCommand: "tool_cert_decode",
     sensitive: true,
     keywords: [
       "certificate",
@@ -389,7 +389,7 @@ export const tools: Tool[] = [
     roles: ["backend", "general"],
     icon: "tag",
     platforms: ["desktop", "web"],
-    rustCommand: "uuid_process",
+    rustCommand: "tool_uuid_process",
     keywords: ["uuid", "guid", "generate", "unique id", "v4", "v7", "random id", "identifier"],
     component: React.lazy(() =>
       import("../tools/uuid-generator").then((m) => ({ default: m.default }))
@@ -407,7 +407,7 @@ export const tools: Tool[] = [
     roles: ["backend", "data", "general"],
     icon: "tag",
     platforms: ["desktop", "web"],
-    rustCommand: "ulid_process",
+    rustCommand: "tool_ulid_process",
     keywords: ["ulid", "generate", "id", "unique id", "sortable", "identifier", "time-based id"],
     component: React.lazy(() =>
       import("../tools/ulid-generator").then((m) => ({ default: m.default }))
@@ -426,7 +426,7 @@ export const tools: Tool[] = [
     roles: ["backend", "general"],
     icon: "tag",
     platforms: ["desktop", "web"],
-    rustCommand: "nanoid_process",
+    rustCommand: "tool_nanoid_process",
     keywords: [
       "nanoid",
       "nano",
@@ -524,7 +524,7 @@ export const tools: Tool[] = [
     roles: ["backend", "security"],
     icon: "key",
     platforms: ["desktop", "web"],
-    rustCommand: "api_key_process",
+    rustCommand: "tool_api_key_process",
     keywords: ["api", "key", "generate", "secret", "token", "random string", "generate token", "auth key"],
     component: React.lazy(() =>
       import("../tools/api-key-generator").then((m) => ({ default: m.default }))
@@ -543,7 +543,7 @@ export const tools: Tool[] = [
     roles: ["backend", "security", "general"],
     icon: "password",
     platforms: ["desktop", "web"],
-    rustCommand: "password_process",
+    rustCommand: "tool_password_process",
     sensitive: true,
     keywords: [
       "password",
@@ -576,7 +576,7 @@ export const tools: Tool[] = [
     roles: ["backend", "security", "general"],
     icon: "abc",
     platforms: ["desktop", "web"],
-    rustCommand: "passphrase_process",
+    rustCommand: "tool_passphrase_process",
     sensitive: true,
     keywords: [
       "passphrase",
@@ -607,7 +607,7 @@ export const tools: Tool[] = [
     roles: ["backend", "security", "general"],
     icon: "lock",
     platforms: ["desktop", "web"],
-    rustCommand: "aes_process",
+    rustCommand: "tool_aes_process",
     sensitive: true,
     keywords: [
       "aes",
@@ -918,7 +918,7 @@ export const tools: Tool[] = [
     roles: ["frontend", "general"],
     icon: "image",
     platforms: ["desktop"],
-    rustCommand: "image_convert",
+    rustCommand: "tool_image_convert",
     keywords: [
       "image",
       "convert",
@@ -991,7 +991,7 @@ export const tools: Tool[] = [
     roles: ["frontend", "general"],
     icon: "html",
     platforms: ["desktop", "web"],
-    rustCommand: "html_format",
+    rustCommand: "tool_html_format",
     keywords: [
       "html",
       "format",
@@ -1096,7 +1096,7 @@ export const tools: Tool[] = [
     roles: ["devops", "backend"],
     icon: "lan",
     platforms: ["desktop", "web"],
-    rustCommand: "cidr_calculate",
+    rustCommand: "tool_cidr_calculate",
     keywords: [
       "cidr",
       "subnet",
@@ -1218,7 +1218,7 @@ export const tools: Tool[] = [
     roles: ["backend", "frontend", "devops", "general"],
     icon: "devices",
     platforms: ["desktop", "web"],
-    rustCommand: "ua_parse",
+    rustCommand: "tool_ua_parse",
     keywords: [
       "user agent",
       "ua",
@@ -1262,7 +1262,7 @@ export const tools: Tool[] = [
     roles: ["frontend", "backend", "devops"],
     icon: "settings_applications",
     platforms: ["desktop", "web"],
-    rustCommand: "env_parse",
+    rustCommand: "tool_env_parse",
     sensitive: true,
     keywords: [
       "env",
@@ -1296,7 +1296,7 @@ export const tools: Tool[] = [
     roles: ["frontend", "backend", "general"],
     icon: "sort",
     platforms: ["desktop", "web"],
-    rustCommand: "line_tools_process",
+    rustCommand: "tool_line_tools_process",
     keywords: [
       "sort",
       "deduplicate",
@@ -1326,7 +1326,7 @@ export const tools: Tool[] = [
     roles: ["backend", "frontend", "general"],
     icon: "dataset",
     platforms: ["desktop", "web"],
-    rustCommand: "fake_data_process",
+    rustCommand: "tool_fake_data_process",
     keywords: [
       "fake",
       "mock",
@@ -1367,7 +1367,7 @@ export const tools: Tool[] = [
     roles: ["frontend", "backend", "general"],
     icon: "text_fields",
     platforms: ["desktop", "web"],
-    rustCommand: "case_process",
+    rustCommand: "tool_case_process",
     keywords: [
       "text",
       "case",
@@ -1401,7 +1401,7 @@ export const tools: Tool[] = [
     roles: ["frontend", "general"],
     icon: "sort_by_alpha",
     platforms: ["desktop", "web"],
-    rustCommand: "word_counter_process",
+    rustCommand: "tool_word_counter_process",
     keywords: [
       "word",
       "count",
@@ -1491,7 +1491,7 @@ export const tools: Tool[] = [
     roles: ["frontend", "backend", "general"],
     icon: "keyboard",
     platforms: ["desktop", "web"],
-    rustCommand: "string_escaper_process",
+    rustCommand: "tool_string_escaper_process",
     keywords: [
       "string",
       "escape",
@@ -1519,7 +1519,7 @@ export const tools: Tool[] = [
     roles: ["frontend", "backend", "general"],
     icon: "find_replace",
     platforms: ["desktop", "web"],
-    rustCommand: "find_replace_process",
+    rustCommand: "tool_find_replace_process",
     keywords: [
       "find",
       "replace",
@@ -1546,7 +1546,7 @@ export const tools: Tool[] = [
     roles: ["frontend", "backend", "general"],
     icon: "difference",
     platforms: ["desktop", "web"],
-    rustCommand: "text_diff_process",
+    rustCommand: "tool_text_diff_process",
     keywords: [
       "text",
       "diff",
@@ -1574,7 +1574,7 @@ export const tools: Tool[] = [
     roles: ["frontend", "general"],
     icon: "format_quote",
     platforms: ["desktop", "web"],
-    rustCommand: "lorem_ipsum_process",
+    rustCommand: "tool_lorem_ipsum_process",
     keywords: [
       "lorem",
       "ipsum",
@@ -1634,7 +1634,7 @@ export const tools: Tool[] = [
     roles: ["backend", "data", "general"],
     icon: "schedule",
     platforms: ["desktop", "web"],
-    rustCommand: "timestamp_process",
+    rustCommand: "tool_timestamp_process",
     keywords: [
       "timestamp",
       "unix",
@@ -1665,7 +1665,7 @@ export const tools: Tool[] = [
     roles: ["backend", "general"],
     icon: "public",
     platforms: ["desktop", "web"],
-    rustCommand: "timezone_process",
+    rustCommand: "tool_timezone_process",
     keywords: [
       "timezone",
       "tz",
@@ -1694,7 +1694,7 @@ export const tools: Tool[] = [
     roles: ["backend", "data", "general"],
     icon: "event",
     platforms: ["desktop", "web"],
-    rustCommand: "iso8601_process",
+    rustCommand: "tool_iso8601_process",
     keywords: [
       "iso8601",
       "iso",
@@ -1723,7 +1723,7 @@ export const tools: Tool[] = [
     roles: ["backend", "devops", "general"],
     icon: "update",
     platforms: ["desktop", "web"],
-    rustCommand: "cron_process",
+    rustCommand: "tool_cron_process",
     keywords: [
       "cron",
       "schedule",
@@ -1754,7 +1754,7 @@ export const tools: Tool[] = [
     roles: ["frontend", "backend", "general"],
     icon: "numbers",
     platforms: ["desktop", "web"],
-    rustCommand: "base_converter_process",
+    rustCommand: "tool_base_converter_process",
     keywords: [
       "number",
       "base",
@@ -1785,7 +1785,7 @@ export const tools: Tool[] = [
     roles: ["backend", "devops", "general"],
     icon: "account_tree",
     platforms: ["desktop", "web"],
-    rustCommand: "semver_process",
+    rustCommand: "tool_semver_process",
     keywords: [
       "semver",
       "version",
@@ -1817,7 +1817,7 @@ export const tools: Tool[] = [
     roles: ["frontend", "backend", "general"],
     icon: "straighten",
     platforms: ["desktop", "web"],
-    rustCommand: "unit_convert",
+    rustCommand: "tool_unit_convert",
     keywords: [
       "unit",
       "convert",
@@ -1860,7 +1860,7 @@ export const tools: Tool[] = [
     roles: ["backend", "general"],
     icon: "memory",
     platforms: ["desktop", "web"],
-    rustCommand: "bitwise_process",
+    rustCommand: "tool_bitwise_process",
     keywords: [
       "bitwise",
       "and",
@@ -1888,7 +1888,7 @@ export const tools: Tool[] = [
     roles: ["backend", "devops"],
     icon: "lock_open",
     platforms: ["desktop", "web"],
-    rustCommand: "chmod_process",
+    rustCommand: "tool_chmod_process",
     sensitive: false,
     keywords: [
       "chmod",

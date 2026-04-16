@@ -13,7 +13,7 @@ import { useHistoryStore } from "../../store";
 import type { FakeDataInput } from "../../bindings/FakeDataInput";
 import type { FakeDataOutput } from "../../bindings/FakeDataOutput";
 
-const RUST_COMMAND = "fake_data_process";
+const RUST_COMMAND = "tool_fake_data_process";
 const TOOL_ID = "fake-data-generator";
 const DEBOUNCE_MS = 300;
 const HISTORY_DEBOUNCE_MS = 1500;

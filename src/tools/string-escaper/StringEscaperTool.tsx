@@ -14,7 +14,7 @@ import type { EscapeTarget } from "../../bindings/EscapeTarget";
 import type { StringEscaperInput } from "../../bindings/StringEscaperInput";
 import type { StringEscaperOutput } from "../../bindings/StringEscaperOutput";
 
-const RUST_COMMAND = "string_escaper_process";
+const RUST_COMMAND = "tool_string_escaper_process";
 const TOOL_ID = "string-escaper";
 const DEBOUNCE_MS = 150;
 const HISTORY_DEBOUNCE_MS = 1500;

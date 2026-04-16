@@ -6,7 +6,7 @@ import { useHistoryStore } from "../../store";
 import type { WordCounterInput } from "../../bindings/WordCounterInput";
 import type { WordCounterOutput } from "../../bindings/WordCounterOutput";
 
-const RUST_COMMAND = "word_counter_process";
+const RUST_COMMAND = "tool_word_counter_process";
 const TOOL_ID = "word-counter";
 const DEBOUNCE_MS = 150;
 const HISTORY_DEBOUNCE_MS = 1500;

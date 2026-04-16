@@ -1,5 +1,5 @@
 # Allow the Timezone Converter tool command to be invoked from the frontend.
 [[permission]]
 identifier = "allow-timezone"
-description = "Enables the timezone_process command."
-commands.allow = ["timezone_process"]
+description = "Enables the tool_timezone_process command."
+commands.allow = ["tool_timezone_process"]

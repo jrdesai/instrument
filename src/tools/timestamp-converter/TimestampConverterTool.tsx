@@ -14,7 +14,7 @@ import type { TimestampMode } from "../../bindings/TimestampMode";
 import type { TimestampOutput } from "../../bindings/TimestampOutput";
 import type { TimestampUnit } from "../../bindings/TimestampUnit";
 
-const RUST_COMMAND = "timestamp_process";
+const RUST_COMMAND = "tool_timestamp_process";
 const TOOL_ID = "timestamp-converter";
 const DEBOUNCE_MS = 150;
 const HISTORY_DEBOUNCE_MS = 1500;

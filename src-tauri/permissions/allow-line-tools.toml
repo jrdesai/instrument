@@ -1,5 +1,5 @@
 # Allow the Line Tools command to be invoked from the frontend.
 [[permission]]
 identifier = "allow-line-tools"
-description = "Enables the line_tools_process command."
-commands.allow = ["line_tools_process"]
+description = "Enables the tool_line_tools_process command."
+commands.allow = ["tool_line_tools_process"]

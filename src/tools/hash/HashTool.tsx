@@ -15,7 +15,7 @@ import type { HashInput } from "../../bindings/HashInput";
 import type { HashOutput } from "../../bindings/HashOutput";
 import type { HashOutputFormat } from "../../bindings/HashOutputFormat";
 
-const RUST_COMMAND = "hash_process";
+const RUST_COMMAND = "tool_hash_process";
 const TOOL_ID = "hash";
 const DEBOUNCE_MS = 150;
 const HISTORY_DEBOUNCE_MS = 1500;

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent } from "react";
 import { callTool } from "../../bridge";
 
-const RUST_COMMAND = "image_convert";
+const RUST_COMMAND = "tool_image_convert";
 const ACCEPTED_TYPES = "PNG, JPEG, WebP, BMP, TIFF, GIF, ICO, TGA, PNM";
 const OUTPUT_FORMATS = ["png", "jpeg", "webp", "bmp", "tiff", "ico", "tga", "pnm"] as const;
 const ROTATIONS = [0, 90, 180, 270] as const;

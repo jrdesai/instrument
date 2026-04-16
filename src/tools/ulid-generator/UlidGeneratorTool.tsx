@@ -12,8 +12,8 @@ import type { UlidOutput } from "../../bindings/UlidOutput";
 
 type TabId = "generate" | "inspect";
 
-const RUST_COMMAND_GENERATE = "ulid_process";
-const RUST_COMMAND_INSPECT = "ulid_inspect";
+const RUST_COMMAND_GENERATE = "tool_ulid_process";
+const RUST_COMMAND_INSPECT = "tool_ulid_inspect";
 export const TOOL_ID = "ulid-generator";
 const COPIED_DURATION_MS = 1500;
 const INSPECT_DEBOUNCE_MS = 150;

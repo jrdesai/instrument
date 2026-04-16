@@ -13,7 +13,7 @@ import type { HtmlEntityInput } from "../../bindings/HtmlEntityInput";
 import type { HtmlEntityMode } from "../../bindings/HtmlEntityMode";
 import type { HtmlEntityOutput } from "../../bindings/HtmlEntityOutput";
 
-const RUST_COMMAND = "html_entity_process";
+const RUST_COMMAND = "tool_html_entity_process";
 const TOOL_ID = "html-entity";
 const DEBOUNCE_MS = 150;
 const HISTORY_DEBOUNCE_MS = 1500;

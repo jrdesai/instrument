@@ -7,7 +7,7 @@ import type { CidrInput } from "../../bindings/CidrInput";
 import type { CidrOutput } from "../../bindings/CidrOutput";
 
 const TOOL_ID = "cidr-calculator";
-const RUST_COMMAND = "cidr_calculate";
+const RUST_COMMAND = "tool_cidr_calculate";
 const DEBOUNCE_MS = 150;
 const HISTORY_DEBOUNCE_MS = 1500;
 

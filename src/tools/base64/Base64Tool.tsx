@@ -14,7 +14,7 @@ import type { Base64Input } from "../../bindings/Base64Input";
 import type { Base64Mode } from "../../bindings/Base64Mode";
 import type { Base64Output } from "../../bindings/Base64Output";
 
-const RUST_COMMAND = "base64_process";
+const RUST_COMMAND = "tool_base64_process";
 const TOOL_ID = "base64-encoder";
 const DEBOUNCE_MS = 150;
 const HISTORY_DEBOUNCE_MS = 1500;

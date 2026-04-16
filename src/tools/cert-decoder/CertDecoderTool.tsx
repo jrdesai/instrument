@@ -6,7 +6,7 @@ import type { CertDecodeInput } from "../../bindings/CertDecodeInput";
 import type { CertDecodeOutput } from "../../bindings/CertDecodeOutput";
 import type { DnField } from "../../bindings/DnField";
 
-const RUST_COMMAND = "cert_decode";
+const RUST_COMMAND = "tool_cert_decode";
 const DEBOUNCE_MS = 150;
 
 function DnTable({ fields, label }: { fields: DnField[]; label: string }) {

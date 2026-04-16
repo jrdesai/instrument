@@ -13,7 +13,7 @@ import type { UrlEncodeMode } from "../../bindings/UrlEncodeMode";
 import type { UrlEncodeOutput } from "../../bindings/UrlEncodeOutput";
 import type { UrlEncodeType } from "../../bindings/UrlEncodeType";
 
-const RUST_COMMAND = "url_encode_process";
+const RUST_COMMAND = "tool_url_encode_process";
 const TOOL_ID = "url-encoder";
 const DEBOUNCE_MS = 150;
 const HISTORY_DEBOUNCE_MS = 1500;
