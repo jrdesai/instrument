@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { isWeb } from "../../bridge";
 import { categorySubtitles } from "../../constants/library";
 import type { Role, Tool } from "../../registry";
@@ -182,10 +182,22 @@ function ToolGridCard({
 }
 
 export function DashboardPage() {
+  const location = useLocation();
   const [view, setView] = useState<HomeView>({ type: "categories" });
   const [activeRole, setActiveRole] = useState<RoleFilter>("All");
   const welcomeDismissed = usePreferenceStore((s) => s.welcomeDismissed);
   const setWelcomeDismissed = usePreferenceStore((s) => s.setWelcomeDismissed);
+
+  // Open a specific category if navigated here from a tool's category badge
+  useEffect(() => {
+    const incoming = (location.state as { openCategory?: string } | null)
+      ?.openCategory;
+    if (incoming) {
+      setView({ type: "category", name: incoming });
+      // Clear the state so back-navigation doesn't re-trigger
+      window.history.replaceState({}, "");
+    }
+  }, [location.state]);
 
   const platformTools = useMemo(
     () => tools.filter((t) => !isWeb || t.platforms.includes("web")),
@@ -364,13 +376,13 @@ export function DashboardPage() {
 
       {/* Role filter pills — persistent across all views */}
       <div className="shrink-0 border-b border-border-light px-6 py-2.5 dark:border-border-dark">
-        <div className="flex flex-wrap gap-1.5">
+        <div className="flex gap-1.5 overflow-x-auto no-scrollbar">
           {ROLES.map((role) => (
             <button
               key={role}
               type="button"
               onClick={() => handleRoleChange(role)}
-              className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+              className={`shrink-0 rounded-full px-3 py-1 text-xs font-medium transition-colors ${
                 activeRole === role
                   ? "bg-primary text-white"
                   : "bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-700 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-200"
@@ -397,7 +409,7 @@ export function DashboardPage() {
 
                 if (catTools.length === 0) return null;
 
-                const preview = catTools.slice(0, 3).map((t) => t.name);
+                const preview = catTools.slice(0, 2).map((t) => t.name);
                 const subtitle = categorySubtitles[cat.name] ?? "";
                 return (
                   <button
@@ -406,23 +418,23 @@ export function DashboardPage() {
                     onClick={() => setView({ type: "category", name: cat.name })}
                     className="group flex flex-col items-start gap-2 rounded-xl border border-border-light bg-white p-4 text-left transition-colors hover:border-primary/40 hover:bg-primary/5 dark:border-border-dark dark:bg-panel-dark"
                   >
-                    <div className="flex w-full items-center justify-between">
-                      <div className="flex size-8 items-center justify-center rounded-lg bg-slate-100 text-slate-500 transition-colors group-hover:bg-primary/10 group-hover:text-primary dark:bg-slate-800 dark:text-slate-400">
-                        <span
-                          className="material-symbols-outlined text-[18px]"
-                          aria-hidden
-                        >
-                          {cat.icon}
-                        </span>
-                      </div>
-                      <span className="font-mono text-xs text-slate-400 dark:text-slate-500">
-                        {catTools.length}
+                    <div className="flex size-8 items-center justify-center rounded-lg bg-slate-100 text-slate-500 transition-colors group-hover:bg-primary/10 group-hover:text-primary dark:bg-slate-800 dark:text-slate-400">
+                      <span
+                        className="material-symbols-outlined text-[18px]"
+                        aria-hidden
+                      >
+                        {cat.icon}
                       </span>
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">
-                        {cat.name}
-                      </p>
+                      <div className="flex items-baseline gap-1.5">
+                        <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">
+                          {cat.name}
+                        </p>
+                        <span className="font-mono text-[10px] text-slate-400 dark:text-slate-500">
+                          {catTools.length}
+                        </span>
+                      </div>
                       <p className="mt-0.5 line-clamp-2 text-[11px] leading-snug text-slate-500 dark:text-slate-400">
                         {subtitle}
                       </p>
@@ -437,9 +449,9 @@ export function DashboardPage() {
                             {name}
                           </span>
                         ))}
-                        {catTools.length > 3 && (
+                        {catTools.length > 2 && (
                           <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] text-slate-400 dark:bg-slate-800 dark:text-slate-500">
-                            +{catTools.length - 3} more
+                            +{catTools.length - 2} more
                           </span>
                         )}
                       </div>
@@ -467,7 +479,7 @@ export function DashboardPage() {
               <button
                 type="button"
                 onClick={() => setView({ type: "all" })}
-                className="flex items-center gap-1.5 text-xs text-slate-500 transition-colors hover:text-primary dark:text-slate-400"
+                className="flex items-center gap-1.5 rounded-lg border border-border-light px-4 py-2 text-xs font-medium text-slate-600 transition-colors hover:border-primary/40 hover:text-primary dark:border-border-dark dark:text-slate-400 dark:hover:border-primary/40 dark:hover:text-primary"
               >
                 <span
                   className="material-symbols-outlined text-[14px]"

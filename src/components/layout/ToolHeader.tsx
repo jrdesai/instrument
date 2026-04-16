@@ -1,8 +1,10 @@
+import { useNavigate } from "react-router-dom";
 import type { Tool } from "../../registry";
 import { StorageBadge } from "../tool";
 import { useToolStore } from "../../store";
 
 export function ToolHeader({ tool }: { tool: Tool }) {
+  const navigate = useNavigate();
   const favouriteToolIds = useToolStore((s) => s.favouriteToolIds);
   const toggleFavourite = useToolStore((s) => s.toggleFavourite);
   const isFavourite = favouriteToolIds.includes(tool.id);
@@ -42,17 +44,14 @@ export function ToolHeader({ tool }: { tool: Tool }) {
             star
           </span>
         </button>
-        <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-semibold uppercase tracking-wider">
+        <button
+          type="button"
+          onClick={() => navigate("/", { state: { openCategory: tool.displayCategory } })}
+          className="inline-flex items-center px-2 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-semibold uppercase tracking-wider transition-colors hover:bg-primary/20"
+          title={`Browse ${tool.displayCategory} tools`}
+        >
           {tool.displayCategory}
-        </span>
-        {tool.roles.map((role) => (
-          <span
-            key={role}
-            className="inline-flex items-center px-2 py-0.5 rounded-full bg-slate-100 dark:bg-panel-dark border border-border-light dark:border-border-dark text-xs text-slate-600 dark:text-slate-400"
-          >
-            {role}
-          </span>
-        ))}
+        </button>
       </div>
     </header>
   );

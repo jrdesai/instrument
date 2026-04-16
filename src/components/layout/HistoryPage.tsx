@@ -48,10 +48,10 @@ export function HistoryPage() {
       {/* Header */}
       <header className="shrink-0 px-8 py-6 border-b border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark flex items-center justify-between">
         <div>
-          <h1 className="text-sm font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+          <h1 className="text-base font-semibold text-slate-800 dark:text-slate-100">
             History
           </h1>
-          <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
+          <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
             Preserved across sessions · max 100 entries per tool · never leaves your device
           </p>
         </div>
@@ -76,6 +76,16 @@ export function HistoryPage() {
             <p className="text-sm text-slate-500 dark:text-slate-400">
               No history yet. Run a tool to see results here.
             </p>
+            <button
+              type="button"
+              onClick={() => navigate("/")}
+              className="flex items-center gap-1.5 rounded-lg border border-border-light px-4 py-2 text-xs font-medium text-slate-600 transition-colors hover:border-primary/40 hover:text-primary dark:border-border-dark dark:text-slate-400 dark:hover:border-primary/40 dark:hover:text-primary"
+            >
+              Browse tools
+              <span className="material-symbols-outlined text-[14px]" aria-hidden>
+                arrow_forward
+              </span>
+            </button>
           </div>
         ) : (
           <div className="px-8 py-6 space-y-2">

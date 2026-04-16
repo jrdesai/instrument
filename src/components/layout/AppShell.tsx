@@ -55,7 +55,7 @@ export function AppShell() {
   return (
     <div className="flex h-screen w-full min-w-0 flex-col overflow-hidden bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display md:flex-row">
       <aside
-        className="hidden shrink-0 flex-col items-center border-r border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark z-20 md:flex"
+        className="hidden shrink-0 flex-col items-center border-r border-border-light dark:border-border-dark bg-white dark:bg-background-dark z-20 md:flex"
         style={{ width: SIDEBAR_WIDTH }}
         aria-label="Main navigation"
       >
