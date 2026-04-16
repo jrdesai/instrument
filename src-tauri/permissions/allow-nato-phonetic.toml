@@ -1,0 +1,5 @@
+# Allow the NATO Phonetic Alphabet tool command to be invoked from the frontend.
+[[permission]]
+identifier = "allow-nato-phonetic"
+description = "Enables the tool_nato_phonetic_process command."
+commands.allow = ["tool_nato_phonetic_process"]

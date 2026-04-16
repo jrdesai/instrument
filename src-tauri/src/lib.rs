@@ -54,6 +54,7 @@ pub fn run() {
         instrument_desktop::commands::text::tool_word_counter_process,
         instrument_desktop::commands::text::tool_unicode_inspect,
         instrument_desktop::commands::text::tool_slug_generate,
+        instrument_desktop::commands::text::tool_nato_phonetic_process,
         instrument_desktop::commands::text::tool_string_escaper_process,
         instrument_desktop::commands::text::tool_find_replace_process,
         instrument_desktop::commands::text::tool_lorem_ipsum_process,

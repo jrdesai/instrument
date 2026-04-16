@@ -29,6 +29,7 @@
     "allow-image-convert",
     "allow-unicode-inspector",
     "allow-slug-generator",
+    "allow-nato-phonetic",
     "allow-string-escaper",
     "allow-find-replace",
     "allow-lorem-ipsum",

@@ -24,6 +24,9 @@ use instrument_core::text::string_escaper::{
 use instrument_core::text::lorem_ipsum::{
     process as lorem_ipsum_process_core, LoremIpsumInput, LoremIpsumOutput,
 };
+use instrument_core::text::nato_phonetic::{
+    process as nato_phonetic_process_core, NatoPhoneticInput, NatoPhoneticOutput,
+};
 use instrument_core::text::slug::{process as slug_generate_core, SlugInput, SlugOutput};
 use instrument_core::text::unicode::{
     process as unicode_inspect_core, UnicodeInspectInput, UnicodeInspectOutput,
@@ -131,6 +134,16 @@ pub fn tool_slug_generate(input: SlugInput) -> SlugOutput {
     let start = Instant::now();
     let output = slug_generate_core(input);
     finish_ok("tool_slug_generate", start);
+    output
+}
+
+/// Converts text to/from NATO phonetic alphabet.
+#[tauri::command]
+#[specta::specta]
+pub fn tool_nato_phonetic_process(input: NatoPhoneticInput) -> NatoPhoneticOutput {
+    let start = Instant::now();
+    let output = nato_phonetic_process_core(input);
+    finish_ok("tool_nato_phonetic_process", start);
     output
 }
 

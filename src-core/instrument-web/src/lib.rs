@@ -110,6 +110,9 @@ use instrument_core::text::line_tools::{
 use instrument_core::text::lorem_ipsum::{
     process as lorem_ipsum_process_core, LoremIpsumInput,
 };
+use instrument_core::text::nato_phonetic::{
+    process as nato_phonetic_process_core, NatoPhoneticInput,
+};
 use instrument_core::text::slug::{process as slug_generate_core, SlugInput};
 use instrument_core::text::string_escaper::{
     process as string_escaper_process_core, StringEscaperInput,
@@ -225,6 +228,12 @@ tool_binding!(
     unicode_inspect_core
 );
 tool_binding!("tool_slug_generate", tool_slug_generate_wasm, SlugInput, slug_generate_core);
+tool_binding!(
+    "tool_nato_phonetic_process",
+    tool_nato_phonetic_process_wasm,
+    NatoPhoneticInput,
+    nato_phonetic_process_core
+);
 tool_binding!(
     "tool_string_escaper_process",
     string_escaper_process_wasm,

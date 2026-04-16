@@ -121,6 +121,12 @@ async toolSlugGenerate(input: SlugInput) : Promise<SlugOutput> {
     return await TAURI_INVOKE("tool_slug_generate", { input });
 },
 /**
+ * Converts text to/from NATO phonetic alphabet.
+ */
+async toolNatoPhoneticProcess(input: NatoPhoneticInput) : Promise<NatoPhoneticOutput> {
+    return await TAURI_INVOKE("tool_nato_phonetic_process", { input });
+},
+/**
  * Runs string escape/unescape via instrument-core.
  */
 async toolStringEscaperProcess(input: StringEscaperInput) : Promise<StringEscaperOutput> {
@@ -1467,6 +1473,18 @@ export type SemverOutput = { major: number | null; minor: number | null; patch: 
  * Normalized semver string for the parsed version.
  */
 canonical: string; compareResult: SemverCompareResult | null; compareError: string | null; rangeSatisfied: boolean | null; rangeError: string | null; bumpedMajor: string | null; bumpedMinor: string | null; bumpedPatch: string | null; error: string | null }
+/**
+ * Encode or decode NATO phonetic alphabet.
+ */
+export type NatoPhoneticMode = "encode" | "decode"
+/**
+ * Input for the NATO Phonetic Alphabet tool.
+ */
+export type NatoPhoneticInput = { text: string; mode: NatoPhoneticMode }
+/**
+ * Output for the NATO Phonetic Alphabet tool.
+ */
+export type NatoPhoneticOutput = { result: string; error: string | null }
 /**
  * Input for the Slug Generator tool.
  */

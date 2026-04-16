@@ -168,6 +168,9 @@ fn main() {
     instrument_core::text::string_escaper::StringEscaperOutput::export_all_to(&out).unwrap();
     instrument_core::text::slug::SlugInput::export_all_to(&out).unwrap();
     instrument_core::text::slug::SlugOutput::export_all_to(&out).unwrap();
+    instrument_core::text::nato_phonetic::NatoPhoneticInput::export_all_to(&out).unwrap();
+    instrument_core::text::nato_phonetic::NatoPhoneticMode::export_all_to(&out).unwrap();
+    instrument_core::text::nato_phonetic::NatoPhoneticOutput::export_all_to(&out).unwrap();
     instrument_core::text::unicode::UnicodeChar::export_all_to(&out).unwrap();
     instrument_core::text::unicode::UnicodeInspectInput::export_all_to(&out).unwrap();
     instrument_core::text::unicode::UnicodeInspectOutput::export_all_to(&out).unwrap();
