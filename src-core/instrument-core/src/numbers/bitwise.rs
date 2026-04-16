@@ -293,10 +293,10 @@ pub fn process(input: BitwiseInput) -> BitwiseOutput {
     };
 
     // Bit analysis of A (use the masked value; leading/trailing within width)
-    out.bit_count_a = Some(parsed_a.count_ones() as u32);
+    out.bit_count_a = Some(parsed_a.count_ones());
     let leading = (parsed_a << (64 - width_bits)).leading_zeros();
-    out.leading_zeros_a = Some((leading.saturating_sub(64 - width_bits)) as u32);
-    out.trailing_zeros_a = Some((parsed_a.trailing_zeros()).min(width_bits) as u32);
+    out.leading_zeros_a = Some(leading.saturating_sub(64 - width_bits));
+    out.trailing_zeros_a = Some((parsed_a.trailing_zeros()).min(width_bits));
     out.is_power_of_two_a = Some(parsed_a != 0 && parsed_a.is_power_of_two());
 
     // Single-operand ops

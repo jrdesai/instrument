@@ -27,55 +27,55 @@ async toolBasicAuth(input: BasicAuthInput) : Promise<BasicAuthOutput> {
 /**
  * Runs combined hash (MD5, SHA-1/256/512, SHA3-256/512) via instrument-core.
  */
-async hashProcess(input: HashInput) : Promise<HashOutput> {
+async toolHashProcess(input: HashInput) : Promise<HashOutput> {
     return await TAURI_INVOKE("tool_hash_process", { input });
 },
 /**
  * Runs ULID generation via instrument-core.
  */
-async ulidProcess(input: UlidInput) : Promise<UlidOutput> {
+async toolUlidProcess(input: UlidInput) : Promise<UlidOutput> {
     return await TAURI_INVOKE("tool_ulid_process", { input });
 },
 /**
  * Runs ULID inspection via instrument-core.
  */
-async ulidInspect(input: UlidInspectInput) : Promise<UlidInspectOutput> {
+async toolUlidInspect(input: UlidInspectInput) : Promise<UlidInspectOutput> {
     return await TAURI_INVOKE("tool_ulid_inspect", { input });
 },
 /**
  * Runs UUID generation via instrument-core.
  */
-async uuidProcess(input: UuidInput) : Promise<UuidOutput> {
+async toolUuidProcess(input: UuidInput) : Promise<UuidOutput> {
     return await TAURI_INVOKE("tool_uuid_process", { input });
 },
 /**
  * Runs UUID inspection via instrument-core.
  */
-async uuidInspect(input: UuidInspectInput) : Promise<UuidInspectOutput> {
+async toolUuidInspect(input: UuidInspectInput) : Promise<UuidInspectOutput> {
     return await TAURI_INVOKE("tool_uuid_inspect", { input });
 },
 /**
  * Runs API key generation via instrument-core.
  */
-async apiKeyProcess(input: ApiKeyInput) : Promise<ApiKeyOutput> {
+async toolApiKeyProcess(input: ApiKeyInput) : Promise<ApiKeyOutput> {
     return await TAURI_INVOKE("tool_api_key_process", { input });
 },
 /**
  * Runs Nano ID generation via instrument-core.
  */
-async nanoidProcess(input: NanoIdInput) : Promise<NanoIdOutput> {
+async toolNanoidProcess(input: NanoIdInput) : Promise<NanoIdOutput> {
     return await TAURI_INVOKE("tool_nanoid_process", { input });
 },
 /**
  * Decodes X.509 / PEM certificates via instrument-core.
  */
-async certDecode(input: CertDecodeInput) : Promise<CertDecodeOutput> {
+async toolCertDecode(input: CertDecodeInput) : Promise<CertDecodeOutput> {
     return await TAURI_INVOKE("tool_cert_decode", { input });
 },
 /**
  * Runs AES-256-GCM encrypt/decrypt via instrument-core.
  */
-async aesProcess(input: AesInput) : Promise<AesOutput> {
+async toolAesProcess(input: AesInput) : Promise<AesOutput> {
     return await TAURI_INVOKE("tool_aes_process", { input });
 },
 /**
@@ -87,25 +87,25 @@ async toolTotpGenerate(input: TotpInput) : Promise<TotpOutput> {
 /**
  * Runs Password generation via instrument-core.
  */
-async passwordProcess(input: PasswordInput) : Promise<PasswordOutput> {
+async toolPasswordProcess(input: PasswordInput) : Promise<PasswordOutput> {
     return await TAURI_INVOKE("tool_password_process", { input });
 },
 /**
  * Runs Passphrase generation via instrument-core.
  */
-async passphraseProcess(input: PassphraseInput) : Promise<PassphraseOutput> {
+async toolPassphraseProcess(input: PassphraseInput) : Promise<PassphraseOutput> {
     return await TAURI_INVOKE("tool_passphrase_process", { input });
 },
 /**
  * Runs case conversion via instrument-core.
  */
-async caseProcess(input: CaseInput) : Promise<CaseOutput> {
+async toolCaseProcess(input: CaseInput) : Promise<CaseOutput> {
     return await TAURI_INVOKE("tool_case_process", { input });
 },
 /**
  * Runs word counting via instrument-core.
  */
-async wordCounterProcess(input: WordCounterInput) : Promise<WordCounterOutput> {
+async toolWordCounterProcess(input: WordCounterInput) : Promise<WordCounterOutput> {
     return await TAURI_INVOKE("tool_word_counter_process", { input });
 },
 /**
@@ -123,103 +123,103 @@ async toolSlugGenerate(input: SlugInput) : Promise<SlugOutput> {
 /**
  * Runs string escape/unescape via instrument-core.
  */
-async stringEscaperProcess(input: StringEscaperInput) : Promise<StringEscaperOutput> {
+async toolStringEscaperProcess(input: StringEscaperInput) : Promise<StringEscaperOutput> {
     return await TAURI_INVOKE("tool_string_escaper_process", { input });
 },
 /**
  * Runs find and replace via instrument-core.
  */
-async findReplaceProcess(input: FindReplaceInput) : Promise<FindReplaceOutput> {
+async toolFindReplaceProcess(input: FindReplaceInput) : Promise<FindReplaceOutput> {
     return await TAURI_INVOKE("tool_find_replace_process", { input });
 },
 /**
  * Runs lorem ipsum generation via instrument-core.
  */
-async loremIpsumProcess(input: LoremIpsumInput) : Promise<LoremIpsumOutput> {
+async toolLoremIpsumProcess(input: LoremIpsumInput) : Promise<LoremIpsumOutput> {
     return await TAURI_INVOKE("tool_lorem_ipsum_process", { input });
 },
 /**
  * Runs line-by-line text diff via instrument-core.
  */
-async textDiffProcess(input: TextDiffInput) : Promise<TextDiffOutput> {
+async toolTextDiffProcess(input: TextDiffInput) : Promise<TextDiffOutput> {
     return await TAURI_INVOKE("tool_text_diff_process", { input });
 },
 /**
  * Runs line-level text tools via instrument-core.
  */
-async lineToolsProcess(input: LineToolsInput) : Promise<LineToolsOutput> {
+async toolLineToolsProcess(input: LineToolsInput) : Promise<LineToolsOutput> {
     return await TAURI_INVOKE("tool_line_tools_process", { input });
 },
 /**
  * Generates fake records from a field schema (JSON output).
  */
-async fakeDataProcess(input: FakeDataInput) : Promise<FakeDataOutput> {
+async toolFakeDataProcess(input: FakeDataInput) : Promise<FakeDataOutput> {
     return await TAURI_INVOKE("tool_fake_data_process", { input });
 },
 /**
  * Parses and validates .env content via instrument-core.
  */
-async envParse(input: EnvParseInput) : Promise<EnvParseOutput> {
+async toolEnvParse(input: EnvParseInput) : Promise<EnvParseOutput> {
     return await TAURI_INVOKE("tool_env_parse", { input });
 },
 /**
  * Runs timestamp conversion via instrument-core.
  */
-async timestampProcess(input: TimestampInput) : Promise<TimestampOutput> {
+async toolTimestampProcess(input: TimestampInput) : Promise<TimestampOutput> {
     return await TAURI_INVOKE("tool_timestamp_process", { input });
 },
 /**
  * Runs timezone conversion via instrument-core.
  */
-async timezoneProcess(input: TimezoneInput) : Promise<TimezoneOutput> {
+async toolTimezoneProcess(input: TimezoneInput) : Promise<TimezoneOutput> {
     return await TAURI_INVOKE("tool_timezone_process", { input });
 },
 /**
  * Runs ISO 8601 parse/format via instrument-core.
  */
-async iso8601Process(input: Iso8601Input) : Promise<Iso8601Output> {
+async toolIso8601Process(input: Iso8601Input) : Promise<Iso8601Output> {
     return await TAURI_INVOKE("tool_iso8601_process", { input });
 },
 /**
  * Parses a cron expression and returns next run times (UTC).
  */
-async cronProcess(input: CronInput) : Promise<CronOutput> {
+async toolCronProcess(input: CronInput) : Promise<CronOutput> {
     return await TAURI_INVOKE("tool_cron_process", { input });
 },
 /**
  * Runs Base64 encode or decode via instrument-core.
  */
-async base64Process(input: Base64Input) : Promise<Base64Output> {
+async toolBase64Process(input: Base64Input) : Promise<Base64Output> {
     return await TAURI_INVOKE("tool_base64_process", { input });
 },
 /**
  * Runs URL percent-encode or decode via instrument-core.
  */
-async urlEncodeProcess(input: UrlEncodeInput) : Promise<UrlEncodeOutput> {
+async toolUrlEncodeProcess(input: UrlEncodeInput) : Promise<UrlEncodeOutput> {
     return await TAURI_INVOKE("tool_url_encode_process", { input });
 },
 /**
  * Runs HTML entity encode or decode via instrument-core.
  */
-async htmlEntityProcess(input: HtmlEntityInput) : Promise<HtmlEntityOutput> {
+async toolHtmlEntityProcess(input: HtmlEntityInput) : Promise<HtmlEntityOutput> {
     return await TAURI_INVOKE("tool_html_entity_process", { input });
 },
 /**
  * Runs Hex encode or decode via instrument-core.
  */
-async hexProcess(input: HexInput) : Promise<HexOutput> {
+async toolHexProcess(input: HexInput) : Promise<HexOutput> {
     return await TAURI_INVOKE("tool_hex_process", { input });
 },
 /**
  * Converts a colour string to HEX, RGB, HSL, HSB, and CSS name.
  */
-async colorConvert(input: ColorInput) : Promise<ColorOutput> {
+async toolColorConvert(input: ColorInput) : Promise<ColorOutput> {
     return await TAURI_INVOKE("tool_color_convert", { input });
 },
 /**
  * Generates a QR code SVG from input text.
  */
-async qrGenerate(input: QrCodeInput) : Promise<QrCodeOutput> {
+async toolQrGenerate(input: QrCodeInput) : Promise<QrCodeOutput> {
     return await TAURI_INVOKE("tool_qr_generate", { input });
 },
 /**
@@ -267,40 +267,40 @@ async toolConfigConvert(input: ConfigConvertInput) : Promise<ConfigConvertOutput
 async toolUrlParse(input: UrlParseInput) : Promise<UrlParseOutput> {
     return await TAURI_INVOKE("tool_url_parse", { input });
 },
-async cidrCalculate(input: CidrInput) : Promise<CidrOutput> {
+async toolCidrCalculate(input: CidrInput) : Promise<CidrOutput> {
     return await TAURI_INVOKE("tool_cidr_calculate", { input });
 },
-async uaParse(input: UaParseInput) : Promise<UaParseOutput> {
+async toolUaParse(input: UaParseInput) : Promise<UaParseOutput> {
     return await TAURI_INVOKE("tool_ua_parse", { input });
 },
 /**
  * Runs base conversion via instrument-core.
  */
-async baseConverterProcess(input: BaseConverterInput) : Promise<BaseConverterOutput> {
+async toolBaseConverterProcess(input: BaseConverterInput) : Promise<BaseConverterOutput> {
     return await TAURI_INVOKE("tool_base_converter_process", { input });
 },
 /**
  * Runs bitwise operations via instrument-core.
  */
-async bitwiseProcess(input: BitwiseInput) : Promise<BitwiseOutput> {
+async toolBitwiseProcess(input: BitwiseInput) : Promise<BitwiseOutput> {
     return await TAURI_INVOKE("tool_bitwise_process", { input });
 },
 /**
  * Parses Unix permission strings (octal or symbolic) via instrument-core.
  */
-async chmodProcess(input: ChmodInput) : Promise<ChmodOutput> {
+async toolChmodProcess(input: ChmodInput) : Promise<ChmodOutput> {
     return await TAURI_INVOKE("tool_chmod_process", { input });
 },
 /**
  * Parse semver, compare versions, check version ranges, and bump major/minor/patch.
  */
-async semverProcess(input: SemverInput) : Promise<SemverOutput> {
+async toolSemverProcess(input: SemverInput) : Promise<SemverOutput> {
     return await TAURI_INVOKE("tool_semver_process", { input });
 },
 /**
  * Converts a value between units in a given category.
  */
-async unitConvert(input: UnitConverterInput) : Promise<UnitConverterOutput> {
+async toolUnitConvert(input: UnitConverterInput) : Promise<UnitConverterOutput> {
     return await TAURI_INVOKE("tool_unit_convert", { input });
 },
 /**
@@ -346,7 +346,7 @@ async toolJsonToCsv(input: JsonToCsvInput) : Promise<JsonToCsvOutput> {
 async toolXmlFormat(input: XmlFormatInput) : Promise<XmlFormatOutput> {
     return await TAURI_INVOKE("tool_xml_format", { input });
 },
-async htmlFormat(input: HtmlFormatInput) : Promise<HtmlFormatOutput> {
+async toolHtmlFormat(input: HtmlFormatInput) : Promise<HtmlFormatOutput> {
     return await TAURI_INVOKE("tool_html_format", { input });
 },
 async toolYamlFormat(input: YamlFormatInput) : Promise<YamlFormatOutput> {
@@ -358,7 +358,7 @@ async toolExpressionEval(input: ExprEvalInput) : Promise<ExprEvalOutput> {
 /**
  * Converts image bytes between formats with optional transforms.
  */
-async imageConvert(input: ImageConvertInput) : Promise<ImageConvertOutput> {
+async toolImageConvert(input: ImageConvertInput) : Promise<ImageConvertOutput> {
     return await TAURI_INVOKE("tool_image_convert", { input });
 },
 /**
