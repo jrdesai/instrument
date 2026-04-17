@@ -56,9 +56,12 @@ export default defineConfig(async ({ command, mode }) => ({
               runtimeCaching: [
                 {
                   urlPattern: /\/wasm-pkg\/.*/,
-                  handler: "CacheFirst",
+                  // CacheFirst kept users on stale instrument_web.js for up to a week after
+                  // a deploy — new UI then called WASM exports missing from the old bundle.
+                  handler: "NetworkFirst",
                   options: {
-                    cacheName: "wasm-cache",
+                    cacheName: `wasm-instrument-${pkg.version}`,
+                    networkTimeoutSeconds: 5,
                     expiration: {
                       maxAgeSeconds: 7 * 24 * 60 * 60,
                     },

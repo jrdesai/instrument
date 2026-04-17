@@ -28,7 +28,14 @@ export class WasmLoadError extends Error {
 // Vite 7 forbids importing `/public` files from source — root-relative paths are resolved
 // and rejected during dev. A full http(s) URL is loaded by the browser only, bypassing that.
 function wasmModuleScriptHref(): string {
-  const path = `${import.meta.env.BASE_URL}wasm-pkg/instrument_web.js`
+  // Bust CDN / service-worker caches when the app version changes (WASM glue must
+  // stay in sync with new exports like tool_fake_data_process).
+  const version =
+    typeof import.meta.env.VITE_APP_VERSION === "string"
+      ? import.meta.env.VITE_APP_VERSION
+      : ""
+  const versionQuery = version !== "" ? `?v=${encodeURIComponent(version)}` : ""
+  const path = `${import.meta.env.BASE_URL}wasm-pkg/instrument_web.js${versionQuery}`
   const origin =
     typeof self !== "undefined" && typeof self.location !== "undefined"
       ? self.location.origin
