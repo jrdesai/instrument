@@ -1311,6 +1311,9 @@ ids: string[];
  * Optional error message.
  */
 error: string | null }
+export type NatoPhoneticInput = { text: string; mode: NatoPhoneticMode }
+export type NatoPhoneticMode = "encode" | "decode"
+export type NatoPhoneticOutput = { result: string; error: string | null }
 /**
  * Input base for the number string.
  */
@@ -1473,18 +1476,6 @@ export type SemverOutput = { major: number | null; minor: number | null; patch: 
  * Normalized semver string for the parsed version.
  */
 canonical: string; compareResult: SemverCompareResult | null; compareError: string | null; rangeSatisfied: boolean | null; rangeError: string | null; bumpedMajor: string | null; bumpedMinor: string | null; bumpedPatch: string | null; error: string | null }
-/**
- * Encode or decode NATO phonetic alphabet.
- */
-export type NatoPhoneticMode = "encode" | "decode"
-/**
- * Input for the NATO Phonetic Alphabet tool.
- */
-export type NatoPhoneticInput = { text: string; mode: NatoPhoneticMode }
-/**
- * Output for the NATO Phonetic Alphabet tool.
- */
-export type NatoPhoneticOutput = { result: string; error: string | null }
 /**
  * Input for the Slug Generator tool.
  */
