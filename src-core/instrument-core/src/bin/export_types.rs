@@ -54,6 +54,8 @@ fn main() {
     instrument_core::csv::CsvToJsonOutput::export_all_to(&out).unwrap();
     instrument_core::csv::JsonToCsvInput::export_all_to(&out).unwrap();
     instrument_core::csv::JsonToCsvOutput::export_all_to(&out).unwrap();
+    instrument_core::csv::preview::CsvPreviewInput::export_all_to(&out).unwrap();
+    instrument_core::csv::preview::CsvPreviewOutput::export_all_to(&out).unwrap();
     instrument_core::datetime::cron::CronInput::export_all_to(&out).unwrap();
     instrument_core::datetime::cron::CronOutput::export_all_to(&out).unwrap();
     instrument_core::datetime::iso8601::Iso8601Input::export_all_to(&out).unwrap();

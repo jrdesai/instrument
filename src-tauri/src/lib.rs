@@ -92,6 +92,7 @@ pub fn run() {
         instrument_desktop::commands::sql::tool_sql_format,
         instrument_desktop::commands::csv::tool_csv_to_json,
         instrument_desktop::commands::csv::tool_json_to_csv,
+        instrument_desktop::commands::csv::tool_csv_preview,
         instrument_desktop::commands::xml::tool_xml_format,
         instrument_desktop::commands::html::tool_html_format,
         instrument_desktop::commands::yaml_fmt::tool_yaml_format,

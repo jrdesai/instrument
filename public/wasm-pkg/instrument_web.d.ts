@@ -37,6 +37,8 @@ export function tool_config_convert(js_input: any): any;
 
 export function tool_cron_process(js_input: any): any;
 
+export function tool_csv_preview(js_input: any): any;
+
 export function tool_csv_to_json(js_input: any): any;
 
 export function tool_env_parse(js_input: any): any;
@@ -148,6 +150,7 @@ export interface InitOutput {
     readonly tool_color_convert: (a: any) => [number, number, number];
     readonly tool_config_convert: (a: any) => [number, number, number];
     readonly tool_cron_process: (a: any) => [number, number, number];
+    readonly tool_csv_preview: (a: any) => [number, number, number];
     readonly tool_csv_to_json: (a: any) => [number, number, number];
     readonly tool_env_parse: (a: any) => [number, number, number];
     readonly tool_expression_eval: (a: any) => [number, number, number];

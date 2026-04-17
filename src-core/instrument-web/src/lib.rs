@@ -35,6 +35,7 @@ use instrument_core::csv::{
     process as csv_to_json_process_core, process_json_to_csv as json_to_csv_process_core,
     CsvToJsonInput, JsonToCsvInput,
 };
+use instrument_core::csv::preview::{process as csv_preview_core, CsvPreviewInput};
 use instrument_core::datetime::cron::{process as cron_process_core, CronInput};
 use instrument_core::datetime::iso8601::{
     process as iso8601_process_core, Iso8601Input,
@@ -163,6 +164,7 @@ tool_binding!("tool_cidr_calculate", cidr_calculate_wasm, CidrInput, cidr_proces
 tool_binding!("tool_ua_parse", ua_parse_wasm, UaParseInput, ua_parse_process_core);
 tool_binding!("tool_csv_to_json", tool_csv_to_json_wasm, CsvToJsonInput, csv_to_json_process_core);
 tool_binding!("tool_json_to_csv", tool_json_to_csv_wasm, JsonToCsvInput, json_to_csv_process_core);
+tool_binding!("tool_csv_preview", tool_csv_preview_wasm, CsvPreviewInput, csv_preview_core);
 tool_binding!("tool_html_format", html_format_wasm, HtmlFormatInput, html_format_process_core);
 tool_binding!("tool_xml_format", tool_xml_format_wasm, XmlFormatInput, xml_format_process_core);
 tool_binding!("tool_yaml_format", tool_yaml_format_wasm, YamlFormatInput, yaml_format_process_core);

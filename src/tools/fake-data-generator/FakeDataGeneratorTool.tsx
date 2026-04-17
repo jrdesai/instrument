@@ -5,6 +5,7 @@ import {
   useState,
   type ChangeEvent,
 } from "react";
+import { useNavigate } from "react-router-dom";
 import { callTool } from "../../bridge";
 import { CopyButton, PanelHeader } from "../../components/tool";
 import { CodeBlock } from "../../components/ui/CodeBlock";
@@ -254,24 +255,29 @@ function downloadJson(json: string) {
   URL.revokeObjectURL(url);
 }
 
+function buildCsvString(json: string): string {
+  const records = JSON.parse(json) as Record<string, unknown>[];
+  if (!Array.isArray(records) || records.length === 0) {
+    throw new Error("No records to export.");
+  }
+  const headers = Object.keys(records[0]);
+  const escape = (v: unknown) => {
+    const s = String(v ?? "");
+    return s.includes(",") || s.includes('"') || s.includes("\n")
+      ? `"${s.replace(/"/g, '""')}"`
+      : s;
+  };
+  const rows = [
+    headers.join(","),
+    ...records.map((r) => headers.map((h) => escape(r[h])).join(",")),
+  ];
+  return rows.join("\n");
+}
+
 function downloadCsv(json: string): void {
   try {
-    const records = JSON.parse(json) as Record<string, unknown>[];
-    if (!Array.isArray(records) || records.length === 0) {
-      throw new Error("No records to export.");
-    }
-    const headers = Object.keys(records[0]);
-    const escape = (v: unknown) => {
-      const s = String(v ?? "");
-      return s.includes(",") || s.includes('"') || s.includes("\n")
-        ? `"${s.replace(/"/g, '""')}"`
-        : s;
-    };
-    const rows = [
-      headers.join(","),
-      ...records.map((r) => headers.map((h) => escape(r[h])).join(",")),
-    ];
-    const blob = new Blob([rows.join("\n")], { type: "text/csv" });
+    const csvString = buildCsvString(json);
+    const blob = new Blob([csvString], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
@@ -298,6 +304,7 @@ function EmptyState() {
 }
 
 function FakeDataGeneratorTool() {
+  const navigate = useNavigate();
   const { setDraft } = useDraftInput(TOOL_ID);
   const [fields, setFields] = useState<SchemaField[]>(() => createDefaultFields());
   const [count, setCount] = useState(10);
@@ -672,6 +679,23 @@ function FakeDataGeneratorTool() {
                   >
                     <span className="material-symbols-outlined text-[14px]">download</span>
                     CSV
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      try {
+                        const csv = buildCsvString(output!.json);
+                        navigate("/tools/csv-previewer", {
+                          state: { csv, delimiter: "," },
+                        });
+                      } catch {
+                        // silently ignore if build fails
+                      }
+                    }}
+                    className="flex items-center gap-1.5 rounded-lg border border-border-light px-3 py-1 text-xs text-slate-600 transition-colors hover:text-primary dark:border-border-dark dark:text-slate-400"
+                  >
+                    <span className="material-symbols-outlined text-[14px]">table_view</span>
+                    Preview
                   </button>
                 </div>
               </div>

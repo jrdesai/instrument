@@ -349,6 +349,12 @@ async toolCsvToJson(input: CsvToJsonInput) : Promise<CsvToJsonOutput> {
 async toolJsonToCsv(input: JsonToCsvInput) : Promise<JsonToCsvOutput> {
     return await TAURI_INVOKE("tool_json_to_csv", { input });
 },
+/**
+ * Parses CSV into structured headers + rows for table rendering.
+ */
+async toolCsvPreview(input: CsvPreviewInput) : Promise<CsvPreviewOutput> {
+    return await TAURI_INVOKE("tool_csv_preview", { input });
+},
 async toolXmlFormat(input: XmlFormatInput) : Promise<XmlFormatOutput> {
     return await TAURI_INVOKE("tool_xml_format", { input });
 },
@@ -660,6 +666,30 @@ export type CsvOutputFormat =
  * Array of arrays: each row is a string array.
  */
 "arrayOfArrays"
+/**
+ * Input for the CSV Previewer.
+ */
+export type CsvPreviewInput = { text: string; hasHeaders: boolean; delimiter: string; 
+/**
+ * Maximum rows to return (default 1000).
+ */
+maxRows: number | null }
+/**
+ * Parsed CSV output ready for table rendering.
+ */
+export type CsvPreviewOutput = { 
+/**
+ * Column headers (empty when `has_headers` is false).
+ */
+headers: string[]; 
+/**
+ * Data rows (up to `max_rows`).
+ */
+rows: string[][]; 
+/**
+ * Total rows in the file (may exceed `rows.len()` when truncated).
+ */
+totalRows: number; truncated: boolean; error: string | null }
 export type CsvToJsonInput = { 
 /**
  * Raw CSV text.

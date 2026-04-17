@@ -908,6 +908,38 @@ export const tools: Tool[] = [
     implemented: true,
   },
   {
+    id: "csv-previewer",
+    name: "CSV Previewer",
+    description: "Render CSV data as a formatted table for quick inspection.",
+    category: "data",
+    displayCategory: "Data",
+    displayCategoryIcon: "table_chart",
+    roles: ["backend", "data", "general"],
+    icon: "table_view",
+    platforms: ["desktop", "web"],
+    rustCommand: "tool_csv_preview",
+    keywords: [
+      "csv",
+      "preview",
+      "table",
+      "viewer",
+      "inspect",
+      "spreadsheet",
+      "tsv",
+      "tabular",
+      "data",
+      "columns",
+      "rows",
+    ],
+    component: React.lazy(() =>
+      import("../tools/csv-previewer").then((m) => ({
+        default: m.default,
+      }))
+    ),
+    trayPopover: false,
+    implemented: true,
+  },
+  {
     id: "image-converter",
     name: "Image Converter",
     description:

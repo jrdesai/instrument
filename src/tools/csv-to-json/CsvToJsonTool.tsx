@@ -5,6 +5,7 @@ import {
   useState,
   type ChangeEvent,
 } from "react";
+import { useNavigate } from "react-router-dom";
 import { callTool } from "../../bridge";
 import { CopyButton } from "../../components/tool";
 import { CodeBlock } from "../../components/ui/CodeBlock";
@@ -22,6 +23,7 @@ const DEBOUNCE_MS = 300;
 const HISTORY_DEBOUNCE_MS = 1500;
 
 function CsvToJsonTool() {
+  const navigate = useNavigate();
   const { setDraft } = useDraftInput(TOOL_ID);
   const [direction, setDirection] = useState<"csv-to-json" | "json-to-csv">("csv-to-json");
   const [inputValue, setInputValue] = useState(
@@ -479,21 +481,39 @@ function CsvToJsonTool() {
               Convert
             </button>
             {activeResult?.result && !activeResult.error ? (
-              <button
-                type="button"
-                onClick={() =>
-                  handleDownload(
-                    activeResult.result,
-                    fileName
-                      ? `${fileName.replace(/\.[^.]+$/, "")}.${direction === "csv-to-json" ? "json" : "csv"}`
-                      : `output.${direction === "csv-to-json" ? "json" : "csv"}`,
-                    direction === "csv-to-json" ? "application/json" : "text/csv"
-                  )
-                }
-                className="rounded-lg border border-border-light bg-panel-light px-3 py-1.5 text-xs text-slate-500 transition-colors hover:text-slate-700 dark:border-border-dark dark:bg-panel-dark dark:text-slate-400 dark:hover:text-slate-200"
-              >
-                Download .{direction === "csv-to-json" ? "json" : "csv"}
-              </button>
+              <>
+                <button
+                  type="button"
+                  onClick={() =>
+                    handleDownload(
+                      activeResult.result,
+                      fileName
+                        ? `${fileName.replace(/\.[^.]+$/, "")}.${direction === "csv-to-json" ? "json" : "csv"}`
+                        : `output.${direction === "csv-to-json" ? "json" : "csv"}`,
+                      direction === "csv-to-json" ? "application/json" : "text/csv"
+                    )
+                  }
+                  className="rounded-lg border border-border-light bg-panel-light px-3 py-1.5 text-xs text-slate-500 transition-colors hover:text-slate-700 dark:border-border-dark dark:bg-panel-dark dark:text-slate-400 dark:hover:text-slate-200"
+                >
+                  Download .{direction === "csv-to-json" ? "json" : "csv"}
+                </button>
+                {direction === "json-to-csv" && jsonToCsvOutput?.result && (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      navigate("/tools/csv-previewer", {
+                        state: { csv: jsonToCsvOutput.result, delimiter },
+                      })
+                    }
+                    className="flex items-center gap-1.5 rounded-lg border border-border-light bg-panel-light px-3 py-1.5 text-xs text-slate-500 transition-colors hover:text-primary dark:border-border-dark dark:bg-panel-dark dark:text-slate-400 dark:hover:text-primary"
+                  >
+                    <span className="material-symbols-outlined text-[14px]" aria-hidden>
+                      table_view
+                    </span>
+                    Preview
+                  </button>
+                )}
+              </>
             ) : null}
             <CopyButton
               value={

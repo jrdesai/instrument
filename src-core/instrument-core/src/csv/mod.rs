@@ -3,6 +3,8 @@
 //! Converts CSV text into either an array-of-objects (using headers as keys)
 //! or an array-of-arrays, and returns pretty-printed JSON plus basic stats.
 
+pub mod preview;
+
 use csv::ReaderBuilder;
 use serde::{Deserialize, Serialize};
 use specta::Type;

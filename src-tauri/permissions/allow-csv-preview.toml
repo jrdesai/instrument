@@ -1,0 +1,5 @@
+# Allow the CSV Previewer tool command to be invoked from the frontend.
+[[permission]]
+identifier = "allow-csv-preview"
+description = "Allows the tool_csv_preview command."
+commands.allow = ["tool_csv_preview"]

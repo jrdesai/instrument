@@ -186,6 +186,18 @@ export function tool_cron_process(js_input) {
  * @param {any} js_input
  * @returns {any}
  */
+export function tool_csv_preview(js_input) {
+    const ret = wasm.tool_csv_preview(js_input);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
+ * @param {any} js_input
+ * @returns {any}
+ */
 export function tool_csv_to_json(js_input) {
     const ret = wasm.tool_csv_to_json(js_input);
     if (ret[2]) {

@@ -16,6 +16,7 @@ export const tool_cidr_calculate: (a: any) => [number, number, number];
 export const tool_color_convert: (a: any) => [number, number, number];
 export const tool_config_convert: (a: any) => [number, number, number];
 export const tool_cron_process: (a: any) => [number, number, number];
+export const tool_csv_preview: (a: any) => [number, number, number];
 export const tool_csv_to_json: (a: any) => [number, number, number];
 export const tool_env_parse: (a: any) => [number, number, number];
 export const tool_expression_eval: (a: any) => [number, number, number];
