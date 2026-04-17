@@ -2007,6 +2007,39 @@ export const tools: Tool[] = [
     implemented: true,
   },
   {
+    id: "color-contrast",
+    name: "Colour Contrast Checker",
+    description:
+      "Check foreground/background colour pairs against WCAG AA and AAA contrast ratio requirements.",
+    category: "numbers",
+    displayCategory: "Numbers",
+    displayCategoryIcon: "numbers",
+    roles: ["frontend", "general"],
+    icon: "contrast",
+    platforms: ["desktop", "web"],
+    rustCommand: "tool_color_contrast_process",
+    keywords: [
+      "colour",
+      "color",
+      "contrast",
+      "wcag",
+      "accessibility",
+      "a11y",
+      "hex",
+      "foreground",
+      "background",
+      "ratio",
+      "aa",
+      "aaa",
+    ],
+    component: React.lazy(() =>
+      import("../tools/color-contrast/ColorContrastTool").then((m) => ({
+        default: m.default,
+      }))
+    ),
+    implemented: true,
+  },
+  {
     id: "keycode-info",
     name: "Keycode Info",
     description: "Press any key to inspect its keyCode, code, key, and modifiers.",

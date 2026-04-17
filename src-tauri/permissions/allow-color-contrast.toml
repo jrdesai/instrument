@@ -1,0 +1,5 @@
+# Allow the Colour Contrast Checker tool command to be invoked from the frontend.
+[[permission]]
+identifier = "allow-color-contrast"
+description = "Allows the tool_color_contrast_process command."
+commands.allow = ["tool_color_contrast_process"]

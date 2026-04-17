@@ -17,6 +17,11 @@ use instrument_core::numbers::chmod::{
     ChmodInput,
     ChmodOutput,
 };
+use instrument_core::numbers::color_contrast::{
+    process as color_contrast_process_core,
+    ColorContrastInput,
+    ColorContrastOutput,
+};
 use instrument_core::numbers::semver::{
     process as semver_process_core, SemverInput, SemverOutput,
 };
@@ -73,5 +78,15 @@ pub fn tool_unit_convert(input: UnitConverterInput) -> UnitConverterOutput {
     let start = Instant::now();
     let output = unit_convert_core(input);
     finish_ok("tool_unit_convert", start);
+    output
+}
+
+/// Computes WCAG contrast ratio for a foreground/background colour pair.
+#[tauri::command]
+#[specta::specta]
+pub fn tool_color_contrast_process(input: ColorContrastInput) -> ColorContrastOutput {
+    let start = Instant::now();
+    let output = color_contrast_process_core(input);
+    finish_ok("tool_color_contrast_process", start);
     output
 }

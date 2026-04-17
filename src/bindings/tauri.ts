@@ -298,6 +298,12 @@ async toolChmodProcess(input: ChmodInput) : Promise<ChmodOutput> {
     return await TAURI_INVOKE("tool_chmod_process", { input });
 },
 /**
+ * Computes WCAG contrast ratio for a foreground/background colour pair.
+ */
+async toolColorContrastProcess(input: ColorContrastInput) : Promise<ColorContrastOutput> {
+    return await TAURI_INVOKE("tool_color_contrast_process", { input });
+},
+/**
  * Parse semver, compare versions, check version ranges, and bump major/minor/patch.
  */
 async toolSemverProcess(input: SemverInput) : Promise<SemverOutput> {
@@ -610,6 +616,52 @@ specialNote: string | null;
  * Subnet split preview.
  */
 subnetSplit: SubnetSplit | null; error: string | null }
+export type ColorContrastInput = { 
+/**
+ * Foreground colour — 3 or 6-digit hex, with or without `#`.
+ */
+foreground: string; 
+/**
+ * Background colour — 3 or 6-digit hex, with or without `#`.
+ */
+background: string }
+export type ColorContrastOutput = { 
+/**
+ * Contrast ratio, e.g. 4.54.
+ */
+ratio: number; 
+/**
+ * Human-readable ratio string, e.g. "4.54:1".
+ */
+ratioDisplay: string; 
+/**
+ * WCAG AA — normal text (≥4.5:1).
+ */
+aaNormal: boolean; 
+/**
+ * WCAG AA — large text / UI components (≥3.0:1).
+ */
+aaLarge: boolean; 
+/**
+ * WCAG AAA — normal text (≥7.0:1).
+ */
+aaaNormal: boolean; 
+/**
+ * WCAG AAA — large text (≥4.5:1).
+ */
+aaaLarge: boolean; 
+/**
+ * Normalised foreground hex (always `#RRGGBB` uppercase).
+ */
+foregroundHex: string; 
+/**
+ * Normalised background hex (always `#RRGGBB` uppercase).
+ */
+backgroundHex: string; 
+/**
+ * Set when either colour cannot be parsed.
+ */
+error: string | null }
 /**
  * Input for the colour converter.
  */

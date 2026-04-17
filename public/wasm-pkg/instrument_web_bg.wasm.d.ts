@@ -13,6 +13,7 @@ export const tool_case_process: (a: any) => [number, number, number];
 export const tool_cert_decode: (a: any) => [number, number, number];
 export const tool_chmod_process: (a: any) => [number, number, number];
 export const tool_cidr_calculate: (a: any) => [number, number, number];
+export const tool_color_contrast_process: (a: any) => [number, number, number];
 export const tool_color_convert: (a: any) => [number, number, number];
 export const tool_config_convert: (a: any) => [number, number, number];
 export const tool_cron_process: (a: any) => [number, number, number];

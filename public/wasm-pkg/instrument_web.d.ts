@@ -31,6 +31,8 @@ export function tool_chmod_process(js_input: any): any;
 
 export function tool_cidr_calculate(js_input: any): any;
 
+export function tool_color_contrast_process(js_input: any): any;
+
 export function tool_color_convert(js_input: any): any;
 
 export function tool_config_convert(js_input: any): any;
@@ -147,6 +149,7 @@ export interface InitOutput {
     readonly tool_cert_decode: (a: any) => [number, number, number];
     readonly tool_chmod_process: (a: any) => [number, number, number];
     readonly tool_cidr_calculate: (a: any) => [number, number, number];
+    readonly tool_color_contrast_process: (a: any) => [number, number, number];
     readonly tool_color_convert: (a: any) => [number, number, number];
     readonly tool_config_convert: (a: any) => [number, number, number];
     readonly tool_cron_process: (a: any) => [number, number, number];

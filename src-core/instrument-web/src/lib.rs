@@ -90,6 +90,9 @@ use instrument_core::numbers::bitwise::{
     process as bitwise_process_core, BitwiseInput,
 };
 use instrument_core::numbers::chmod::{process as chmod_process_core, ChmodInput};
+use instrument_core::numbers::color_contrast::{
+    process as color_contrast_process_core, ColorContrastInput,
+};
 use instrument_core::numbers::semver::{process as semver_process_core, SemverInput};
 use instrument_core::numbers::unit_converter::{
     process as unit_convert_core, UnitConverterInput,
@@ -219,6 +222,12 @@ tool_binding!(
 );
 tool_binding!("tool_bitwise_process", bitwise_process_wasm, BitwiseInput, bitwise_process_core);
 tool_binding!("tool_chmod_process", chmod_process_wasm, ChmodInput, chmod_process_core);
+tool_binding!(
+    "tool_color_contrast_process",
+    color_contrast_process_wasm,
+    ColorContrastInput,
+    color_contrast_process_core
+);
 tool_binding!("tool_semver_process", semver_process_wasm, SemverInput, semver_process_core);
 tool_binding!("tool_unit_convert", unit_convert_wasm, UnitConverterInput, unit_convert_core);
 tool_binding!("tool_word_counter_process", word_counter_process_wasm, WordCounterInput, word_counter_process_core);

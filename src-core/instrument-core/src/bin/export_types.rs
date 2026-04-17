@@ -134,6 +134,8 @@ fn main() {
     instrument_core::numbers::bitwise::BitwiseWidth::export_all_to(&out).unwrap();
     instrument_core::numbers::chmod::ChmodInput::export_all_to(&out).unwrap();
     instrument_core::numbers::chmod::ChmodOutput::export_all_to(&out).unwrap();
+    instrument_core::numbers::color_contrast::ColorContrastInput::export_all_to(&out).unwrap();
+    instrument_core::numbers::color_contrast::ColorContrastOutput::export_all_to(&out).unwrap();
     instrument_core::numbers::semver::SemverCompareResult::export_all_to(&out).unwrap();
     instrument_core::numbers::semver::SemverInput::export_all_to(&out).unwrap();
     instrument_core::numbers::semver::SemverOutput::export_all_to(&out).unwrap();

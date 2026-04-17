@@ -85,6 +85,7 @@ pub fn run() {
         instrument_desktop::commands::numbers::tool_base_converter_process,
         instrument_desktop::commands::numbers::tool_bitwise_process,
         instrument_desktop::commands::numbers::tool_chmod_process,
+        instrument_desktop::commands::numbers::tool_color_contrast_process,
         instrument_desktop::commands::numbers::tool_semver_process,
         instrument_desktop::commands::numbers::tool_unit_convert,
         instrument_desktop::commands::regex::tool_regex_test,

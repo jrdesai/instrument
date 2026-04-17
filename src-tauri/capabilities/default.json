@@ -40,6 +40,7 @@
     "allow-base-converter",
     "allow-bitwise",
     "allow-chmod",
+    "allow-color-contrast",
     "allow-semver",
     "allow-unit-converter",
     "allow-jwt-decode",

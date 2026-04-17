@@ -150,6 +150,18 @@ export function tool_cidr_calculate(js_input) {
  * @param {any} js_input
  * @returns {any}
  */
+export function tool_color_contrast_process(js_input) {
+    const ret = wasm.tool_color_contrast_process(js_input);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return takeFromExternrefTable0(ret[0]);
+}
+
+/**
+ * @param {any} js_input
+ * @returns {any}
+ */
 export function tool_color_convert(js_input) {
     const ret = wasm.tool_color_convert(js_input);
     if (ret[2]) {
