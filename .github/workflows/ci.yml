@@ -106,33 +106,8 @@ jobs:
         # requires system libraries (libglib2.0-dev) not present on the runner.
         run: cargo clippy --manifest-path src-core/Cargo.toml -p instrument-core -p regex-core --all-targets -- -D warnings
 
-  web:
-    name: Web — Vite build
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: "10"
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "22"
-          cache: "pnpm"
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Build web
-        run: pnpm exec vite build --mode web
-
-  wasm-sync:
-    name: WASM — sync check
+  build-and-deploy-web:
+    name: Web — build WASM + Vite
     runs-on: ubuntu-latest
 
     steps:
@@ -173,21 +148,15 @@ jobs:
       - name: Install wasm-pack
         run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
 
-      - name: Rebuild WASM
+      - name: Build WASM
         run: pnpm run build:wasm
 
-      - name: Check WASM interface is up to date
-        run: |
-          # Check only the JS/TS interface files — the .wasm binary is non-deterministic
-          # between builds (internal metadata differs) so we skip it.
-          # What matters for correctness is that the exported JS interface matches the Rust source.
-          if ! git diff --exit-code public/wasm-pkg/instrument_web.js \
-                                    public/wasm-pkg/instrument_web.d.ts \
-                                    public/wasm-pkg/instrument_web_bg.wasm.d.ts \
-                                    public/wasm-pkg/package.json; then
-            echo ""
-            echo "❌ public/wasm-pkg/ interface is out of sync with the Rust source."
-            echo "   Run 'pnpm run build:wasm' locally and commit the updated public/wasm-pkg/."
-            exit 1
-          fi
-          echo "✅ public/wasm-pkg/ interface is up to date."
+      - name: Build web
+        run: pnpm exec vite build --mode web
+
+      - name: Deploy to Cloudflare Pages
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: npx wrangler pages deploy dist --project-name instrument-wqt
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

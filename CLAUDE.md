@@ -33,7 +33,7 @@ instrument/
 │   ├── instrument-web/         # wasm-bindgen wrappers → delegates to instrument-core
 │   └── regex-core/             # Regex engine (multi-engine match + explain), shared by desktop + web
 ├── src-tauri/                  # Tauri app shell (config, icons, binary)
-├── public/wasm-pkg/            # ⚠️ COMMITTED — WASM binary served by Cloudflare
+├── public/wasm-pkg/            # ⚠️ GITIGNORED — built by CI; run build:wasm locally for dev:web
 ├── docs/
 │   ├── ARCHITECTURE.md         # Full architecture reference
 │   ├── design/DESIGN_REFERENCE.md
@@ -49,7 +49,7 @@ instrument/
 pnpm tauri dev          # Run desktop app (hot reload)
 pnpm run dev:web        # Run web version in browser (localhost:1420 via Vite only — NOT tauri dev)
 pnpm dev                # Alias for tauri dev — do NOT use this to test web/WASM behaviour
-pnpm run build:wasm     # Compile Rust → WASM → public/wasm-pkg/ (must commit after)
+pnpm run build:wasm     # Compile Rust → WASM → public/wasm-pkg/ (local dev only — CI builds automatically)
 pnpm run build:web      # build:wasm + vite build --mode web
 pnpm run typecheck      # tsc --noEmit
 pnpm run lint           # eslint src/
@@ -63,17 +63,14 @@ cargo test --manifest-path src-core/Cargo.toml -p instrument-core  # Core tests 
 
 ## ⚠️ Critical rules (non-obvious)
 
-### 1. WASM sync — most common mistake
-After **any** change to `src-core/` Rust files, you MUST:
+### 1. WASM — built by CI, not committed
+`public/wasm-pkg/` is **gitignored**. The `build-and-deploy-web` CI job builds WASM from source and deploys to Cloudflare Pages automatically on every push to `main`. You never need to commit WASM artifacts.
+
+**Local dev only** — if you change `src-core/` Rust files and want to test web behaviour locally:
 ```bash
-pnpm run build:wasm
-git add public/wasm-pkg/
-git commit -m "chore: rebuild wasm-pkg ..."
+pnpm run build:wasm   # regenerates public/wasm-pkg/ locally — do NOT commit it
 ```
-- `public/wasm-pkg/` is **committed to git** so Cloudflare Pages can deploy without a Rust toolchain
-- `src/wasm-pkg/` is gitignored — ignore it
-- The CI `wasm-sync` job will fail if `public/wasm-pkg/` doesn't match the Rust source
-- After a version bump in `package.json` / `Cargo.toml`, also rebuild — the version is embedded in the WASM package.json
+- `public/wasm-pkg/` and `src/wasm-pkg/` are both gitignored — never commit either
 - **Symptom of missing WASM in dev**: browser console shows `"text/html" is not a valid JavaScript MIME type`. This means `public/wasm-pkg/instrument_web.js` is missing — run `pnpm run build:wasm` to fix. Vite returns `index.html` for any unmatched path, masking the real 404.
 - **Vite 7 — never `import()` a `/public` path from source**: Vite 7 forbids loading anything under `public/` through the normal `import()` pipeline from app source (throws "This file is in /public … should not be imported from source code"). The WASM loader in `src/bridge/web.ts` works around this by building an absolute URL with `new URL(path, self.location.origin + '/')` and passing that string to `import()`. The browser fetch bypasses Vite's transform pipeline entirely. Do not revert this to a root-relative path like `/wasm-pkg/instrument_web.js`.
 

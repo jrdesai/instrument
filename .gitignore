@@ -16,7 +16,8 @@ src-core/target/
 src-tauri/target/
 
 # ── WASM build output ────────────────────────────────
-# public/wasm-pkg/ is committed so Cloudflare Pages can build without Rust/wasm-pack
+# Built by CI (build-and-deploy-web job) — not committed. Run pnpm run build:wasm locally for dev:web.
+public/wasm-pkg/
 
 # ── Logs ─────────────────────────────────────────────
 logs/
