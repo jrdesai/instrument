@@ -1,6 +1,6 @@
 # Instrument
 
-**A privacy-first developer toolkit — 61 tools, all processing happens locally on your device. No data ever leaves.**
+**A privacy-first developer toolkit — 65 tools, all processing happens locally on your device. No data ever leaves.**
 
 > Screenshot coming soon
 
@@ -9,7 +9,7 @@
 ## Ways to use Instrument
 
 ### Desktop app
-The full experience. Open the app, browse 61 tools across the Library, pin favourites to your dashboard, and keep a history of recent inputs.
+The full experience. Open the app, browse 65 tools across the Library, pin favourites to your dashboard, and keep a history of recent inputs.
 
 Supported platforms: macOS · Windows · Linux
 
@@ -51,20 +51,20 @@ instrument semver bump minor 1.4.2
 
 ---
 
-## Tools (61 total)
+## Tools (65 total)
 
 | Category | Tools |
 |----------|-------|
 | **Encoding** | Base64, URL Encoder, HTML Entity, Hex Converter, Color Converter, QR Code Generator |
-| **Crypto** | Hash, UUID / ULID / Nano ID Generator, Password Generator, Passphrase Generator, API Key Generator, AES Encrypt/Decrypt, TOTP Generator, Certificate Decoder |
+| **Crypto** | Hash, UUID / ULID / Nano ID Generator, Password Generator, Passphrase Generator, API Key Generator, AES Encrypt/Decrypt, TOTP Generator, Certificate Decoder, RSA Key Pair Generator |
 | **Auth** | JWT Decoder, Basic Auth Header |
 | **JSON** | Formatter, Validator, Schema Validator, Diff, Path, Converter, Config Converter |
-| **Data** | CSV ↔ JSON, XML Formatter, YAML Formatter |
+| **Data** | CSV ↔ JSON, CSV Previewer, XML Formatter, YAML Formatter |
 | **Media** | Image Converter *(desktop only)* |
 | **Network** | URL Parser, CIDR Calculator, HTTP Status Codes, cURL Builder, User-Agent Parser |
-| **Text** | Case Converter, Word Counter, Find & Replace, Text Diff, Line Tools, String Escaper, Lorem Ipsum, Markdown Editor, Config Parser, Unicode Inspector, Slug Generator, Fake Data Generator |
+| **Text** | Case Converter, Word Counter, Find & Replace, Text Diff, Line Tools, String Escaper, Lorem Ipsum, Markdown Editor, Config Parser, Unicode Inspector, Slug Generator, Fake Data Generator, NATO Phonetic Alphabet |
 | **Code** | Regex Tester, Regex Explain, HTML Formatter, SQL Formatter, Code Formatter, Keycode Info |
-| **Numbers** | Number Base Converter, Semver, Unit Converter, Bitwise Calculator, chmod Calculator, Expression Evaluator |
+| **Numbers** | Number Base Converter, Semver, Unit Converter, Bitwise Calculator, chmod Calculator, Expression Evaluator, Colour Contrast Checker |
 | **Date & Time** | Timestamp Converter, Timezone Converter, ISO 8601 Formatter, Cron Expression Parser |
 
 ---
@@ -74,7 +74,7 @@ instrument semver bump minor 1.4.2
 | Layer | Technology |
 |-------|-----------|
 | Desktop shell | Tauri 2 |
-| Frontend | React 18 · TypeScript · Vite · Tailwind v4 · Zustand |
+| Frontend | React 19 · TypeScript · Vite · Tailwind v4 · Zustand |
 | Core logic | Rust (`instrument-core`) — shared between desktop and WASM |
 | Desktop commands | `instrument-desktop` — Tauri command wrappers |
 | Web / WASM | `instrument-web` — wasm-bindgen exports, compiled with wasm-pack |
@@ -90,7 +90,7 @@ instrument semver bump minor 1.4.2
 
 - Node.js 22+
 - Rust 1.80+
-- pnpm 9+
+- pnpm 10+
 
 ### Run the desktop app
 
@@ -120,11 +120,11 @@ Output: `src-tauri/target/release/`
 
 **Web (WASM + Vite):**
 ```bash
-pnpm run build:wasm   # Rust → public/wasm-pkg/
+pnpm run build:wasm   # Rust → public/wasm-pkg/ (local dev only)
 pnpm run build:web    # wasm + vite build → dist/
 ```
 
-> `public/wasm-pkg/` is committed to git so Cloudflare Pages can deploy without a Rust toolchain. Rebuild and commit it after every Rust change.
+> `public/wasm-pkg/` is gitignored and never committed. CI builds WASM from source and deploys to Cloudflare Pages automatically on every push to `main`.
 
 ---
 
@@ -151,7 +151,7 @@ instrument/
 │   ├── instrument-web/   # wasm-bindgen exports
 │   └── instrument-cli/   # CLI binary
 ├── src-tauri/            # Tauri app shell, capabilities, permissions
-├── public/wasm-pkg/      # Compiled WASM — committed to git
+├── public/wasm-pkg/      # Compiled WASM — gitignored, built by CI
 └── docs/                 # Architecture, design tokens, per-tool docs
 ```
 
