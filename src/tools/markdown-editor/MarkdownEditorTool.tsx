@@ -375,7 +375,7 @@ function MarkdownEditorTool() {
             item === "divider" ? (
               <div
                 key={`d-${i}`}
-                className="mx-1.5 h-4 w-px bg-border-light dark:bg-border-dark"
+                className="mx-1.5 h-5 w-px bg-border-light dark:bg-border-dark"
               />
             ) : (
               <button
@@ -383,7 +383,7 @@ function MarkdownEditorTool() {
                 type="button"
                 title={item.title}
                 onClick={item.action}
-                className="rounded px-2 py-1 font-mono text-xs text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-100"
+                className="inline-flex h-7 items-center justify-center rounded px-2 font-mono text-xs text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-100"
               >
                 {item.label}
               </button>
