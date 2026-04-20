@@ -1,4 +1,5 @@
 import { useCallback, useState } from "react";
+import { Loader2 } from "lucide-react";
 import { CopyButton, PillButton } from "../../components/tool";
 import { callTool } from "../../bridge";
 import { extractErrorMessage } from "../../lib/extractErrorMessage";
@@ -24,6 +25,9 @@ function RsaKeygenTool() {
     setPublicKey("");
     setPrivateKey("");
     setAlgorithm("");
+    // Yield to the browser so React can flush the loading state to the DOM
+    // before the WASM call blocks the main thread.
+    await new Promise<void>((resolve) => setTimeout(resolve, 0));
     try {
       const payload: RsaKeygenInput = { keySize, format };
       const result = (await callTool(RUST_COMMAND, payload, {
@@ -43,16 +47,25 @@ function RsaKeygenTool() {
     }
   }, [keySize, format]);
 
+  const handleClear = useCallback(() => {
+    setPublicKey("");
+    setPrivateKey("");
+    setAlgorithm("");
+    setError(null);
+  }, []);
+
   const hasKeys = publicKey.length > 0 && privateKey.length > 0;
 
   return (
     <div className="flex flex-col h-full bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
-      {/* Options + Generate */}
-      <div className="flex flex-wrap items-center gap-4 px-4 py-3 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0">
+      {/* Options + actions */}
+      <div className="flex flex-wrap items-end gap-x-6 gap-y-3 px-4 py-3 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0">
         {/* Key size */}
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Size</span>
-          <div className="flex items-center gap-1" role="group" aria-label="Key size">
+        <div>
+          <div className="text-[10px] uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-1.5">
+            Size
+          </div>
+          <div className="flex gap-1" role="group" aria-label="Key size">
             {(["rsa2048", "rsa3072", "rsa4096"] as RsaKeySize[]).map((size) => (
               <PillButton
                 key={size}
@@ -66,10 +79,15 @@ function RsaKeygenTool() {
           </div>
         </div>
 
+        {/* Divider */}
+        <div className="hidden md:block w-px self-stretch bg-border-light dark:bg-border-dark" />
+
         {/* Format */}
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Format</span>
-          <div className="flex items-center gap-1" role="group" aria-label="Key format">
+        <div>
+          <div className="text-[10px] uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-1.5">
+            Format
+          </div>
+          <div className="flex gap-1" role="group" aria-label="Key format">
             <PillButton
               active={format === "pkcs8"}
               onClick={() => setFormat("pkcs8")}
@@ -87,16 +105,27 @@ function RsaKeygenTool() {
           </div>
         </div>
 
-        {/* Generate button */}
-        <button
-          type="button"
-          onClick={handleGenerate}
-          disabled={isLoading}
-          aria-label="Generate RSA key pair"
-          className="ml-auto rounded-lg bg-primary px-4 py-1.5 text-sm font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {isLoading ? "Generating…" : "Generate"}
-        </button>
+        {/* Actions */}
+        <div className="ml-auto flex items-end gap-2">
+          <button
+            type="button"
+            onClick={handleClear}
+            disabled={!hasKeys && !error}
+            aria-label="Clear generated keys"
+            className="rounded-lg px-3 py-1.5 text-sm text-slate-600 dark:text-slate-400 transition-colors hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            Clear
+          </button>
+          <button
+            type="button"
+            onClick={handleGenerate}
+            disabled={isLoading}
+            aria-label="Generate RSA key pair"
+            className="rounded-lg bg-primary px-4 py-1.5 text-sm font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isLoading ? "Generating…" : "Generate"}
+          </button>
+        </div>
       </div>
 
       {/* Output area */}
@@ -119,13 +148,14 @@ function RsaKeygenTool() {
 
       {isLoading && (
         <div className="flex flex-1 items-center justify-center">
-          <div className="text-center text-sm text-slate-400">
-            <p className="animate-pulse">
+          <div className="flex flex-col items-center gap-3 text-center">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <p className="text-sm font-medium text-slate-600 dark:text-slate-300">
               Generating {keySize.replace("rsa", "")}-bit RSA key pair…
             </p>
-            {keySize === "rsa4096" && (
-              <p className="mt-1 text-xs">4096-bit keys may take a few seconds.</p>
-            )}
+            <p className="text-xs text-slate-400 dark:text-slate-500">
+              This may take a few seconds
+            </p>
           </div>
         </div>
       )}
