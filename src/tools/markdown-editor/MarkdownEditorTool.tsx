@@ -417,7 +417,7 @@ function MarkdownEditorTool() {
                 {fileDropError}
               </p>
             ) : null}
-            <div className="flex items-center justify-between border-b border-border-light px-4 py-2 dark:border-border-dark">
+            <div className="flex min-h-[41px] items-center justify-between border-b border-border-light px-4 py-2 dark:border-border-dark">
               <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                 {fileName ?? "Markdown"}
               </span>
@@ -455,7 +455,7 @@ function MarkdownEditorTool() {
               showEditor ? "md:w-1/2" : "flex-1"
             )}
           >
-            <div className="flex items-center justify-between border-b border-border-light px-4 py-2 dark:border-border-dark">
+            <div className="flex min-h-[41px] items-center justify-between border-b border-border-light px-4 py-2 dark:border-border-dark">
               <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                 Preview
               </span>
@@ -463,7 +463,7 @@ function MarkdownEditorTool() {
                 value={html || undefined}
                 label="Copy HTML"
                 variant="outline"
-                className="py-1 text-xs"
+                className="py-0.5 text-xs"
               />
             </div>
             <div
