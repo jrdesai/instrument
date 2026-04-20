@@ -138,7 +138,7 @@ function CertDecoderTool() {
               key={cert.serialNumber}
               className="mb-3 overflow-hidden rounded-lg border border-border-light bg-panel-light dark:border-border-dark dark:bg-panel-dark"
             >
-              <div className="flex items-center justify-between border-b border-border-light px-4 py-2 dark:border-border-dark">
+              <div className="flex min-h-[41px] items-center justify-between border-b border-border-light px-4 py-2 dark:border-border-dark">
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-semibold text-slate-300">
                     {cert.isCa ? "CA Certificate" : `Certificate ${i + 1}`}

@@ -147,7 +147,7 @@ function QrCodeTool() {
         {/* Left — input + options */}
         <div className="flex w-80 shrink-0 flex-col border-r border-border-light dark:border-border-dark">
           {/* Input header */}
-          <div className="flex shrink-0 items-center justify-between border-b border-border-light px-4 py-2 dark:border-border-dark">
+          <div className="flex shrink-0 min-h-[41px] items-center justify-between border-b border-border-light px-4 py-2 dark:border-border-dark">
             <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
               Input
             </span>

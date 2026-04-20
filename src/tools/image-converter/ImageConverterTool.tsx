@@ -296,7 +296,7 @@ function ImageConverterTool() {
             </button>
           ) : (
             <>
-              <div className="flex items-center justify-between border-b border-border-light px-4 py-2 text-xs dark:border-border-dark">
+              <div className="flex min-h-[41px] items-center justify-between border-b border-border-light px-4 py-2 text-xs dark:border-border-dark">
                 <button
                   type="button"
                   onClick={() => inputRef.current?.click()}
