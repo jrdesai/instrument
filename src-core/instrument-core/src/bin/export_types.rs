@@ -40,6 +40,10 @@ fn main() {
     instrument_core::crypto::totp::TotpAlgorithm::export_all_to(&out).unwrap();
     instrument_core::crypto::totp::TotpInput::export_all_to(&out).unwrap();
     instrument_core::crypto::totp::TotpOutput::export_all_to(&out).unwrap();
+    instrument_core::crypto::rsa_keygen::RsaKeyFormat::export_all_to(&out).unwrap();
+    instrument_core::crypto::rsa_keygen::RsaKeygenInput::export_all_to(&out).unwrap();
+    instrument_core::crypto::rsa_keygen::RsaKeygenOutput::export_all_to(&out).unwrap();
+    instrument_core::crypto::rsa_keygen::RsaKeySize::export_all_to(&out).unwrap();
     instrument_core::crypto::ulid::UlidInput::export_all_to(&out).unwrap();
     instrument_core::crypto::ulid::UlidInspectInput::export_all_to(&out).unwrap();
     instrument_core::crypto::ulid::UlidInspectOutput::export_all_to(&out).unwrap();

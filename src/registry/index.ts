@@ -566,6 +566,42 @@ export const tools: Tool[] = [
     implemented: true,
   },
   {
+    id: "rsa-keygen",
+    name: "RSA Key Pair Generator",
+    description:
+      "Generate RSA public/private key pairs locally in PKCS#8 or PKCS#1 PEM format. Nothing leaves your device.",
+    category: "crypto",
+    displayCategory: "Security",
+    displayCategoryIcon: "security",
+    roles: ["backend", "security", "devops"],
+    icon: "key",
+    platforms: ["desktop", "web"],
+    rustCommand: "tool_rsa_keygen_process",
+    sensitive: true,
+    keywords: [
+      "rsa",
+      "key",
+      "keypair",
+      "public key",
+      "private key",
+      "pem",
+      "pkcs8",
+      "pkcs1",
+      "asymmetric",
+      "encryption",
+      "signing",
+      "certificate",
+      "ssh",
+      "openssl",
+      "generate",
+    ],
+    component: React.lazy(() =>
+      import("../tools/rsa-keygen").then((m) => ({ default: m.default }))
+    ),
+    trayPopover: false,
+    implemented: true,
+  },
+  {
     id: "passphrase-generator",
     name: "Passphrase Generator",
     description:

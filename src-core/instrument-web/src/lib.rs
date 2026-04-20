@@ -25,6 +25,9 @@ use instrument_core::crypto::password::{
     process as password_process_core, PasswordInput,
 };
 use instrument_core::crypto::totp::{process as totp_process_core, TotpInput};
+use instrument_core::crypto::rsa_keygen::{
+    process as rsa_keygen_process_core, RsaKeygenInput,
+};
 use instrument_core::crypto::ulid::{
     inspect as ulid_inspect_core, process as ulid_process_core, UlidInput, UlidInspectInput,
 };
@@ -195,6 +198,12 @@ tool_binding!("tool_passphrase_process", passphrase_process_wasm, PassphraseInpu
 tool_binding!("tool_nanoid_process", nanoid_process_wasm, NanoIdInput, nanoid_process_core);
 tool_binding!("tool_aes_process", aes_process_wasm, AesInput, aes_process_core);
 tool_binding!("tool_totp_generate", tool_totp_generate_wasm, TotpInput, totp_process_core);
+tool_binding!(
+    "tool_rsa_keygen_process",
+    tool_rsa_keygen_process_wasm,
+    RsaKeygenInput,
+    rsa_keygen_process_core
+);
 tool_binding!("tool_jwt_decode", tool_jwt_decode_wasm, JwtDecodeInput, jwt_decode_process_core);
 tool_binding!("tool_jwt_build", tool_jwt_build_wasm, JwtBuildInput, jwt_build_process_core);
 tool_binding!("tool_basic_auth", tool_basic_auth_wasm, BasicAuthInput, basic_auth_core);

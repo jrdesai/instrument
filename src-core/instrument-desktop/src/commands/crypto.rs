@@ -22,6 +22,9 @@ use instrument_core::crypto::passphrase::{
 };
 use instrument_core::crypto::password::{process as password_process_core, PasswordInput, PasswordOutput};
 use instrument_core::crypto::totp::{process as totp_process_core, TotpInput, TotpOutput};
+use instrument_core::crypto::rsa_keygen::{
+    process as rsa_keygen_process_core, RsaKeygenInput, RsaKeygenOutput,
+};
 
 use crate::command_log::finish_ok;
 
@@ -142,5 +145,15 @@ pub fn tool_totp_generate(input: TotpInput) -> TotpOutput {
     let start = Instant::now();
     let output = totp_process_core(input);
     finish_ok("tool_totp_generate", start);
+    output
+}
+
+/// Generates an RSA public/private key pair in PEM format.
+#[tauri::command]
+#[specta::specta]
+pub fn tool_rsa_keygen_process(input: RsaKeygenInput) -> RsaKeygenOutput {
+    let start = Instant::now();
+    let output = rsa_keygen_process_core(input);
+    finish_ok("tool_rsa_keygen_process", start);
     output
 }

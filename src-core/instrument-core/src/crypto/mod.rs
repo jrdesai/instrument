@@ -9,4 +9,5 @@ pub mod api_key;
 pub mod nanoid;
 pub mod password;
 pub mod passphrase;
+pub mod rsa_keygen;
 pub mod totp;

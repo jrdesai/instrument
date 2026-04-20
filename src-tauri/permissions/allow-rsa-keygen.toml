@@ -1,0 +1,5 @@
+# Allow the RSA Key Pair Generator tool command to be invoked from the frontend.
+[[permission]]
+identifier = "allow-rsa-keygen"
+description = "Allows invoking the tool_rsa_keygen_process command."
+commands.allow = ["tool_rsa_keygen_process"]

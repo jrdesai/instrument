@@ -61,6 +61,7 @@ ipnetwork = "0.20"
 qrcode = "0.14"
 semver = "1"
 totp-rs = { version = "5", features = ["gen_secret", "otpauth"] }
+rsa = { version = "0.9", default-features = true }
 ts-rs = { version = "10", features = ["serde-compat"] }
 specta = { version = "=2.0.0-rc.22", features = ["derive", "function", "serde_json"] }
 unicode_names2 = "1"

@@ -85,6 +85,12 @@ async toolTotpGenerate(input: TotpInput) : Promise<TotpOutput> {
     return await TAURI_INVOKE("tool_totp_generate", { input });
 },
 /**
+ * Generates an RSA public/private key pair in PEM format.
+ */
+async toolRsaKeygenProcess(input: RsaKeygenInput) : Promise<RsaKeygenOutput> {
+    return await TAURI_INVOKE("tool_rsa_keygen_process", { input });
+},
+/**
  * Runs Password generation via instrument-core.
  */
 async toolPasswordProcess(input: PasswordInput) : Promise<PasswordOutput> {
@@ -1522,6 +1528,18 @@ export type QrEcLevel = "low" | "medium" | "quartile" | "high"
 export type QueryParam = { key: string; value: string }
 export type RegexRequest = { pattern: string; text: string; engine: string; flags: string | null }
 export type ResizeOptions = { width: number | null; height: number | null; maintainAspect: boolean }
+export type RsaKeyFormat = 
+/**
+ * PKCS#8 — -----BEGIN PRIVATE KEY----- / -----BEGIN PUBLIC KEY-----
+ */
+"pkcs8" | 
+/**
+ * PKCS#1 — -----BEGIN RSA PRIVATE KEY----- / -----BEGIN RSA PUBLIC KEY-----
+ */
+"pkcs1"
+export type RsaKeySize = "rsa2048" | "rsa3072" | "rsa4096"
+export type RsaKeygenInput = { keySize: RsaKeySize; format: RsaKeyFormat }
+export type RsaKeygenOutput = { publicKey: string; privateKey: string; algorithm: string; error: string | null }
 /**
  * Which JSON Schema draft to use for validation.
  */
