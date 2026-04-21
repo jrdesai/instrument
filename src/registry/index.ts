@@ -2197,6 +2197,39 @@ export const tools: Tool[] = [
     implemented: true,
   },
   {
+    id: "percentage-calculator",
+    name: "Percentage Calculator",
+    description:
+      "Enter two numbers and instantly see all percentage relationships: of, add, subtract, change, and ratio.",
+    category: "numbers",
+    displayCategory: "Numbers",
+    displayCategoryIcon: "calculate",
+    roles: ["general"],
+    icon: "percent",
+    platforms: ["desktop", "web"],
+    keywords: [
+      "percentage",
+      "percent",
+      "%",
+      "calculator",
+      "ratio",
+      "proportion",
+      "increase",
+      "decrease",
+      "change",
+      "discount",
+      "tip",
+      "tax",
+      "markup",
+      "fraction",
+      "math",
+    ],
+    component: React.lazy(() =>
+      import("../tools/percentage-calculator").then((m) => ({ default: m.default }))
+    ),
+    implemented: true,
+  },
+  {
     id: "color-contrast",
     name: "Colour Contrast Checker",
     description:
