@@ -1362,6 +1362,46 @@ export const tools: Tool[] = [
     implemented: true,
   },
   {
+    id: "mac-address",
+    name: "MAC Address Tool",
+    description:
+      "Normalize MAC address formats, inspect type and scope, look up the vendor OUI, and generate random locally-administered MACs.",
+    category: "network",
+    displayCategory: "Network",
+    displayCategoryIcon: "router",
+    roles: ["backend", "general"],
+    icon: "device_hub",
+    platforms: ["desktop", "web"],
+    keywords: [
+      "mac address",
+      "mac",
+      "ethernet",
+      "hardware address",
+      "nic",
+      "oui",
+      "vendor",
+      "manufacturer",
+      "network interface",
+      "colon",
+      "hyphen",
+      "cisco",
+      "eui-48",
+      "locally administered",
+      "random mac",
+      "unicast",
+      "multicast",
+      "global",
+      "local",
+      "spoofing",
+    ],
+    component: React.lazy(() =>
+      import("../tools/mac-address/MacAddressTool").then((m) => ({
+        default: m.default,
+      }))
+    ),
+    implemented: true,
+  },
+  {
     id: "env-parser",
     name: "Config Parser",
     description:
