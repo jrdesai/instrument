@@ -602,6 +602,43 @@ export const tools: Tool[] = [
     implemented: true,
   },
   {
+    id: "bcrypt",
+    name: "Bcrypt Tool",
+    description:
+      "Hash passwords with bcrypt and verify hashes locally. Configurable cost factor. Nothing leaves your device.",
+    category: "crypto",
+    displayCategory: "Security",
+    displayCategoryIcon: "security",
+    roles: ["backend", "security"],
+    icon: "lock",
+    platforms: ["desktop", "web"],
+    rustCommand: "tool_bcrypt_process",
+    sensitive: true,
+    keywords: [
+      "bcrypt",
+      "hash",
+      "password",
+      "hashing",
+      "verify",
+      "cost",
+      "salt",
+      "kdf",
+      "key derivation",
+      "authentication",
+      "security",
+      "credential",
+      "storage",
+      "node",
+      "php",
+      "django",
+    ],
+    component: React.lazy(() =>
+      import("../tools/bcrypt").then((m) => ({ default: m.default }))
+    ),
+    trayPopover: false,
+    implemented: true,
+  },
+  {
     id: "passphrase-generator",
     name: "Passphrase Generator",
     description:

@@ -17,6 +17,19 @@
     ]
   },
   "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '.tool_input.file_path // \"\"' | grep -q 'registry/index.ts' && python3 /Users/jigardesai/Code/Projects/instrument/.claude/sync-tool-count.py 2>/dev/null || true",
+            "timeout": 15,
+            "statusMessage": "Syncing tool count in docs..."
+          }
+        ]
+      }
+    ],
     "PreToolUse": [
       {
         "matcher": "Bash",

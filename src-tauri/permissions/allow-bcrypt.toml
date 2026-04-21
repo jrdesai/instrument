@@ -1,0 +1,5 @@
+# Allow the Bcrypt Tool command to be invoked from the frontend.
+[[permission]]
+identifier = "allow-bcrypt"
+description = "Allows invoking the tool_bcrypt_process command."
+commands.allow = ["tool_bcrypt_process"]

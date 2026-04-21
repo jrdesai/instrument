@@ -24,6 +24,7 @@
     "allow-aes",
     "allow-totp",
     "allow-rsa-keygen",
+    "allow-bcrypt",
     "allow-text-case",
     "allow-word-counter",
     "allow-fake-data",

@@ -18,6 +18,8 @@ fn main() {
     instrument_core::auth::jwt_decoder::SecretEncoding::export_all_to(&out).unwrap();
     instrument_core::crypto::aes::AesInput::export_all_to(&out).unwrap();
     instrument_core::crypto::aes::AesOutput::export_all_to(&out).unwrap();
+    instrument_core::crypto::bcrypt_tool::BcryptInput::export_all_to(&out).unwrap();
+    instrument_core::crypto::bcrypt_tool::BcryptOutput::export_all_to(&out).unwrap();
     instrument_core::crypto::api_key::ApiKeyCharset::export_all_to(&out).unwrap();
     instrument_core::crypto::api_key::ApiKeyFormat::export_all_to(&out).unwrap();
     instrument_core::crypto::api_key::ApiKeyInput::export_all_to(&out).unwrap();

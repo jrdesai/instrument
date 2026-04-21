@@ -91,6 +91,12 @@ async toolRsaKeygenProcess(input: RsaKeygenInput) : Promise<RsaKeygenOutput> {
     return await TAURI_INVOKE("tool_rsa_keygen_process", { input });
 },
 /**
+ * Hashes or verifies a password using bcrypt.
+ */
+async toolBcryptProcess(input: BcryptInput) : Promise<BcryptOutput> {
+    return await TAURI_INVOKE("tool_bcrypt_process", { input });
+},
+/**
  * Runs Password generation via instrument-core.
  */
 async toolPasswordProcess(input: PasswordInput) : Promise<PasswordOutput> {
@@ -533,6 +539,28 @@ export type BasicAuthMode = "encode" | "decode"
  * Output: always all fields present; unused strings are empty on error or opposite mode.
  */
 export type BasicAuthOutput = { encoded: string; decodedUsername: string; decodedPassword: string; rawBase64: string; error: string | null }
+export type BcryptInput = { 
+/**
+ * `"hash"` or `"verify"`.
+ */
+mode: string; password: string; 
+/**
+ * Cost factor (4–31). Used only in hash mode. UI default is 12.
+ */
+cost: number; 
+/**
+ * Existing bcrypt hash to verify against. Used only in verify mode.
+ */
+hash: string }
+export type BcryptOutput = { 
+/**
+ * The generated bcrypt hash. Populated in hash mode; empty string in verify mode.
+ */
+hash: string; 
+/**
+ * Whether the password matched the hash. `Some(true/false)` in verify mode; `None` in hash mode.
+ */
+matches: boolean | null; error: string | null }
 /**
  * Bit width for binary output (padding and grouping).
  */

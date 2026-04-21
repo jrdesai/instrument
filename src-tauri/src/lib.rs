@@ -49,6 +49,7 @@ pub fn run() {
         instrument_desktop::commands::crypto::tool_aes_process,
         instrument_desktop::commands::crypto::tool_totp_generate,
         instrument_desktop::commands::crypto::tool_rsa_keygen_process,
+        instrument_desktop::commands::crypto::tool_bcrypt_process,
         instrument_desktop::commands::crypto::tool_password_process,
         instrument_desktop::commands::crypto::tool_passphrase_process,
         instrument_desktop::commands::text::tool_case_process,

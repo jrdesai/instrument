@@ -12,6 +12,9 @@ use instrument_core::crypto::ulid::{
     UlidInspectInput, UlidInspectOutput, UlidInput, UlidOutput,
 };
 use instrument_core::crypto::aes::{process as aes_process_core, AesInput, AesOutput};
+use instrument_core::crypto::bcrypt_tool::{
+    process as bcrypt_process_core, BcryptInput, BcryptOutput,
+};
 use instrument_core::crypto::api_key::{process as api_key_process_core, ApiKeyInput, ApiKeyOutput};
 use instrument_core::crypto::cert::{process as cert_decode_core, CertDecodeInput, CertDecodeOutput};
 use instrument_core::crypto::nanoid::{
@@ -155,5 +158,15 @@ pub fn tool_rsa_keygen_process(input: RsaKeygenInput) -> RsaKeygenOutput {
     let start = Instant::now();
     let output = rsa_keygen_process_core(input);
     finish_ok("tool_rsa_keygen_process", start);
+    output
+}
+
+/// Hashes or verifies a password using bcrypt.
+#[tauri::command]
+#[specta::specta]
+pub fn tool_bcrypt_process(input: BcryptInput) -> BcryptOutput {
+    let start = Instant::now();
+    let output = bcrypt_process_core(input);
+    finish_ok("tool_bcrypt_process", start);
     output
 }

@@ -10,6 +10,7 @@ use instrument_core::auth::jwt_decoder::{
     process as jwt_decode_process_core, JwtDecodeInput,
 };
 use instrument_core::crypto::aes::{process as aes_process_core, AesInput};
+use instrument_core::crypto::bcrypt_tool::{process as bcrypt_process_core, BcryptInput};
 use instrument_core::crypto::api_key::{
     process as api_key_process_core, ApiKeyInput,
 };
@@ -204,6 +205,7 @@ tool_binding!(
     RsaKeygenInput,
     rsa_keygen_process_core
 );
+tool_binding!("tool_bcrypt_process", bcrypt_process_wasm, BcryptInput, bcrypt_process_core);
 tool_binding!("tool_jwt_decode", tool_jwt_decode_wasm, JwtDecodeInput, jwt_decode_process_core);
 tool_binding!("tool_jwt_build", tool_jwt_build_wasm, JwtBuildInput, jwt_build_process_core);
 tool_binding!("tool_basic_auth", tool_basic_auth_wasm, BasicAuthInput, basic_auth_core);

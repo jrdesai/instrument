@@ -29,6 +29,7 @@ sha2 = { workspace = true }
 sha3 = { workspace = true }
 digest = { workspace = true }
 aes-gcm = "0.10"
+bcrypt = "0.15"
 pbkdf2 = { version = "0.12", features = ["simple"] }
 hex = "0.4"
 hmac = { workspace = true }
