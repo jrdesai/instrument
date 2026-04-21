@@ -12,7 +12,8 @@ export type ToolCategory =
   | "code"
   | "network"
   | "data"
-  | "media";
+  | "media"
+  | "design";
 
 /** Role tag for tool discovery (e.g. frontend, backend). */
 export type Role =
@@ -2209,6 +2210,38 @@ export const tools: Tool[] = [
     ],
     component: React.lazy(() =>
       import("../tools/sql-formatter/SqlFormatterTool").then((m) => ({
+        default: m.default,
+      }))
+    ),
+    implemented: true,
+  },
+  {
+    id: "css-gradient",
+    name: "CSS Gradient Generator",
+    description:
+      "Build linear, radial, and conic CSS gradients with a live preview.",
+    category: "design",
+    displayCategory: "Design",
+    displayCategoryIcon: "gradient",
+    roles: ["frontend", "general"],
+    icon: "gradient",
+    platforms: ["desktop", "web"],
+    keywords: [
+      "css",
+      "gradient",
+      "linear",
+      "radial",
+      "conic",
+      "background",
+      "color",
+      "colour",
+      "design",
+      "ui",
+      "style",
+      "frontend",
+    ],
+    component: React.lazy(() =>
+      import("../tools/css-gradient/CssGradientTool").then((m) => ({
         default: m.default,
       }))
     ),
