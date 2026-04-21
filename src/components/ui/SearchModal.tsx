@@ -54,7 +54,7 @@ export function SearchModal({
     if (query.trim()) {
       return allImplemented
         .map((t) => ({ tool: t, score: scoreMatch(t, query) }))
-        .filter(({ score }) => score > 0)
+        .filter(({ score }) => score > 1)
         .sort((a, b) => b.score - a.score)
         .slice(0, 8)
         .map(({ tool }) => tool);
