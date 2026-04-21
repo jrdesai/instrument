@@ -2230,6 +2230,39 @@ export const tools: Tool[] = [
     implemented: true,
   },
   {
+    id: "roman-numerals",
+    name: "Roman Numerals",
+    description:
+      "Convert between Arabic numbers and Roman numerals, with a step-by-step breakdown.",
+    category: "numbers",
+    displayCategory: "Numbers",
+    displayCategoryIcon: "swap_horiz",
+    roles: ["general"],
+    icon: "history_edu",
+    platforms: ["desktop", "web"],
+    keywords: [
+      "roman",
+      "roman numerals",
+      "numerals",
+      "convert",
+      "arabic",
+      "number",
+      "I",
+      "V",
+      "X",
+      "L",
+      "C",
+      "D",
+      "M",
+      "ancient",
+      "latin",
+    ],
+    component: React.lazy(() =>
+      import("../tools/roman-numerals").then((m) => ({ default: m.default }))
+    ),
+    implemented: true,
+  },
+  {
     id: "color-contrast",
     name: "Colour Contrast Checker",
     description:
