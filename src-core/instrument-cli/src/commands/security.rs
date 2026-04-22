@@ -1,5 +1,6 @@
-use clap::{Args, ValueEnum};
+use clap::{Args, Subcommand, ValueEnum};
 use instrument_core::auth::jwt_decoder::{self, SecretEncoding};
+use instrument_core::crypto::{bcrypt_tool, cert};
 use instrument_core::crypto::hash::{self, HashOutputFormat};
 
 use crate::{input, output};
@@ -114,6 +115,85 @@ pub fn run_jwt(args: JwtArgs, json: bool) {
         println!("Algorithm: {}", result.algorithm);
         if result.is_expired == Some(true) {
             eprintln!("warning: token is expired");
+        }
+    }
+}
+
+#[derive(Args)]
+pub struct BcryptArgs {
+    #[command(subcommand)]
+    pub mode: BcryptMode,
+}
+
+#[derive(Subcommand)]
+pub enum BcryptMode {
+    Hash {
+        password: Option<String>,
+        #[arg(short, long)]
+        file: Option<std::path::PathBuf>,
+        #[arg(long, default_value_t = 12)]
+        cost: u32,
+    },
+    Verify {
+        password: Option<String>,
+        #[arg(short, long)]
+        file: Option<std::path::PathBuf>,
+        #[arg(long)]
+        hash: String,
+    },
+}
+
+pub fn run_bcrypt(args: BcryptArgs, json: bool) {
+    match args.mode {
+        BcryptMode::Hash { password, file, cost } => {
+            let password = input::resolve(password, file).unwrap_or_else(|e| output::print_err(&e, json, "bcrypt"));
+            let out = bcrypt_tool::process(bcrypt_tool::BcryptInput { mode: "hash".to_string(), password, cost, hash: String::new() });
+            if let Some(e) = out.error {
+                output::print_err(&e, json, "bcrypt");
+            }
+            output::print_ok(&out.hash, json, "bcrypt");
+        }
+        BcryptMode::Verify { password, file, hash } => {
+            let password = input::resolve(password, file).unwrap_or_else(|e| output::print_err(&e, json, "bcrypt"));
+            let out = bcrypt_tool::process(bcrypt_tool::BcryptInput { mode: "verify".to_string(), password, cost: 12, hash });
+            if let Some(e) = out.error {
+                output::print_err(&e, json, "bcrypt");
+            }
+            let valid = out.matches.unwrap_or(false);
+            if json {
+                println!("{}", serde_json::json!({"ok": true, "tool": "bcrypt", "valid": valid}));
+            } else {
+                println!("{}", if valid { "Valid" } else { "Invalid" });
+            }
+        }
+    }
+}
+
+#[derive(Args)]
+pub struct CertArgs {
+    pub pem: Option<String>,
+    #[arg(short, long)]
+    pub file: Option<std::path::PathBuf>,
+}
+
+pub fn run_cert(args: CertArgs, json: bool) {
+    let pem = input::resolve(args.pem, args.file).unwrap_or_else(|e| output::print_err(&e, json, "cert"));
+    let out = cert::process(cert::CertDecodeInput { pem });
+    if let Some(e) = out.error.clone() {
+        output::print_err(&e, json, "cert");
+    }
+    if json {
+        println!("{}", serde_json::to_string(&serde_json::json!({"ok": true, "tool":"cert", "output": out})).unwrap_or_default());
+    } else {
+        for c in out.certificates {
+            println!("subject: {}", c.subject);
+            println!("issuer: {}", c.issuer);
+            println!("not_before: {}", c.not_before);
+            println!("not_after: {}", c.not_after);
+            if !c.sans.is_empty() {
+                println!("sans: {}", c.sans.join(", "));
+            }
+            println!("sha256: {}", c.fingerprint_sha256);
         }
     }
 }

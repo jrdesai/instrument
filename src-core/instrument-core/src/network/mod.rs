@@ -3,6 +3,10 @@
 //! Uses the `url` crate. All parsing happens in Rust; no browser URL API.
 
 pub mod cidr;
+pub mod curl_builder;
+pub mod http_status;
+pub mod mac_address;
+pub mod mime;
 pub mod user_agent;
 
 use serde::{Deserialize, Serialize};

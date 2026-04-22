@@ -1,8 +1,9 @@
-use clap::{Args, Subcommand};
+use clap::{Args, Subcommand, ValueEnum};
 use instrument_core::encoding::{
     base64 as b64,
     hex as hex_mod,
     html_entity,
+    morse,
     url::{process as url_process, UrlEncodeInput, UrlEncodeMode, UrlEncodeType},
 };
 use instrument_core::text::slug;
@@ -261,5 +262,35 @@ pub fn run_slug(args: SlugArgs, json: bool) {
     match result.error {
         Some(e) => output::print_err(&e, json, "slug"),
         None => output::print_ok(&result.slug, json, "slug"),
+    }
+}
+
+// ── Morse ────────────────────────────────────────────────────────────────────
+
+#[derive(Copy, Clone, PartialEq, Eq, ValueEnum)]
+pub enum MorseArgMode {
+    Encode,
+    Decode,
+}
+
+#[derive(Args)]
+pub struct MorseArgs {
+    pub text: Option<String>,
+    #[arg(short, long)]
+    pub file: Option<std::path::PathBuf>,
+    #[arg(long, value_enum, default_value_t = MorseArgMode::Encode)]
+    pub mode: MorseArgMode,
+}
+
+pub fn run_morse(args: MorseArgs, json: bool) {
+    let inp = input::resolve(args.text, args.file).unwrap_or_else(|e| output::print_err(&e, json, "morse"));
+    let mode = match args.mode {
+        MorseArgMode::Encode => morse::MorseMode::Encode,
+        MorseArgMode::Decode => morse::MorseMode::Decode,
+    };
+    let result = morse::process(morse::MorseInput { text: inp, mode });
+    match result.error {
+        Some(e) => output::print_err(&e, json, "morse"),
+        None => output::print_ok(&result.result, json, "morse"),
     }
 }

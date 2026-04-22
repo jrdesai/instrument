@@ -1,5 +1,5 @@
 use clap::Args;
-use instrument_core::crypto::{nanoid as nanoid_mod, password as pw_mod, ulid as ulid_mod, uuid_gen};
+use instrument_core::crypto::{api_key, nanoid as nanoid_mod, passphrase, password as pw_mod, ulid as ulid_mod, uuid_gen};
 
 use crate::output;
 
@@ -126,5 +126,68 @@ pub fn run_password(args: PasswordArgs, json: bool) {
         println!("{}", serde_json::json!({ "ok": true, "tool": "password", "output": out.passwords }));
     } else {
         println!("{}", out.passwords.join("\n"));
+    }
+}
+
+#[derive(Args)]
+pub struct ApiKeyArgs {
+    #[arg(long, default_value_t = 32)]
+    pub length: u32,
+    #[arg(long)]
+    pub prefix: Option<String>,
+}
+
+pub fn run_api_key(args: ApiKeyArgs, json: bool) {
+    let has_prefix = args.prefix.is_some();
+    let out = api_key::process(api_key::ApiKeyInput {
+        count: 1,
+        length: args.length,
+        prefix: args.prefix.unwrap_or_default(),
+        format: if has_prefix {
+            api_key::ApiKeyFormat::Prefixed
+        } else {
+            api_key::ApiKeyFormat::Raw
+        },
+        charset: api_key::ApiKeyCharset::Alphanumeric,
+    });
+    if let Some(e) = out.error {
+        output::print_err(&e, json, "api-key");
+    }
+    output::print_ok(out.keys.first().map(String::as_str).unwrap_or(""), json, "api-key");
+}
+
+#[derive(Args)]
+pub struct PassphraseArgs {
+    #[arg(long, default_value_t = 4)]
+    pub words: u32,
+    #[arg(long, default_value = "-")]
+    pub separator: String,
+    #[arg(long, default_value_t = 1)]
+    pub count: u32,
+}
+
+pub fn run_passphrase(args: PassphraseArgs, json: bool) {
+    let separator = match args.separator.as_str() {
+        " " => passphrase::PassphraseSeparator::Space,
+        "." => passphrase::PassphraseSeparator::Dot,
+        "_" => passphrase::PassphraseSeparator::Underscore,
+        "" => passphrase::PassphraseSeparator::None,
+        _ => passphrase::PassphraseSeparator::Hyphen,
+    };
+    let out = passphrase::process(passphrase::PassphraseInput {
+        word_count: args.words,
+        count: args.count,
+        separator,
+        capitalize: false,
+        include_number: false,
+        include_symbol: false,
+    });
+    if let Some(e) = out.error {
+        output::print_err(&e, json, "passphrase");
+    }
+    if json {
+        println!("{}", serde_json::json!({"ok": true, "tool": "passphrase", "output": out.passphrases}));
+    } else {
+        println!("{}", out.passphrases.join("\n"));
     }
 }

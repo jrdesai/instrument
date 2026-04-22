@@ -250,6 +250,7 @@ export const tools: Tool[] = [
       import("../tools/morse-code").then((m) => ({ default: m.default }))
     ),
     trayPopover: true,
+    cliCommand: "morse",
     implemented: true,
   },
   {
@@ -283,6 +284,7 @@ export const tools: Tool[] = [
   },
   {
     id: "color-converter",
+    cliCommand: "color",
     name: "Color Converter",
     description: "Convert colors between HEX, RGB, HSL, HSB, and CSS names.",
     category: "encoding",
@@ -319,6 +321,7 @@ export const tools: Tool[] = [
   },
   {
     id: "qr-code",
+    cliCommand: "qr",
     name: "QR Code Generator",
     description: "Generate QR codes locally from any text, URL, or data.",
     category: "encoding",
@@ -387,6 +390,7 @@ export const tools: Tool[] = [
   },
   {
     id: "cert-decoder",
+    cliCommand: "cert",
     name: "Certificate Decoder",
     description:
       "Decode X.509 / PEM certificates - subject, SANs, validity, and key info.",
@@ -564,6 +568,7 @@ export const tools: Tool[] = [
   },
   {
     id: "api-key-generator",
+    cliCommand: "api-key",
     name: "API Key Generator",
     description: "Generate secure API keys.",
     category: "crypto",
@@ -652,6 +657,7 @@ export const tools: Tool[] = [
   },
   {
     id: "bcrypt",
+    cliCommand: "bcrypt",
     name: "Bcrypt Tool",
     description:
       "Hash passwords with bcrypt and verify hashes locally. Configurable cost factor. Nothing leaves your device.",
@@ -689,6 +695,7 @@ export const tools: Tool[] = [
   },
   {
     id: "passphrase-generator",
+    cliCommand: "passphrase",
     name: "Passphrase Generator",
     description:
       "Generate memorable passphrases from a wordlist with configurable word count, separator, and extras.",
@@ -846,6 +853,7 @@ export const tools: Tool[] = [
   },
   {
     id: "json-schema-validator",
+    cliCommand: "json-schema",
     name: "JSON Schema Validator",
     description:
       "Validate a JSON document against a JSON Schema (draft-07, 2019-09, 2020-12).",
@@ -878,6 +886,7 @@ export const tools: Tool[] = [
   },
   {
     id: "json-diff",
+    cliCommand: "json-diff",
     name: "JSON Diff",
     description: "Diff two JSON values.",
     category: "json",
@@ -904,6 +913,7 @@ export const tools: Tool[] = [
   },
   {
     id: "json-path",
+    cliCommand: "jsonpath",
     name: "JSON Path",
     description: "Query JSON with path expressions.",
     category: "json",
@@ -932,6 +942,7 @@ export const tools: Tool[] = [
   },
   {
     id: "json-converter",
+    cliCommand: "json-convert",
     name: "JSON Converter",
     description: "Convert JSON to YAML, TypeScript, CSV, or XML.",
     category: "json",
@@ -963,6 +974,7 @@ export const tools: Tool[] = [
   },
   {
     id: "config-converter",
+    cliCommand: "config",
     name: "Config Converter",
     description:
       "Convert between JSON, YAML, and TOML. All six directions supported.",
@@ -997,6 +1009,7 @@ export const tools: Tool[] = [
   },
   {
     id: "csv-to-json",
+    cliCommand: "csv",
     name: "CSV / JSON",
     description: "Convert between CSV and JSON in both directions.",
     category: "data",
@@ -1143,6 +1156,7 @@ export const tools: Tool[] = [
   },
   {
     id: "html-formatter",
+    cliCommand: "html",
     name: "HTML Formatter",
     description:
       "Format and pretty-print HTML with configurable indent and attribute wrapping.",
@@ -1214,6 +1228,7 @@ export const tools: Tool[] = [
   },
   {
     id: "url-parser",
+    cliCommand: "url-parse",
     name: "URL Parser",
     description: "Parse and inspect URL components.",
     category: "network",
@@ -1249,6 +1264,7 @@ export const tools: Tool[] = [
   },
   {
     id: "cidr-calculator",
+    cliCommand: "cidr",
     name: "CIDR Calculator",
     description:
       "Calculate network address, broadcast, host range and mask from a CIDR.",
@@ -1328,6 +1344,7 @@ export const tools: Tool[] = [
       import("../tools/http-status-codes").then((m) => ({ default: m.default }))
     ),
     trayPopover: true,
+    cliCommand: "http-status",
     implemented: true,
   },
   {
@@ -1368,10 +1385,12 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/curl-builder/CurlBuilderTool").then((m) => ({ default: m.default }))
     ),
+    cliCommand: "curl-build",
     implemented: true,
   },
   {
     id: "user-agent-parser",
+    cliCommand: "user-agent",
     name: "User-Agent Parser",
     description: "Parse a User-Agent string into browser, OS, device, and engine details.",
     category: "network",
@@ -1451,10 +1470,12 @@ export const tools: Tool[] = [
         default: m.default,
       }))
     ),
+    cliCommand: "mac",
     implemented: true,
   },
   {
     id: "env-parser",
+    cliCommand: "env",
     name: "Config Parser",
     description:
       "Parse and validate .env, .properties, and .ini config files. Spot duplicates, empty values, and syntax errors.",
@@ -1521,6 +1542,7 @@ export const tools: Tool[] = [
   },
   {
     id: "fake-data-generator",
+    cliCommand: "fake",
     name: "Fake Data Generator",
     description: "Generate realistic fake records for testing and development.",
     category: "text",
@@ -1627,6 +1649,7 @@ export const tools: Tool[] = [
   },
   {
     id: "unicode-inspector",
+    cliCommand: "unicode",
     name: "Unicode Inspector",
     description:
       "Inspect each character — codepoint, name, block, and UTF-8 bytes.",
@@ -1689,6 +1712,7 @@ export const tools: Tool[] = [
   },
   {
     id: "nato-phonetic",
+    cliCommand: "nato",
     name: "NATO Phonetic Alphabet",
     description:
       "Spell out text using NATO phonetic words (Alpha, Bravo, Charlie…) and decode them back.",
@@ -1722,6 +1746,7 @@ export const tools: Tool[] = [
   },
   {
     id: "string-escaper",
+    cliCommand: "escape",
     name: "String Escaper",
     description: "Escape and unescape strings (JSON, CSV, etc.).",
     category: "text",
@@ -1750,6 +1775,7 @@ export const tools: Tool[] = [
   },
   {
     id: "find-replace",
+    cliCommand: "replace",
     name: "Find & Replace",
     description: "Find and replace text with optional regex.",
     category: "text",
@@ -1777,6 +1803,7 @@ export const tools: Tool[] = [
   },
   {
     id: "text-diff",
+    cliCommand: "diff",
     name: "Text Diff",
     description: "Compare two blocks of text line by line.",
     category: "text",
@@ -1805,6 +1832,7 @@ export const tools: Tool[] = [
   },
   {
     id: "lorem-ipsum",
+    cliCommand: "lorem",
     name: "Lorem Ipsum Generator",
     description: "Generate placeholder text (paragraphs, sentences, or words).",
     category: "text",
@@ -1897,6 +1925,7 @@ export const tools: Tool[] = [
   },
   {
     id: "timezone-converter",
+    cliCommand: "timezone",
     name: "Timezone Converter",
     description: "Convert times between timezones.",
     category: "datetime",
@@ -1926,6 +1955,7 @@ export const tools: Tool[] = [
   },
   {
     id: "iso8601-formatter",
+    cliCommand: "iso8601",
     name: "ISO 8601 Formatter",
     description: "Format and parse ISO 8601 dates.",
     category: "datetime",
@@ -1954,6 +1984,7 @@ export const tools: Tool[] = [
   },
   {
     id: "cron-parser",
+    cliCommand: "cron",
     name: "Cron Expression Parser",
     description:
       "Parse and validate cron expressions. See next scheduled run times.",
@@ -2022,10 +2053,12 @@ export const tools: Tool[] = [
         default: m.default,
       }))
     ),
+    cliCommand: "date",
     implemented: true,
   },
   {
     id: "number-base-converter",
+    cliCommand: "base",
     name: "Number Base Converter",
     description: "Convert between decimal, hex, binary, octal.",
     category: "numbers",
@@ -2089,6 +2122,7 @@ export const tools: Tool[] = [
   },
   {
     id: "unit-converter",
+    cliCommand: "unit",
     name: "Unit Converter",
     description:
       "Convert between units of data size, time, temperature, length, weight, speed, angle, and frequency.",
@@ -2133,6 +2167,7 @@ export const tools: Tool[] = [
   },
   {
     id: "bitwise-calculator",
+    cliCommand: "bitwise",
     name: "Bitwise Calculator",
     description: "AND, OR, XOR, NOT, shift operations.",
     category: "numbers",
@@ -2160,6 +2195,7 @@ export const tools: Tool[] = [
   },
   {
     id: "chmod-calculator",
+    cliCommand: "chmod",
     name: "chmod Calculator",
     description:
       "Parse Unix permission strings (755, rwxr-xr-x) and see all representations with a plain-English breakdown.",
@@ -2196,6 +2232,7 @@ export const tools: Tool[] = [
   },
   {
     id: "expression-evaluator",
+    cliCommand: "eval",
     name: "Expression Evaluator",
     description: "Safely evaluate numeric or logical expressions.",
     category: "numbers",
@@ -2253,6 +2290,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/percentage-calculator").then((m) => ({ default: m.default }))
     ),
+    cliCommand: "percent",
     implemented: true,
   },
   {
@@ -2286,10 +2324,12 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/roman-numerals").then((m) => ({ default: m.default }))
     ),
+    cliCommand: "roman",
     implemented: true,
   },
   {
     id: "color-contrast",
+    cliCommand: "contrast",
     name: "Colour Contrast Checker",
     description:
       "Check foreground/background colour pairs against WCAG AA and AAA contrast ratio requirements.",
@@ -2390,6 +2430,7 @@ export const tools: Tool[] = [
         default: m.default,
       }))
     ),
+    cliCommand: "mime",
     implemented: true,
   },
   {
