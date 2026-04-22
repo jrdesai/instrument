@@ -169,31 +169,39 @@ function ToolGridCard({
         )}
       </div>
 
-      <div>
+      <div className="flex flex-1 flex-col">
         <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">
           {tool.name}
         </p>
         <p className="mt-0.5 line-clamp-2 text-xs leading-snug text-slate-500 dark:text-slate-400">
           {tool.description}
         </p>
-        {(tool.cliCommand || (!isWeb && tool.trayPopover)) && (
-          <div className="mt-1.5 flex flex-wrap gap-1">
-            {tool.cliCommand && (
-              <span className="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[10px] text-slate-400 dark:bg-slate-800 dark:text-slate-500">
-                $ {tool.cliCommand}
-              </span>
-            )}
-            {!isWeb && tool.trayPopover && (
-              <span className="flex items-center gap-0.5 rounded bg-slate-100 px-1.5 py-0.5 text-[10px] text-slate-400 dark:bg-slate-800 dark:text-slate-500">
-                <span className="material-symbols-outlined text-[10px]" aria-hidden>
-                  push_pin
-                </span>
-                Tray
-              </span>
-            )}
-          </div>
-        )}
       </div>
+
+      {(tool.cliCommand || (!isWeb && tool.trayPopover)) && (
+        <div className="relative z-10 flex justify-end gap-2">
+          {tool.cliCommand && (
+            <span
+              title={`Available in CLI — instrument ${tool.cliCommand}`}
+              className="flex items-center text-slate-300 dark:text-slate-600"
+            >
+              <span className="material-symbols-outlined text-[15px]" aria-hidden>
+                terminal
+              </span>
+            </span>
+          )}
+          {!isWeb && tool.trayPopover && (
+            <span
+              title="Available in tray popover"
+              className="flex items-center text-slate-300 dark:text-slate-600"
+            >
+              <span className="material-symbols-outlined text-[15px]" aria-hidden>
+                push_pin
+              </span>
+            </span>
+          )}
+        </div>
+      )}
     </div>
   );
 }
