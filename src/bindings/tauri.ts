@@ -685,9 +685,13 @@ specialNote: string | null;
 subnetSplit: SubnetSplit | null; error: string | null }
 export type CliStatus = { installed: boolean; installPath: string | null; sourcePath: string | null; error: string | null; 
 /**
- * Whether the install directory is currently present in the process PATH.
+ * Whether ~/.local/bin (Unix) or the install dir (Windows) is referenced in the user's shell config / registry PATH.
  */
-pathInEnv: boolean }
+pathInEnv: boolean; 
+/**
+ * The shell config file the user should edit to add to PATH (Unix only — None on Windows).
+ */
+shellProfile: string | null }
 export type ColorContrastInput = { 
 /**
  * Foreground colour — 3 or 6-digit hex, with or without `#`.

@@ -203,28 +203,6 @@ pub fn run() {
                 log::warn!("Failed to register global popover shortcut: {}", e);
             }
 
-            // Attempt silent CLI install on first launch; users can still control this in Settings.
-            let cli_app = app.handle().clone();
-            std::thread::spawn(move || {
-                let status = cli_install::cli_status(cli_app.clone()).unwrap_or(cli_install::CliStatus {
-                    installed: false,
-                    path_in_env: false,
-                    install_path: None,
-                    source_path: None,
-                    error: None,
-                });
-                if !status.installed {
-                    if let Err(e) = cli_install::do_install_pub(&cli_app) {
-                        log::warn!(
-                            "Silent CLI install failed (user can install manually in Settings): {}",
-                            e
-                        );
-                    } else {
-                        log::info!("CLI auto-installed to PATH");
-                    }
-                }
-            });
-
             Ok(())
         })
         .run(tauri::generate_context!())

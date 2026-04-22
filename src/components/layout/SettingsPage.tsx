@@ -48,6 +48,7 @@ type CliUiStatus = {
   installPath?: string;
   error?: string;
   pathInEnv?: boolean;
+  shellProfile?: string;
 };
 
 function normalizeCliStatusPayload(raw: unknown): CliUiStatus {
@@ -69,6 +70,7 @@ function normalizeCliStatusPayload(raw: unknown): CliUiStatus {
         installPath: typeof d.installPath === "string" ? d.installPath : undefined,
         error: typeof d.error === "string" ? d.error : undefined,
         pathInEnv: Boolean(d.pathInEnv),
+        shellProfile: typeof d.shellProfile === "string" ? d.shellProfile : undefined,
       };
     }
   }
@@ -337,20 +339,48 @@ export function SettingsPage() {
                         </p>
                         {cliStatus.installed && !cliStatus.pathInEnv && (
                           <p className="mt-1 text-xs text-amber-500 dark:text-amber-400">
-                            <code className="font-mono">~/.local/bin</code> is not in your PATH —{" "}
-                            <code className="font-mono">instrument</code> won't be found in the terminal.{" "}
-                            <button
-                              type="button"
-                              className="underline hover:no-underline"
-                              onClick={() =>
-                                navigator.clipboard.writeText(
-                                  'export PATH="$HOME/.local/bin:$PATH"'
-                                )
-                              }
-                            >
-                              Copy export line
-                            </button>{" "}
-                            and add it to your <code className="font-mono">~/.zshrc</code>.
+                            {cliStatus.shellProfile ? (
+                              <>
+                                <code className="font-mono">~/.local/bin</code> is not in your
+                                PATH —{" "}
+                                <code className="font-mono">instrument</code> won't be found in
+                                the terminal.{" "}
+                                <button
+                                  type="button"
+                                  className="underline hover:no-underline"
+                                  onClick={() =>
+                                    navigator.clipboard.writeText(
+                                      'export PATH="$HOME/.local/bin:$PATH"'
+                                    )
+                                  }
+                                >
+                                  Copy export line
+                                </button>{" "}
+                                and add it to your{" "}
+                                <code className="font-mono">{cliStatus.shellProfile}</code>.
+                              </>
+                            ) : (
+                              <>
+                                <code className="font-mono">instrument</code> is not in your
+                                PATH.{" "}
+                                <button
+                                  type="button"
+                                  className="underline hover:no-underline"
+                                  onClick={() =>
+                                    navigator.clipboard.writeText(
+                                      cliStatus.installPath?.replace(
+                                        /\\instrument\.exe$/,
+                                        ""
+                                      ) ?? ""
+                                    )
+                                  }
+                                >
+                                  Copy path
+                                </button>{" "}
+                                and add it to PATH via System Properties → Environment
+                                Variables.
+                              </>
+                            )}
                           </p>
                         )}
                         {cliStatus.error && (

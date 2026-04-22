@@ -9,8 +9,10 @@ pub struct CliStatus {
     pub install_path: Option<String>,
     pub source_path: Option<String>,
     pub error: Option<String>,
-    /// Whether the install directory is currently present in the process PATH.
+    /// Whether ~/.local/bin (Unix) or the install dir (Windows) is referenced in the user's shell config / registry PATH.
     pub path_in_env: bool,
+    /// The shell config file the user should edit to add to PATH (Unix only — None on Windows).
+    pub shell_profile: Option<String>,
 }
 
 /// Returns the current CLI installation status.
@@ -27,6 +29,7 @@ pub fn cli_status(app: AppHandle) -> Result<CliStatus, String> {
     Ok(CliStatus {
         installed,
         path_in_env: install_dir_in_path(),
+        shell_profile: detected_shell_profile(),
         install_path: target.map(|p| p.to_string_lossy().into_owned()),
         source_path: source.map(|p| p.to_string_lossy().into_owned()),
         error: None,
@@ -42,6 +45,7 @@ pub fn cli_install(app: AppHandle) -> Result<CliStatus, String> {
         Err(e) => Ok(CliStatus {
             installed: false,
             path_in_env: install_dir_in_path(),
+            shell_profile: detected_shell_profile(),
             install_path: cli_link_path().map(|p| p.to_string_lossy().into_owned()),
             source_path: bundled_cli_path(&app).map(|p| p.to_string_lossy().into_owned()),
             error: Some(e.to_string()),
@@ -58,15 +62,12 @@ pub fn cli_uninstall(app: AppHandle) -> Result<CliStatus, String> {
         Err(e) => Ok(CliStatus {
             installed: true,
             path_in_env: install_dir_in_path(),
+            shell_profile: detected_shell_profile(),
             install_path: cli_link_path().map(|p| p.to_string_lossy().into_owned()),
             source_path: bundled_cli_path(&app).map(|p| p.to_string_lossy().into_owned()),
             error: Some(e.to_string()),
         }),
     }
-}
-
-pub(crate) fn do_install_pub(app: &AppHandle) -> Result<(), Box<dyn std::error::Error>> {
-    do_install_impl(app)
 }
 
 #[cfg(unix)]
@@ -93,6 +94,19 @@ fn do_install_impl(app: &AppHandle) -> Result<(), Box<dyn std::error::Error>> {
 }
 
 #[cfg(unix)]
+fn detected_shell_profile() -> Option<String> {
+    let shell = std::env::var("SHELL").unwrap_or_default();
+    let file = if shell.ends_with("zsh") {
+        "~/.zshrc"
+    } else if shell.ends_with("bash") {
+        "~/.bashrc"
+    } else {
+        "~/.profile"
+    };
+    Some(file.to_string())
+}
+
+#[cfg(unix)]
 fn install_dir_in_path() -> bool {
     let home = std::env::var("HOME").unwrap_or_default();
     // Check shell config files rather than the app process PATH, which is never
@@ -112,6 +126,10 @@ fn do_uninstall_impl() -> Result<(), Box<dyn std::error::Error>> {
         if link.exists() || link.symlink_metadata().is_ok() {
             std::fs::remove_file(&link)?;
             log::info!("CLI uninstalled: {:?}", link);
+        }
+        // Remove ~/.local/bin if we created it and it's now empty.
+        if let Some(parent) = link.parent() {
+            let _ = std::fs::remove_dir(parent); // no-op if non-empty or doesn't exist
         }
     }
     Ok(())
@@ -139,6 +157,11 @@ fn do_install_impl(app: &AppHandle) -> Result<(), Box<dyn std::error::Error>> {
     std::fs::copy(&source, &dest)?;
     log::info!("CLI installed to {:?}", dest);
     Ok(())
+}
+
+#[cfg(windows)]
+fn detected_shell_profile() -> Option<String> {
+    None
 }
 
 #[cfg(windows)]
