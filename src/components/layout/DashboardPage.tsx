@@ -176,6 +176,23 @@ function ToolGridCard({
         <p className="mt-0.5 line-clamp-2 text-xs leading-snug text-slate-500 dark:text-slate-400">
           {tool.description}
         </p>
+        {(tool.cliCommand || (!isWeb && tool.trayPopover)) && (
+          <div className="mt-1.5 flex flex-wrap gap-1">
+            {tool.cliCommand && (
+              <span className="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[10px] text-slate-400 dark:bg-slate-800 dark:text-slate-500">
+                $ {tool.cliCommand}
+              </span>
+            )}
+            {!isWeb && tool.trayPopover && (
+              <span className="flex items-center gap-0.5 rounded bg-slate-100 px-1.5 py-0.5 text-[10px] text-slate-400 dark:bg-slate-800 dark:text-slate-500">
+                <span className="material-symbols-outlined text-[10px]" aria-hidden>
+                  push_pin
+                </span>
+                Tray
+              </span>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

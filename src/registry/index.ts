@@ -58,6 +58,12 @@ export interface Tool {
    * Only for tools that work in a ~400×520px single-panel layout.
    */
   trayPopover?: boolean;
+
+  /**
+   * CLI subcommand name if this tool is available in the `instrument` CLI binary.
+   * Example: "base64" → `instrument base64 --help`
+   */
+  cliCommand?: string;
 }
 
 /** Placeholder lazy component for future tools (currently unused). */
@@ -95,6 +101,7 @@ export const tools: Tool[] = [
       import("../tools/base64").then((m) => ({ default: m.default }))
     ),
     trayPopover: true,
+    cliCommand: "base64",
     implemented: true,
   },
   {
@@ -180,6 +187,7 @@ export const tools: Tool[] = [
       import("../tools/url-encoder").then((m) => ({ default: m.default }))
     ),
     trayPopover: true,
+    cliCommand: "url",
     implemented: true,
   },
   {
@@ -209,6 +217,7 @@ export const tools: Tool[] = [
       import("../tools/html-entity").then((m) => ({ default: m.default }))
     ),
     trayPopover: true,
+    cliCommand: "html-entity",
     implemented: true,
   },
   {
@@ -269,6 +278,7 @@ export const tools: Tool[] = [
       import("../tools/hex-converter").then((m) => ({ default: m.default }))
     ),
     trayPopover: true,
+    cliCommand: "hex",
     implemented: true,
   },
   {
@@ -372,6 +382,7 @@ export const tools: Tool[] = [
       import("../tools/hash/HashTool").then((m) => ({ default: m.default }))
     ),
     trayPopover: true,
+    cliCommand: "hash",
     implemented: true,
   },
   {
@@ -428,6 +439,7 @@ export const tools: Tool[] = [
       import("../tools/uuid-generator").then((m) => ({ default: m.default }))
     ),
     trayPopover: true,
+    cliCommand: "uuid",
     implemented: true,
   },
   {
@@ -446,6 +458,7 @@ export const tools: Tool[] = [
       import("../tools/ulid-generator").then((m) => ({ default: m.default }))
     ),
     trayPopover: true,
+    cliCommand: "ulid",
     implemented: true,
   },
   {
@@ -476,6 +489,7 @@ export const tools: Tool[] = [
       import("../tools/nano-id-generator").then((m) => ({ default: m.default }))
     ),
     trayPopover: true,
+    cliCommand: "nanoid",
     implemented: true,
   },
   {
@@ -513,6 +527,7 @@ export const tools: Tool[] = [
       import("../tools/jwt/JwtTool").then((m) => ({ default: m.default }))
     ),
     trayPopover: true,
+    cliCommand: "jwt",
     implemented: true,
     sensitive: true,
   },
@@ -596,6 +611,7 @@ export const tools: Tool[] = [
       }))
     ),
     trayPopover: true,
+    cliCommand: "password",
     implemented: true,
   },
   {
@@ -796,6 +812,7 @@ export const tools: Tool[] = [
       import("../tools/json-formatter").then((m) => ({ default: m.default }))
     ),
     trayPopover: true,
+    cliCommand: "json",
     implemented: true,
   },
   {
@@ -824,6 +841,7 @@ export const tools: Tool[] = [
       import("../tools/json-validator").then((m) => ({ default: m.default }))
     ),
     trayPopover: true,
+    cliCommand: "json",
     implemented: true,
   },
   {
@@ -1120,6 +1138,7 @@ export const tools: Tool[] = [
         default: m.default,
       }))
     ),
+    cliCommand: "xml",
     implemented: true,
   },
   {
@@ -1190,6 +1209,7 @@ export const tools: Tool[] = [
         default: m.default,
       }))
     ),
+    cliCommand: "yaml",
     implemented: true,
   },
   {
@@ -1496,6 +1516,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/line-tools").then((m) => ({ default: m.default }))
     ),
+    cliCommand: "lines",
     implemented: true,
   },
   {
@@ -1571,6 +1592,7 @@ export const tools: Tool[] = [
       import("../tools/text-case-converter").then((m) => ({ default: m.default }))
     ),
     trayPopover: true,
+    cliCommand: "case",
     implemented: true,
   },
   {
@@ -1600,6 +1622,7 @@ export const tools: Tool[] = [
       import("../tools/word-counter").then((m) => ({ default: m.default }))
     ),
     trayPopover: true,
+    cliCommand: "word-count",
     implemented: true,
   },
   {
@@ -1661,6 +1684,7 @@ export const tools: Tool[] = [
       import("../tools/slug-generator").then((m) => ({ default: m.default }))
     ),
     trayPopover: true,
+    cliCommand: "slug",
     implemented: true,
   },
   {
@@ -1868,6 +1892,7 @@ export const tools: Tool[] = [
       import("../tools/timestamp-converter").then((m) => ({ default: m.default }))
     ),
     trayPopover: true,
+    cliCommand: "timestamp",
     implemented: true,
   },
   {
@@ -2059,6 +2084,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/semver").then((m) => ({ default: m.default }))
     ),
+    cliCommand: "semver",
     implemented: true,
   },
   {
@@ -2429,6 +2455,7 @@ export const tools: Tool[] = [
         default: m.default,
       }))
     ),
+    cliCommand: "sql",
     implemented: true,
   },
   {
