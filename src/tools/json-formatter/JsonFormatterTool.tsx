@@ -201,10 +201,10 @@ function JsonFormatterTool() {
 
   return (
     <div className="flex flex-col h-full bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
-      <div className="flex flex-1 min-h-0 w-full">
+      <div className="flex flex-1 min-h-0 w-full flex-col sm:flex-row">
         {/* Left panel — input */}
         <div
-          className="relative flex flex-col flex-1 min-w-0 border-r border-border-light dark:border-border-dark"
+          className="relative flex flex-col flex-1 min-w-0 border-b border-border-light dark:border-border-dark sm:border-b-0 sm:border-r"
           {...dropZoneProps}
         >
           {isDragging && (

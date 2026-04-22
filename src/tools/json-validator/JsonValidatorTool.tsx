@@ -134,9 +134,9 @@ function JsonValidatorTool() {
 
   return (
     <div className="flex flex-col h-full bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
-      <div className="flex flex-1 min-h-0 w-full">
+      <div className="flex flex-1 min-h-0 w-full flex-col sm:flex-row">
         {/* Left panel — input */}
-        <div className="flex flex-col flex-1 min-w-0 border-r border-border-light dark:border-border-dark">
+        <div className="flex flex-col flex-1 min-w-0 border-b border-border-light dark:border-border-dark sm:border-b-0 sm:border-r">
           <div className="flex items-center justify-between px-4 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0 min-h-[41px]">
             <span className="text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider">
               INPUT

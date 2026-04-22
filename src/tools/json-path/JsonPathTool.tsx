@@ -190,9 +190,9 @@ function JsonPathTool() {
       </div>
 
       {/* Row 2 — JSON input + Results */}
-      <div className="flex flex-1 min-h-0">
+      <div className="flex flex-1 min-h-0 flex-col sm:flex-row">
         {/* Left — JSON document input */}
-        <div className="flex flex-col flex-1 min-w-0 border-r border-border-light dark:border-border-dark">
+        <div className="flex flex-col flex-1 min-w-0 border-b border-border-light dark:border-border-dark sm:border-b-0 sm:border-r">
           <div className="flex items-center justify-between px-4 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0 min-h-[41px]">
             <span className="text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider">
               JSON DOCUMENT

@@ -143,9 +143,9 @@ function QrCodeTool() {
   return (
     <div className="flex h-full flex-col bg-background-light font-display text-slate-900 dark:bg-background-dark dark:text-slate-100">
       {/* Split panel */}
-      <div className="flex min-h-0 flex-1 overflow-hidden">
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden sm:flex-row">
         {/* Left — input + options */}
-        <div className="flex w-80 shrink-0 flex-col border-r border-border-light dark:border-border-dark">
+        <div className="flex h-72 flex-col border-b border-border-light dark:border-border-dark sm:h-auto sm:w-80 sm:shrink-0 sm:border-b-0 sm:border-r">
           {/* Input header */}
           <div className="flex shrink-0 min-h-[41px] items-center justify-between border-b border-border-light px-4 py-2 dark:border-border-dark">
             <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
@@ -170,7 +170,7 @@ function QrCodeTool() {
           />
 
           {/* Options */}
-          <div className="shrink-0 border-t border-border-light px-4 py-3 dark:border-border-dark">
+          <div className="overflow-y-auto border-t border-border-light px-4 py-3 dark:border-border-dark sm:overflow-y-visible">
             <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
               Error Correction
             </p>
@@ -249,7 +249,7 @@ function QrCodeTool() {
         </div>
 
         {/* Right — QR output */}
-        <div className="flex min-w-0 flex-1 flex-col items-center justify-center p-8">
+        <div className="flex min-w-0 flex-1 flex-col items-center overflow-y-auto p-4 sm:justify-center sm:overflow-y-visible sm:p-8">
           {!text.trim() && (
             <div className="flex flex-col items-center gap-3 text-center">
               <span className="material-symbols-outlined text-[48px] text-slate-300 dark:text-slate-700">
@@ -271,7 +271,7 @@ function QrCodeTool() {
             <div className="flex flex-col items-center gap-4">
               {/* QR code card */}
               <div
-                className="rounded-xl bg-white p-5 shadow-md"
+                className="rounded-xl bg-white p-5 shadow-md [&>svg]:h-auto [&>svg]:max-w-full"
                 dangerouslySetInnerHTML={{ __html: output.svg }}
               />
 
