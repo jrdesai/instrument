@@ -196,7 +196,7 @@ function ToolGridCard({
               className="flex items-center text-slate-300 dark:text-slate-600"
             >
               <span className="material-symbols-outlined text-[15px]" aria-hidden>
-                push_pin
+                picture_in_picture
               </span>
             </span>
           )}
