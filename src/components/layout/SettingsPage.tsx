@@ -47,7 +47,7 @@ type CliUiStatus = {
   installed: boolean;
   installPath?: string;
   error?: string;
-  pathUpdated?: boolean;
+  pathInEnv?: boolean;
 };
 
 function normalizeCliStatusPayload(raw: unknown): CliUiStatus {
@@ -68,7 +68,7 @@ function normalizeCliStatusPayload(raw: unknown): CliUiStatus {
         installed: Boolean(d.installed),
         installPath: typeof d.installPath === "string" ? d.installPath : undefined,
         error: typeof d.error === "string" ? d.error : undefined,
-        pathUpdated: Boolean(d.pathUpdated),
+        pathInEnv: Boolean(d.pathInEnv),
       };
     }
   }
@@ -78,7 +78,7 @@ function normalizeCliStatusPayload(raw: unknown): CliUiStatus {
       installed: Boolean(d.installed),
       installPath: typeof d.installPath === "string" ? d.installPath : undefined,
       error: typeof d.error === "string" ? d.error : undefined,
-      pathUpdated: Boolean(d.pathUpdated),
+      pathInEnv: Boolean(d.pathInEnv),
     };
   }
   return { installed: false, error: "Unexpected response from app" };
@@ -335,11 +335,22 @@ export function SettingsPage() {
                             </>
                           )}
                         </p>
-                        {cliStatus.pathUpdated && (
+                        {cliStatus.installed && !cliStatus.pathInEnv && (
                           <p className="mt-1 text-xs text-amber-500 dark:text-amber-400">
-                            Open a new terminal tab, or run{" "}
-                            <code className="font-mono">source ~/.zshrc</code>{" "}
-                            to use <code className="font-mono">instrument</code>.
+                            <code className="font-mono">~/.local/bin</code> is not in your PATH —{" "}
+                            <code className="font-mono">instrument</code> won't be found in the terminal.{" "}
+                            <button
+                              type="button"
+                              className="underline hover:no-underline"
+                              onClick={() =>
+                                navigator.clipboard.writeText(
+                                  'export PATH="$HOME/.local/bin:$PATH"'
+                                )
+                              }
+                            >
+                              Copy export line
+                            </button>{" "}
+                            and add it to your <code className="font-mono">~/.zshrc</code>.
                           </p>
                         )}
                         {cliStatus.error && (

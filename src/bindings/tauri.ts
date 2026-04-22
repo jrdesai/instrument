@@ -685,10 +685,9 @@ specialNote: string | null;
 subnetSplit: SubnetSplit | null; error: string | null }
 export type CliStatus = { installed: boolean; installPath: string | null; sourcePath: string | null; error: string | null; 
 /**
- * True when the shell profile was just updated to add ~/.local/bin to PATH.
- * The user needs to restart their terminal (or source the profile) for `instrument` to work.
+ * Whether the install directory is currently present in the process PATH.
  */
-pathUpdated: boolean }
+pathInEnv: boolean }
 export type ColorContrastInput = { 
 /**
  * Foreground colour — 3 or 6-digit hex, with or without `#`.

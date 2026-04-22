@@ -208,10 +208,10 @@ pub fn run() {
             std::thread::spawn(move || {
                 let status = cli_install::cli_status(cli_app.clone()).unwrap_or(cli_install::CliStatus {
                     installed: false,
+                    path_in_env: false,
                     install_path: None,
                     source_path: None,
                     error: None,
-                    path_updated: false,
                 });
                 if !status.installed {
                     if let Err(e) = cli_install::do_install_pub(&cli_app) {
