@@ -16,6 +16,7 @@
     "tauri": "tauri",
     "build:wasm": "wasm-pack build src-core/instrument-web --target web --out-dir ../../public/wasm-pkg",
     "build:web": "pnpm run build:wasm && vite build --mode web",
+    "build:cli-sidecar": "node scripts/build-cli-sidecar.js",
     "build:cli": "cargo build --release --manifest-path src-core/Cargo.toml -p instrument-cli",
     "install:cli": "cargo install --path src-core/instrument-cli --force",
     "test:rust": "cargo test --manifest-path src-core/Cargo.toml",

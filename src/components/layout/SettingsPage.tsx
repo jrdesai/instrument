@@ -1,3 +1,4 @@
+import { useCallback, useEffect, useState } from "react";
 import { callTool, isDesktop, isWeb } from "../../bridge";
 import { useHistoryStore, usePreferenceStore, useToolStore } from "../../store";
 import { APP_VERSION } from "../../version";
@@ -41,6 +42,48 @@ const STORAGE_SUMMARY_ROWS = [
   },
 ] as const;
 
+/** Desktop CLI commands are generated as `Result<CliStatus, string>` — unwrap for UI state. */
+type CliUiStatus = {
+  installed: boolean;
+  installPath?: string;
+  error?: string;
+  pathUpdated?: boolean;
+};
+
+function normalizeCliStatusPayload(raw: unknown): CliUiStatus {
+  if (raw && typeof raw === "object" && "status" in raw) {
+    const r = raw as { status: string; data?: unknown; error?: unknown };
+    if (r.status === "error") {
+      const msg =
+        typeof r.error === "string"
+          ? r.error
+          : r.error != null
+            ? String(r.error)
+            : "Command failed";
+      return { installed: false, error: msg };
+    }
+    if (r.status === "ok" && r.data != null && typeof r.data === "object") {
+      const d = r.data as Record<string, unknown>;
+      return {
+        installed: Boolean(d.installed),
+        installPath: typeof d.installPath === "string" ? d.installPath : undefined,
+        error: typeof d.error === "string" ? d.error : undefined,
+        pathUpdated: Boolean(d.pathUpdated),
+      };
+    }
+  }
+  if (raw && typeof raw === "object" && "installed" in (raw as object)) {
+    const d = raw as Record<string, unknown>;
+    return {
+      installed: Boolean(d.installed),
+      installPath: typeof d.installPath === "string" ? d.installPath : undefined,
+      error: typeof d.error === "string" ? d.error : undefined,
+      pathUpdated: Boolean(d.pathUpdated),
+    };
+  }
+  return { installed: false, error: "Unexpected response from app" };
+}
+
 export function SettingsPage() {
   const theme = usePreferenceStore((s) => s.theme);
   const setTheme = usePreferenceStore((s) => s.setTheme);
@@ -62,6 +105,37 @@ export function SettingsPage() {
   const clearFavourites = useToolStore((s) => s.clearFavourites);
   const clearDraftInputs = useToolStore((s) => s.clearDraftInputs);
   const clearHistory = useHistoryStore((s) => s.clearHistory);
+  const [cliStatus, setCliStatus] = useState<CliUiStatus | null>(null);
+  const [cliLoading, setCliLoading] = useState(false);
+
+  useEffect(() => {
+    if (!isDesktop) return;
+    callTool("cli_status", null, { skipHistory: true })
+      .then((raw) => setCliStatus(normalizeCliStatusPayload(raw)))
+      .catch((err) =>
+        setCliStatus({
+          installed: false,
+          error: err instanceof Error ? err.message : String(err),
+        })
+      );
+  }, [isDesktop]);
+
+  const handleCliToggle = useCallback(async () => {
+    setCliLoading(true);
+    try {
+      const command = cliStatus?.installed ? "cli_uninstall" : "cli_install";
+      const raw = await callTool(command, null, { skipHistory: true });
+      setCliStatus(normalizeCliStatusPayload(raw));
+    } catch (err) {
+      setCliStatus((prev) => ({
+        installed: prev?.installed ?? false,
+        installPath: prev?.installPath,
+        error: err instanceof Error ? err.message : String(err),
+      }));
+    } finally {
+      setCliLoading(false);
+    }
+  }, [cliStatus?.installed]);
 
   return (
     <div className="flex flex-col h-full w-full overflow-hidden bg-background-light dark:bg-background-dark">
@@ -236,6 +310,56 @@ export function SettingsPage() {
                       />
                     </button>
                   </div>
+
+                  {cliStatus !== null && (
+                    <div className="flex items-center justify-between bg-panel-light px-4 py-3 dark:bg-panel-dark">
+                      <div>
+                        <p className="text-sm text-slate-700 dark:text-slate-300">
+                          CLI integration
+                        </p>
+                        <p className="mt-0.5 text-xs text-slate-400 dark:text-slate-500">
+                          {cliStatus.installed ? (
+                            <>
+                              <code className="font-mono">instrument</code> is available in your
+                              terminal
+                              {cliStatus.installPath && (
+                                <span className="ml-1 opacity-60">
+                                  · {cliStatus.installPath}
+                                </span>
+                              )}
+                            </>
+                          ) : (
+                            <>
+                              Install <code className="font-mono">instrument</code> to use tools
+                              from your terminal
+                            </>
+                          )}
+                        </p>
+                        {cliStatus.pathUpdated && (
+                          <p className="mt-1 text-xs text-amber-500 dark:text-amber-400">
+                            Open a new terminal tab, or run{" "}
+                            <code className="font-mono">source ~/.zshrc</code>{" "}
+                            to use <code className="font-mono">instrument</code>.
+                          </p>
+                        )}
+                        {cliStatus.error && (
+                          <p className="mt-0.5 text-xs text-red-400">{cliStatus.error}</p>
+                        )}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={handleCliToggle}
+                        disabled={cliLoading}
+                        className={`ml-4 shrink-0 rounded-md px-3 py-1.5 text-xs font-medium transition-colors disabled:opacity-50 ${
+                          cliStatus.installed
+                            ? "bg-slate-100 text-slate-600 hover:bg-red-50 hover:text-red-600 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-red-900/20 dark:hover:text-red-400"
+                            : "bg-primary/10 text-primary hover:bg-primary/20"
+                        }`}
+                      >
+                        {cliLoading ? "…" : cliStatus.installed ? "Uninstall" : "Install"}
+                      </button>
+                    </div>
+                  )}
                 </div>
               </section>
 

@@ -42,6 +42,7 @@
     "allow-base-converter",
     "allow-bitwise",
     "allow-chmod",
+    "allow-cli-integration",
     "allow-color-contrast",
     "allow-semver",
     "allow-unit-converter",

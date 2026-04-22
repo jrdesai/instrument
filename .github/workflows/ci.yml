@@ -75,7 +75,9 @@ jobs:
             ${{ runner.os }}-cargo-
 
       - name: Tests
-        run: cargo test --manifest-path src-core/Cargo.toml -p instrument-core -p regex-core
+        run: |
+          cargo test --manifest-path src-core/Cargo.toml -p instrument-core -p regex-core
+          cargo build --manifest-path src-core/Cargo.toml -p instrument-cli
 
   clippy:
     name: Rust — clippy
@@ -104,7 +106,7 @@ jobs:
       - name: Clippy
         # Scope to pure crates only — instrument-desktop pulls in Tauri/glib which
         # requires system libraries (libglib2.0-dev) not present on the runner.
-        run: cargo clippy --manifest-path src-core/Cargo.toml -p instrument-core -p regex-core --all-targets -- -D warnings
+        run: cargo clippy --manifest-path src-core/Cargo.toml -p instrument-core -p regex-core -p instrument-cli --all-targets -- -D warnings
 
   build-and-deploy-web:
     name: Web — build WASM + Vite

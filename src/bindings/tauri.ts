@@ -468,6 +468,39 @@ async readClipboardText() : Promise<Result<string, string>> {
     if(e instanceof Error) throw e;
     else return { status: "error", error: e  as any };
 }
+},
+/**
+ * Returns the current CLI installation status.
+ */
+async cliStatus() : Promise<Result<CliStatus, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("cli_status") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
+ * Installs the CLI into a user-writable path.
+ */
+async cliInstall() : Promise<Result<CliStatus, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("cli_install") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
+ * Removes the CLI installation.
+ */
+async cliUninstall() : Promise<Result<CliStatus, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("cli_uninstall") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
 }
 }
 
@@ -650,6 +683,12 @@ specialNote: string | null;
  * Subnet split preview.
  */
 subnetSplit: SubnetSplit | null; error: string | null }
+export type CliStatus = { installed: boolean; installPath: string | null; sourcePath: string | null; error: string | null; 
+/**
+ * True when the shell profile was just updated to add ~/.local/bin to PATH.
+ * The user needs to restart their terminal (or source the profile) for `instrument` to work.
+ */
+pathUpdated: boolean }
 export type ColorContrastInput = { 
 /**
  * Foreground colour — 3 or 6-digit hex, with or without `#`.

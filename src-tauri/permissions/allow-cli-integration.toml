@@ -1,0 +1,5 @@
+# Allow CLI install/status/uninstall commands from Settings (desktop).
+[[permission]]
+identifier = "allow-cli-integration"
+description = "Enables cli_status, cli_install, and cli_uninstall for PATH integration."
+commands.allow = ["cli_status", "cli_install", "cli_uninstall"]

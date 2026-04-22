@@ -1,9 +1,12 @@
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 
+mod cli_install;
 mod hotkey;
 mod tray;
 
+#[cfg(debug_assertions)]
 use specta_typescript::{BigIntExportBehavior, Typescript};
+#[cfg(debug_assertions)]
 use std::path::Path;
 use tauri::tray::TrayIconBuilder;
 use tauri::Manager;
@@ -12,6 +15,7 @@ use tauri_plugin_log::{RotationStrategy, Target, TargetKind};
 use tauri_specta::{collect_commands, Builder};
 
 /// `tauri-specta` emits imports/helpers at EOF that trip `tsc` `noUnusedLocals` when no events exist.
+#[cfg(debug_assertions)]
 fn prepend_ts_nocheck_if_needed(path: &Path) {
     let content = match std::fs::read_to_string(path) {
         Ok(c) => c,
@@ -109,6 +113,9 @@ pub fn run() {
         tray::consume_popover_clipboard_seed,
         hotkey::set_global_hotkey_enabled,
         hotkey::read_clipboard_text,
+        cli_install::cli_status,
+        cli_install::cli_install,
+        cli_install::cli_uninstall,
     ]);
 
     #[cfg(debug_assertions)]
@@ -195,6 +202,28 @@ pub fn run() {
             ) {
                 log::warn!("Failed to register global popover shortcut: {}", e);
             }
+
+            // Attempt silent CLI install on first launch; users can still control this in Settings.
+            let cli_app = app.handle().clone();
+            std::thread::spawn(move || {
+                let status = cli_install::cli_status(cli_app.clone()).unwrap_or(cli_install::CliStatus {
+                    installed: false,
+                    install_path: None,
+                    source_path: None,
+                    error: None,
+                    path_updated: false,
+                });
+                if !status.installed {
+                    if let Err(e) = cli_install::do_install_pub(&cli_app) {
+                        log::warn!(
+                            "Silent CLI install failed (user can install manually in Settings): {}",
+                            e
+                        );
+                    } else {
+                        log::info!("CLI auto-installed to PATH");
+                    }
+                }
+            });
 
             Ok(())
         })

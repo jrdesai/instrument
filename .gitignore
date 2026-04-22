@@ -50,6 +50,7 @@ Thumbs.db
 # ── Tauri ─────────────────────────────────────────────
 src-tauri/target/
 src-tauri/WixTools/
+src-tauri/binaries/
 
 # ── pnpm ──────────────────────────────────────────────
 .pnpm-store/
