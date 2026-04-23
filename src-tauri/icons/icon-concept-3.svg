@@ -14,17 +14,18 @@
   <rect width="1024" height="1024" rx="224" fill="url(#bg)"/>
 
   <!--
-    Both characters span y=262 to y=762 (500px, vertically centered at y=512).
-    Stroke-width=60 means round linecaps add 30px overhang at each endpoint,
-    so the > path endpoints are inset by 30px: y=292 to y=732.
+    >I mark centred at (512, 512) with ~10% padding top/bottom (macOS HIG).
+    Both characters span y=102–922 (820px = 80% of canvas).
+    Stroke-width=64 → round linecap adds ~25px vertical overhang,
+    so path endpoints are inset to y=127 and y=897.
   -->
 
   <!-- > chevron -->
-  <path d="M 290 292 L 530 512 L 290 732"
-        stroke="url(#fg)" stroke-width="60"
+  <path d="M 290 127 L 630 512 L 290 897"
+        stroke="url(#fg)" stroke-width="64"
         stroke-linecap="round" stroke-linejoin="round"
         fill="none"/>
 
   <!-- I — plain stem, no serifs -->
-  <rect x="590" y="262" width="60" height="500" rx="30" fill="url(#fg)"/>
+  <rect x="690" y="102" width="64" height="820" rx="32" fill="url(#fg)"/>
 </svg>
