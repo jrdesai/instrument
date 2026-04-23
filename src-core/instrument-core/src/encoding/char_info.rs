@@ -287,9 +287,11 @@ pub fn lookup(input: CharLookupInput) -> CharLookupOutput {
 
     let parsed_cp = if q.chars().count() == 1 {
         q.chars().next().map(|c| c as u32)
-    } else if q.starts_with("U+") || q.starts_with("u+") {
-        u32::from_str_radix(&q[2..], 16).ok()
-    } else if q.starts_with("0x") || q.starts_with("0X") {
+    } else if q.starts_with("U+")
+        || q.starts_with("u+")
+        || q.starts_with("0x")
+        || q.starts_with("0X")
+    {
         u32::from_str_radix(&q[2..], 16).ok()
     } else if q.chars().all(|c| c.is_ascii_digit()) {
         q.parse::<u32>().ok()
