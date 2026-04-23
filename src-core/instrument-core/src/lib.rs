@@ -15,3 +15,5 @@ pub mod html;
 pub mod yaml_fmt;
 pub mod expression;
 pub mod media;
+
+pub use encoding::char_info;

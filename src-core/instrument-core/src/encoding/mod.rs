@@ -1,4 +1,5 @@
 pub mod base64;
+pub mod char_info;
 pub mod color;
 pub mod html_entity;
 pub mod hex;

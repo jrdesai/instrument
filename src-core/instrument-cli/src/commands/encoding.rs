@@ -1,6 +1,7 @@
 use clap::{Args, Subcommand, ValueEnum};
 use instrument_core::encoding::{
     base64 as b64,
+    char_info,
     hex as hex_mod,
     html_entity,
     morse,
@@ -292,5 +293,53 @@ pub fn run_morse(args: MorseArgs, json: bool) {
     match result.error {
         Some(e) => output::print_err(&e, json, "morse"),
         None => output::print_ok(&result.result, json, "morse"),
+    }
+}
+
+#[derive(Args)]
+pub struct CharArgs {
+    /// Codepoint (65, 0x41, U+0041), single character, control abbr (NUL), or name search
+    pub query: Option<String>,
+}
+
+pub fn run_char(args: CharArgs, json: bool) {
+    let query = args.query.unwrap_or_default();
+    if query.trim().is_empty() {
+        output::print_err(
+            "Provide a codepoint (65, 0x41, U+0041), character, or name to search",
+            json,
+            "char",
+        );
+    }
+    let out = char_info::lookup(char_info::CharLookupInput { query });
+    if let Some(e) = out.error {
+        output::print_err(&e, json, "char");
+    }
+    if json {
+        println!(
+            "{}",
+            serde_json::to_string(&serde_json::json!({ "ok": true, "tool": "char", "output": out.matches }))
+                .unwrap_or_default()
+        );
+    } else {
+        for c in &out.matches {
+            let ch_display = if c.ch.is_empty() {
+                c.abbr.as_deref().unwrap_or("").to_string()
+            } else {
+                c.ch.clone()
+            };
+            println!(
+                "{:<6} U+{:<6} {:>6}  0x{:<6}  {}",
+                ch_display,
+                format!("{:04X}", c.codepoint),
+                c.codepoint,
+                format!("{:04X}", c.codepoint),
+                c.name
+            );
+        }
+        if out.matches.is_empty() {
+            eprintln!("No matching characters found.");
+            std::process::exit(1);
+        }
     }
 }

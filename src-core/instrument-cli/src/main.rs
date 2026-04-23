@@ -35,6 +35,8 @@ enum Commands {
     Slug(encoding::SlugArgs),
     /// Encode/decode Morse code
     Morse(encoding::MorseArgs),
+    /// Look up a character by codepoint, decimal, hex, abbreviation, or name
+    Char(encoding::CharArgs),
     /// Hash text (MD5, SHA-1, SHA-256, SHA-512, SHA3-256, SHA3-512); optional HMAC
     Hash(security::HashArgs),
     /// Decode and inspect a JWT token
@@ -157,6 +159,7 @@ fn main() {
         Commands::HtmlEntity(args) => encoding::run_html_entity(args, json),
         Commands::Slug(args) => encoding::run_slug(args, json),
         Commands::Morse(args) => encoding::run_morse(args, json),
+        Commands::Char(args) => encoding::run_char(args, json),
         Commands::Hash(args) => security::run_hash(args, json),
         Commands::Jwt(args) => security::run_jwt(args, json),
         Commands::Bcrypt(args) => security::run_bcrypt(args, json),
