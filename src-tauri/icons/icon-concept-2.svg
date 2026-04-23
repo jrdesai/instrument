@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <linearGradient id="fg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#34D399"/>
+      <stop offset="100%" stop-color="#38BDF8"/>
+    </linearGradient>
+    <radialGradient id="bg" cx="50%" cy="35%" r="70%">
+      <stop offset="0%" stop-color="#1a1b2e"/>
+      <stop offset="100%" stop-color="#0d0e1a"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1024" height="1024" rx="224" fill="url(#bg)"/>
+
+  <!-- Prompt: >_ -->
+
+  <!-- > chevron -->
+  <path d="M 200 360 L 360 512 L 200 664" stroke="url(#fg)" stroke-width="72" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+
+  <!-- _ underscore cursor -->
+  <rect x="420" y="626" width="180" height="68" rx="34" fill="url(#fg)"/>
+
+  <!-- Wrench -->
+  <!-- Wrench head (ring) -->
+  <circle cx="756" cy="308" r="110" stroke="url(#fg)" stroke-width="68" fill="none"/>
+  <rect x="700" y="390" width="112" height="60" rx="0" fill="url(#0d0e1a)"/>
+
+  <!-- Wrench handle -->
+  <path d="M 694 430 L 556 680" stroke="url(#fg)" stroke-width="68" stroke-linecap="round" fill="none"/>
+  <path d="M 818 430 L 680 680" stroke="url(#fg)" stroke-width="68" stroke-linecap="round" fill="none"/>
+  <rect x="543" y="646" width="150" height="68" rx="34" fill="url(#fg)"/>
+</svg>
