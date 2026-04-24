@@ -1,6 +1,6 @@
 # Instrument
 
-**A privacy-first developer toolkit — 76 tools, all processing happens locally on your device. No data ever leaves.**
+**A privacy-first developer toolkit — 75 tools, all processing happens locally on your device. No data ever leaves.**
 
 > Screenshot coming soon
 
@@ -51,7 +51,7 @@ instrument semver bump minor 1.4.2
 
 ---
 
-## Tools (76 total)
+## Tools (75 total)
 
 | Category | Tools |
 |----------|-------|

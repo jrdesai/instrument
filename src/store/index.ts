@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
+import type { ChainTemplate } from "../data/chainTemplates";
 import type { Role, Tool } from "../registry";
 
 // ---------------------------------------------------------------------------
@@ -205,6 +206,7 @@ interface ChainState {
   /** Persisted first-step input per chain. Keyed by chainId. */
   chainInputs: Record<string, string>;
   createChain: (name?: string) => Chain;
+  createChainFromTemplate: (template: ChainTemplate) => Chain;
   deleteChain: (chainId: string) => void;
   renameChain: (chainId: string, name: string) => void;
   addStep: (chainId: string, toolId: string) => void;
@@ -233,6 +235,26 @@ const chainStoreImpl = persist(
         id: crypto.randomUUID(),
         name: name?.trim() ? name.trim() : "Untitled chain",
         steps: [],
+        createdAt: now,
+        updatedAt: now,
+      };
+      set((state) => {
+        state.chains.push(chain);
+      });
+      return chain;
+    },
+
+    createChainFromTemplate: (template) => {
+      const now = Date.now();
+      const chain: Chain = {
+        id: crypto.randomUUID(),
+        name: template.name,
+        steps: template.steps.map((s) => ({
+          id: crypto.randomUUID(),
+          toolId: s.toolId,
+          outputField: s.outputField,
+          config: { ...s.config },
+        })),
         createdAt: now,
         updatedAt: now,
       };
