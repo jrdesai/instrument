@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <linearGradient id="fg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#818CF8"/>
+      <stop offset="100%" stop-color="#38BDF8"/>
+    </linearGradient>
+    <radialGradient id="bg" cx="50%" cy="35%" r="70%">
+      <stop offset="0%" stop-color="#1a1b2e"/>
+      <stop offset="100%" stop-color="#0d0e1a"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Scale to 90% around center — adds ~5% transparent margin on each side -->
+  <g transform="translate(512,512) scale(0.9) translate(-512,-512)">
+    <rect width="1024" height="1024" rx="224" fill="url(#bg)"/>
+    <path d="M 290 127 L 630 512 L 290 897"
+          stroke="url(#fg)" stroke-width="64"
+          stroke-linecap="round" stroke-linejoin="round"
+          fill="none"/>
+    <rect x="690" y="102" width="64" height="820" rx="32" fill="url(#fg)"/>
+  </g>
+</svg>
