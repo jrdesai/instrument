@@ -1229,6 +1229,41 @@ export const tools: Tool[] = [
     implemented: true,
   },
   {
+    id: "html-previewer",
+    name: "HTML Previewer",
+    description:
+      "Live-preview raw HTML in a sandboxed frame — test snippets without leaving the app.",
+    category: "code",
+    displayCategory: "Code",
+    displayCategoryIcon: "code",
+    roles: ["frontend", "general"],
+    icon: "preview",
+    platforms: ["desktop", "web"],
+    keywords: [
+      "html",
+      "preview",
+      "render",
+      "sandbox",
+      "iframe",
+      "live preview",
+      "html preview",
+      "browser",
+      "snippet",
+      "template",
+      "design",
+      "frontend",
+      "test html",
+      "html viewer",
+      "markup",
+    ],
+    component: React.lazy(() =>
+      import("../tools/html-previewer/HtmlPreviewerTool").then((m) => ({
+        default: m.default,
+      }))
+    ),
+    implemented: true,
+  },
+  {
     id: "yaml-formatter",
     name: "YAML Formatter",
     description: "Format and validate YAML documents.",
