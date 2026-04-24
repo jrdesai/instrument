@@ -16,12 +16,12 @@ const isMac =
   /mac/i.test(navigator.platform || navigator.userAgent);
 const MOD = isMac ? "⌘" : "Ctrl+";
 
-const navItems: { to: string; icon: string; label: string; shortcut: string }[] =
-  [
-    { to: "/", icon: "home", label: "Home", shortcut: `${MOD}1` },
-    { to: "/history", icon: "history", label: "History", shortcut: `${MOD}2` },
-    { to: "/settings", icon: "settings", label: "Settings", shortcut: `${MOD}3` },
-  ];
+const navItems: { to: string; icon: string; label: string; shortcut: string }[] = [
+  { to: "/", icon: "home", label: "Home", shortcut: `${MOD}1` },
+  { to: "/history", icon: "history", label: "History", shortcut: `${MOD}2` },
+  { to: "/chains", icon: "conversion_path", label: "Chains", shortcut: `${MOD}3` },
+  { to: "/settings", icon: "settings", label: "Settings", shortcut: `${MOD}4` },
+];
 
 export function AppShell() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -53,6 +53,10 @@ export function AppShell() {
         navigate("/history");
       }
       if (mod && e.key === "3") {
+        e.preventDefault();
+        navigate("/chains");
+      }
+      if (mod && e.key === "4") {
         e.preventDefault();
         navigate("/settings");
       }

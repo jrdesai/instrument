@@ -15,31 +15,25 @@ export interface HistoryEntry {
   timestamp: number;
 }
 
-/**
- * Per-tool input config for a chain step. Refine with a concrete ToolInputMap
- * (e.g. Record<toolId, ThatToolInput>) when tool input types are defined.
- */
-export type ToolInputMap = Record<string, unknown>;
-
-/**
- * One step in a chain: which tool runs, which field from the previous step's
- * output feeds into this step (inputKey), and the tool-specific config.
- */
 export interface ChainStep {
   id: string;
   toolId: string;
-  /** Which field from previous step output feeds into this step. */
-  inputKey: string;
-  /** Tool-specific config; typed per-tool via ToolInputMap when available. */
-  config: ToolInputMap;
+  /**
+   * For tools with structured output (e.g. JWT outputs header/payload/signature),
+   * which field to pipe forward to the next step. undefined = pipe the full string output.
+   * Used in Phase 2 execution — stored in Phase 1 so the data model doesn't change.
+   */
+  outputField?: string;
+  /** Per-step static config (secondary inputs set once, not piped). Used in Phase 2. */
+  config: Record<string, unknown>;
 }
 
-/** A named sequence of tool steps. */
 export interface Chain {
   id: string;
   name: string;
   steps: ChainStep[];
   createdAt: number;
+  updatedAt: number;
 }
 
 /** Theme preference. */
@@ -182,90 +176,186 @@ export const useHistoryStore = create<HistoryState>()(
 // Chain store
 // ---------------------------------------------------------------------------
 
-function generateId(): string {
-  return crypto.randomUUID();
+function migratePersistedChain(raw: unknown): Chain | null {
+  if (!raw || typeof raw !== "object") return null;
+  const o = raw as Record<string, unknown>;
+  if (typeof o.id !== "string" || typeof o.name !== "string") return null;
+  const createdAt = typeof o.createdAt === "number" ? o.createdAt : Date.now();
+  const updatedAt = typeof o.updatedAt === "number" ? o.updatedAt : createdAt;
+  if (!Array.isArray(o.steps)) return null;
+  const steps: ChainStep[] = o.steps
+    .map((st): ChainStep | null => {
+      if (!st || typeof st !== "object") return null;
+      const s = st as Record<string, unknown>;
+      if (typeof s.id !== "string" || typeof s.toolId !== "string") return null;
+      const config =
+        s.config && typeof s.config === "object" && !Array.isArray(s.config)
+          ? (s.config as Record<string, unknown>)
+          : {};
+      const outputField = typeof s.outputField === "string" ? s.outputField : undefined;
+      return { id: s.id, toolId: s.toolId, outputField, config };
+    })
+    .filter((x): x is ChainStep => x !== null);
+  return { id: o.id, name: o.name, steps, createdAt, updatedAt };
 }
 
 interface ChainState {
   chains: Chain[];
-  activeChain: Chain | null;
-  createChain: (name: string) => Chain;
+  activeChainId: string | null;
+  /** Persisted first-step input per chain. Keyed by chainId. */
+  chainInputs: Record<string, string>;
+  createChain: (name?: string) => Chain;
+  deleteChain: (chainId: string) => void;
+  renameChain: (chainId: string, name: string) => void;
   addStep: (chainId: string, toolId: string) => void;
   removeStep: (chainId: string, stepId: string) => void;
-  runChain: (chainId: string) => void;
-  setActiveChain: (chain: Chain | null) => void;
+  moveStepUp: (chainId: string, stepId: string) => void;
+  moveStepDown: (chainId: string, stepId: string) => void;
+  setActiveChainId: (chainId: string | null) => void;
+  getChain: (chainId: string) => Chain | undefined;
+  updateStep: (
+    chainId: string,
+    stepId: string,
+    updates: Partial<Pick<ChainStep, "outputField" | "config">>
+  ) => void;
+  setChainInput: (chainId: string, value: string) => void;
 }
 
-/**
- * @internal Stub — always returns true until tool I/O types are defined. Do not use in UI logic.
- */
-function areStepsCompatible(_stepA: Tool, _stepB: Tool): boolean {
-  // TODO: when ToolInputMap / output types exist, check stepA output has a field stepB accepts
-  return true;
-}
+const chainStoreImpl = persist(
+  immer<ChainState>((set, get) => ({
+    chains: [],
+    activeChainId: null,
+    chainInputs: {},
 
-void areStepsCompatible;
-
-/**
- * Store for chains (sequences of tools). Create chains, add/remove steps,
- * and run a chain. activeChain is the one currently being edited or viewed.
- *
- * Intentionally NOT persisted: chain execution (runChain) is not yet implemented,
- * and chain data structures may change significantly before the feature ships.
- * Add persist() here once chains are stable.
- */
-const chainStoreImpl = immer<ChainState>((set, get) => ({
-  chains: [],
-  activeChain: null,
-
-  createChain: (name) => {
-    const chain: Chain = {
-      id: generateId(),
-      name,
-      steps: [],
-      createdAt: Date.now(),
-    };
-    set((state) => {
-      state.chains.push(chain);
-      state.activeChain = chain;
-    });
-    return chain;
-  },
-
-  addStep: (chainId, toolId) =>
-    set((state) => {
-      const chain = state.chains.find((c: Chain) => c.id === chainId);
-      if (!chain) return;
-      const step: ChainStep = {
-        id: generateId(),
-        toolId,
-        inputKey: "",
-        config: {},
+    createChain: (name) => {
+      const now = Date.now();
+      const chain: Chain = {
+        id: crypto.randomUUID(),
+        name: name?.trim() ? name.trim() : "Untitled chain",
+        steps: [],
+        createdAt: now,
+        updatedAt: now,
       };
-      chain.steps.push(step);
-    }),
+      set((state) => {
+        state.chains.push(chain);
+      });
+      return chain;
+    },
 
-  removeStep: (chainId, stepId) =>
-    set((state) => {
-      const chain = state.chains.find((c: Chain) => c.id === chainId);
-      if (!chain) return;
-      chain.steps = chain.steps.filter((s: ChainStep) => s.id !== stepId);
-    }),
+    deleteChain: (chainId) =>
+      set((state) => {
+        state.chains = state.chains.filter((c) => c.id !== chainId);
+        if (state.activeChainId === chainId) state.activeChainId = null;
+        delete state.chainInputs[chainId];
+      }),
 
-  runChain: (chainId) => {
-    const chain = get().chains.find((c: Chain) => c.id === chainId);
-    if (!chain) return;
-    // TODO: iterate steps, call callTool for each, pass previous output into next step
-    throw new Error(
-      `runChain: chain execution is not yet implemented (chain: "${chain.name}")`
-    );
-  },
+    renameChain: (chainId, name) =>
+      set((state) => {
+        const chain = state.chains.find((c) => c.id === chainId);
+        if (!chain) return;
+        chain.name = name;
+        chain.updatedAt = Date.now();
+      }),
 
-  setActiveChain: (chain) =>
-    set((state) => {
-      state.activeChain = chain;
+    addStep: (chainId, toolId) =>
+      set((state) => {
+        const chain = state.chains.find((c) => c.id === chainId);
+        if (!chain) return;
+        chain.steps.push({
+          id: crypto.randomUUID(),
+          toolId,
+          outputField: undefined,
+          config: {},
+        });
+        chain.updatedAt = Date.now();
+      }),
+
+    removeStep: (chainId, stepId) =>
+      set((state) => {
+        const chain = state.chains.find((c) => c.id === chainId);
+        if (!chain) return;
+        chain.steps = chain.steps.filter((s) => s.id !== stepId);
+        chain.updatedAt = Date.now();
+      }),
+
+    moveStepUp: (chainId, stepId) =>
+      set((state) => {
+        const chain = state.chains.find((c) => c.id === chainId);
+        if (!chain) return;
+        const i = chain.steps.findIndex((s) => s.id === stepId);
+        if (i <= 0) return;
+        const tmp = chain.steps[i - 1];
+        chain.steps[i - 1] = chain.steps[i];
+        chain.steps[i] = tmp;
+        chain.updatedAt = Date.now();
+      }),
+
+    moveStepDown: (chainId, stepId) =>
+      set((state) => {
+        const chain = state.chains.find((c) => c.id === chainId);
+        if (!chain) return;
+        const i = chain.steps.findIndex((s) => s.id === stepId);
+        if (i < 0 || i >= chain.steps.length - 1) return;
+        const tmp = chain.steps[i + 1];
+        chain.steps[i + 1] = chain.steps[i];
+        chain.steps[i] = tmp;
+        chain.updatedAt = Date.now();
+      }),
+
+    setActiveChainId: (chainId) =>
+      set((state) => {
+        state.activeChainId = chainId;
+      }),
+
+    getChain: (chainId) => get().chains.find((c) => c.id === chainId),
+
+    updateStep: (chainId, stepId, updates) =>
+      set((state) => {
+        const chain = state.chains.find((c) => c.id === chainId);
+        if (!chain) return;
+        const step = chain.steps.find((s) => s.id === stepId);
+        if (!step) return;
+        if ("outputField" in updates) step.outputField = updates.outputField;
+        if (updates.config) {
+          Object.assign(step.config, updates.config);
+        }
+        chain.updatedAt = Date.now();
+      }),
+
+    setChainInput: (chainId, value) =>
+      set((state) => {
+        state.chainInputs[chainId] = value;
+      }),
+  })),
+  {
+    name: "instrument-chains",
+    partialize: (state) => ({
+      chains: state.chains,
+      activeChainId: state.activeChainId,
+      chainInputs: state.chainInputs,
     }),
-}));
+    merge: (persistedState, currentState) => {
+      if (!persistedState || typeof persistedState !== "object") {
+        return currentState;
+      }
+      const p = persistedState as Partial<
+        Pick<ChainState, "chains" | "activeChainId" | "chainInputs">
+      >;
+      const chains = Array.isArray(p.chains)
+        ? p.chains.map(migratePersistedChain).filter((c): c is Chain => c != null)
+        : currentState.chains;
+      const activeChainId =
+        p.activeChainId === null || typeof p.activeChainId === "string"
+          ? p.activeChainId ?? null
+          : currentState.activeChainId;
+      const chainInputs =
+        p.chainInputs && typeof p.chainInputs === "object" && !Array.isArray(p.chainInputs)
+          ? (p.chainInputs as Record<string, string>)
+          : currentState.chainInputs;
+      return { ...currentState, chains, activeChainId, chainInputs };
+    },
+  }
+);
 
 export const useChainStore = create<ChainState>()(
   (import.meta.env.DEV

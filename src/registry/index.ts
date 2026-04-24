@@ -1,4 +1,5 @@
 import React from "react";
+import { CHAIN_TOOL_META } from "./chainMetadata";
 
 /** Category for Library filtering and grouping. */
 export type ToolCategory =
@@ -27,6 +28,23 @@ export type Role =
 /** Platform(s) the tool runs on. */
 export type Platform = "desktop" | "web";
 
+/** A configurable field shown on a chain step card (critical secondary inputs only). */
+export type ChainConfigField =
+  | {
+      key: string;
+      label: string;
+      type: "select";
+      options: { value: string; label: string }[];
+      default: string;
+    }
+  | {
+      key: string;
+      label: string;
+      type: "text";
+      placeholder?: string;
+      default: string;
+    };
+
 /** Registry entry for a single tool. */
 export interface Tool {
   id: string;
@@ -43,6 +61,38 @@ export interface Tool {
   keywords: string[];
   component: React.LazyExoticComponent<React.ComponentType<unknown>>;
   implemented: boolean;
+  /**
+   * If true, this tool can appear as a step in a Chain.
+   * Chainable tools have one clear primary text input (receives piped data)
+   * and produce a string or structured output. Tools excluded: binary I/O,
+   * random generators, reference tables, tools needing two simultaneous
+   * dynamic inputs.
+   */
+  chainable?: boolean;
+
+  /**
+   * The input object field that receives piped data from the previous step.
+   * Required on all tools where chainable === true.
+   */
+  chainPrimaryInput?: string;
+
+  /**
+   * Dot-path to extract the primary output string from the tool's response.
+   * Default when absent: "result". Supports dot notation for nested access.
+   */
+  chainPrimaryOutput?: string;
+
+  /**
+   * For structured outputs, the user picks which field pipes forward.
+   * Selected key is stored in ChainStep.outputField.
+   */
+  chainOutputFields?: { key: string; label: string }[];
+
+  /**
+   * Critical secondary inputs shown on the chain step card (encode/decode, etc.).
+   */
+  chainConfig?: ChainConfigField[];
+
   /** If true, input/output are never recorded in history (e.g. JWT, API keys). */
   sensitive?: boolean;
 
@@ -103,6 +153,7 @@ export const tools: Tool[] = [
     trayPopover: true,
     cliCommand: "base64",
     implemented: true,
+    chainable: true,
   },
   {
     id: "regex-tester",
@@ -136,6 +187,7 @@ export const tools: Tool[] = [
     ),
     trayPopover: true,
     implemented: true,
+    chainable: true,
   },
   /** Same UI as Regex Tester; separate row so `tool_regex_explain` resolves for the bridge. Not shown in Library (implemented: false). */
   {
@@ -189,6 +241,7 @@ export const tools: Tool[] = [
     trayPopover: true,
     cliCommand: "url",
     implemented: true,
+    chainable: true,
   },
   {
     id: "html-entity",
@@ -219,6 +272,7 @@ export const tools: Tool[] = [
     trayPopover: true,
     cliCommand: "html-entity",
     implemented: true,
+    chainable: true,
   },
   {
     id: "morse-code",
@@ -320,6 +374,7 @@ export const tools: Tool[] = [
     trayPopover: true,
     cliCommand: "hex",
     implemented: true,
+    chainable: true,
   },
   {
     id: "color-converter",
@@ -357,6 +412,7 @@ export const tools: Tool[] = [
     ),
     trayPopover: true,
     implemented: true,
+    chainable: true,
   },
   {
     id: "qr-code",
@@ -426,6 +482,7 @@ export const tools: Tool[] = [
     trayPopover: true,
     cliCommand: "hash",
     implemented: true,
+    chainable: true,
   },
   {
     id: "cert-decoder",
@@ -465,6 +522,7 @@ export const tools: Tool[] = [
       import("../tools/cert-decoder").then((m) => ({ default: m.default }))
     ),
     implemented: true,
+    chainable: true,
   },
   {
     id: "uuid-generator",
@@ -572,6 +630,7 @@ export const tools: Tool[] = [
     trayPopover: true,
     cliCommand: "jwt",
     implemented: true,
+    chainable: true,
     sensitive: true,
   },
   {
@@ -731,6 +790,7 @@ export const tools: Tool[] = [
     ),
     trayPopover: false,
     implemented: true,
+    chainable: true,
   },
   {
     id: "passphrase-generator",
@@ -795,6 +855,7 @@ export const tools: Tool[] = [
       }))
     ),
     implemented: true,
+    chainable: true,
   },
   {
     id: "totp-generator",
@@ -860,6 +921,7 @@ export const tools: Tool[] = [
     trayPopover: true,
     cliCommand: "json",
     implemented: true,
+    chainable: true,
   },
   {
     id: "json-validator",
@@ -889,6 +951,7 @@ export const tools: Tool[] = [
     trayPopover: true,
     cliCommand: "json",
     implemented: true,
+    chainable: true,
   },
   {
     id: "json-schema-validator",
@@ -922,6 +985,7 @@ export const tools: Tool[] = [
       import("../tools/json-schema-validator").then((m) => ({ default: m.default }))
     ),
     implemented: true,
+    chainable: true,
   },
   {
     id: "json-diff",
@@ -978,6 +1042,7 @@ export const tools: Tool[] = [
     ),
     trayPopover: true,
     implemented: true,
+    chainable: true,
   },
   {
     id: "json-converter",
@@ -1010,6 +1075,7 @@ export const tools: Tool[] = [
       import("../tools/json-converter").then((m) => ({ default: m.default }))
     ),
     implemented: true,
+    chainable: true,
   },
   {
     id: "config-converter",
@@ -1045,6 +1111,7 @@ export const tools: Tool[] = [
         }>
     ),
     implemented: true,
+    chainable: true,
   },
   {
     id: "csv-to-json",
@@ -1086,6 +1153,7 @@ export const tools: Tool[] = [
     ),
     trayPopover: true,
     implemented: true,
+    chainable: true,
   },
   {
     id: "csv-previewer",
@@ -1192,6 +1260,7 @@ export const tools: Tool[] = [
     ),
     cliCommand: "xml",
     implemented: true,
+    chainable: true,
   },
   {
     id: "html-formatter",
@@ -1227,6 +1296,7 @@ export const tools: Tool[] = [
       }))
     ),
     implemented: true,
+    chainable: true,
   },
   {
     id: "html-previewer",
@@ -1299,6 +1369,7 @@ export const tools: Tool[] = [
     ),
     cliCommand: "yaml",
     implemented: true,
+    chainable: true,
   },
   {
     id: "url-parser",
@@ -1335,6 +1406,7 @@ export const tools: Tool[] = [
     ),
     trayPopover: true,
     implemented: true,
+    chainable: true,
   },
   {
     id: "cidr-calculator",
@@ -1505,6 +1577,7 @@ export const tools: Tool[] = [
       import("../tools/user-agent-parser/UserAgentParserTool").then((m) => ({ default: m.default }))
     ),
     implemented: true,
+    chainable: true,
   },
   {
     id: "mac-address",
@@ -1582,6 +1655,7 @@ export const tools: Tool[] = [
       import("../tools/env-parser").then((m) => ({ default: m.default }))
     ),
     implemented: true,
+    chainable: true,
   },
   {
     id: "line-tools",
@@ -1613,6 +1687,7 @@ export const tools: Tool[] = [
     ),
     cliCommand: "lines",
     implemented: true,
+    chainable: true,
   },
   {
     id: "fake-data-generator",
@@ -1690,6 +1765,7 @@ export const tools: Tool[] = [
     trayPopover: true,
     cliCommand: "case",
     implemented: true,
+    chainable: true,
   },
   {
     id: "word-counter",
@@ -1720,6 +1796,7 @@ export const tools: Tool[] = [
     trayPopover: true,
     cliCommand: "word-count",
     implemented: true,
+    chainable: true,
   },
   {
     id: "unicode-inspector",
@@ -1752,6 +1829,7 @@ export const tools: Tool[] = [
       import("../tools/unicode-inspector").then((m) => ({ default: m.default }))
     ),
     implemented: true,
+    chainable: true,
   },
   {
     id: "slug-generator",
@@ -1783,6 +1861,7 @@ export const tools: Tool[] = [
     trayPopover: true,
     cliCommand: "slug",
     implemented: true,
+    chainable: true,
   },
   {
     id: "nato-phonetic",
@@ -1817,6 +1896,7 @@ export const tools: Tool[] = [
     ),
     trayPopover: false,
     implemented: true,
+    chainable: true,
   },
   {
     id: "string-escaper",
@@ -1846,6 +1926,7 @@ export const tools: Tool[] = [
     ),
     trayPopover: true,
     implemented: true,
+    chainable: true,
   },
   {
     id: "find-replace",
@@ -1874,6 +1955,7 @@ export const tools: Tool[] = [
       import("../tools/find-replace").then((m) => ({ default: m.default }))
     ),
     implemented: true,
+    chainable: true,
   },
   {
     id: "text-diff",
@@ -1996,6 +2078,7 @@ export const tools: Tool[] = [
     trayPopover: true,
     cliCommand: "timestamp",
     implemented: true,
+    chainable: true,
   },
   {
     id: "timezone-converter",
@@ -2026,6 +2109,7 @@ export const tools: Tool[] = [
     ),
     trayPopover: true,
     implemented: true,
+    chainable: true,
   },
   {
     id: "iso8601-formatter",
@@ -2055,6 +2139,7 @@ export const tools: Tool[] = [
       import("../tools/iso8601-formatter").then((m) => ({ default: m.default }))
     ),
     implemented: true,
+    chainable: true,
   },
   {
     id: "cron-parser",
@@ -2088,6 +2173,7 @@ export const tools: Tool[] = [
       }))
     ),
     implemented: true,
+    chainable: true,
   },
   {
     id: "date-calculator",
@@ -2160,6 +2246,7 @@ export const tools: Tool[] = [
     ),
     trayPopover: true,
     implemented: true,
+    chainable: true,
   },
   {
     id: "semver",
@@ -2193,6 +2280,7 @@ export const tools: Tool[] = [
     ),
     cliCommand: "semver",
     implemented: true,
+    chainable: true,
   },
   {
     id: "unit-converter",
@@ -2303,6 +2391,7 @@ export const tools: Tool[] = [
         }>
     ),
     implemented: true,
+    chainable: true,
   },
   {
     id: "expression-evaluator",
@@ -2332,6 +2421,7 @@ export const tools: Tool[] = [
       }))
     ),
     implemented: true,
+    chainable: true,
   },
   {
     id: "percentage-calculator",
@@ -2572,6 +2662,7 @@ export const tools: Tool[] = [
     ),
     cliCommand: "sql",
     implemented: true,
+    chainable: true,
   },
   {
     id: "css-gradient",
@@ -2606,6 +2697,13 @@ export const tools: Tool[] = [
     implemented: true,
   },
 ];
+
+for (let i = 0; i < tools.length; i++) {
+  const patch = CHAIN_TOOL_META[tools[i].id];
+  if (patch) {
+    Object.assign(tools[i], patch);
+  }
+}
 
 // Build lookup maps once at module init for O(1) access.
 const _toolById = new Map<string, Tool>(tools.map((t) => [t.id, t]));

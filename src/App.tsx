@@ -12,6 +12,8 @@ import { getPopoverTools, getToolById } from "./registry";
 import { isDesktop } from "./bridge";
 import { AppShell } from "./components/layout/AppShell";
 import { DashboardPage } from "./components/layout/DashboardPage";
+import { ChainEditPage } from "./components/layout/ChainEditPage";
+import { ChainsPage } from "./components/layout/ChainsPage";
 import { HistoryPage } from "./components/layout/HistoryPage";
 import { SettingsPage } from "./components/layout/SettingsPage";
 import { ToolHeader } from "./components/layout/ToolHeader";
@@ -118,6 +120,8 @@ function RoutedLayout() {
         <Route element={<AppShell />}>
           <Route path="/" element={<DashboardPage />} />
           <Route path="/history" element={<HistoryPage />} />
+          <Route path="/chains" element={<ChainsPage />} />
+          <Route path="/chains/:chainId" element={<ChainEditPage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/tools/:toolId" element={<ToolPage />} />
         </Route>

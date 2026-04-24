@@ -20,7 +20,8 @@ const navigationRows: { label: string; mac: string[]; win: string[] }[] = [
   { label: "Search tools", mac: ["⌘", "K"], win: ["Ctrl", "K"] },
   { label: "Home", mac: ["⌘", "1"], win: ["Ctrl", "1"] },
   { label: "History", mac: ["⌘", "2"], win: ["Ctrl", "2"] },
-  { label: "Settings", mac: ["⌘", "3"], win: ["Ctrl", "3"] },
+  { label: "Chains", mac: ["⌘", "3"], win: ["Ctrl", "3"] },
+  { label: "Settings", mac: ["⌘", "4"], win: ["Ctrl", "4"] },
   { label: "Keyboard shortcuts", mac: ["⌘", "/"], win: ["Ctrl", "/"] },
 ];
 
