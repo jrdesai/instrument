@@ -1,6 +1,6 @@
 # Instrument
 
-**A privacy-first developer toolkit — 74 tools, all processing happens locally on your device. No data ever leaves.**
+**A privacy-first developer toolkit — 76 tools, all processing happens locally on your device. No data ever leaves.**
 
 > Screenshot coming soon
 
@@ -9,7 +9,7 @@
 ## Ways to use Instrument
 
 ### Desktop app
-The full experience. Open the app, browse 65 tools across the Library, pin favourites to your dashboard, and keep a history of recent inputs.
+The full experience. Open the app, browse 76 tools across the Library, pin favourites to your dashboard, and keep a history of recent inputs.
 
 Supported platforms: macOS · Windows · Linux
 
@@ -51,11 +51,11 @@ instrument semver bump minor 1.4.2
 
 ---
 
-## Tools (74 total)
+## Tools (76 total)
 
 | Category | Tools |
 |----------|-------|
-| **Encoding** | Base64, URL Encoder, HTML Entity, Hex Converter, Color Converter, QR Code Generator |
+| **Encoding** | Base64, URL Encoder, HTML Entity, Hex Converter, Color Converter, QR Code Generator, ASCII / Unicode Table |
 | **Crypto** | Hash, UUID / ULID / Nano ID Generator, Password Generator, Passphrase Generator, API Key Generator, AES Encrypt/Decrypt, TOTP Generator, Certificate Decoder, RSA Key Pair Generator |
 | **Auth** | JWT Decoder, Basic Auth Header |
 | **JSON** | Formatter, Validator, Schema Validator, Diff, Path, Converter, Config Converter |
@@ -63,7 +63,7 @@ instrument semver bump minor 1.4.2
 | **Media** | Image Converter *(desktop only)* |
 | **Network** | URL Parser, CIDR Calculator, HTTP Status Codes, cURL Builder, User-Agent Parser |
 | **Text** | Case Converter, Word Counter, Find & Replace, Text Diff, Line Tools, String Escaper, Lorem Ipsum, Markdown Editor, Config Parser, Unicode Inspector, Slug Generator, Fake Data Generator, NATO Phonetic Alphabet |
-| **Code** | Regex Tester, Regex Explain, HTML Formatter, SQL Formatter, Code Formatter, Keycode Info |
+| **Code** | Regex Tester, Regex Explain, HTML Formatter, HTML Previewer, SQL Formatter, Code Formatter, Keycode Info |
 | **Numbers** | Number Base Converter, Semver, Unit Converter, Bitwise Calculator, chmod Calculator, Expression Evaluator, Colour Contrast Checker |
 | **Date & Time** | Timestamp Converter, Timezone Converter, ISO 8601 Formatter, Cron Expression Parser |
 
