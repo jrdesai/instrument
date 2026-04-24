@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { getToolById } from "../../registry";
+import { useToolStore } from "../../store";
 import { LogoMark } from "../LogoMark";
 import { OnboardingModal } from "../onboarding/OnboardingModal";
+import { KeyboardShortcutsModal } from "../ui/KeyboardShortcutsModal";
 import { PwaInstallBanner } from "../ui/PwaInstallBanner";
 import { SearchModal } from "../ui/SearchModal";
 
@@ -23,14 +25,21 @@ const navItems: { to: string; icon: string; label: string; shortcut: string }[] 
 
 export function AppShell() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isShortcutsOpen, setIsShortcutsOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const toolIdMatch = location.pathname.match(/^\/tools\/(.+)$/);
   const activeTool = toolIdMatch ? getToolById(toolIdMatch[1]) : null;
+  const toggleFavourite = useToolStore((s) => s.toggleFavourite);
+  const favouriteToolIds = useToolStore((s) => s.favouriteToolIds);
 
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       const mod = e.metaKey || e.ctrlKey;
+      if (mod && e.key === "/") {
+        e.preventDefault();
+        setIsShortcutsOpen((prev) => !prev);
+      }
       if (mod && e.key === "k") {
         e.preventDefault();
         setIsSearchOpen((prev) => !prev);
@@ -47,10 +56,18 @@ export function AppShell() {
         e.preventDefault();
         navigate("/settings");
       }
+      if (mod && e.shiftKey && (e.key === "F" || e.key === "f")) {
+        e.preventDefault();
+        const match = window.location.pathname.match(/^\/tools\/(.+)$/);
+        if (match) {
+          const tool = getToolById(match[1]);
+          if (tool) toggleFavourite(tool);
+        }
+      }
     }
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [navigate]);
+  }, [navigate, toggleFavourite, favouriteToolIds]);
 
   return (
     <div className="flex h-screen w-full min-w-0 flex-col overflow-hidden bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display md:flex-row">
@@ -115,10 +132,19 @@ export function AppShell() {
               search
             </span>
             <span className="min-w-0 flex-1 truncate">Search tools...</span>
-            <kbd className="hidden items-center gap-0.5 font-mono text-xs text-slate-400 dark:text-slate-500 sm:inline-flex">
-              <span>{MOD}</span>
-              <span>K</span>
-            </kbd>
+            <span className="hidden shrink-0 items-center gap-1.5 sm:inline-flex">
+              <kbd className="inline-flex items-center gap-0.5 font-mono text-xs text-slate-400 dark:text-slate-500">
+                <span>{MOD}</span>
+                <span>K</span>
+              </kbd>
+              <span className="select-none text-xs text-slate-400 dark:text-slate-500" aria-hidden>
+                ·
+              </span>
+              <kbd className="inline-flex items-center gap-0.5 font-mono text-xs text-slate-400 dark:text-slate-500">
+                <span>{MOD}</span>
+                <span>/</span>
+              </kbd>
+            </span>
           </button>
         </header>
 
@@ -155,6 +181,8 @@ export function AppShell() {
       </nav>
 
       <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+
+      <KeyboardShortcutsModal isOpen={isShortcutsOpen} onClose={() => setIsShortcutsOpen(false)} />
 
       <OnboardingModal />
     </div>

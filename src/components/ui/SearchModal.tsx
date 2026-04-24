@@ -33,6 +33,7 @@ export function SearchModal({
   const [query, setQuery] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
+  const listItemRefs = useRef<(HTMLLIElement | null)[]>([]);
   const navigate = useNavigate();
 
   const recentToolIds = useToolStore((s) => s.recentToolIds);
@@ -76,6 +77,14 @@ export function SearchModal({
   useEffect(() => {
     setSelectedIndex(0);
   }, [results.length, query]);
+
+  useEffect(() => {
+    listItemRefs.current.length = results.length;
+  }, [results]);
+
+  useEffect(() => {
+    listItemRefs.current[selectedIndex]?.scrollIntoView({ block: "nearest" });
+  }, [selectedIndex]);
 
   useEffect(() => {
     if (isOpen) {
@@ -197,6 +206,9 @@ export function SearchModal({
                 return (
                   <li
                     key={tool.id}
+                    ref={(el) => {
+                      listItemRefs.current[i] = el;
+                    }}
                     role="option"
                     aria-selected={isSelected}
                     onMouseEnter={() => setSelectedIndex(i)}

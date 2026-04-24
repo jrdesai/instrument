@@ -3,6 +3,10 @@ import type { Tool } from "../../registry";
 import { StorageBadge } from "../tool";
 import { useToolStore } from "../../store";
 
+const isMac =
+  typeof navigator !== "undefined" && /mac/i.test(navigator.platform || navigator.userAgent);
+const MOD = isMac ? "⌘" : "Ctrl+";
+
 export function ToolHeader({ tool }: { tool: Tool }) {
   const navigate = useNavigate();
   const favouriteToolIds = useToolStore((s) => s.favouriteToolIds);
@@ -33,7 +37,16 @@ export function ToolHeader({ tool }: { tool: Tool }) {
         <button
           type="button"
           onClick={() => toggleFavourite(tool)}
-          aria-label={isFavourite ? "Remove from favourites" : "Add to favourites"}
+          aria-label={
+            isFavourite
+              ? `Remove from favourites (${MOD}⇧F)`
+              : `Add to favourites (${MOD}⇧F)`
+          }
+          title={
+            isFavourite
+              ? `Remove from favourites (${MOD}⇧F)`
+              : `Add to favourites (${MOD}⇧F)`
+          }
           className="text-slate-400 hover:text-amber-400 dark:text-slate-500 dark:hover:text-amber-400 transition-colors"
         >
           <span

@@ -52,7 +52,7 @@ export function HistoryPage() {
             History
           </h1>
           <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
-            Preserved across sessions · max 100 entries per tool · never leaves your device
+            Session only · max 100 entries per tool · never leaves your device
           </p>
         </div>
         {allEntries.length > 0 && (
