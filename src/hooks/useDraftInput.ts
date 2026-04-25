@@ -49,6 +49,17 @@ export function useRestoreStringDraft(
     }
     return useToolStore.persist.onFinishHydration(run);
   }, [toolId]);
+
+  useEffect(() => {
+    return useToolStore.subscribe((state, prev) => {
+      const pending = state.pendingRestoreInput[toolId];
+      const prevPending = prev.pendingRestoreInput[toolId];
+      if (pending !== undefined && pending !== prevPending) {
+        setValueRef.current(pending);
+        useToolStore.getState().clearPendingRestoreInput(toolId);
+      }
+    });
+  }, [toolId]);
 }
 
 /**

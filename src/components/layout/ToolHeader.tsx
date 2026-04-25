@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import type { Tool } from "../../registry";
 import { StorageBadge } from "../tool";
 import { useToolStore } from "../../store";
+import { BookmarkButton } from "../ui/BookmarkButton";
 
 const isMac =
   typeof navigator !== "undefined" && /mac/i.test(navigator.platform || navigator.userAgent);
@@ -34,6 +35,7 @@ export function ToolHeader({ tool }: { tool: Tool }) {
         </div>
       </div>
       <div className="flex items-center gap-2 flex-wrap justify-end">
+        {!tool.sensitive && <BookmarkButton toolId={tool.id} />}
         <button
           type="button"
           onClick={() => toggleFavourite(tool)}

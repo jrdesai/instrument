@@ -29,6 +29,14 @@ export interface ChainStep {
   config: Record<string, unknown>;
 }
 
+export interface ToolBookmark {
+  id: string;
+  toolId: string;
+  name: string;
+  value: string;
+  createdAt: number;
+}
+
 export interface Chain {
   id: string;
   name: string;
@@ -53,12 +61,16 @@ interface ToolState {
   favouriteToolIds: string[];
   /** Last-typed input per tool id (persisted). Do not use for sensitive tools. */
   draftInputs: Record<string, unknown>;
+  /** Ephemeral restore signal. Set by BookmarkButton, consumed by useRestoreStringDraft. */
+  pendingRestoreInput: Record<string, string>;
   setActiveTool: (tool: Tool | null) => void;
   addToRecent: (tool: Tool) => void;
   toggleFavourite: (tool: Tool) => void;
   clearRecents: () => void;
   clearFavourites: () => void;
   setDraftInput: (toolId: string, input: unknown) => void;
+  setPendingRestoreInput: (toolId: string, value: string) => void;
+  clearPendingRestoreInput: (toolId: string) => void;
   getDraftInput: (toolId: string) => unknown;
   clearDraftInputs: () => void;
 }
@@ -74,6 +86,7 @@ const toolStoreImpl = persist(
     recentToolIds: [],
     favouriteToolIds: [],
     draftInputs: {},
+    pendingRestoreInput: {},
 
     setActiveTool: (tool) =>
       set((state) => {
@@ -111,6 +124,16 @@ const toolStoreImpl = persist(
         state.draftInputs[toolId] = input;
       }),
 
+    setPendingRestoreInput: (toolId, value) =>
+      set((state) => {
+        state.pendingRestoreInput[toolId] = value;
+      }),
+
+    clearPendingRestoreInput: (toolId) =>
+      set((state) => {
+        delete state.pendingRestoreInput[toolId];
+      }),
+
     getDraftInput: (toolId) => get().draftInputs[toolId] ?? null,
 
     clearDraftInputs: () =>
@@ -118,7 +141,15 @@ const toolStoreImpl = persist(
         state.draftInputs = {};
       }),
   })),
-  { name: "instrument-tools" }
+  {
+    name: "instrument-tools",
+    partialize: (state) => ({
+      activeToolId: state.activeToolId,
+      recentToolIds: state.recentToolIds,
+      favouriteToolIds: state.favouriteToolIds,
+      draftInputs: state.draftInputs,
+    }),
+  }
 );
 
 export const useToolStore = create<ToolState>()(
@@ -383,6 +414,60 @@ export const useChainStore = create<ChainState>()(
   (import.meta.env.DEV
     ? devtools(chainStoreImpl, { name: "ChainStore" })
     : chainStoreImpl) as typeof chainStoreImpl
+);
+
+// ---------------------------------------------------------------------------
+// Bookmark store (persisted)
+// ---------------------------------------------------------------------------
+
+const MAX_BOOKMARKS_PER_TOOL = 10;
+
+interface BookmarkState {
+  bookmarks: ToolBookmark[];
+  addBookmark: (toolId: string, name: string, value: string) => void;
+  deleteBookmark: (id: string) => void;
+  renameBookmark: (id: string, name: string) => void;
+  getBookmarksForTool: (toolId: string) => ToolBookmark[];
+}
+
+const bookmarkStoreImpl = persist(
+  immer<BookmarkState>((set, get) => ({
+    bookmarks: [],
+
+    addBookmark: (toolId, name, value) =>
+      set((state) => {
+        const existing = state.bookmarks.filter((b) => b.toolId === toolId);
+        if (existing.length >= MAX_BOOKMARKS_PER_TOOL) return;
+        state.bookmarks.push({
+          id: crypto.randomUUID(),
+          toolId,
+          name: name.trim() || "Untitled",
+          value,
+          createdAt: Date.now(),
+        });
+      }),
+
+    deleteBookmark: (id) =>
+      set((state) => {
+        state.bookmarks = state.bookmarks.filter((b) => b.id !== id);
+      }),
+
+    renameBookmark: (id, name) =>
+      set((state) => {
+        const b = state.bookmarks.find((b) => b.id === id);
+        if (b) b.name = name.trim() || b.name;
+      }),
+
+    getBookmarksForTool: (toolId) =>
+      get().bookmarks.filter((b) => b.toolId === toolId),
+  })),
+  { name: "instrument-bookmarks" }
+);
+
+export const useBookmarkStore = create<BookmarkState>()(
+  (import.meta.env.DEV
+    ? devtools(bookmarkStoreImpl, { name: "BookmarkStore" })
+    : bookmarkStoreImpl) as typeof bookmarkStoreImpl
 );
 
 // ---------------------------------------------------------------------------
