@@ -32,6 +32,10 @@ export function useRestoreStringDraft(
   const setValueRef = useRef(setValue);
   setValueRef.current = setValue;
   const doneRef = useRef(false);
+  const pendingRestore = useToolStore((s) => s.pendingRestoreInput?.[toolId]);
+  const clearPendingRestoreInput = useToolStore(
+    (s) => s.clearPendingRestoreInput ?? (() => {})
+  );
 
   useEffect(() => {
     const run = () => {
@@ -51,15 +55,10 @@ export function useRestoreStringDraft(
   }, [toolId]);
 
   useEffect(() => {
-    return useToolStore.subscribe((state, prev) => {
-      const pending = state.pendingRestoreInput[toolId];
-      const prevPending = prev.pendingRestoreInput[toolId];
-      if (pending !== undefined && pending !== prevPending) {
-        setValueRef.current(pending);
-        useToolStore.getState().clearPendingRestoreInput(toolId);
-      }
-    });
-  }, [toolId]);
+    if (pendingRestore === undefined) return;
+    setValueRef.current(pendingRestore);
+    clearPendingRestoreInput(toolId);
+  }, [pendingRestore, toolId, clearPendingRestoreInput]);
 }
 
 /**
