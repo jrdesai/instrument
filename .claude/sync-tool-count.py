@@ -9,11 +9,9 @@ import subprocess
 import datetime
 import pathlib
 
-ROOT = pathlib.Path("/Users/jigardesai/Code/Projects/instrument")
-MEMORY = pathlib.Path.home() / (
-    ".claude/projects/-Users-jigardesai-Code-Projects-instrument"
-    "/memory/project_current_state.md"
-)
+ROOT = pathlib.Path(__file__).parent.parent.resolve()
+_project_key = str(ROOT).replace("/", "-").lstrip("-")
+MEMORY = pathlib.Path.home() / ".claude/projects" / _project_key / "memory/project_current_state.md"
 TODAY = datetime.date.today().isoformat()
 
 # Count tools with implemented: true
