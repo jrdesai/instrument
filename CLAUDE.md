@@ -159,7 +159,7 @@ Do NOT skip this for any command that returns `Result` — the raw object will c
 6. **Tool component** — create `src/tools/<tool-id>/<ToolName>Tool.tsx`.
    Use `callTool(tool.rustCommand, input)` from the bridge.
 
-7. **Rebuild WASM** — `pnpm run build:wasm` then commit `public/wasm-pkg/`.
+7. **Rebuild WASM** — `pnpm run build:wasm` to test locally. Do not commit `public/wasm-pkg/` — it is gitignored; CI builds it on push.
 
 8. **Docs** — add `docs/tools/<tool-name>.md`.
 
@@ -189,8 +189,7 @@ Zustand devtools are only active in `import.meta.env.DEV` to avoid bundle bloat.
 
 - **Desktop**: `pnpm run build` → produces platform installer via Tauri bundler
 - **Web**: Push to `main` → GitHub Actions builds → Cloudflare Pages auto-deploys
-- **CI jobs**: typecheck, lint, test:ts, rust tests, web build, wasm-sync check
-- **wasm-sync CI**: fails if `public/wasm-pkg/` differs from a fresh `pnpm run build:wasm` — prevents stale WASM being shipped
+- **CI jobs**: typecheck, lint, test:ts, rust tests, clippy, web build + Cloudflare Pages deploy
 - **Check CI after push**: use the GitHub MCP tool — do not use `gh` (not installed)
 
 ---

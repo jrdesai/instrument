@@ -1,33 +1,34 @@
 ---
 description: WASM build and sync rules — required after any Rust source change
-alwaysApply: true
+alwaysApply: false
+globs: ["src-core/**", "wrangler.toml", "vite.config.ts"]
 ---
 
 # WASM Workflow Rules
 
-## public/wasm-pkg/ is committed to git
-`public/wasm-pkg/` (NOT `src/wasm-pkg/`) is committed so Cloudflare Pages can
-deploy without a Rust toolchain. `src/wasm-pkg/` is gitignored — ignore it.
+## public/wasm-pkg/ is GITIGNORED — never commit it
+`public/wasm-pkg/` and `src/wasm-pkg/` are both gitignored. The CI
+`build-and-deploy-web` job builds WASM from source on every push to `main`
+and deploys directly to Cloudflare Pages — no committed artifacts needed.
 
-**Cloudflare Pages build command** must be `pnpm exec vite build --mode web` (or the
-equivalent in `wrangler.toml`), **not** `pnpm run build:web`. The latter runs
-`build:wasm` first and requires Rust/wasm-pack on the host; if that step is skipped
-or fails, `dist/wasm-pkg/` may be missing and every WASM tool breaks at runtime.
+**Local dev only:** if you change `src-core/` Rust files and want to test
+web behaviour locally, run `pnpm run build:wasm` to regenerate `public/wasm-pkg/`.
+Do not stage or commit the result.
 
-## After ANY change to src-core/ Rust files you MUST:
-1. Run `pnpm run build:wasm`
-2. `git add public/wasm-pkg/`
-3. Commit the updated wasm-pkg alongside your Rust changes
+## After ANY change to src-core/ Rust files:
+1. Run `pnpm run build:wasm` (local dev only — do NOT commit the output)
+2. Test with `pnpm run dev:web`
+3. Commit only the Rust source changes — CI handles the WASM build on push
 
 This applies to:
 - New WASM bindings in `src-core/instrument-web/src/lib.rs`
 - Cargo.toml dependency changes in any `src-core/` crate
-- Version bumps in `package.json` or workspace `Cargo.toml` (version is embedded in WASM package.json)
 - Any logic change in `src-core/instrument-core/`
 
-## CI will fail if you skip this
-The `wasm-sync` CI job runs `pnpm run build:wasm` and checks `git diff public/wasm-pkg/`.
-If they differ, the job fails with: "public/wasm-pkg/ is out of sync with the Rust source."
+## CI — what actually runs
+The `build-and-deploy-web` job: installs wasm-pack → `pnpm run build:wasm` →
+`pnpm exec vite build --mode web` → deploys `dist/` to Cloudflare Pages.
+There is no separate wasm-sync job.
 
 ## Diagnosing missing WASM in the browser
 If a tool fails in the browser with **`"text/html" is not a valid JavaScript MIME type`**,

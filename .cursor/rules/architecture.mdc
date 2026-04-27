@@ -24,7 +24,7 @@ alwaysApply: true
 - sensitive: true for any tool handling secrets, tokens, or keys (auto-skips history)
 
 ## WASM sync (critical)
-- After any src-core/ Rust change: run `pnpm run build:wasm` and commit public/wasm-pkg/
+- After any src-core/ Rust change: run `pnpm run build:wasm` locally to test web behaviour — do NOT commit public/wasm-pkg/ (it is gitignored; CI builds it)
 - See wasm-workflow.mdc for the full workflow
 
 ## Package management

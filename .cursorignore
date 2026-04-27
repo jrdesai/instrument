@@ -1,0 +1,25 @@
+# ── Rust build output ─────────────────────────────────
+target/
+src-core/target/
+src-tauri/target/
+
+# ── WASM build output (gitignored, CI-built) ──────────
+public/wasm-pkg/
+src/wasm-pkg/
+
+# ── Node ──────────────────────────────────────────────
+node_modules/
+dist/
+dist-ssr/
+
+# ── Tauri bundler output ───────────────────────────────
+src-tauri/WixTools/
+src-tauri/binaries/
+
+# ── Generated TypeScript bindings ─────────────────────
+# Keep src/bindings/tauri.ts accessible (stub used by bridge)
+src/bindings/*
+!src/bindings/tauri.ts
+
+# ── Local temp / planning files ───────────────────────
+temp/
