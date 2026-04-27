@@ -2696,6 +2696,39 @@ export const tools: Tool[] = [
     ),
     implemented: true,
   },
+  {
+    id: "box-shadow-builder",
+    name: "Box Shadow Builder",
+    description:
+      "Build layered box shadows interactively — offset, blur, spread, colour, and inset. Copy the ready-to-use CSS value.",
+    category: "design",
+    displayCategory: "Design",
+    displayCategoryIcon: "gradient",
+    roles: ["frontend", "general"],
+    icon: "shadow",
+    platforms: ["desktop", "web"],
+    keywords: [
+      "box-shadow",
+      "shadow",
+      "css",
+      "design",
+      "ui",
+      "offset",
+      "blur",
+      "spread",
+      "inset",
+      "drop shadow",
+      "layer",
+      "frontend",
+      "style",
+    ],
+    component: React.lazy(() =>
+      import("../tools/box-shadow-builder/BoxShadowBuilderTool").then((m) => ({
+        default: m.default,
+      }))
+    ),
+    implemented: true,
+  },
 ];
 
 for (let i = 0; i < tools.length; i++) {
