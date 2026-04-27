@@ -68,12 +68,12 @@ function DetailRow({
 }) {
   if (!value) return null;
   return (
-    <div className="grid grid-cols-[6rem_1fr_2.25rem] items-baseline gap-x-3 border-b border-border-light py-3 last:border-b-0 dark:border-border-dark">
-      <div className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-        {label}
-      </div>
-      <div className="min-w-0 break-all font-mono text-sm text-slate-200">{value}</div>
-      <div className="flex justify-end">
+    <div className="flex items-baseline gap-3 py-2.5">
+      <span className="w-20 shrink-0 text-xs text-slate-500 dark:text-slate-400">{label}</span>
+      <span className="min-w-0 flex-1 break-all font-mono text-sm text-slate-100 dark:text-slate-200">
+        {value}
+      </span>
+      <div className="w-9 shrink-0 self-start flex justify-end pt-0.5">
         {copyable && <CopyButton value={value} variant="icon" aria-label={`Copy ${label}`} />}
       </div>
     </div>
@@ -171,10 +171,12 @@ function IpInspectorTool() {
             </p>
 
             <div className="rounded-lg border border-border-light bg-panel-light dark:border-border-dark dark:bg-panel-dark">
-              <div className="px-3 pt-2 text-[10px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                Details
+              <div className="border-b border-border-light px-4 py-2 dark:border-border-dark">
+                <span className="text-[10px] font-semibold uppercase tracking-widest text-slate-400">
+                  Details
+                </span>
               </div>
-              <div className="px-3 pb-1">
+              <div className="divide-y divide-border-light px-4 dark:divide-border-dark">
                 {output.version === "IPv4" && (
                   <>
                     <DetailRow label="Range" value={output.range ?? ""} copyable />
