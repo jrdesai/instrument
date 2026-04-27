@@ -58,8 +58,18 @@ pnpm run test:rust      # cargo test (all Rust)
 pnpm run test:ts        # vitest run
 pnpm run check:pure     # Verify instrument-core has no Tauri/fs/tokio imports
 pnpm run check:commands # Registry `rustCommand` vs desktop `#[tauri::command]` names (dev sanity check)
+pnpm run prepare        # Wire up git hooks (runs automatically after pnpm install)
 cargo test --manifest-path src-core/Cargo.toml -p instrument-core  # Core tests only
 ```
+
+---
+
+## Git hooks
+
+Hooks live in `.githooks/` (committed). `pnpm install` wires them up automatically via the `prepare` script.
+
+- **pre-commit**: if any `.rs` files are staged, runs `pnpm run gen:types` and auto-stages `src/bindings/` so binding files are always committed with the Rust struct that generated them.
+- **pre-push**: runs `pnpm run typecheck` before every push.
 
 ---
 
@@ -161,7 +171,8 @@ Do NOT skip this for any command that returns `Result` — the raw object will c
 6. **Tool component** — create `src/tools/<tool-id>/<ToolName>Tool.tsx`.
    Use `callTool(tool.rustCommand, input)` from the bridge.
 
-7. **Rebuild WASM** — `pnpm run build:wasm` to test locally. Do not commit `public/wasm-pkg/` — it is gitignored; CI builds it on push.
+7. **Bindings** — `src/bindings/*.ts` are auto-generated and auto-staged by the pre-commit hook when you commit `.rs` files. Nothing to do manually.
+   **Rebuild WASM** — `pnpm run build:wasm` to test locally. Do not commit `public/wasm-pkg/` — it is gitignored; CI builds it on push.
 
 8. **Docs** — add `docs/tools/<tool-name>.md`.
 

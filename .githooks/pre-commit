@@ -1,0 +1,8 @@
+#!/bin/sh
+# Regenerate ts-rs TypeScript bindings whenever Rust source files are staged.
+# Auto-stages updated bindings so they're always part of the same commit.
+if git diff --cached --name-only | grep -q '\.rs$'; then
+  echo "Rust files changed — regenerating ts-rs bindings..."
+  pnpm run gen:types
+  git add src/bindings/
+fi

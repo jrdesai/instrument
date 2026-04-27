@@ -9,6 +9,7 @@
     ]
   },
   "scripts": {
+    "prepare": "git config core.hooksPath .githooks",
     "dev": "tauri dev",
     "dev:web": "vite",
     "build": "node scripts/tauri-build.mjs",
