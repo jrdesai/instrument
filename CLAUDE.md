@@ -228,6 +228,20 @@ body:  ## Summary (bullets) · ## Test plan (checklist) · 🤖 Generated with C
 
 ---
 
+## Behavioural guidelines (Karpathy principles)
+
+These apply to every task — coding, planning, and file edits.
+
+**Think before coding** — state assumptions explicitly before implementing. If multiple interpretations exist, surface them rather than picking silently. If something is unclear, stop and ask rather than guessing.
+
+**Simplicity first** — deliver the minimum code that solves the problem. No speculative features, no abstractions for single-use code, no unrequested flexibility. If a simpler approach exists, say so.
+
+**Surgical changes** — touch only what the request requires. Don't improve adjacent code, reformat unrelated lines, or refactor things that aren't broken. Match existing style. If unrelated dead code is noticed, mention it — don't delete it. Every changed line should trace directly to the request.
+
+**Goal-driven execution** — transform tasks into verifiable success criteria. For multi-step work, state a brief plan with a verification step for each stage before starting.
+
+---
+
 ## Compact instructions
 
 When compacting, prioritize: files edited, new Rust command names, registry entries added, WASM sync status, and any unresolved errors. Discard UI iteration details, intermediate error messages that were resolved, and tool output samples.
