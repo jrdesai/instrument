@@ -11,4 +11,5 @@ pub mod nanoid;
 pub mod password;
 pub mod passphrase;
 pub mod rsa_keygen;
+pub mod sri;
 pub mod totp;

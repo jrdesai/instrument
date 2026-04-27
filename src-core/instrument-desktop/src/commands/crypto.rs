@@ -28,6 +28,7 @@ use instrument_core::crypto::totp::{process as totp_process_core, TotpInput, Tot
 use instrument_core::crypto::rsa_keygen::{
     process as rsa_keygen_process_core, RsaKeygenInput, RsaKeygenOutput,
 };
+use instrument_core::crypto::sri::{process as sri_process_core, SriInput, SriOutput};
 
 use crate::command_log::finish_ok;
 
@@ -168,5 +169,15 @@ pub fn tool_bcrypt_process(input: BcryptInput) -> BcryptOutput {
     let start = Instant::now();
     let output = bcrypt_process_core(input);
     finish_ok("tool_bcrypt_process", start);
+    output
+}
+
+/// Generates SRI integrity hashes (sha256, sha384, sha512) for a file's raw bytes.
+#[tauri::command]
+#[specta::specta]
+pub fn tool_sri_generate(input: SriInput) -> SriOutput {
+    let start = Instant::now();
+    let output = sri_process_core(input);
+    finish_ok("tool_sri_generate", start);
     output
 }

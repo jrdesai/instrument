@@ -3,6 +3,8 @@
 src/bindings/*
 # Stub kept so the web/CI build can resolve the import; overwritten by tauri-specta on `pnpm tauri dev`
 !src/bindings/tauri.ts
+# ts-rs raw output directory (intermediate — app imports from src/bindings/ instead)
+src-core/instrument-core/bindings/
 
 # ── Node ────────────────────────────────────────────
 node_modules/

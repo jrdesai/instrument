@@ -1,0 +1,5 @@
+# Allow the SRI Generator command to be invoked from the frontend.
+[[permission]]
+identifier = "allow-sri-generator"
+description = "Allows invoking the tool_sri_generate command."
+commands.allow = ["tool_sri_generate"]

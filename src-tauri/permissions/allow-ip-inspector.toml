@@ -1,0 +1,5 @@
+# Allow the IP Address Inspector command to be invoked from the frontend.
+[[permission]]
+identifier = "allow-ip-inspector"
+description = "Enables the tool_ip_inspect command."
+commands.allow = ["tool_ip_inspect"]

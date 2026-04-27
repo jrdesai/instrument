@@ -1,0 +1,20 @@
+---
+description: Scoped implementation — design handoff from Claude; avoid full-repo exploration
+alwaysApply: true
+---
+
+# Agent workflow
+
+## Default scope is narrow
+- Treat **@mentioned paths**, the **active editor**, and **paths named in the prompt** as the work surface. Do not list or read the whole tree to satisfy a local edit.
+- Find symbols with **grep or scoped search** (prefer a single directory), then **read only relevant files** — small ranges when possible.
+
+## Design vs implementation
+- **Claude** owns product/UX exploration; **Cursor** implements against a **stable brief** in the repo when possible.
+- Ask the user to **@mention one doc** per feature (e.g. `docs/design/...` or a short spec under `docs/`) instead of rediscovering requirements by scanning the codebase.
+
+## Heavy references only when the task needs them
+- Do not open long design dumps or prototypes unless the task is **UI, layout, or theming** (see `design-system.mdc` globs).
+
+## For the human (habit)
+- After design in Claude: paste a **short implementation checklist** into **one file** and @mention it once in Cursor for each chunk of work — avoids repeating context and avoids model-led “tour of the repo.”

@@ -29,6 +29,7 @@ use instrument_core::crypto::totp::{process as totp_process_core, TotpInput};
 use instrument_core::crypto::rsa_keygen::{
     process as rsa_keygen_process_core, RsaKeygenInput,
 };
+use instrument_core::crypto::sri::{process as sri_process_core, SriInput};
 use instrument_core::crypto::ulid::{
     inspect as ulid_inspect_core, process as ulid_process_core, UlidInput, UlidInspectInput,
 };
@@ -83,6 +84,7 @@ use instrument_core::json::validator::{
     process as json_validate_process_core, JsonValidateInput,
 };
 use instrument_core::network::cidr::{process as cidr_process_core, CidrInput};
+use instrument_core::network::ip_inspect::{process as ip_inspect_core, IpInspectInput};
 use instrument_core::network::user_agent::{
     process as ua_parse_process_core, UaParseInput,
 };
@@ -169,6 +171,7 @@ tool_binding!("tool_url_encode_process", url_encode_process_wasm, UrlEncodeInput
 tool_binding!("tool_url_parse", tool_url_parse_wasm, UrlParseInput, url_parse_process);
 tool_binding!("tool_cidr_calculate", cidr_calculate_wasm, CidrInput, cidr_process_core);
 tool_binding!("tool_ua_parse", ua_parse_wasm, UaParseInput, ua_parse_process_core);
+tool_binding!("tool_ip_inspect", ip_inspect_wasm, IpInspectInput, ip_inspect_core);
 tool_binding!("tool_csv_to_json", tool_csv_to_json_wasm, CsvToJsonInput, csv_to_json_process_core);
 tool_binding!("tool_json_to_csv", tool_json_to_csv_wasm, JsonToCsvInput, json_to_csv_process_core);
 tool_binding!("tool_csv_preview", tool_csv_preview_wasm, CsvPreviewInput, csv_preview_core);
@@ -206,6 +209,7 @@ tool_binding!(
     rsa_keygen_process_core
 );
 tool_binding!("tool_bcrypt_process", bcrypt_process_wasm, BcryptInput, bcrypt_process_core);
+tool_binding!("tool_sri_generate", sri_generate_wasm, SriInput, sri_process_core);
 tool_binding!("tool_jwt_decode", tool_jwt_decode_wasm, JwtDecodeInput, jwt_decode_process_core);
 tool_binding!("tool_jwt_build", tool_jwt_build_wasm, JwtBuildInput, jwt_build_process_core);
 tool_binding!("tool_basic_auth", tool_basic_auth_wasm, BasicAuthInput, basic_auth_core);

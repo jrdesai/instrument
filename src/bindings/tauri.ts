@@ -97,6 +97,12 @@ async toolBcryptProcess(input: BcryptInput) : Promise<BcryptOutput> {
     return await TAURI_INVOKE("tool_bcrypt_process", { input });
 },
 /**
+ * Generates SRI integrity hashes (sha256, sha384, sha512) for a file's raw bytes.
+ */
+async toolSriGenerate(input: SriInput) : Promise<SriOutput> {
+    return await TAURI_INVOKE("tool_sri_generate", { input });
+},
+/**
  * Runs Password generation via instrument-core.
  */
 async toolPasswordProcess(input: PasswordInput) : Promise<PasswordOutput> {
@@ -290,6 +296,12 @@ async toolCidrCalculate(input: CidrInput) : Promise<CidrOutput> {
 },
 async toolUaParse(input: UaParseInput) : Promise<UaParseOutput> {
     return await TAURI_INVOKE("tool_ua_parse", { input });
+},
+/**
+ * Classifies an IPv4 or IPv6 address — type, range, RFC, format conversions.
+ */
+async toolIpInspect(input: IpInspectInput) : Promise<IpInspectOutput> {
+    return await TAURI_INVOKE("tool_ip_inspect", { input });
 },
 /**
  * Runs base conversion via instrument-core.
@@ -1079,6 +1091,52 @@ export type IndentStyle =
  * One tab per indent level.
  */
 "tab"
+export type IpInspectInput = { address: string }
+export type IpInspectOutput = { 
+/**
+ * "IPv4" or "IPv6"
+ */
+version: string; 
+/**
+ * e.g. "Private", "Public", "Loopback", "Link-local", "Multicast"
+ */
+ipType: string; 
+/**
+ * Plain-English explanation of what this address is used for
+ */
+description: string; 
+/**
+ * CIDR range this address belongs to, e.g. "192.168.0.0/16"
+ */
+range: string | null; 
+/**
+ * Defining RFC, e.g. "RFC 1918"
+ */
+rfc: string | null; 
+/**
+ * Dot-separated binary octets: "11000000.10101000.00000001.00000001"
+ */
+binary: string | null; 
+/**
+ * Uppercase hex without prefix: "C0A80101"
+ */
+hex: string | null; 
+/**
+ * Unsigned 32-bit decimal integer: 3232235777
+ */
+decimal: number | null; 
+/**
+ * Full expanded form: "fe80:0000:0000:0000:0000:0000:0000:0001"
+ */
+expanded: string | null; 
+/**
+ * Standard compressed form: "fe80::1"
+ */
+compressed: string | null; 
+/**
+ * If IPv4-mapped (::ffff:x.x.x.x), the embedded IPv4 address
+ */
+ipv4Mapped: string | null; error: string | null }
 /**
  * Input for the ISO 8601 formatter.
  */
@@ -1674,6 +1732,25 @@ export type SqlFormatOutput = { result: string; lineCount: number; charCount: nu
 error: string | null }
 export type SqlIndentStyle = "spaces2" | "spaces4" | "tab"
 export type SqlKeywordCase = "upper" | "lower" | "preserve"
+export type SriInput = { 
+/**
+ * Raw file bytes encoded as standard base64.
+ * Frontend converts both file uploads (ArrayBuffer) and text (TextEncoder) to base64.
+ */
+contentB64: string }
+export type SriOutput = { 
+/**
+ * "sha256-<base64-encoded-hash>"
+ */
+sha256: string; 
+/**
+ * "sha384-<base64-encoded-hash>"
+ */
+sha384: string; 
+/**
+ * "sha512-<base64-encoded-hash>"
+ */
+sha512: string; error: string | null }
 /**
  * Input for the String Escaper tool.
  */
