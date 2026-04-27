@@ -16,10 +16,5 @@ dist-ssr/
 src-tauri/WixTools/
 src-tauri/binaries/
 
-# ── Generated TypeScript bindings ─────────────────────
-# Keep src/bindings/tauri.ts accessible (stub used by bridge)
-src/bindings/*
-!src/bindings/tauri.ts
-
 # ── Local temp / planning files ───────────────────────
 temp/

@@ -23,6 +23,7 @@ instrument/
 │   │   ├── index.ts            # callTool(), isDesktop, isWeb
 │   │   ├── desktop.ts          # Tauri invoke() — never import directly from components
 │   │   └── web.ts              # WASM module loader — never import directly from components
+│   ├── bindings/               # ts-rs types + tauri-specta `tauri.ts` — committed (deterministic)
 │   ├── registry/index.ts       # Single source of truth for all tools
 │   ├── store/index.ts          # Zustand (favourites, history, recents, settings)
 │   ├── tools/                  # One folder per tool (e.g. tools/base64/)
@@ -56,6 +57,7 @@ pnpm run lint           # eslint src/
 pnpm run test:rust      # cargo test (all Rust)
 pnpm run test:ts        # vitest run
 pnpm run check:pure     # Verify instrument-core has no Tauri/fs/tokio imports
+pnpm run check:commands # Registry `rustCommand` vs desktop `#[tauri::command]` names (dev sanity check)
 cargo test --manifest-path src-core/Cargo.toml -p instrument-core  # Core tests only
 ```
 

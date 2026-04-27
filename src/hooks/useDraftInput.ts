@@ -1,5 +1,11 @@
 import { useCallback, useEffect, useRef } from "react";
+import { tools } from "../registry";
 import { useToolStore } from "../store";
+
+/** Returns true if the given toolId has sensitive: true in the registry. */
+function isToolSensitive(toolId: string): boolean {
+  return tools.find((t) => t.id === toolId)?.sensitive === true;
+}
 
 /**
  * Persists and restores a tool's input across navigation.
@@ -7,23 +13,28 @@ import { useToolStore } from "../store";
  * Pair with {@link useRestoreStringDraft} or {@link useRestoreDraft} on mount
  * so persisted values apply after localStorage hydration.
  *
- * Do NOT use for sensitive tools — JWT, AES, Password, Passphrase, TOTP, Basic Auth,
- * Cert Decoder, or any future tool marked `sensitive: true` in the registry.
+ * Safe to call for sensitive tools (those with `sensitive: true` in the registry) —
+ * the hook automatically no-ops and never writes to localStorage in that case.
  */
 export function useDraftInput(toolId: string) {
+  const sensitive = isToolSensitive(toolId);
   const setDraftInput = useToolStore((s) => s.setDraftInput);
   const draft = useToolStore((s) => s.draftInputs[toolId] ?? null);
 
   const setDraft = useCallback(
-    (input: unknown) => setDraftInput(toolId, input),
-    [toolId, setDraftInput]
+    (input: unknown) => {
+      if (sensitive) return;
+      setDraftInput(toolId, input);
+    },
+    [toolId, sensitive, setDraftInput]
   );
 
-  return { draft, setDraft };
+  return { draft: sensitive ? null : draft, setDraft };
 }
 
 /**
  * After the persisted tool store hydrates, set string state from the saved draft once.
+ * No-ops for sensitive tools (same guard as {@link useDraftInput}).
  */
 export function useRestoreStringDraft(
   toolId: string,
@@ -38,6 +49,7 @@ export function useRestoreStringDraft(
   );
 
   useEffect(() => {
+    if (isToolSensitive(toolId)) return;
     const run = () => {
       if (doneRef.current) return;
       doneRef.current = true;
@@ -55,6 +67,7 @@ export function useRestoreStringDraft(
   }, [toolId]);
 
   useEffect(() => {
+    if (isToolSensitive(toolId)) return;
     if (pendingRestore === undefined) return;
     setValueRef.current(pendingRestore);
     clearPendingRestoreInput(toolId);
@@ -63,7 +76,7 @@ export function useRestoreStringDraft(
 
 /**
  * After hydration, invoke apply once with the raw persisted draft for this tool
- * (use for object-shaped drafts).
+ * (use for object-shaped drafts). No-ops for sensitive tools.
  */
 export function useRestoreDraft(
   toolId: string,
@@ -74,6 +87,7 @@ export function useRestoreDraft(
   const doneRef = useRef(false);
 
   useEffect(() => {
+    if (isToolSensitive(toolId)) return;
     const run = () => {
       if (doneRef.current) return;
       doneRef.current = true;

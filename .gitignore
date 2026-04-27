@@ -1,9 +1,6 @@
 # ── Generated TypeScript (ts-rs + tauri-specta) ───────
-# Ignore contents but not the directory — allows !tauri.ts exception below to work
-src/bindings/*
-# Stub kept so the web/CI build can resolve the import; overwritten by tauri-specta on `pnpm tauri dev`
-!src/bindings/tauri.ts
-# ts-rs raw output directory (intermediate — app imports from src/bindings/ instead)
+# src/bindings/*.ts are committed — deterministic, needed for IDE type resolution on fresh clone.
+# src-core/instrument-core/bindings/ is the intermediate ts-rs output directory — not committed.
 src-core/instrument-core/bindings/
 
 # ── Node ────────────────────────────────────────────
