@@ -54,19 +54,9 @@ src-tauri/binaries/
 
 # ── pnpm ──────────────────────────────────────────────
 .pnpm-store/
-```
 
----
-
-## Key Additions
-```
-target/              ← Rust build output (huge, 1-5GB, never commit)
-src-core/target/     ← Rust workspace build output
-src-tauri/target/    ← Tauri shell build output
-src/wasm-pkg/        ← generated WASM bundle (run build:wasm to regenerate)
-src-tauri/WixTools/  ← Windows installer tools downloaded by Tauri
-.pnpm-store/         ← pnpm local cache if configured
-
+# ── WASM (src/ copy) ──────────────────────────────────
+src/wasm-pkg/
 
 # ── Cursor ────────────────────────────────────────────
 .cursor/*
