@@ -76,3 +76,6 @@ temp/
 
 # MCP server config (contains tokens, machine-specific)
 .mcp.json
+
+# Claude Code local IDE config (machine-specific launch configurations)
+.claude/launch.json
