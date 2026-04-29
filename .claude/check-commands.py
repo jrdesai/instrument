@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
-Validates that every implemented tool's rustCommand in the registry
-has a corresponding #[tauri::command] function in the desktop commands.
+Validates that every implemented tool's rustCommand in the registry:
+  1. Has a corresponding #[tauri::command] function in the desktop commands.
+  2. Is registered in collect_commands![] in src-tauri/src/lib.rs.
 
 Usage: python3 .claude/check-commands.py
 Exit code 1 if any mismatches found.
@@ -42,21 +43,42 @@ for rs_file in commands_dir.glob("*.rs"):
     )
     desktop_fns.update(matches)
 
-# ── 3. Report mismatches ─────────────────────────────────────────────────────
+# ── 3. Extract registered names from collect_commands![] in lib.rs ───────────
 
-missing = sorted(rust_commands - desktop_fns)
-ok = sorted(rust_commands & desktop_fns)
+lib_rs_path = ROOT / "src-tauri/src/lib.rs"
+lib_rs_text = lib_rs_path.read_text()
 
-print(f"check:commands — {len(ok)} commands validated")
+# Entries look like: instrument_desktop::commands::<module>::<fn_name>,
+registered_fns: set[str] = set(
+    re.findall(r"instrument_desktop::commands::\w+::(\w+)", lib_rs_text)
+)
 
-if missing:
-    print(f"\n❌  {len(missing)} rustCommand(s) have no matching desktop function:\n")
-    for cmd in missing:
-        print(f"   • {cmd}")
-    print(
-        "\nEach rustCommand in src/registry/index.ts must have a matching "
-        "#[tauri::command] pub fn in src-core/instrument-desktop/src/commands/."
+# ── 4. Report mismatches ─────────────────────────────────────────────────────
+
+errors: list[str] = []
+
+missing_desktop = sorted(rust_commands - desktop_fns)
+if missing_desktop:
+    errors.append(
+        f"❌  {len(missing_desktop)} rustCommand(s) missing a desktop #[tauri::command] fn:\n"
+        + "\n".join(f"   • {c}" for c in missing_desktop)
+        + "\n   → Add a matching pub fn in src-core/instrument-desktop/src/commands/."
     )
+
+missing_registered = sorted(rust_commands - registered_fns)
+if missing_registered:
+    errors.append(
+        f"❌  {len(missing_registered)} rustCommand(s) not registered in collect_commands![]:\n"
+        + "\n".join(f"   • {c}" for c in missing_registered)
+        + "\n   → Add the entry to collect_commands![] in src-tauri/src/lib.rs."
+    )
+
+ok_count = len(rust_commands - set(missing_desktop) - set(missing_registered))
+print(f"check:commands — {len(rust_commands)} registry commands checked")
+
+if errors:
+    print()
+    print("\n\n".join(errors))
     sys.exit(1)
 else:
-    print("✅  All registry rustCommands match desktop command functions.")
+    print("✅  All registry rustCommands have matching desktop fns and are registered.")

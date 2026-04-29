@@ -225,7 +225,9 @@ count grows. Each entry describes the problem, the solution, and the trigger con
 
 `ts-rs` (with `serde-compat`) and `specta` added to `instrument-core`. All serde-backed
 tool types derive `TS`, `specta::Type`, and `#[ts(export)]`. Running `pnpm run gen:types`
-emits 114 type roots into `src/bindings/` (gitignored). `pnpm run typecheck` now runs
+emits type roots into `src/bindings/` (committed to the repo — deterministic, needed for IDE
+type resolution on fresh clone). `pnpm run gen:types` is run automatically by the pre-commit
+hook when `.rs` files are staged. `pnpm run typecheck` also runs
 the exporter first, so Rust/TypeScript drift is caught at compile time. CI updated to
 set up Rust before typecheck so `gen:types` works on clean checkouts.
 
@@ -242,7 +244,7 @@ and `0n`-safe null guards where needed.
 Every `#[tauri::command]` in `instrument-desktop` also has `#[specta::specta]`.
 `src-tauri/src/lib.rs` uses tauri-specta's `Builder` for command registration.
 On debug builds (`#[cfg(debug_assertions)]`), bindings are exported to
-`src/bindings/tauri.ts` (gitignored) when `pnpm tauri dev` starts.
+`src/bindings/tauri.ts` (committed) when `pnpm tauri dev` starts.
 
 `src/bridge/desktop.ts` now dispatches through the tauri-specta generated
 `commands` object (`src/bindings/tauri.ts`) instead of raw `invoke()`. The file is

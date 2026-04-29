@@ -427,4 +427,39 @@ mod tests {
         assert!(out.error.is_none());
         assert!(out.version.is_empty());
     }
+
+    #[test]
+    fn ipv4_cgnat() {
+        let out = inspect("100.64.0.1");
+        assert_eq!(out.ip_type, "Shared / CGNAT");
+        assert_eq!(out.range.as_deref(), Some("100.64.0.0/10"));
+        assert!(out.error.is_none());
+    }
+
+    #[test]
+    fn ipv6_teredo() {
+        let out = inspect("2001::1");
+        assert_eq!(out.version, "IPv6");
+        assert_eq!(out.ip_type, "Teredo");
+        assert_eq!(out.range.as_deref(), Some("2001::/32"));
+        assert!(out.error.is_none());
+    }
+
+    #[test]
+    fn ipv6_6to4() {
+        let out = inspect("2002::1");
+        assert_eq!(out.version, "IPv6");
+        assert_eq!(out.ip_type, "6to4");
+        assert_eq!(out.range.as_deref(), Some("2002::/16"));
+        assert!(out.error.is_none());
+    }
+
+    #[test]
+    fn ipv6_ipv4_mapped() {
+        let out = inspect("::ffff:192.168.1.1");
+        assert_eq!(out.version, "IPv6");
+        assert_eq!(out.ip_type, "IPv4-mapped");
+        assert!(out.ipv4_mapped.is_some());
+        assert!(out.error.is_none());
+    }
 }
