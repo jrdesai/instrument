@@ -44,6 +44,7 @@ pub fn build_tray_menu(
             menu.append(&item)?;
         }
     }
+    menu.append(&PredefinedMenuItem::separator(app)?)?;
     let browse = MenuItem::with_id(app, "browse-all", "Browse all tools…", true, None::<&str>)?;
     menu.append(&browse)?;
     menu.append(&PredefinedMenuItem::separator(app)?)?;
