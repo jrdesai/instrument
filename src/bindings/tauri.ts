@@ -1503,7 +1503,7 @@ lineEnding: string }
 /**
  * Input for the Lorem Ipsum generator.
  */
-export type LoremIpsumInput = { outputType: LoremOutputType; count: number; startWithClassic: boolean }
+export type LoremIpsumInput = { outputType: LoremOutputType; count: number; startWithClassic: boolean; offset: number; sentencesPerParagraph: number }
 /**
  * Output: generated text and actual word/sentence/paragraph counts.
  */

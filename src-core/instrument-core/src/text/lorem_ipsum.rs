@@ -15,6 +15,10 @@ pub struct LoremIpsumInput {
     pub output_type: LoremOutputType,
     pub count: u32,
     pub start_with_classic: bool,
+    /// Offset into the sentence/word pool so callers can vary text without changing other settings.
+    pub offset: u32,
+    /// Sentences per paragraph when `output_type` is `Paragraphs`. Clamped to 1–10 in `process`.
+    pub sentences_per_paragraph: u32,
 }
 
 /// Output format: paragraphs, sentences, or words.
@@ -75,9 +79,6 @@ const WORDS: &[&str] = &[
     "pretium", "tincidunt", "lacus", "vestibulum", "ante", "faucibus",
 ];
 
-const MIN_SENTENCES_PER_PARAGRAPH: usize = 3;
-const MAX_SENTENCES_PER_PARAGRAPH: usize = 6;
-
 fn count_words(s: &str) -> usize {
     s.split_whitespace().filter(|w| !w.is_empty()).count()
 }
@@ -92,8 +93,8 @@ fn count_paragraphs(s: &str) -> usize {
 
 /// Generate lorem ipsum text.
 ///
-/// Count must be 1–50. Deterministic: cycles through the corpus so the same
-/// input always yields the same output.
+/// Count must be 1–200. Cycles through the corpus; `offset` shifts the starting
+/// position so the same other settings can yield different text.
 ///
 /// # Example
 ///
@@ -106,27 +107,33 @@ fn count_paragraphs(s: &str) -> usize {
 ///     output_type: LoremOutputType::Words,
 ///     count: 5,
 ///     start_with_classic: true,
+///     offset: 0,
+///     sentences_per_paragraph: 4,
 /// });
 /// assert!(out.error.is_none());
 /// assert_eq!(out.word_count, 5);
 /// assert!(out.result.starts_with("Lorem"));
 /// ```
 pub fn process(input: LoremIpsumInput) -> LoremIpsumOutput {
-    if input.count == 0 || input.count > 50 {
+    if input.count == 0 || input.count > 200 {
         return LoremIpsumOutput {
             result: String::new(),
             word_count: 0,
             paragraph_count: 0,
             sentence_count: 0,
-            error: Some("Count must be between 1 and 50".to_string()),
+            error: Some("Count must be between 1 and 200".to_string()),
         };
     }
 
     let count = input.count as usize;
+    let offset = input.offset as usize;
+    let spp = (input.sentences_per_paragraph as usize).max(1).min(10);
     let result = match input.output_type {
-        LoremOutputType::Paragraphs => generate_paragraphs(count, input.start_with_classic),
-        LoremOutputType::Sentences => generate_sentences(count, input.start_with_classic),
-        LoremOutputType::Words => generate_words(count, input.start_with_classic),
+        LoremOutputType::Paragraphs => {
+            generate_paragraphs(count, input.start_with_classic, spp, offset)
+        }
+        LoremOutputType::Sentences => generate_sentences(count, input.start_with_classic, offset),
+        LoremOutputType::Words => generate_words(count, input.start_with_classic, offset),
     };
 
     let word_count = u32::try_from(count_words(&result)).unwrap_or(u32::MAX);
@@ -142,16 +149,19 @@ pub fn process(input: LoremIpsumInput) -> LoremIpsumOutput {
     }
 }
 
-fn generate_paragraphs(count: usize, start_with_classic: bool) -> String {
+fn generate_paragraphs(
+    count: usize,
+    start_with_classic: bool,
+    sentences_per_para: usize,
+    offset: usize,
+) -> String {
     let mut out = String::new();
-    let mut sent_idx: usize = 0;
+    let mut sent_idx: usize = offset;
     for p in 0..count {
         if p > 0 {
             out.push_str("\n\n");
         }
-        let num_sent = MIN_SENTENCES_PER_PARAGRAPH
-            + (p + count) % (MAX_SENTENCES_PER_PARAGRAPH - MIN_SENTENCES_PER_PARAGRAPH + 1);
-        for s in 0..num_sent {
+        for s in 0..sentences_per_para {
             if s > 0 {
                 out.push(' ');
             }
@@ -168,7 +178,7 @@ fn generate_paragraphs(count: usize, start_with_classic: bool) -> String {
     out
 }
 
-fn generate_sentences(count: usize, start_with_classic: bool) -> String {
+fn generate_sentences(count: usize, start_with_classic: bool, offset: usize) -> String {
     let mut out = String::new();
     for i in 0..count {
         if i > 0 {
@@ -177,15 +187,15 @@ fn generate_sentences(count: usize, start_with_classic: bool) -> String {
         let sentence = if start_with_classic && i == 0 {
             CLASSIC_OPENING
         } else {
-            let idx = if start_with_classic { i - 1 } else { i };
-            SENTENCES[idx % SENTENCES.len()]
+            let idx = (offset + if start_with_classic { i - 1 } else { i }) % SENTENCES.len();
+            SENTENCES[idx]
         };
         out.push_str(sentence);
     }
     out
 }
 
-fn generate_words(count: usize, start_with_classic: bool) -> String {
+fn generate_words(count: usize, start_with_classic: bool, offset: usize) -> String {
     let mut out = String::new();
     for i in 0..count {
         if i > 0 {
@@ -194,8 +204,8 @@ fn generate_words(count: usize, start_with_classic: bool) -> String {
         let word = if start_with_classic && i == 0 {
             "Lorem".to_string()
         } else {
-            let idx = if start_with_classic { i - 1 } else { i };
-            let w = WORDS[idx % WORDS.len()];
+            let idx = (offset + if start_with_classic { i - 1 } else { i }) % WORDS.len();
+            let w = WORDS[idx];
             if i == 0 && !start_with_classic {
                 let mut c = w.chars();
                 match c.next() {
@@ -221,6 +231,8 @@ mod tests {
             output_type: LoremOutputType::Paragraphs,
             count: 2,
             start_with_classic: false,
+            offset: 0,
+            sentences_per_paragraph: 4,
         });
         assert!(out.error.is_none());
         let paras: Vec<&str> = out.result.split("\n\n").filter(|s| !s.is_empty()).collect();
@@ -233,6 +245,8 @@ mod tests {
             output_type: LoremOutputType::Sentences,
             count: 3,
             start_with_classic: false,
+            offset: 0,
+            sentences_per_paragraph: 4,
         });
         assert!(out.error.is_none());
         assert_eq!(out.sentence_count, 3);
@@ -244,6 +258,8 @@ mod tests {
             output_type: LoremOutputType::Words,
             count: 10,
             start_with_classic: false,
+            offset: 0,
+            sentences_per_paragraph: 4,
         });
         assert!(out.error.is_none());
         assert_eq!(out.word_count, 10);
@@ -255,6 +271,8 @@ mod tests {
             output_type: LoremOutputType::Paragraphs,
             count: 1,
             start_with_classic: true,
+            offset: 0,
+            sentences_per_paragraph: 4,
         });
         assert!(out.error.is_none());
         assert!(out.result.starts_with("Lorem ipsum dolor sit amet"));
@@ -266,6 +284,8 @@ mod tests {
             output_type: LoremOutputType::Sentences,
             count: 1,
             start_with_classic: false,
+            offset: 0,
+            sentences_per_paragraph: 4,
         });
         assert!(out.error.is_none());
         assert!(!out.result.starts_with("Lorem ipsum"));
@@ -275,8 +295,10 @@ mod tests {
     fn count_too_high() {
         let out = process(LoremIpsumInput {
             output_type: LoremOutputType::Words,
-            count: 51,
+            count: 201,
             start_with_classic: false,
+            offset: 0,
+            sentences_per_paragraph: 4,
         });
         assert!(out.error.is_some());
         assert!(out.result.is_empty());
@@ -288,6 +310,8 @@ mod tests {
             output_type: LoremOutputType::Words,
             count: 0,
             start_with_classic: false,
+            offset: 0,
+            sentences_per_paragraph: 4,
         });
         assert!(out.error.is_some());
         assert!(out.result.is_empty());
@@ -299,6 +323,8 @@ mod tests {
             output_type: LoremOutputType::Words,
             count: 15,
             start_with_classic: true,
+            offset: 0,
+            sentences_per_paragraph: 4,
         });
         assert!(out.error.is_none());
         let actual_words = out.result.split_whitespace().count() as u32;

@@ -242,10 +242,20 @@ pub struct LoremArgs {
     pub count: u32,
     #[arg(long = "no-classic")]
     pub no_classic: bool,
+    #[arg(long, default_value_t = 0)]
+    pub offset: u32,
+    #[arg(long, default_value_t = 4)]
+    pub sentences_per_paragraph: u32,
 }
 pub fn run_lorem(args: LoremArgs, json: bool) {
     let output_type = match args.output_type { LoremTypeArg::Paragraphs => lorem_ipsum::LoremOutputType::Paragraphs, LoremTypeArg::Sentences => lorem_ipsum::LoremOutputType::Sentences, LoremTypeArg::Words => lorem_ipsum::LoremOutputType::Words };
-    let out = lorem_ipsum::process(lorem_ipsum::LoremIpsumInput { output_type, count: args.count, start_with_classic: !args.no_classic });
+    let out = lorem_ipsum::process(lorem_ipsum::LoremIpsumInput {
+        output_type,
+        count: args.count,
+        start_with_classic: !args.no_classic,
+        offset: args.offset,
+        sentences_per_paragraph: args.sentences_per_paragraph,
+    });
     if let Some(e) = out.error { output::print_err(&e, json, "lorem"); }
     output::print_ok(&out.result, json, "lorem");
 }

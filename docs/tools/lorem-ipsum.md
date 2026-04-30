@@ -1,6 +1,6 @@
 # Lorem Ipsum Generator
 
-Generate placeholder text as paragraphs, sentences, or individual words. Uses a fixed corpus so output is deterministic: the same options always produce the same text.
+Generate placeholder text as paragraphs, sentences, or individual words from a fixed grammatical corpus (not random word soup).
 
 ## Use cases
 
@@ -11,28 +11,24 @@ Generate placeholder text as paragraphs, sentences, or individual words. Uses a 
 ## Output types
 
 | Type | Description |
-|------|--------------|
-| **Paragraphs** | Each paragraph has 3–6 sentences from the corpus. Paragraphs are separated by a blank line. |
+|------|-------------|
+| **Paragraphs** | *Count* paragraphs, each with a configurable number of sentences (1–10). Paragraphs are separated by a blank line. |
 | **Sentences** | Exactly *count* sentences, space-separated. |
 | **Words** | Exactly *count* words, space-separated. |
 
 ## Options
 
-- **Count** — 1–50. Number of paragraphs, sentences, or words to generate.
-- **Start with "Lorem ipsum..."** — When on, the first paragraph/sentence/word starts with the classic “Lorem ipsum dolor sit amet…” opening. When off, generation starts from the main corpus.
+- **Count** — Depends on type (roughly 1–15 paragraphs, 1–30 sentences, 10–200 words). Maximum allowed by the engine is 200.
+- **Sentences / paragraph** — Paragraph mode only: how many sentences each paragraph contains (1–10).
+- **Start with "Lorem ipsum..."** — When on, the first paragraph/sentence/word uses the classic opening. When off, generation follows the corpus from the current offset.
+- **HTML output** — When on, the UI shows each paragraph wrapped in `<p>…</p>` as markup in a code block; copy uses that form. Plain mode renders readable paragraphs.
+- **Regenerate** — Picks a new random offset into the corpus so you get different text without changing other sliders.
 
-## Deterministic generation
+## Behaviour
 
-The tool does not use random selection. It cycles through the embedded corpus in a fixed order, so the same type, count, and “start with classic” setting always produce the same output. This makes the tool predictable and easy to use in tests or reproducible layouts.
+The tool auto-generates when you change options (debounced). History captures successful runs after a short delay. **Regenerate** changes only the starting offset in the sentence/word pool.
 
 ## Input / output
 
-- **Input:** Options only (no text input).
-- **Output:** Generated text plus counts: word count, sentence count, and paragraph count for the result.
-
-## Examples
-
-- Type: Paragraphs, Count: 3, Start classic: on → 3 paragraphs, first begins with “Lorem ipsum dolor sit amet…”.
-- Type: Sentences, Count: 5 → 5 sentences.
-- Type: Words, Count: 20 → 20 words.
-- Same options twice → identical output.
+- **Input:** Options only (no text input). The desktop CLI supports `--offset` and `--sentences-per-paragraph` in addition to type, count, and classic start.
+- **Output:** Generated text plus word, sentence, and paragraph counts for the result.
