@@ -127,7 +127,7 @@ pub fn process(input: LoremIpsumInput) -> LoremIpsumOutput {
 
     let count = input.count as usize;
     let offset = input.offset as usize;
-    let spp = (input.sentences_per_paragraph as usize).max(1).min(10);
+    let spp = (input.sentences_per_paragraph as usize).clamp(1, 10);
     let result = match input.output_type {
         LoremOutputType::Paragraphs => {
             generate_paragraphs(count, input.start_with_classic, spp, offset)

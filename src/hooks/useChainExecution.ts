@@ -6,6 +6,18 @@ import { useChainStore } from "../store";
 
 const DEBOUNCE_MS = 150;
 
+/** `LineOperation` variants accepted by `tool_line_tools_process` (must match Rust). */
+const LINE_TOOL_OPERATIONS = new Set([
+  "sortAsc",
+  "sortDesc",
+  "sortNaturalAsc",
+  "sortNaturalDesc",
+  "deduplicate",
+  "reverse",
+  "trimWhitespace",
+  "removeEmpty",
+]);
+
 export interface StepResult {
   status: "idle" | "running" | "success" | "error" | "waiting";
   rawOutput?: unknown;
@@ -87,8 +99,20 @@ function finalizeToolInput(tool: Tool, merged: Record<string, unknown>): Record<
     if (out.secret === undefined) out.secret = "";
     if (out.secretEncoding === undefined) out.secretEncoding = "utf8";
   }
-  if (tool.id === "line-tools" && typeof out.operation === "string") {
-    out.operations = [out.operation];
+  if (tool.id === "line-tools") {
+    const fallback = "trimWhitespace";
+    if (Array.isArray(out.operations) && out.operations.length > 0) {
+      const filtered = (out.operations as unknown[]).filter(
+        (x): x is string => typeof x === "string" && LINE_TOOL_OPERATIONS.has(x)
+      );
+      out.operations = filtered.length > 0 ? filtered : [fallback];
+    } else if (typeof out.operation === "string") {
+      const op = out.operation.trim();
+      out.operations =
+        op && LINE_TOOL_OPERATIONS.has(op) ? [op] : [fallback];
+    } else {
+      out.operations = [fallback];
+    }
     delete out.operation;
   }
   if (tool.id === "semver") {
