@@ -3,6 +3,9 @@
 use std::time::Instant;
 
 use instrument_core::network::cidr::{process as cidr_process_core, CidrInput, CidrOutput};
+use instrument_core::network::dns_lookup::{
+    process as dns_lookup_core, DnsLookupInput, DnsLookupOutput,
+};
 use instrument_core::network::ip_inspect::{
     process as ip_inspect_core, IpInspectInput, IpInspectOutput,
 };
@@ -47,5 +50,14 @@ pub fn tool_ip_inspect(input: IpInspectInput) -> IpInspectOutput {
     let start = Instant::now();
     let output = ip_inspect_core(input);
     finish_ok("tool_ip_inspect", start);
+    output
+}
+
+#[tauri::command]
+#[specta::specta]
+pub fn tool_dns_lookup(input: DnsLookupInput) -> DnsLookupOutput {
+    let start = Instant::now();
+    let output = dns_lookup_core(input);
+    finish_ok("tool_dns_lookup", start);
     output
 }

@@ -1,0 +1,5 @@
+# Allow the DNS lookup command to be invoked from the frontend.
+[[permission]]
+identifier = "allow-dns-lookup"
+description = "Enables the tool_dns_lookup command."
+commands.allow = ["tool_dns_lookup"]

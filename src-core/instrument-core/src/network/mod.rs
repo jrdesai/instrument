@@ -3,6 +3,7 @@
 //! Uses the `url` crate. All parsing happens in Rust; no browser URL API.
 
 pub mod cidr;
+pub mod dns_lookup;
 pub mod ip_inspect;
 pub mod curl_builder;
 pub mod http_status;

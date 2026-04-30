@@ -3,6 +3,7 @@ use instrument_core::datetime::timestamp::{self as ts, TimestampMode, TimestampU
 use instrument_core::datetime::{cron, date_calc, iso8601, timezone};
 use instrument_core::encoding::{color, qrcode};
 use instrument_core::expression;
+use instrument_core::network::dns_lookup::{self as dns, DnsLookupInput};
 use instrument_core::network::{self as net, cidr, curl_builder, http_status, mac_address, mime, user_agent};
 use instrument_core::numbers::{base_converter, bitwise, chmod, color_contrast, percentage, roman, unit_converter};
 use instrument_core::numbers::semver as semver_mod;
@@ -445,6 +446,66 @@ pub fn run_cidr(args: CidrArgs, json: bool) {
     let out = cidr::process(cidr::CidrInput { cidr: args.cidr });
     if let Some(e) = out.error { output::print_err(&e, json, "cidr"); }
     output::print_ok(&out.network_address, json, "cidr");
+}
+
+#[derive(Copy, Clone, PartialEq, Eq, ValueEnum)]
+pub enum DnsRecordTypeArg {
+    A,
+    Aaaa,
+    Mx,
+    Txt,
+    Cname,
+    Ns,
+}
+
+#[derive(Args)]
+pub struct DnsArgs {
+    /// Domain to resolve (e.g. example.com)
+    pub domain: String,
+    /// DNS record type
+    #[arg(long, short = 't', value_enum, default_value_t = DnsRecordTypeArg::A)]
+    pub record_type: DnsRecordTypeArg,
+}
+
+pub fn run_dns(args: DnsArgs, json: bool) {
+    let rt = match args.record_type {
+        DnsRecordTypeArg::A => "A",
+        DnsRecordTypeArg::Aaaa => "AAAA",
+        DnsRecordTypeArg::Mx => "MX",
+        DnsRecordTypeArg::Txt => "TXT",
+        DnsRecordTypeArg::Cname => "CNAME",
+        DnsRecordTypeArg::Ns => "NS",
+    };
+    let out = dns::process(DnsLookupInput {
+        domain: args.domain,
+        record_type: rt.to_string(),
+    });
+    if let Some(e) = &out.error {
+        output::print_err(e, json, "dns");
+    }
+    if json {
+        println!(
+            "{}",
+            serde_json::json!({
+                "ok": true,
+                "tool": "dns",
+                "domain": out.domain,
+                "record_type": out.record_type,
+                "records": out.records,
+            })
+        );
+    } else {
+        for record in &out.records {
+            if let Some(priority) = record.priority {
+                println!("{priority}\t{}\t{}s", record.value, record.ttl);
+            } else {
+                println!("{}\t{}s", record.value, record.ttl);
+            }
+        }
+        if out.records.is_empty() && out.error.is_none() {
+            println!("No {} records found.", out.record_type);
+        }
+    }
 }
 
 #[derive(Args)]

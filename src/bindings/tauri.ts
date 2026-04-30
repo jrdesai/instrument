@@ -303,6 +303,9 @@ async toolUaParse(input: UaParseInput) : Promise<UaParseOutput> {
 async toolIpInspect(input: IpInspectInput) : Promise<IpInspectOutput> {
     return await TAURI_INVOKE("tool_ip_inspect", { input });
 },
+async toolDnsLookup(input: DnsLookupInput) : Promise<DnsLookupOutput> {
+    return await TAURI_INVOKE("tool_dns_lookup", { input });
+},
 /**
  * Runs base conversion via instrument-core.
  */
@@ -882,6 +885,17 @@ leftValue: string | null;
 rightValue: string | null }
 export type DiffGranularity = "line" | "word" | "char"
 export type DnField = { label: string; value: string }
+export type DnsLookupInput = { domain: string; 
+/**
+ * One of: "A", "AAAA", "MX", "TXT", "CNAME", "NS"
+ */
+recordType: string }
+export type DnsLookupOutput = { domain: string; recordType: string; records: DnsRecord[]; error: string | null }
+export type DnsRecord = { value: string; ttl: number; 
+/**
+ * MX priority only — None for all other record types
+ */
+priority: number | null }
 export type EnvEntry = { key: string; value: string; rawValue: string; lineNumber: number; isEmptyValue: boolean; isComment: boolean; isQuoted: boolean; 
 /**
  * For .ini files: the section this key belongs to. None for .env/.properties.

@@ -131,6 +131,9 @@ fn main() {
     instrument_core::network::user_agent::UaParseOutput::export_all_to(&out).unwrap();
     instrument_core::network::ip_inspect::IpInspectInput::export_all_to(&out).unwrap();
     instrument_core::network::ip_inspect::IpInspectOutput::export_all_to(&out).unwrap();
+    instrument_core::network::dns_lookup::DnsLookupInput::export_all_to(&out).unwrap();
+    instrument_core::network::dns_lookup::DnsLookupOutput::export_all_to(&out).unwrap();
+    instrument_core::network::dns_lookup::DnsRecord::export_all_to(&out).unwrap();
     instrument_core::numbers::base_converter::BaseConverterInput::export_all_to(&out).unwrap();
     instrument_core::numbers::base_converter::BaseConverterOutput::export_all_to(&out).unwrap();
     instrument_core::numbers::base_converter::BitWidth::export_all_to(&out).unwrap();

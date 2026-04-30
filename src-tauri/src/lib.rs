@@ -90,6 +90,7 @@ pub fn run() {
         instrument_desktop::commands::network::tool_cidr_calculate,
         instrument_desktop::commands::network::tool_ua_parse,
         instrument_desktop::commands::network::tool_ip_inspect,
+        instrument_desktop::commands::network::tool_dns_lookup,
         instrument_desktop::commands::numbers::tool_base_converter_process,
         instrument_desktop::commands::numbers::tool_bitwise_process,
         instrument_desktop::commands::numbers::tool_chmod_process,

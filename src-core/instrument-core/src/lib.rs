@@ -17,3 +17,4 @@ pub mod expression;
 pub mod media;
 
 pub use encoding::char_info;
+pub use network::dns_lookup::{DnsLookupInput, DnsLookupOutput, DnsRecord};

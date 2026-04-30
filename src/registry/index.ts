@@ -1653,6 +1653,42 @@ export const tools: Tool[] = [
     implemented: true,
   },
   {
+    id: "dns-lookup",
+    cliCommand: "dns",
+    name: "DNS Lookup",
+    description: "Resolve DNS records using your system's configured resolver.",
+    category: "network",
+    displayCategory: "Network",
+    displayCategoryIcon: "router",
+    roles: ["backend", "devops", "general"],
+    icon: "dns",
+    platforms: ["desktop"],
+    rustCommand: "tool_dns_lookup",
+    trayPopover: true,
+    keywords: [
+      "dns",
+      "lookup",
+      "resolve",
+      "domain",
+      "a",
+      "aaaa",
+      "mx",
+      "txt",
+      "cname",
+      "ns",
+      "nameserver",
+      "mail",
+      "record",
+      "propagation",
+    ],
+    component: React.lazy(() =>
+      import("../tools/dns-lookup/DnsLookupTool").then((m) => ({
+        default: m.default,
+      }))
+    ),
+    implemented: true,
+  },
+  {
     id: "mac-address",
     name: "MAC Address Tool",
     description:

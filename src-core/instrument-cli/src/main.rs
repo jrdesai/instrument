@@ -143,6 +143,8 @@ enum Commands {
     UserAgent(misc::UserAgentArgs),
     /// CIDR calculator
     Cidr(misc::CidrArgs),
+    /// Resolve DNS records using the system resolver
+    Dns(misc::DnsArgs),
     /// Color converter
     Color(misc::ColorArgs),
     /// QR code generator
@@ -213,6 +215,7 @@ fn main() {
         Commands::UrlParse(args) => misc::run_url_parse(args, json),
         Commands::UserAgent(args) => misc::run_user_agent(args, json),
         Commands::Cidr(args) => misc::run_cidr(args, json),
+        Commands::Dns(args) => misc::run_dns(args, json),
         Commands::Color(args) => misc::run_color(args, json),
         Commands::Qr(args) => misc::run_qr(args, json),
     }
