@@ -1,6 +1,13 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import { callTool } from "../../bridge";
-import { CopyButton, PanelHeader, ToolbarFooter } from "../../components/tool";
+import { CopyButton, PanelHeader } from "../../components/tool";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useHistoryStore } from "../../store";
 import type { LineOperation } from "../../bindings/LineOperation";
@@ -12,22 +19,47 @@ const TOOL_ID = "line-tools";
 const DEBOUNCE_MS = 150;
 const HISTORY_DEBOUNCE_MS = 1500;
 
-const AVAILABLE_OPS: { label: string; value: LineOperation }[] = [
-  { label: "Sort A->Z", value: "sortAsc" },
-  { label: "Sort Z->A", value: "sortDesc" },
-  { label: "Natural A->Z", value: "sortNaturalAsc" },
-  { label: "Natural Z->A", value: "sortNaturalDesc" },
-  { label: "Deduplicate", value: "deduplicate" },
-  { label: "Reverse", value: "reverse" },
-  { label: "Trim Whitespace", value: "trimWhitespace" },
-  { label: "Remove Empty", value: "removeEmpty" },
-];
+/** Sort is mutually exclusive — at most one direction, or none. */
+type SortMode =
+  | "none"
+  | "sortAsc"
+  | "sortDesc"
+  | "sortNaturalAsc"
+  | "sortNaturalDesc";
+
+function OptionPill({
+  active,
+  onClick,
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
+        active
+          ? "border-primary/30 bg-primary/10 text-primary"
+          : "border-border-light bg-transparent text-slate-500 hover:text-primary dark:border-border-dark dark:text-slate-400"
+      }`}
+    >
+      {children}
+    </button>
+  );
+}
 
 function LineToolsTool() {
   const { setDraft } = useDraftInput(TOOL_ID);
   const [text, setText] = useState("");
   useRestoreStringDraft(TOOL_ID, setText);
-  const [operations, setOperations] = useState<LineOperation[]>(["sortAsc"]);
+  const [sortMode, setSortMode] = useState<SortMode>("none");
+  const [deduplicate, setDeduplicate] = useState(false);
+  const [reverse, setReverse] = useState(false);
+  const [trimWhitespace, setTrimWhitespace] = useState(false);
+  const [removeEmpty, setRemoveEmpty] = useState(false);
   const [caseInsensitive, setCaseInsensitive] = useState(true);
   const [keepFirst, setKeepFirst] = useState(true);
   const [output, setOutput] = useState<LineToolsOutput | null>(null);
@@ -35,6 +67,16 @@ function LineToolsTool() {
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
+
+  const operations = useMemo<LineOperation[]>(() => {
+    const ops: LineOperation[] = [];
+    if (sortMode !== "none") ops.push(sortMode);
+    if (deduplicate) ops.push("deduplicate");
+    if (reverse) ops.push("reverse");
+    if (trimWhitespace) ops.push("trimWhitespace");
+    if (removeEmpty) ops.push("removeEmpty");
+    return ops;
+  }, [sortMode, deduplicate, reverse, trimWhitespace, removeEmpty]);
 
   const runProcess = useCallback(
     async (currentText: string, currentOperations: LineOperation[]) => {
@@ -89,17 +131,6 @@ function LineToolsTool() {
     };
   }, []);
 
-  const hasSortOrDedup = operations.some((op) =>
-    [
-      "sortAsc",
-      "sortDesc",
-      "sortNaturalAsc",
-      "sortNaturalDesc",
-      "deduplicate",
-    ].includes(op)
-  );
-  const hasDedup = operations.includes("deduplicate");
-
   return (
     <div className="flex h-full flex-col bg-background-light font-display text-slate-900 dark:bg-background-dark dark:text-slate-100">
       <div className="flex min-h-0 flex-1">
@@ -131,7 +162,12 @@ function LineToolsTool() {
           <textarea
             aria-label="Output text"
             readOnly
-            className="min-h-0 flex-1 resize-none bg-transparent p-4 font-mono text-xs leading-relaxed text-slate-200 focus:outline-none"
+            className="min-h-0 flex-1 resize-none bg-transparent p-4 font-mono text-xs leading-relaxed text-slate-700 placeholder:text-slate-400 focus:outline-none dark:text-slate-300 dark:placeholder:text-slate-500"
+            placeholder={
+              text.trim()
+                ? undefined
+                : "Paste or type lines on the left — output updates as you change sort and transform options."
+            }
             value={output?.result ?? ""}
           />
         </div>
@@ -143,117 +179,127 @@ function LineToolsTool() {
         </div>
       )}
 
-      <ToolbarFooter
-        groups={[
-          {
-            label: "Chain",
-            children: (
-              <div className="flex flex-wrap items-center gap-1.5">
-                {operations.map((op, idx) => {
-                  const label = AVAILABLE_OPS.find((o) => o.value === op)?.label ?? op;
-                  return (
-                    <span
-                      key={`${op}-${idx}`}
-                      className="flex items-center gap-1 rounded-full bg-primary/15 px-2.5 py-1 text-xs font-medium text-primary"
-                    >
-                      {idx > 0 && <span className="mr-0.5 text-slate-500">{"->"}</span>}
-                      {label}
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setOperations((prev) => prev.filter((_, i) => i !== idx))
-                        }
-                        className="ml-0.5 text-primary/60 hover:text-primary"
-                        aria-label="Remove step"
-                      >
-                        x
-                      </button>
-                    </span>
-                  );
-                })}
-                <select
-                  value=""
-                  onChange={(e) => {
-                    if (e.target.value) {
-                      setOperations((prev) => [...prev, e.target.value as LineOperation]);
-                      e.target.value = "";
-                    }
-                  }}
-                  className="rounded border border-border-light bg-panel-light px-2 py-1 text-xs text-slate-500 dark:border-border-dark dark:bg-panel-dark"
-                >
-                  <option value="">+ Add step</option>
-                  {AVAILABLE_OPS.map((op) => (
-                    <option key={op.value} value={op.value}>
-                      {op.label}
-                    </option>
-                  ))}
-                </select>
+      <footer className="flex shrink-0 flex-wrap items-start gap-x-6 gap-y-3 border-t border-border-light bg-panel-light px-4 py-3 dark:border-border-dark dark:bg-panel-dark">
+        <div>
+          <div className="mb-1.5 text-[10px] uppercase tracking-wider text-slate-400">
+            Sort
+          </div>
+          <div className="flex flex-wrap gap-1">
+            {(
+              [
+                { value: "none" as const, label: "None" },
+                { value: "sortAsc" as const, label: "A → Z" },
+                { value: "sortDesc" as const, label: "Z → A" },
+                { value: "sortNaturalAsc" as const, label: "Natural A → Z" },
+                { value: "sortNaturalDesc" as const, label: "Natural Z → A" },
+              ] as const
+            ).map(({ value, label }) => (
+              <OptionPill
+                key={value}
+                active={sortMode === value}
+                onClick={() => setSortMode(value)}
+              >
+                {label}
+              </OptionPill>
+            ))}
+          </div>
+        </div>
+
+        <div className="hidden w-px self-stretch bg-border-light dark:bg-border-dark md:block" />
+
+        <div>
+          <div className="mb-1.5 text-[10px] uppercase tracking-wider text-slate-400">
+            Transform
+          </div>
+          <div className="flex flex-wrap gap-1">
+            <OptionPill
+              active={deduplicate}
+              onClick={() => setDeduplicate((v) => !v)}
+            >
+              Deduplicate
+            </OptionPill>
+            <OptionPill active={reverse} onClick={() => setReverse((v) => !v)}>
+              Reverse
+            </OptionPill>
+            <OptionPill
+              active={trimWhitespace}
+              onClick={() => setTrimWhitespace((v) => !v)}
+            >
+              Trim Whitespace
+            </OptionPill>
+            <OptionPill
+              active={removeEmpty}
+              onClick={() => setRemoveEmpty((v) => !v)}
+            >
+              Remove Empty
+            </OptionPill>
+          </div>
+        </div>
+
+        {(sortMode !== "none" || deduplicate) && (
+          <>
+            <div className="hidden w-px self-stretch bg-border-light dark:bg-border-dark md:block" />
+            <div>
+              <div className="mb-1.5 text-[10px] uppercase tracking-wider text-slate-400">
+                Options
               </div>
-            ),
-          },
-          {
-            label: "Options",
-            children: (
-              <>
-                {hasSortOrDedup && (
-                  <label className="inline-flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
+              <div className="flex flex-col gap-1.5">
+                {sortMode !== "none" || deduplicate ? (
+                  <label className="flex cursor-pointer items-center gap-2">
                     <input
                       type="checkbox"
                       checked={caseInsensitive}
                       onChange={(e) => setCaseInsensitive(e.target.checked)}
                       className="h-3 w-3 accent-primary"
                     />
-                    Case-insensitive
+                    <span className="text-xs text-slate-500 dark:text-slate-400">
+                      Case-insensitive
+                    </span>
                   </label>
-                )}
-                {hasDedup && (
-                  <label className="inline-flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
+                ) : null}
+                {deduplicate ? (
+                  <label className="flex cursor-pointer items-center gap-2">
                     <input
                       type="checkbox"
                       checked={keepFirst}
                       onChange={(e) => setKeepFirst(e.target.checked)}
                       className="h-3 w-3 accent-primary"
                     />
-                    Keep first
+                    <span className="text-xs text-slate-500 dark:text-slate-400">
+                      Keep first occurrence
+                    </span>
                   </label>
-                )}
-              </>
-            ),
-          },
-          {
-            end: true,
-            children: (
-              <>
-                <span className="text-xs text-slate-500 dark:text-slate-400">
-                  {output
-                    ? `${output.inputLineCount} lines -> ${output.outputLineCount} lines`
-                    : "No output"}
-                </span>
-                {output?.lineEnding === "crlf" && (
-                  <span className="text-[10px] text-slate-500">CRLF</span>
-                )}
-                <CopyButton
-                  value={output?.result || undefined}
-                  label="Copy Output"
-                  variant="outline"
-                />
-                <button
-                  type="button"
-                  onClick={() => {
-                    setText("");
-                    setDraft("");
-                    setOutput(null);
-                    setError(null);
-                  }}
-                  className="rounded-lg border border-border-light bg-panel-light px-3 py-1.5 text-xs text-slate-600 transition-colors hover:text-primary dark:border-border-dark dark:bg-panel-dark dark:text-slate-400"
-                >
-                  Clear
-                </button>
-              </>
-            ),
-          },
-        ]}
-      />
+                ) : null}
+              </div>
+            </div>
+          </>
+        )}
+
+        <div className="ml-auto flex items-end gap-2 pb-0.5">
+          {output && (
+            <span className="self-center text-xs text-slate-500 dark:text-slate-400">
+              {output.inputLineCount} → {output.outputLineCount} lines
+            </span>
+          )}
+          <CopyButton
+            value={output?.result || undefined}
+            label="Copy"
+            variant="outline"
+          />
+          <button
+            type="button"
+            onClick={() => {
+              setText("");
+              setDraft("");
+              setOutput(null);
+              setError(null);
+            }}
+            className="rounded-lg border border-border-light bg-panel-light px-3 py-1.5 text-xs text-slate-600 transition-colors hover:text-primary dark:border-border-dark dark:bg-panel-dark dark:text-slate-400"
+          >
+            Clear
+          </button>
+        </div>
+      </footer>
     </div>
   );
 }
