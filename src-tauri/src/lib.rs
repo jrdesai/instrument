@@ -184,6 +184,9 @@ pub fn run() {
                                 let _ = window.set_focus();
                             }
                         }
+                        "browse-all" => {
+                            let _ = tray::open_popover_window(app, "");
+                        }
                         "quit" => {
                             app.exit(0);
                         }

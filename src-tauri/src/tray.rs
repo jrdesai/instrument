@@ -33,7 +33,7 @@ pub fn build_tray_menu(
     if tools.is_empty() {
         let empty = MenuItem::new(
             app,
-            "No tools — star a popover-eligible tool",
+            "No favourites — star a tool to pin it here",
             false,
             None::<&str>,
         )?;
@@ -44,6 +44,8 @@ pub fn build_tray_menu(
             menu.append(&item)?;
         }
     }
+    let browse = MenuItem::with_id(app, "browse-all", "Browse all tools…", true, None::<&str>)?;
+    menu.append(&browse)?;
     menu.append(&PredefinedMenuItem::separator(app)?)?;
     let open = MenuItem::with_id(app, "open-instrument", "Open Instrument", true, None::<&str>)?;
     menu.append(&open)?;
