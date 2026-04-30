@@ -1,6 +1,7 @@
 import {
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
   type ChangeEvent,
@@ -25,6 +26,7 @@ const RUST_COMMAND = "tool_json_format";
 const TOOL_ID = "json-formatter";
 const DEBOUNCE_MS = 150;
 const HISTORY_DEBOUNCE_MS = 1500;
+const encoder = new TextEncoder();
 
 const MODE_ORDER = ["pretty", "minify", "compact"] as const satisfies readonly JsonFormatMode[];
 
@@ -40,7 +42,101 @@ const MODE_TOOLTIPS: Record<JsonFormatMode, string> = {
   compact: "Single line with readable spacing",
 };
 
+/** Minified byte size of any JSON-serialisable value. */
+function byteSize(value: unknown): number {
+  return encoder.encode(JSON.stringify(value)).length;
+}
+
+/** Human-readable byte size. */
+function formatBytes(n: number): string {
+  if (n < 1024) return `${n} B`;
+  return `${(n / 1024).toFixed(1)} KB`;
+}
+
+/** Short type description for a JSON value. */
+function typeHint(value: unknown): string {
+  if (value === null) return "null";
+  if (Array.isArray(value)) return `array (${value.length} items)`;
+  if (typeof value === "object") return `object (${Object.keys(value as object).length} keys)`;
+  return typeof value;
+}
+
+interface SizeEntry {
+  key: string;
+  bytes: number;
+  pct: number;
+  hint: string;
+}
+
+/** Returns per-key size breakdown for a root object, sorted largest first. */
+function computeBreakdown(parsed: unknown): SizeEntry[] | null {
+  if (parsed === null || typeof parsed !== "object" || Array.isArray(parsed)) {
+    return null;
+  }
+  const obj = parsed as Record<string, unknown>;
+  const total = byteSize(obj);
+  if (total === 0) return [];
+  return Object.entries(obj)
+    .map(([key, value]) => {
+      const b = byteSize(value);
+      return { key, bytes: b, pct: (b / total) * 100, hint: typeHint(value) };
+    })
+    .sort((a, b) => b.bytes - a.bytes);
+}
+
+function SizePanel({
+  totalBytes,
+  breakdown,
+}: {
+  totalBytes: number;
+  breakdown: SizeEntry[] | null;
+}) {
+  return (
+    <div className="flex h-full flex-col gap-4 overflow-auto custom-scrollbar">
+      <div className="flex items-baseline gap-2">
+        <span className="font-mono text-2xl font-semibold text-slate-100">
+          {formatBytes(totalBytes)}
+        </span>
+        <span className="text-xs text-slate-500">minified payload</span>
+      </div>
+
+      {breakdown === null ? (
+        <p className="text-xs text-slate-500">
+          Root value is not an object — no key breakdown available.
+        </p>
+      ) : breakdown.length === 0 ? (
+        <p className="text-xs text-slate-500">Empty object.</p>
+      ) : (
+        <div className="flex flex-col gap-0.5">
+          {breakdown.map((entry) => (
+            <div key={entry.key} className="group relative flex flex-col gap-0.5 py-2">
+              <div
+                className="pointer-events-none absolute inset-y-0 left-0 rounded bg-primary/6 transition-all"
+                style={{ width: `${entry.pct}%` }}
+                aria-hidden
+              />
+              <div className="relative flex items-baseline gap-3">
+                <span className="min-w-0 flex-1 truncate font-mono text-xs text-slate-200">
+                  {entry.key}
+                </span>
+                <span className="shrink-0 font-mono text-xs text-slate-400">
+                  {formatBytes(entry.bytes)}
+                </span>
+                <span className="w-10 shrink-0 text-right text-xs text-slate-500">
+                  {entry.pct < 1 ? "<1%" : `${Math.round(entry.pct)}%`}
+                </span>
+              </div>
+              <span className="relative text-[10px] text-slate-600">{entry.hint}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function JsonFormatterTool() {
+  type OutputTab = "formatted" | "size";
   const { setDraft } = useDraftInput(TOOL_ID);
   const [inputValue, setInputValue] = useState("");
   useRestoreStringDraft(TOOL_ID, setInputValue);
@@ -48,6 +144,7 @@ function JsonFormatterTool() {
   const [indent, setIndent] = useState<IndentStyle>("spaces2");
   const [sortKeys, setSortKeys] = useState(false);
   const [output, setOutput] = useState<JsonFormatOutput | null>(null);
+  const [outputTab, setOutputTab] = useState<OutputTab>("formatted");
   const [fileName, setFileName] = useState<string | null>(null);
   const [fileDropError, setFileDropError] = useState<string | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -178,12 +275,29 @@ function JsonFormatterTool() {
     setDraft("");
     setFileName(null);
     setFileDropError(null);
+    setOutputTab("formatted");
     setOutput(null);
   }, [setDraft]);
 
   const isEmpty = inputValue.trim() === "";
   const showValidBadge = !isEmpty && output != null;
   const isValid = output?.isValid === true;
+  const sizeParsed = useMemo<unknown>(() => {
+    if (!output?.isValid) return undefined;
+    try {
+      return JSON.parse(inputValue.trim());
+    } catch {
+      return undefined;
+    }
+  }, [output?.isValid, inputValue]);
+  const totalBytes = useMemo(
+    () => (sizeParsed !== undefined ? byteSize(sizeParsed) : 0),
+    [sizeParsed]
+  );
+  const sizeBreakdown = useMemo(
+    () => (sizeParsed !== undefined ? computeBreakdown(sizeParsed) : null),
+    [sizeParsed]
+  );
   const outputMeta =
     isValid && output
       ? [
@@ -273,7 +387,7 @@ function JsonFormatterTool() {
         {/* Right panel — output */}
         <div className="flex flex-col flex-1 min-w-0">
           <PanelHeader
-            label="Output"
+            label=""
             badge={
               showValidBadge
                 ? {
@@ -282,7 +396,36 @@ function JsonFormatterTool() {
                   }
                 : undefined
             }
-            meta={outputMeta}
+            meta={outputTab === "formatted" ? outputMeta : undefined}
+            children={
+              <div className="flex items-center gap-1">
+                <button
+                  type="button"
+                  onClick={() => setOutputTab("formatted")}
+                  className={`rounded px-2.5 py-0.5 text-xs font-medium transition-colors ${
+                    outputTab === "formatted"
+                      ? "bg-primary/15 text-primary"
+                      : "text-slate-400 hover:text-slate-200"
+                  }`}
+                >
+                  Formatted
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (isValid) setOutputTab("size");
+                  }}
+                  disabled={!isValid}
+                  className={`rounded px-2.5 py-0.5 text-xs font-medium transition-colors ${
+                    outputTab === "size" && isValid
+                      ? "bg-primary/15 text-primary"
+                      : "text-slate-400"
+                  } ${isValid ? "hover:text-slate-200" : "cursor-not-allowed opacity-60"}`}
+                >
+                  Size
+                </button>
+              </div>
+            }
           />
 
           <div className="flex-1 min-h-0 overflow-hidden flex flex-col px-4 pt-4 pb-4">
@@ -301,7 +444,7 @@ function JsonFormatterTool() {
                 {output.error ?? "Invalid JSON"}
               </div>
             )}
-            {isValid && output?.result && (
+            {isValid && output?.result && outputTab === "formatted" && (
               <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
                 <CodeBlock
                   code={output.result}
@@ -311,6 +454,9 @@ function JsonFormatterTool() {
                   className="h-full min-h-0 flex flex-col overflow-hidden"
                 />
               </div>
+            )}
+            {isValid && outputTab === "size" && sizeParsed !== undefined && (
+              <SizePanel totalBytes={totalBytes} breakdown={sizeBreakdown} />
             )}
           </div>
         </div>
