@@ -34,6 +34,35 @@ const FORMAT_TO_MIME: Record<ConfigFormat, string> = {
   Toml: "text/plain",
 };
 
+function FormatPill({
+  format,
+  active,
+  disabled,
+  onClick,
+}: {
+  format: ConfigFormat;
+  active: boolean;
+  disabled: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={disabled ? undefined : onClick}
+      disabled={disabled}
+      className={`rounded-full border px-2 py-0.5 text-[11px] font-medium transition-colors ${
+        active
+          ? "border-primary/30 bg-primary/10 text-primary"
+          : disabled
+          ? "cursor-not-allowed border-border-light bg-transparent text-slate-300 dark:border-border-dark dark:text-slate-600"
+          : "border-border-light bg-transparent text-slate-500 hover:text-primary dark:border-border-dark dark:text-slate-400"
+      }`}
+    >
+      {formatLabel(format)}
+    </button>
+  );
+}
+
 function nextFormatAfter(f: ConfigFormat): ConfigFormat {
   const i = FORMAT_ORDER.indexOf(f);
   return FORMAT_ORDER[(i + 1) % FORMAT_ORDER.length];
@@ -195,20 +224,18 @@ const ConfigConverterTool: React.FC = () => {
     void runProcess(input, { from, to, indent, sortKeys }, false);
   };
 
-  const handleFromChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const f = e.target.value as ConfigFormat;
+  const handleFromChange = (f: ConfigFormat) => {
     setFrom(f);
     if (f === to) {
       setTo(nextFormatAfter(f));
     }
   };
 
-  const handleToChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const t = e.target.value as ConfigFormat;
-    if (t === from) {
+  const handleToChange = (f: ConfigFormat) => {
+    if (f === from) {
       setTo(nextFormatAfter(from));
     } else {
-      setTo(t);
+      setTo(f);
     }
   };
 
@@ -235,9 +262,6 @@ const ConfigConverterTool: React.FC = () => {
 
   const outputLanguage =
     to === "Json" ? "json" : to === "Yaml" ? "yaml" : "toml";
-
-  const selectClass =
-    "text-xs rounded-full border border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark px-2 py-0.5 text-slate-600 dark:text-slate-300 cursor-pointer max-w-[7.5rem] outline-none focus-visible:ring-2 focus-visible:ring-primary/40";
 
   const indentPillClass = (value: IndentOption) =>
     [
@@ -280,16 +304,17 @@ const ConfigConverterTool: React.FC = () => {
             label={fileName ?? "Input"}
             meta={`${input.length.toLocaleString()} chars`}
           >
-            <select
-              aria-label="Input format"
-              className={selectClass}
-              value={from}
-              onChange={handleFromChange}
-            >
-              <option value="Json">JSON</option>
-              <option value="Yaml">YAML</option>
-              <option value="Toml">TOML</option>
-            </select>
+            <div className="flex gap-1">
+              {FORMAT_ORDER.map((f) => (
+                <FormatPill
+                  key={f}
+                  format={f}
+                  active={from === f}
+                  disabled={to === f}
+                  onClick={() => handleFromChange(f)}
+                />
+              ))}
+            </div>
             {fileName ? (
               <button
                 type="button"
@@ -343,16 +368,17 @@ const ConfigConverterTool: React.FC = () => {
               ) : null
             }
           >
-            <select
-              aria-label="Output format"
-              className={selectClass}
-              value={to}
-              onChange={handleToChange}
-            >
-              <option value="Json">JSON</option>
-              <option value="Yaml">YAML</option>
-              <option value="Toml">TOML</option>
-            </select>
+            <div className="flex gap-1">
+              {FORMAT_ORDER.map((f) => (
+                <FormatPill
+                  key={f}
+                  format={f}
+                  active={to === f}
+                  disabled={from === f}
+                  onClick={() => handleToChange(f)}
+                />
+              ))}
+            </div>
           </PanelHeader>
 
           <div className="flex-1 min-h-0">
