@@ -217,6 +217,12 @@ async toolBase64Process(input: Base64Input) : Promise<Base64Output> {
     return await TAURI_INVOKE("tool_base64_process", { input });
 },
 /**
+ * Runs Base32 / Base58 encode or decode via instrument-core.
+ */
+async toolBase32Base58Process(input: BaseNInput) : Promise<BaseNOutput> {
+    return await TAURI_INVOKE("tool_base32_base58_process", { input });
+},
+/**
  * Runs URL percent-encode or decode via instrument-core.
  */
 async toolUrlEncodeProcess(input: UrlEncodeInput) : Promise<UrlEncodeOutput> {
@@ -555,6 +561,7 @@ count: number; length: number; prefix: string; format: ApiKeyFormat; charset: Ap
  * Output from the API Key Generator tool.
  */
 export type ApiKeyOutput = { keys: string[]; error: string | null }
+export type Base32Variant = "standard" | "crockford"
 /**
  * Input for the Base64 tool: text to encode or decode, engine choice, and mode.
  */
@@ -575,6 +582,26 @@ export type BaseConverterInput = { value: string; fromBase: NumberBase; bitWidth
  * Output: the value in every supported base.
  */
 export type BaseConverterOutput = { decimal: string; hexadecimal: string; binary: string; binaryGrouped: string; octal: string; base32: string; base36: string; bitLength: number; isNegative: boolean; error: string | null }
+/**
+ * Which encoding to use.
+ */
+export type BaseNEncoding = "base32" | "base58"
+/**
+ * Combined input for the Base32 / Base58 tool.
+ */
+export type BaseNInput = { text: string; encoding: BaseNEncoding; mode: BaseNMode; 
+/**
+ * Only used when `encoding` is `Base32`.
+ */
+base32Variant: Base32Variant }
+/**
+ * Shared mode — applies to both encodings.
+ */
+export type BaseNMode = "encode" | "decode"
+/**
+ * Combined output.
+ */
+export type BaseNOutput = { result: string; error: string | null }
 /**
  * Input for the Basic Auth Header tool.
  */

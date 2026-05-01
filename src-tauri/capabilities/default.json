@@ -13,6 +13,7 @@
     "global-shortcut:allow-is-registered",
     "opener:default",
     "allow-base64",
+    "allow-base32-base58",
     "allow-url-encoder",
     "allow-html-entity",
     "allow-hex-converter",

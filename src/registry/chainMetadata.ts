@@ -31,6 +31,42 @@ export const CHAIN_TOOL_META: Record<string, Partial<Tool>> = {
       },
     ],
   },
+  "base32-base58": {
+    chainPrimaryInput: "text",
+    chainPrimaryOutput: "result",
+    chainConfig: [
+      {
+        key: "encoding",
+        label: "Encoding",
+        type: "select",
+        options: [
+          { value: "base32", label: "Base32" },
+          { value: "base58", label: "Base58" },
+        ],
+        default: "base32",
+      },
+      {
+        key: "mode",
+        label: "Mode",
+        type: "select",
+        options: [
+          { value: "encode", label: "Encode" },
+          { value: "decode", label: "Decode" },
+        ],
+        default: "encode",
+      },
+      {
+        key: "base32Variant",
+        label: "Base32 variant",
+        type: "select",
+        options: [
+          { value: "standard", label: "Standard (RFC 4648)" },
+          { value: "crockford", label: "Crockford" },
+        ],
+        default: "standard",
+      },
+    ],
+  },
   "url-encoder": {
     chainPrimaryInput: "text",
     chainPrimaryOutput: "result",

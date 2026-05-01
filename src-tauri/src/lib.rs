@@ -74,6 +74,7 @@ pub fn run() {
         instrument_desktop::commands::datetime::tool_iso8601_process,
         instrument_desktop::commands::datetime::tool_cron_process,
         instrument_desktop::commands::encoding::tool_base64_process,
+        instrument_desktop::commands::encoding::tool_base32_base58_process,
         instrument_desktop::commands::encoding::tool_url_encode_process,
         instrument_desktop::commands::encoding::tool_html_entity_process,
         instrument_desktop::commands::encoding::tool_hex_process,

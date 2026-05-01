@@ -1,0 +1,5 @@
+# Allow the Base32 / Base58 tool command to be invoked from the frontend.
+[[permission]]
+identifier = "allow-base32-base58"
+description = "Enables the tool_base32_base58_process command for the Base32 / Base58 tool."
+commands.allow = ["tool_base32_base58_process"]

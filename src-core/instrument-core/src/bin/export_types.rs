@@ -72,6 +72,17 @@ fn main() {
     instrument_core::datetime::timestamp::TimestampUnit::export_all_to(&out).unwrap();
     instrument_core::datetime::timezone::TimezoneInput::export_all_to(&out).unwrap();
     instrument_core::datetime::timezone::TimezoneOutput::export_all_to(&out).unwrap();
+    instrument_core::encoding::base32::Base32Input::export_all_to(&out).unwrap();
+    instrument_core::encoding::base32::Base32Mode::export_all_to(&out).unwrap();
+    instrument_core::encoding::base32::Base32Output::export_all_to(&out).unwrap();
+    instrument_core::encoding::base32::Base32Variant::export_all_to(&out).unwrap();
+    instrument_core::encoding::base32_base58::BaseNEncoding::export_all_to(&out).unwrap();
+    instrument_core::encoding::base32_base58::BaseNInput::export_all_to(&out).unwrap();
+    instrument_core::encoding::base32_base58::BaseNMode::export_all_to(&out).unwrap();
+    instrument_core::encoding::base32_base58::BaseNOutput::export_all_to(&out).unwrap();
+    instrument_core::encoding::base58::Base58Input::export_all_to(&out).unwrap();
+    instrument_core::encoding::base58::Base58Mode::export_all_to(&out).unwrap();
+    instrument_core::encoding::base58::Base58Output::export_all_to(&out).unwrap();
     instrument_core::encoding::base64::Base64Input::export_all_to(&out).unwrap();
     instrument_core::encoding::base64::Base64Mode::export_all_to(&out).unwrap();
     instrument_core::encoding::base64::Base64Output::export_all_to(&out).unwrap();

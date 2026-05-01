@@ -1,3 +1,6 @@
+pub mod base32;
+pub mod base32_base58;
+pub mod base58;
 pub mod base64;
 pub mod char_info;
 pub mod color;

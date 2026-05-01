@@ -2,6 +2,9 @@
 
 use std::time::Instant;
 
+use instrument_core::encoding::base32_base58::{
+    process as base32_base58_process_core, BaseNInput, BaseNOutput,
+};
 use instrument_core::encoding::base64::{process, Base64Input, Base64Output};
 use instrument_core::encoding::color::{process as color_process_core, ColorInput, ColorOutput};
 use instrument_core::encoding::html_entity::{
@@ -20,6 +23,16 @@ pub fn tool_base64_process(input: Base64Input) -> Base64Output {
     let start = Instant::now();
     let output = process(input);
     finish_ok("tool_base64_process", start);
+    output
+}
+
+/// Runs Base32 / Base58 encode or decode via instrument-core.
+#[tauri::command]
+#[specta::specta]
+pub fn tool_base32_base58_process(input: BaseNInput) -> BaseNOutput {
+    let start = Instant::now();
+    let output = base32_base58_process_core(input);
+    finish_ok("tool_base32_base58_process", start);
     output
 }
 

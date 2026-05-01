@@ -156,6 +156,38 @@ export const tools: Tool[] = [
     chainable: true,
   },
   {
+    id: "base32-base58",
+    name: "Base32 / Base58",
+    description:
+      "Encode and decode text using Base32 (RFC 4648, Crockford) or Base58 (Bitcoin).",
+    category: "encoding",
+    displayCategory: "Encoding",
+    displayCategoryIcon: "data_array",
+    roles: ["backend", "general"],
+    icon: "data_array",
+    platforms: ["desktop", "web"],
+    rustCommand: "tool_base32_base58_process",
+    keywords: [
+      "base32",
+      "base58",
+      "encode",
+      "decode",
+      "crockford",
+      "bitcoin",
+      "totp",
+      "2fa",
+      "secret",
+      "rfc4648",
+      "ipfs",
+    ],
+    component: React.lazy(() =>
+      import("../tools/base32-base58").then((m) => ({ default: m.default }))
+    ),
+    trayPopover: true,
+    implemented: true,
+    chainable: true,
+  },
+  {
     id: "regex-tester",
     name: "Regex Tester",
     description: "Test regular expressions across engines without freezing the UI.",

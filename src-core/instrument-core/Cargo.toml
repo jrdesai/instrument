@@ -23,7 +23,9 @@ required-features = ["ts-export"]
 [dependencies]
 serde = { workspace = true }
 thiserror = { workspace = true }
+base32 = "0.4"
 base64 = { workspace = true }
+bs58 = "0.5"
 sha1 = { workspace = true }
 sha2 = { workspace = true }
 sha3 = { workspace = true }

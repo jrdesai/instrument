@@ -51,6 +51,9 @@ use instrument_core::datetime::timestamp::{
 use instrument_core::datetime::timezone::{
     process as timezone_process_core, TimezoneInput,
 };
+use instrument_core::encoding::base32_base58::{
+    process as base32_base58_process_core, BaseNInput,
+};
 use instrument_core::encoding::base64::{process, Base64Input};
 use instrument_core::encoding::color::{process as color_process_core, ColorInput};
 use instrument_core::encoding::hex::{process as hex_process_core, HexInput};
@@ -167,6 +170,12 @@ macro_rules! tool_binding {
 }
 
 tool_binding!("tool_base64_process", base64_process_wasm, Base64Input, process);
+tool_binding!(
+    "tool_base32_base58_process",
+    base32_base58_process_wasm,
+    BaseNInput,
+    base32_base58_process_core
+);
 tool_binding!("tool_url_encode_process", url_encode_process_wasm, UrlEncodeInput, url_process);
 tool_binding!("tool_url_parse", tool_url_parse_wasm, UrlParseInput, url_parse_process);
 tool_binding!("tool_cidr_calculate", cidr_calculate_wasm, CidrInput, cidr_process_core);
