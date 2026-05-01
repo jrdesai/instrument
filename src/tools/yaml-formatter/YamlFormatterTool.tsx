@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState, type ChangeEvent } from "react";
 import { callTool } from "../../bridge";
-import { CopyButton } from "../../components/tool";
+import { CopyButton, FileUploadButton } from "../../components/tool";
 import { CodeBlock } from "../../components/ui/CodeBlock";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useFileDrop } from "../../hooks/useFileDrop";
@@ -151,10 +151,10 @@ export default function YamlFormatterTool() {
           <div className="flex items-center justify-between border-b border-border-light bg-panel-light px-4 py-2 dark:border-border-dark dark:bg-panel-dark min-h-[41px]">
             <div className="flex items-center gap-2">
               <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">{fileName ?? "INPUT"}</span>
-              <label className="cursor-pointer rounded-lg border border-border-light bg-panel-light px-2.5 py-0.5 text-xs text-slate-500 transition-colors hover:text-slate-700 dark:border-border-dark dark:bg-panel-dark dark:text-slate-400 dark:hover:text-slate-200">
-                Upload file
-                <input type="file" className="sr-only" accept=".yaml,.yml,text/yaml,text/plain" onChange={handleFileUpload} />
-              </label>
+              <FileUploadButton
+                accept=".yaml,.yml,text/yaml,text/plain"
+                onChange={handleFileUpload}
+              />
             </div>
             {inputValue.trim() ? <span className="text-xs text-slate-600">{inputValue.length.toLocaleString()} chars</span> : null}
           </div>

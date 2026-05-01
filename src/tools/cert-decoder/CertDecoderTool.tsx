@@ -1,6 +1,11 @@
 import { useCallback, useEffect, useRef, useState, type ChangeEvent } from "react";
 import { callTool } from "../../bridge";
-import { CopyButton, PanelHeader, ToolbarFooter } from "../../components/tool";
+import {
+  CopyButton,
+  FileUploadButton,
+  PanelHeader,
+  ToolbarFooter,
+} from "../../components/tool";
 import { useFileDrop } from "../../hooks/useFileDrop";
 import type { CertDecodeInput } from "../../bindings/CertDecodeInput";
 import type { CertDecodeOutput } from "../../bindings/CertDecodeOutput";
@@ -110,15 +115,10 @@ function CertDecoderTool() {
             </p>
           ) : null}
           <PanelHeader label="Input (PEM or DER base64)">
-            <label className="cursor-pointer rounded-lg border border-border-light bg-panel-light px-2.5 py-1 text-xs text-slate-500 transition-colors hover:text-slate-700 dark:border-border-dark dark:bg-panel-dark dark:text-slate-400 dark:hover:text-slate-200">
-              Upload file
-              <input
-                type="file"
-                className="sr-only"
-                accept=".pem,.crt,.cer,.txt,text/plain,application/x-pem-file,application/pkix-cert"
-                onChange={handleFileUpload}
-              />
-            </label>
+            <FileUploadButton
+              accept=".pem,.crt,.cer,.txt,text/plain,application/x-pem-file,application/pkix-cert"
+              onChange={handleFileUpload}
+            />
           </PanelHeader>
           <textarea
             value={pem}

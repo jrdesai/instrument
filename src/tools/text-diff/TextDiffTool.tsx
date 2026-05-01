@@ -5,7 +5,7 @@ import {
   useState,
   type ChangeEvent,
 } from "react";
-import { CopyButton, ToolbarFooter } from "../../components/tool";
+import { CopyButton, FileUploadButton, ToolbarFooter } from "../../components/tool";
 import { callTool } from "../../bridge";
 import { useDraftInput, useRestoreDraft } from "../../hooks/useDraftInput";
 import { useFileDrop } from "../../hooks/useFileDrop";
@@ -329,14 +329,10 @@ function TextDiffTool() {
                   ✕
                 </button>
               ) : null}
-              <label className="cursor-pointer rounded-lg border border-border-light bg-panel-light px-2.5 py-1 text-xs text-slate-500 transition-colors hover:text-slate-700 dark:border-border-dark dark:bg-panel-dark dark:text-slate-400 dark:hover:text-slate-200">
-                Upload file
-                <input
-                  type="file"
-                  className="sr-only"
-                  onChange={handleLeftUpload}
-                />
-              </label>
+              <FileUploadButton
+                onChange={handleLeftUpload}
+                label="Upload left file"
+              />
             </div>
             <span className="text-xs tabular-nums text-slate-500 dark:text-slate-400">
               {leftInput.length.toLocaleString()} chars
@@ -391,14 +387,10 @@ function TextDiffTool() {
                   ✕
                 </button>
               ) : null}
-              <label className="cursor-pointer rounded-lg border border-border-light bg-panel-light px-2.5 py-1 text-xs text-slate-500 transition-colors hover:text-slate-700 dark:border-border-dark dark:bg-panel-dark dark:text-slate-400 dark:hover:text-slate-200">
-                Upload file
-                <input
-                  type="file"
-                  className="sr-only"
-                  onChange={handleRightUpload}
-                />
-              </label>
+              <FileUploadButton
+                onChange={handleRightUpload}
+                label="Upload right file"
+              />
             </div>
             <span className="text-xs tabular-nums text-slate-500 dark:text-slate-400">
               {rightInput.length.toLocaleString()} chars

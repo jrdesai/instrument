@@ -1503,7 +1503,15 @@ lineEnding: string }
 /**
  * Input for the Lorem Ipsum generator.
  */
-export type LoremIpsumInput = { outputType: LoremOutputType; count: number; startWithClassic: boolean; offset: number; sentencesPerParagraph: number }
+export type LoremIpsumInput = { outputType: LoremOutputType; count: number; startWithClassic: boolean; 
+/**
+ * Offset into the sentence/word pool so callers can vary text without changing other settings.
+ */
+offset: number; 
+/**
+ * Sentences per paragraph when `output_type` is `Paragraphs`. Clamped to 1–10 in `process`.
+ */
+sentencesPerParagraph: number }
 /**
  * Output: generated text and actual word/sentence/paragraph counts.
  */

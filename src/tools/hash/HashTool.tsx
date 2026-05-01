@@ -6,7 +6,7 @@ import {
   useState,
   type ChangeEvent,
 } from "react";
-import { CopyButton } from "../../components/tool";
+import { CopyButton, FileUploadButton } from "../../components/tool";
 import { callTool } from "../../bridge";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useFileDrop } from "../../hooks/useFileDrop";
@@ -213,14 +213,7 @@ function HashTool() {
                 ✕
               </button>
             ) : null}
-            <label className="cursor-pointer rounded-lg border border-border-light bg-panel-light px-2.5 py-1 text-xs text-slate-500 transition-colors hover:text-slate-700 dark:border-border-dark dark:bg-panel-dark dark:text-slate-400 dark:hover:text-slate-200">
-              Upload file
-              <input
-                type="file"
-                className="sr-only"
-                onChange={handleFileUpload}
-              />
-            </label>
+            <FileUploadButton onChange={handleFileUpload} />
           </div>
           <div className="flex flex-wrap items-center gap-3">
             <span>Lines: {lines}</span>

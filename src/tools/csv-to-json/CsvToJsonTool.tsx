@@ -7,7 +7,7 @@ import {
 } from "react";
 import { useNavigate } from "react-router-dom";
 import { callTool } from "../../bridge";
-import { CopyButton } from "../../components/tool";
+import { CopyButton, FileUploadButton } from "../../components/tool";
 import { CodeBlock } from "../../components/ui/CodeBlock";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useFileDrop } from "../../hooks/useFileDrop";
@@ -288,15 +288,10 @@ function CsvToJsonTool() {
                   ✕
                 </button>
               ) : null}
-              <label className="cursor-pointer rounded-lg border border-border-light bg-panel-light px-2.5 py-0.5 text-xs text-slate-500 transition-colors hover:text-slate-700 dark:border-border-dark dark:bg-panel-dark dark:text-slate-400 dark:hover:text-slate-200">
-                Upload file
-                <input
-                  type="file"
-                  className="sr-only"
-                  accept={uploadAccept}
-                  onChange={handleFileUpload}
-                />
-              </label>
+              <FileUploadButton
+                accept={uploadAccept}
+                onChange={handleFileUpload}
+              />
             </div>
             {!isEmpty && (
               <span className="text-slate-600 text-xs tabular-nums">

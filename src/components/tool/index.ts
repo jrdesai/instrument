@@ -1,5 +1,6 @@
 export { WasmErrorBanner } from "./WasmErrorBanner";
 export { CopyButton } from "./CopyButton";
+export { FileUploadButton } from "./FileUploadButton";
 export { PanelHeader } from "./PanelHeader";
 export type { PanelHeaderBadge } from "./PanelHeader";
 export { ToolbarFooter } from "./ToolbarFooter";
