@@ -542,6 +542,7 @@ const RegexTesterTool: React.FC = () => {
 
   const evaluate = useDebouncedCallback(
     async (nextPattern: string, nextText: string, nextEngine: EngineId) => {
+      let currentMatchCount = 0;
       if (!nextPattern.trim()) {
         setMatches([]);
         setError(null);
@@ -559,6 +560,7 @@ const RegexTesterTool: React.FC = () => {
       try {
         if (nextEngine === "javascript") {
           const jsResult = runJsRegex(nextPattern, flags, nextText);
+          currentMatchCount = jsResult.length;
           setMatches(jsResult);
         } else {
           const result = await runRegex({
@@ -567,6 +569,7 @@ const RegexTesterTool: React.FC = () => {
             engine: nextEngine,
             flags,
           });
+          currentMatchCount = result.length;
           setMatches(result);
         }
         setExecutionMs(parseFloat((performance.now() - t0).toFixed(2)));
@@ -597,7 +600,7 @@ const RegexTesterTool: React.FC = () => {
         historyDebounceRef.current = setTimeout(() => {
           addHistoryEntry(REGEX_TESTER_TOOL_ID, {
             input: { pattern: nextPattern, engine: nextEngine, flags, text: nextText },
-            output: { matchCount: matches.length },
+            output: { matchCount: currentMatchCount },
             timestamp: Date.now(),
           });
           historyDebounceRef.current = null;

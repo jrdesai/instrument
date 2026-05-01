@@ -166,6 +166,22 @@ fn decode(input: HtmlEntityInput) -> HtmlEntityOutput {
     }
 }
 
+fn parse_numeric_entity(num: &str) -> Option<u32> {
+    if num.is_empty() {
+        return None;
+    }
+    if let Some(hex) = num.strip_prefix('x').or_else(|| num.strip_prefix('X')) {
+        if hex.is_empty() || !hex.chars().all(|c| c.is_ascii_hexdigit()) {
+            return None;
+        }
+        return u32::from_str_radix(hex, 16).ok();
+    }
+    if !num.chars().all(|c| c.is_ascii_digit()) {
+        return None;
+    }
+    num.parse::<u32>().ok()
+}
+
 fn decode_inner(s: &str) -> (String, usize) {
     let mut out = String::with_capacity(s.len());
     let mut count = 0usize;
@@ -210,12 +226,7 @@ fn decode_inner(s: &str) -> (String, usize) {
 
         // Numeric: &#123; or &#x7b;
         if let Some(num) = between.strip_prefix('#') {
-            let code = if num.starts_with('x') || num.starts_with('X') {
-                num[1..].chars().filter_map(|c| c.to_digit(16)).fold(0u32, |a, d| a * 16 + d)
-            } else {
-                num.chars().filter_map(|c| c.to_digit(10)).fold(0u32, |a, d| a * 10 + d)
-            };
-            if let Some(ch) = char::from_u32(code) {
+            if let Some(ch) = parse_numeric_entity(num).and_then(char::from_u32) {
                 out.push(ch);
                 count += 1;
             } else {
@@ -318,6 +329,18 @@ mod tests {
         });
         assert!(out.error.is_none());
         assert_eq!(out.result, "&foo; bar");
+        assert_eq!(out.entities_found, 0);
+    }
+
+    #[test]
+    fn invalid_numeric_entity_left_as_is() {
+        let out = process(HtmlEntityInput {
+            text: "&#12X3;".to_string(),
+            mode: HtmlEntityMode::Decode,
+            encode_type: HtmlEntityEncodeType::Named,
+        });
+        assert!(out.error.is_none());
+        assert_eq!(out.result, "&#12X3;");
         assert_eq!(out.entities_found, 0);
     }
 

@@ -34,12 +34,12 @@ function relativeTimeUntil(nowSec: number, expSec: number): string {
   const past = nowSec >= expSec;
   const [value, unit] =
     diff < 60
-      ? [diff, "seconds"]
+      ? [diff, "second"]
       : diff < 3600
-        ? [Math.floor(diff / 60), "minutes"]
+        ? [Math.floor(diff / 60), "minute"]
         : diff < 86400
-          ? [Math.floor(diff / 3600), "hours"]
-          : [Math.floor(diff / 86400), "days"];
+          ? [Math.floor(diff / 3600), "hour"]
+          : [Math.floor(diff / 86400), "day"];
   const plural = value === 1 ? "" : "s";
   if (past) return `Expired ${value} ${unit}${plural} ago`;
   return `Expires in ${value} ${unit}${plural}`;
@@ -205,7 +205,7 @@ export function JwtDecodePane() {
     return () => {
       if (secretDebounceRef.current) clearTimeout(secretDebounceRef.current);
     };
-  }, [secret, secretEncoding, token, runProcess]);
+  }, [secret, secretEncoding, runProcess]);
 
   const handleClear = useCallback(() => {
     setToken("");
