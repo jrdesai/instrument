@@ -14,6 +14,41 @@ import { APP_VERSION } from "../../version";
 
 const MAX_RECENT = 8;
 
+/** Soft tints for category overview cards only (not tool grid). */
+const CATEGORY_ACCENT: Record<string, { bg: string; text: string }> = {
+  Encoding: { bg: "bg-sky-100 dark:bg-sky-900/20", text: "text-sky-600 dark:text-sky-400" },
+  Security: { bg: "bg-red-100 dark:bg-red-900/20", text: "text-red-600 dark:text-red-400" },
+  Auth: { bg: "bg-amber-100 dark:bg-amber-900/20", text: "text-amber-600 dark:text-amber-400" },
+  "JSON Tools": {
+    bg: "bg-yellow-100 dark:bg-yellow-900/20",
+    text: "text-yellow-600 dark:text-yellow-400",
+  },
+  Code: { bg: "bg-violet-100 dark:bg-violet-900/20", text: "text-violet-600 dark:text-violet-400" },
+  Formatting: {
+    bg: "bg-indigo-100 dark:bg-indigo-900/20",
+    text: "text-indigo-600 dark:text-indigo-400",
+  },
+  "Date & Time": {
+    bg: "bg-teal-100 dark:bg-teal-900/20",
+    text: "text-teal-600 dark:text-teal-400",
+  },
+  Numbers: {
+    bg: "bg-emerald-100 dark:bg-emerald-900/20",
+    text: "text-emerald-600 dark:text-emerald-400",
+  },
+  Network: { bg: "bg-cyan-100 dark:bg-cyan-900/20", text: "text-cyan-600 dark:text-cyan-400" },
+  Data: { bg: "bg-lime-100 dark:bg-lime-900/20", text: "text-lime-600 dark:text-lime-400" },
+  Media: { bg: "bg-pink-100 dark:bg-pink-900/20", text: "text-pink-600 dark:text-pink-400" },
+  Design: {
+    bg: "bg-fuchsia-100 dark:bg-fuchsia-900/20",
+    text: "text-fuchsia-600 dark:text-fuchsia-400",
+  },
+};
+const DEFAULT_CATEGORY_ACCENT = {
+  bg: "bg-slate-100 dark:bg-slate-800",
+  text: "text-slate-500 dark:text-slate-400",
+};
+
 const ROLES = ["All", "Frontend", "Backend", "DevOps", "Security", "Data", "General"] as const;
 type RoleFilter = (typeof ROLES)[number];
 
@@ -436,6 +471,7 @@ export function DashboardPage() {
 
                 const preview = catTools.slice(0, 2).map((t) => t.name);
                 const subtitle = categorySubtitles[cat.name] ?? "";
+                const accent = CATEGORY_ACCENT[cat.name] ?? DEFAULT_CATEGORY_ACCENT;
                 return (
                   <button
                     key={cat.name}
@@ -443,7 +479,9 @@ export function DashboardPage() {
                     onClick={() => setView({ type: "category", name: cat.name })}
                     className="group flex flex-col items-start gap-2 rounded-xl border border-border-light bg-white p-4 text-left transition-colors hover:border-primary/40 hover:bg-primary/5 dark:border-border-dark dark:bg-panel-dark"
                   >
-                    <div className="flex size-8 items-center justify-center rounded-lg bg-slate-100 text-slate-500 transition-colors group-hover:bg-primary/10 group-hover:text-primary dark:bg-slate-800 dark:text-slate-400">
+                    <div
+                      className={`flex size-8 items-center justify-center rounded-lg transition-colors group-hover:bg-primary/10 group-hover:text-primary ${accent.bg} ${accent.text}`}
+                    >
                       <span
                         className="material-symbols-outlined text-[18px]"
                         aria-hidden

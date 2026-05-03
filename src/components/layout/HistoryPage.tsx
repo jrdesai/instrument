@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getToolById } from "../../registry";
 import { useHistoryStore } from "../../store";
@@ -30,10 +30,19 @@ function summarise(value: unknown, maxLen = 80): string {
   }
 }
 
+type HistoryRow = {
+  toolId: string;
+  input: unknown;
+  output: unknown;
+  timestamp: number;
+};
+
 export function HistoryPage() {
   const navigate = useNavigate();
   const history = useHistoryStore((s) => s.history);
   const clearHistory = useHistoryStore((s) => s.clearHistory);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterToolId, setFilterToolId] = useState<string | null>(null);
 
   const allEntries = useMemo(() => {
     return Object.entries(history)
@@ -42,6 +51,39 @@ export function HistoryPage() {
       )
       .sort((a, b) => b.timestamp - a.timestamp);
   }, [history]);
+
+  const toolsInHistory = useMemo(() => {
+    const ids = [...new Set(allEntries.map((e) => e.toolId))];
+    return ids
+      .map((id) => getToolById(id))
+      .filter((t): t is NonNullable<typeof t> => t != null);
+  }, [allEntries]);
+
+  const filteredEntries = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    let rows: HistoryRow[] = allEntries;
+    if (filterToolId) {
+      rows = rows.filter((e) => e.toolId === filterToolId);
+    }
+    if (q) {
+      rows = rows.filter((e) => {
+        const tool = getToolById(e.toolId);
+        const name = (tool?.name ?? e.toolId).toLowerCase();
+        const sin = summarise(e.input).toLowerCase();
+        const sout = summarise(e.output).toLowerCase();
+        return name.includes(q) || sin.includes(q) || sout.includes(q);
+      });
+    }
+    return rows;
+  }, [allEntries, filterToolId, searchQuery]);
+
+  const queryTrimmed = searchQuery.trim();
+  const hasActiveFilters = queryTrimmed.length > 0 || filterToolId != null;
+
+  const clearFilters = () => {
+    setSearchQuery("");
+    setFilterToolId(null);
+  };
 
   return (
     <div className="flex flex-col h-full w-full overflow-hidden bg-background-light dark:bg-background-dark">
@@ -52,7 +94,7 @@ export function HistoryPage() {
             History
           </h1>
           <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
-            Session only · max 100 entries per tool · never leaves your device
+            Persisted locally · max 20 entries per tool · never leaves your device
           </p>
         </div>
         {allEntries.length > 0 && (
@@ -65,6 +107,63 @@ export function HistoryPage() {
           </button>
         )}
       </header>
+
+      {allEntries.length > 0 && (
+        <div className="shrink-0 space-y-2 border-b border-border-light bg-background-light px-8 py-3 dark:border-border-dark dark:bg-background-dark">
+          <div className="flex max-w-xl items-center gap-2">
+            <div className="relative min-w-0 flex-1">
+              <span
+                className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500"
+                aria-hidden
+              >
+                <span className="material-symbols-outlined text-[18px]">search</span>
+              </span>
+              <input
+                type="search"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search history…"
+                className="h-8 w-full rounded-lg border border-transparent bg-slate-100 py-1 pl-9 pr-3 text-sm text-slate-800 placeholder:text-slate-400 transition-colors focus:border-primary/40 focus:outline-none dark:bg-slate-800 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:border-primary/40"
+                aria-label="Search history"
+              />
+            </div>
+            {queryTrimmed.length > 0 && (
+              <span className="shrink-0 text-xs text-slate-400 dark:text-slate-500">
+                {filteredEntries.length} result{filteredEntries.length === 1 ? "" : "s"}
+              </span>
+            )}
+          </div>
+          {toolsInHistory.length >= 2 && (
+            <div className="flex gap-1.5 overflow-x-auto no-scrollbar">
+              <button
+                type="button"
+                onClick={() => setFilterToolId(null)}
+                className={`shrink-0 rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+                  filterToolId === null
+                    ? "bg-primary text-white"
+                    : "bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-700 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-200"
+                }`}
+              >
+                All
+              </button>
+              {toolsInHistory.map((tool) => (
+                <button
+                  key={tool.id}
+                  type="button"
+                  onClick={() => setFilterToolId(tool.id)}
+                  className={`shrink-0 rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+                    filterToolId === tool.id
+                      ? "bg-primary text-white"
+                      : "bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-700 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-200"
+                  }`}
+                >
+                  {tool.name}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Content */}
       <div className="flex-1 overflow-y-auto custom-scrollbar">
@@ -87,9 +186,22 @@ export function HistoryPage() {
               </span>
             </button>
           </div>
+        ) : filteredEntries.length === 0 && hasActiveFilters ? (
+          <div className="flex flex-col items-center justify-center h-full gap-3 px-8 text-center">
+            <p className="text-sm text-slate-500 dark:text-slate-400">
+              No history matches your search.
+            </p>
+            <button
+              type="button"
+              onClick={clearFilters}
+              className="rounded-lg border border-border-light px-4 py-2 text-xs font-medium text-slate-600 transition-colors hover:border-primary/40 hover:text-primary dark:border-border-dark dark:text-slate-400 dark:hover:border-primary/40 dark:hover:text-primary"
+            >
+              Clear search
+            </button>
+          </div>
         ) : (
           <div className="px-8 py-6 space-y-2">
-            {allEntries.map((entry) => {
+            {filteredEntries.map((entry) => {
               const tool = getToolById(entry.toolId);
 
               if (!tool) {

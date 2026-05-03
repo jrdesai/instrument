@@ -3,7 +3,7 @@ import { devtools } from "zustand/middleware";
 import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import type { ChainTemplate } from "../data/chainTemplates";
-import type { Role, Tool } from "../registry";
+import { getToolById, type Role, type Tool } from "../registry";
 
 // ---------------------------------------------------------------------------
 // Shared types
@@ -54,6 +54,10 @@ export type Theme = "dark" | "light" | "system";
 
 const MAX_RECENT_TOOLS = 10;
 const MAX_HISTORY_PER_TOOL = 100;
+/** Persisted history caps — keep localStorage small; strip oversized JSON blobs. */
+const MAX_HISTORY_PERSIST_PER_TOOL = 20;
+const MAX_HISTORY_PERSIST_TOTAL = 50;
+const MAX_HISTORY_ENTRY_JSON_CHARS = 4096;
 
 interface ToolState {
   activeToolId: string | null;
@@ -159,7 +163,7 @@ export const useToolStore = create<ToolState>()(
 );
 
 // ---------------------------------------------------------------------------
-// History store (session-only; not persisted)
+// History store (persisted with caps; sensitive tools never written)
 // ---------------------------------------------------------------------------
 
 interface HistoryState {
@@ -169,34 +173,119 @@ interface HistoryState {
   clearHistory: () => void;
 }
 
+function historyEntryJsonLength(entry: HistoryEntry): number {
+  try {
+    return JSON.stringify(entry).length;
+  } catch {
+    return Number.POSITIVE_INFINITY;
+  }
+}
+
+/** Shape history for localStorage: no sensitive tools, ≤4KB JSON per entry, 20/tool, 50 total. */
+function prepareHistoryForPersist(
+  history: Record<string, HistoryEntry[]>
+): Record<string, HistoryEntry[]> {
+  type Flat = HistoryEntry & { toolId: string };
+  const flat: Flat[] = [];
+
+  for (const [toolId, entries] of Object.entries(history)) {
+    if (getToolById(toolId)?.sensitive === true) continue;
+
+    const kept = entries
+      .filter((e) => historyEntryJsonLength(e) <= MAX_HISTORY_ENTRY_JSON_CHARS)
+      .slice(0, MAX_HISTORY_PERSIST_PER_TOOL);
+
+    for (const entry of kept) {
+      flat.push({ toolId, ...entry });
+    }
+  }
+
+  flat.sort((a, b) => b.timestamp - a.timestamp);
+  const top = flat.slice(0, MAX_HISTORY_PERSIST_TOTAL);
+
+  const grouped: Record<string, HistoryEntry[]> = {};
+  for (const { toolId, input, output, timestamp } of top) {
+    if (!grouped[toolId]) grouped[toolId] = [];
+    grouped[toolId].push({ input, output, timestamp });
+  }
+  for (const id of Object.keys(grouped)) {
+    grouped[id].sort((a, b) => b.timestamp - a.timestamp);
+  }
+  return grouped;
+}
+
+function migratePersistedHistory(
+  raw: unknown
+): Record<string, HistoryEntry[]> | null {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return null;
+  const out: Record<string, HistoryEntry[]> = {};
+  for (const [toolId, entries] of Object.entries(raw as Record<string, unknown>)) {
+    if (getToolById(toolId)?.sensitive === true) continue;
+    if (!Array.isArray(entries)) continue;
+    const list: HistoryEntry[] = [];
+    for (const e of entries) {
+      if (!e || typeof e !== "object") continue;
+      const o = e as Record<string, unknown>;
+      if (typeof o.timestamp !== "number") continue;
+      list.push({
+        input: o.input,
+        output: o.output,
+        timestamp: o.timestamp,
+      });
+    }
+    if (list.length > 0) out[toolId] = list;
+  }
+  return out;
+}
+
 /**
- * Store for per-tool input/output history. Kept in memory only (not persisted).
- * Use for "recent runs" or replay within a session.
+ * Store for per-tool input/output history. In-memory cap 100 per tool; persisted
+ * subset is capped and excludes sensitive tools and oversized entries.
  */
-const historyStoreImpl = immer<HistoryState>((set, get) => ({
-  history: {},
+const historyStoreImpl = persist(
+  immer<HistoryState>((set, get) => ({
+    history: {},
 
-  addHistoryEntry: (toolId, entry) =>
-    set((state) => {
-      if (!state.history[toolId]) state.history[toolId] = [];
-      state.history[toolId].unshift(entry);
-      if (state.history[toolId].length > MAX_HISTORY_PER_TOOL) {
-        state.history[toolId] = state.history[toolId].slice(
-          0,
-          MAX_HISTORY_PER_TOOL
-        );
+    addHistoryEntry: (toolId, entry) =>
+      set((state) => {
+        if (!state.history[toolId]) state.history[toolId] = [];
+        state.history[toolId].unshift(entry);
+        if (state.history[toolId].length > MAX_HISTORY_PER_TOOL) {
+          state.history[toolId] = state.history[toolId].slice(
+            0,
+            MAX_HISTORY_PER_TOOL
+          );
+        }
+      }),
+
+    getHistory: (toolId) => {
+      return get().history[toolId] ?? [];
+    },
+
+    clearHistory: () =>
+      set((state) => {
+        state.history = {};
+      }),
+  })),
+  {
+    name: "instrument-history",
+    partialize: (state) => ({
+      history: prepareHistoryForPersist(state.history),
+    }),
+    merge: (persistedState, currentState) => {
+      if (!persistedState || typeof persistedState !== "object") {
+        return currentState;
       }
-    }),
-
-  getHistory: (toolId) => {
-    return get().history[toolId] ?? [];
-  },
-
-  clearHistory: () =>
-    set((state) => {
-      state.history = {};
-    }),
-}));
+      const p = persistedState as Partial<Pick<HistoryState, "history">>;
+      const migrated = migratePersistedHistory(p.history);
+      const history =
+        migrated != null
+          ? prepareHistoryForPersist(migrated)
+          : currentState.history;
+      return { ...currentState, history };
+    },
+  }
+);
 
 export const useHistoryStore = create<HistoryState>()(
   (import.meta.env.DEV
