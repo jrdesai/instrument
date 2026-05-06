@@ -83,7 +83,7 @@ Hooks live in `.githooks/` (committed). `pnpm install` wires them up automatical
 pnpm run build:wasm   # regenerates public/wasm-pkg/ locally — do NOT commit it
 ```
 - `public/wasm-pkg/` and `src/wasm-pkg/` are both gitignored — never commit either
-- **Symptom of missing WASM in dev**: browser console shows `"text/html" is not a valid JavaScript MIME type`. This means `public/wasm-pkg/instrument_web.js` is missing — run `pnpm run build:wasm` to fix. Vite returns `index.html` for any unmatched path, masking the real 404.
+- **Symptom of missing WASM in dev**: browser console shows `"text/html" is not a valid JavaScript MIME type`. This means `public/wasm-pkg/instrument_web.js` is missing — run `pnpm run build:wasm` to fix. Vite returns `index.html` for any unmatched path, masking the real 404. The same symptom on production means **`dist/wasm-pkg/` was never produced** (e.g. Cloudflare Pages ran `vite build --mode web` without `build:wasm` first) — use `pnpm run build:web` or match the GitHub Actions web job; see `wrangler.toml`.
 - **Vite 7 — never `import()` a `/public` path from source**: Vite 7 forbids loading anything under `public/` through the normal `import()` pipeline from app source (throws "This file is in /public … should not be imported from source code"). The WASM loader in `src/bridge/web.ts` works around this by building an absolute URL with `new URL(path, self.location.origin + '/')` and passing that string to `import()`. The browser fetch bypasses Vite's transform pipeline entirely. Do not revert this to a root-relative path like `/wasm-pkg/instrument_web.js`.
 
 ### 2. Bridge — never bypass it

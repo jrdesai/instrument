@@ -2,15 +2,34 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import { VitePWA } from "vite-plugin-pwa";
-import { readFileSync } from "fs";
+import { existsSync, readFileSync } from "fs";
+import { join } from "path";
 
 const pkg = JSON.parse(readFileSync("./package.json", "utf-8")) as { version: string };
 
 // @ts-expect-error process is a nodejs global
 const host = process.env.TAURI_DEV_HOST;
 
+function assertWebWasmArtifactsPresent(mode: string, command: string): void {
+  if (command !== "build" || mode !== "web") return;
+  const dir = join(process.cwd(), "public/wasm-pkg");
+  const glue = join(dir, "instrument_web.js");
+  const wasm = join(dir, "instrument_web_bg.wasm");
+  if (existsSync(glue) && existsSync(wasm)) return;
+  throw new Error(
+    "Web production build is missing WASM under public/wasm-pkg/ " +
+      "(instrument_web.js + instrument_web_bg.wasm). " +
+      "Run `pnpm run build:wasm` before `vite build --mode web`, or use `pnpm run build:web` which does both. " +
+      "Cloudflare Pages: the build command must compile WASM (Rust + wasm-pack); " +
+      "running Vite alone will deploy a broken site (dynamic import returns HTML → MIME error)."
+  );
+}
+
 // https://vite.dev/config/
-export default defineConfig(async ({ command, mode }) => ({
+export default defineConfig(async ({ command, mode }) => {
+  assertWebWasmArtifactsPresent(mode, command);
+
+  return {
   plugins: [
     react(),
     tailwindcss(),
@@ -126,4 +145,5 @@ export default defineConfig(async ({ command, mode }) => ({
     environment: "jsdom",
     setupFiles: ["src/vitest.setup.ts"],
   },
-}));
+};
+});

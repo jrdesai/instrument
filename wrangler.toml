@@ -1,13 +1,26 @@
 # Cloudflare Pages configuration.
-# NOTE: The [build] section is NOT supported for Pages projects — set the build
-# command in the Cloudflare Pages dashboard instead:
 #
-#   Build command:  pnpm install --frozen-lockfile && pnpm exec vite build --mode web
-#   Output dir:     dist
+# `public/wasm-pkg/` is gitignored — it is produced by `pnpm run build:wasm` and
+# copied into `dist/wasm-pkg/` by Vite. A web build that runs **only** Vite without
+# compiling WASM first deploys a broken app (dynamic import of instrument_web.js
+# gets HTML → "text/html is not a valid JavaScript MIME type").
 #
-# Do NOT use `pnpm run build:web` — that runs build:wasm which requires
-# wasm-pack/Rust on the host. Cloudflare Pages does not have these.
-# The committed public/wasm-pkg/ files are copied into dist/ by Vite automatically.
+# Recommended: deploy from GitHub Actions (see .github/workflows/ci.yml) which runs
+# build:wasm then vite build, then `wrangler pages deploy dist`.
+#
+# If Cloudflare Pages builds from Git instead, use a build command that includes WASM,
+# for example (Ubuntu image; adjust for your Pages environment):
+#
+#   curl -sSf https://sh.rustup.rs | sh -s -- -y
+#   . "$HOME/.cargo/env"
+#   rustup target add wasm32-unknown-unknown
+#   curl -sSf https://rustwasm.github.io/wasm-pack/installer/init.sh | sh
+#   pnpm install --frozen-lockfile
+#   pnpm run build:web
+#
+# Output directory: dist
+#
+# Do **not** use `pnpm exec vite build --mode web` alone — it skips WASM compilation.
 
 name = "instrument"
 compatibility_date = "2024-01-01"
