@@ -1,5 +1,5 @@
-import { useMemo, useState, type ReactNode } from "react";
-import { CopyButton } from "../../components/tool";
+import { useMemo, useState } from "react";
+import { CopyButton, PillButton } from "../../components/tool";
 
 interface StatusCode {
   code: number;
@@ -215,29 +215,6 @@ function badgeClass(code: number): string {
   }
 }
 
-function OptionPill({
-  active,
-  onClick,
-  children,
-}: {
-  active: boolean;
-  onClick: () => void;
-  children: ReactNode;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
-        active
-          ? "border-primary/30 bg-primary/10 text-primary"
-          : "border-border-light text-slate-500 hover:bg-slate-100 dark:border-border-dark dark:text-slate-400 dark:hover:bg-white/5"
-      }`}
-    >
-      {children}
-    </button>
-  );
-}
 
 function StatusRow({ s }: { s: StatusCode }) {
   return (
@@ -314,9 +291,9 @@ export default function HttpStatusCodesTool() {
           />
           <div className="flex flex-wrap gap-2">
             {groupPills.map((p) => (
-              <OptionPill key={p.id} active={group === p.id} onClick={() => setGroup(p.id)}>
+              <PillButton size="sm" key={p.id} active={group === p.id} onClick={() => setGroup(p.id)}>
                 {p.label}
-              </OptionPill>
+              </PillButton>
             ))}
           </div>
         </div>

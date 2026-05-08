@@ -1,5 +1,5 @@
-import { useMemo, useState, type ReactNode } from "react";
-import { CopyButton } from "../../components/tool";
+import { useMemo, useState } from "react";
+import { CopyButton, PillButton } from "../../components/tool";
 
 type MimeCategory =
   | "application"
@@ -191,29 +191,6 @@ const CATEGORY_ORDER: MimeCategory[] = [
   "multipart",
 ];
 
-function OptionPill({
-  active,
-  onClick,
-  children,
-}: {
-  active: boolean;
-  onClick: () => void;
-  children: ReactNode;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
-        active
-          ? "border-primary/30 bg-primary/10 text-primary"
-          : "border-border-light text-slate-500 hover:bg-slate-100 dark:border-border-dark dark:text-slate-400 dark:hover:bg-white/5"
-      }`}
-    >
-      {children}
-    </button>
-  );
-}
 
 function MimeRow({ entry }: { entry: MimeEntry }) {
   return (
@@ -277,13 +254,13 @@ export default function MimeLookupTool() {
           />
           <div className="flex flex-wrap gap-2">
             {CATEGORY_PILLS.map((p) => (
-              <OptionPill
+              <PillButton size="sm"
                 key={p.id}
                 active={categoryFilter === p.id}
                 onClick={() => setCategoryFilter(p.id)}
               >
                 {p.label}
-              </OptionPill>
+              </PillButton>
             ))}
           </div>
         </div>

@@ -4,10 +4,15 @@ import {
   useMemo,
   useRef,
   useState,
-  type ReactNode,
 } from "react";
 import { callTool } from "../../bridge";
-import { CopyButton, PanelHeader } from "../../components/tool";
+import {
+  CopyButton,
+  PanelHeader,
+  PillButton,
+  ToolbarFooter,
+  type FooterGroup,
+} from "../../components/tool";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useHistoryStore } from "../../store";
 import type { LineOperation } from "../../bindings/LineOperation";
@@ -26,30 +31,6 @@ type SortMode =
   | "sortDesc"
   | "sortNaturalAsc"
   | "sortNaturalDesc";
-
-function OptionPill({
-  active,
-  onClick,
-  children,
-}: {
-  active: boolean;
-  onClick: () => void;
-  children: ReactNode;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
-        active
-          ? "border-primary/30 bg-primary/10 text-primary"
-          : "border-border-light bg-transparent text-slate-500 hover:text-primary dark:border-border-dark dark:text-slate-400"
-      }`}
-    >
-      {children}
-    </button>
-  );
-}
 
 function LineToolsTool() {
   const { setDraft } = useDraftInput(TOOL_ID);
@@ -131,6 +112,137 @@ function LineToolsTool() {
     };
   }, []);
 
+  const footerGroups: FooterGroup[] = [
+    {
+      label: "Sort",
+      children: (
+        <>
+          {(
+            [
+              { value: "none" as const, label: "None" },
+              { value: "sortAsc" as const, label: "A → Z" },
+              { value: "sortDesc" as const, label: "Z → A" },
+              { value: "sortNaturalAsc" as const, label: "Natural A → Z" },
+              { value: "sortNaturalDesc" as const, label: "Natural Z → A" },
+            ] as const
+          ).map(({ value, label }) => (
+            <PillButton
+              key={value}
+              active={sortMode === value}
+              onClick={() => setSortMode(value)}
+              size="sm"
+              shape="full"
+            >
+              {label}
+            </PillButton>
+          ))}
+        </>
+      ),
+    },
+    {
+      label: "Transform",
+      children: (
+        <>
+          <PillButton
+            active={deduplicate}
+            onClick={() => setDeduplicate((v) => !v)}
+            size="sm"
+            shape="full"
+          >
+            Deduplicate
+          </PillButton>
+          <PillButton
+            active={reverse}
+            onClick={() => setReverse((v) => !v)}
+            size="sm"
+            shape="full"
+          >
+            Reverse
+          </PillButton>
+          <PillButton
+            active={trimWhitespace}
+            onClick={() => setTrimWhitespace((v) => !v)}
+            size="sm"
+            shape="full"
+          >
+            Trim Whitespace
+          </PillButton>
+          <PillButton
+            active={removeEmpty}
+            onClick={() => setRemoveEmpty((v) => !v)}
+            size="sm"
+            shape="full"
+          >
+            Remove Empty
+          </PillButton>
+        </>
+      ),
+    },
+    ...(sortMode !== "none" || deduplicate
+      ? [
+          {
+            label: "Options",
+            children: (
+              <div className="flex flex-col gap-1.5">
+                {(sortMode !== "none" || deduplicate) && (
+                  <label className="flex cursor-pointer items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={caseInsensitive}
+                      onChange={(e) => setCaseInsensitive(e.target.checked)}
+                      className="h-3 w-3 accent-primary"
+                    />
+                    <span className="text-xs text-slate-500 dark:text-slate-400">
+                      Case-insensitive
+                    </span>
+                  </label>
+                )}
+                {deduplicate && (
+                  <label className="flex cursor-pointer items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={keepFirst}
+                      onChange={(e) => setKeepFirst(e.target.checked)}
+                      className="h-3 w-3 accent-primary"
+                    />
+                    <span className="text-xs text-slate-500 dark:text-slate-400">
+                      Keep first occurrence
+                    </span>
+                  </label>
+                )}
+              </div>
+            ),
+          } satisfies FooterGroup,
+        ]
+      : []),
+    {
+      end: true,
+      children: (
+        <>
+          {output && (
+            <span className="self-center text-xs text-slate-500 dark:text-slate-400">
+              {output.inputLineCount} → {output.outputLineCount} lines
+            </span>
+          )}
+          <CopyButton value={output?.result || undefined} label="Copy" variant="primary" />
+          <button
+            type="button"
+            onClick={() => {
+              setText("");
+              setDraft("");
+              setOutput(null);
+              setError(null);
+            }}
+            disabled={text.trim().length === 0}
+            className="rounded-full px-3 py-1 text-xs font-medium text-slate-500 transition-colors hover:text-red-500 disabled:cursor-not-allowed disabled:opacity-40 dark:text-slate-400 dark:hover:text-red-400"
+          >
+            Clear
+          </button>
+        </>
+      ),
+    },
+  ];
+
   return (
     <div className="flex h-full flex-col bg-background-light font-display text-slate-900 dark:bg-background-dark dark:text-slate-100">
       <div className="flex min-h-0 flex-1">
@@ -179,127 +291,7 @@ function LineToolsTool() {
         </div>
       )}
 
-      <footer className="flex shrink-0 flex-wrap items-start gap-x-6 gap-y-3 border-t border-border-light bg-panel-light px-4 py-3 dark:border-border-dark dark:bg-panel-dark">
-        <div>
-          <div className="mb-1.5 text-[10px] uppercase tracking-wider text-slate-400">
-            Sort
-          </div>
-          <div className="flex flex-wrap gap-1">
-            {(
-              [
-                { value: "none" as const, label: "None" },
-                { value: "sortAsc" as const, label: "A → Z" },
-                { value: "sortDesc" as const, label: "Z → A" },
-                { value: "sortNaturalAsc" as const, label: "Natural A → Z" },
-                { value: "sortNaturalDesc" as const, label: "Natural Z → A" },
-              ] as const
-            ).map(({ value, label }) => (
-              <OptionPill
-                key={value}
-                active={sortMode === value}
-                onClick={() => setSortMode(value)}
-              >
-                {label}
-              </OptionPill>
-            ))}
-          </div>
-        </div>
-
-        <div className="hidden w-px self-stretch bg-border-light dark:bg-border-dark md:block" />
-
-        <div>
-          <div className="mb-1.5 text-[10px] uppercase tracking-wider text-slate-400">
-            Transform
-          </div>
-          <div className="flex flex-wrap gap-1">
-            <OptionPill
-              active={deduplicate}
-              onClick={() => setDeduplicate((v) => !v)}
-            >
-              Deduplicate
-            </OptionPill>
-            <OptionPill active={reverse} onClick={() => setReverse((v) => !v)}>
-              Reverse
-            </OptionPill>
-            <OptionPill
-              active={trimWhitespace}
-              onClick={() => setTrimWhitespace((v) => !v)}
-            >
-              Trim Whitespace
-            </OptionPill>
-            <OptionPill
-              active={removeEmpty}
-              onClick={() => setRemoveEmpty((v) => !v)}
-            >
-              Remove Empty
-            </OptionPill>
-          </div>
-        </div>
-
-        {(sortMode !== "none" || deduplicate) && (
-          <>
-            <div className="hidden w-px self-stretch bg-border-light dark:bg-border-dark md:block" />
-            <div>
-              <div className="mb-1.5 text-[10px] uppercase tracking-wider text-slate-400">
-                Options
-              </div>
-              <div className="flex flex-col gap-1.5">
-                {sortMode !== "none" || deduplicate ? (
-                  <label className="flex cursor-pointer items-center gap-2">
-                    <input
-                      type="checkbox"
-                      checked={caseInsensitive}
-                      onChange={(e) => setCaseInsensitive(e.target.checked)}
-                      className="h-3 w-3 accent-primary"
-                    />
-                    <span className="text-xs text-slate-500 dark:text-slate-400">
-                      Case-insensitive
-                    </span>
-                  </label>
-                ) : null}
-                {deduplicate ? (
-                  <label className="flex cursor-pointer items-center gap-2">
-                    <input
-                      type="checkbox"
-                      checked={keepFirst}
-                      onChange={(e) => setKeepFirst(e.target.checked)}
-                      className="h-3 w-3 accent-primary"
-                    />
-                    <span className="text-xs text-slate-500 dark:text-slate-400">
-                      Keep first occurrence
-                    </span>
-                  </label>
-                ) : null}
-              </div>
-            </div>
-          </>
-        )}
-
-        <div className="ml-auto flex items-end gap-2 pb-0.5">
-          {output && (
-            <span className="self-center text-xs text-slate-500 dark:text-slate-400">
-              {output.inputLineCount} → {output.outputLineCount} lines
-            </span>
-          )}
-          <CopyButton
-            value={output?.result || undefined}
-            label="Copy"
-            variant="outline"
-          />
-          <button
-            type="button"
-            onClick={() => {
-              setText("");
-              setDraft("");
-              setOutput(null);
-              setError(null);
-            }}
-            className="rounded-lg border border-border-light bg-panel-light px-3 py-1.5 text-xs text-slate-600 transition-colors hover:text-primary dark:border-border-dark dark:bg-panel-dark dark:text-slate-400"
-          >
-            Clear
-          </button>
-        </div>
-      </footer>
+      <ToolbarFooter groups={footerGroups} />
     </div>
   );
 }

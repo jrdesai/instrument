@@ -4,11 +4,10 @@ import {
   useMemo,
   useRef,
   useState,
-  type ReactNode,
 } from "react";
 import { useDebouncedCallback } from "use-debounce";
 import { callTool } from "../../bridge";
-import { CopyButton } from "../../components/tool";
+import { CopyButton, PillButton, ToolbarFooter } from "../../components/tool";
 import type { LoremIpsumInput } from "../../bindings/LoremIpsumInput";
 import type { LoremIpsumOutput } from "../../bindings/LoremIpsumOutput";
 import type { LoremOutputType } from "../../bindings/LoremOutputType";
@@ -26,29 +25,6 @@ const COUNT_RANGES = {
   words: { min: 10, max: 200, default: 50 },
 } as const;
 
-function OptionPill({
-  active,
-  onClick,
-  children,
-}: {
-  active: boolean;
-  onClick: () => void;
-  children: ReactNode;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
-        active
-          ? "border-primary/30 bg-primary/10 text-primary"
-          : "border-border-light bg-transparent text-slate-500 hover:text-primary dark:border-border-dark dark:text-slate-400"
-      }`}
-    >
-      {children}
-    </button>
-  );
-}
 
 function LoremIpsumTool() {
   const [outputType, setOutputType] =
@@ -222,115 +198,114 @@ function LoremIpsumTool() {
         </div>
       </div>
 
-      <footer className="flex shrink-0 flex-wrap items-start gap-x-6 gap-y-3 border-t border-border-light bg-panel-light px-4 py-3 dark:border-border-dark dark:bg-panel-dark">
-        <div>
-          <div className="mb-1.5 text-[10px] uppercase tracking-wider text-slate-400">
-            Type
-          </div>
-          <div className="flex gap-1">
-            {(["paragraphs", "sentences", "words"] as const).map((t) => (
-              <OptionPill
-                key={t}
-                active={outputType === t}
-                onClick={() => handleOutputTypeChange(t)}
-              >
-                {t.charAt(0).toUpperCase() + t.slice(1)}
-              </OptionPill>
-            ))}
-          </div>
-        </div>
-
-        <div className="hidden w-px self-stretch bg-border-light dark:bg-border-dark md:block" />
-
-        <div>
-          <div className="mb-1.5 text-[10px] uppercase tracking-wider text-slate-400">
-            Count{" "}
-            <span className="font-mono text-slate-600 dark:text-slate-400">
-              {count}
-            </span>
-          </div>
-          <input
-            type="range"
-            min={COUNT_RANGES[outputType].min}
-            max={COUNT_RANGES[outputType].max}
-            value={count}
-            onChange={(e) => setCount(Number(e.target.value))}
-            className="w-32 accent-primary"
-            aria-label="Count"
-          />
-        </div>
-
-        {outputType === "paragraphs" && (
-          <>
-            <div className="hidden w-px self-stretch bg-border-light dark:bg-border-dark md:block" />
-            <div>
-              <div className="mb-1.5 text-[10px] uppercase tracking-wider text-slate-400">
-                Sentences / para{" "}
-                <span className="font-mono text-slate-600 dark:text-slate-400">
-                  {sentencesPerParagraph}
-                </span>
+      <ToolbarFooter
+        groups={[
+          {
+            label: "Type",
+            children: (
+              <div className="flex gap-1">
+                {(["paragraphs", "sentences", "words"] as const).map((t) => (
+                  <PillButton
+                    key={t}
+                    size="sm"
+                    active={outputType === t}
+                    onClick={() => handleOutputTypeChange(t)}
+                  >
+                    {t.charAt(0).toUpperCase() + t.slice(1)}
+                  </PillButton>
+                ))}
               </div>
-              <input
-                type="range"
-                min={1}
-                max={10}
-                value={sentencesPerParagraph}
-                onChange={(e) =>
-                  setSentencesPerParagraph(Number(e.target.value))
-                }
-                className="w-28 accent-primary"
-                aria-label="Sentences per paragraph"
-              />
-            </div>
-          </>
-        )}
-
-        <div className="hidden w-px self-stretch bg-border-light dark:bg-border-dark md:block" />
-
-        <div>
-          <div className="mb-1.5 text-[10px] uppercase tracking-wider text-slate-400">
-            Options
-          </div>
-          <div className="flex flex-col gap-1.5">
-            <label className="flex cursor-pointer items-center gap-2">
-              <input
-                type="checkbox"
-                checked={startWithClassic}
-                onChange={(e) => setStartWithClassic(e.target.checked)}
-                className="rounded border-border-light text-primary focus:ring-primary dark:border-border-dark"
-              />
-              <span className="text-xs text-slate-600 dark:text-slate-400">
-                Start with &quot;Lorem ipsum&quot;
-              </span>
-            </label>
-            <label className="flex cursor-pointer items-center gap-2">
-              <input
-                type="checkbox"
-                checked={asHtml}
-                onChange={(e) => setAsHtml(e.target.checked)}
-                className="rounded border-border-light text-primary focus:ring-primary dark:border-border-dark"
-              />
-              <span className="text-xs text-slate-600 dark:text-slate-400">
-                HTML output
-              </span>
-            </label>
-          </div>
-        </div>
-
-        <div className="ml-auto flex items-end pb-0.5">
-          <button
-            type="button"
-            onClick={handleRegenerate}
-            title="Regenerate with different text"
-            className="flex items-center gap-1.5 rounded border border-border-light px-3 py-1.5 text-xs font-medium text-slate-500 transition-colors hover:border-primary/30 hover:text-primary dark:border-border-dark"
-          >
-            <span className="material-symbols-outlined text-[14px]">
-              refresh
-            </span>
-            Regenerate
-          </button>
-        </div>
-      </footer>
+            ),
+          },
+          {
+            label: "Count",
+            children: (
+              <div className="flex items-center gap-2">
+                <span className="font-mono text-xs text-slate-600 dark:text-slate-400">
+                  {count}
+                </span>
+                <input
+                  type="range"
+                  min={COUNT_RANGES[outputType].min}
+                  max={COUNT_RANGES[outputType].max}
+                  value={count}
+                  onChange={(e) => setCount(Number(e.target.value))}
+                  className="w-32 accent-primary"
+                  aria-label="Count"
+                />
+              </div>
+            ),
+          },
+          ...(outputType === "paragraphs"
+            ? [
+                {
+                  label: "Sentences / para",
+                  children: (
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono text-xs text-slate-600 dark:text-slate-400">
+                        {sentencesPerParagraph}
+                      </span>
+                      <input
+                        type="range"
+                        min={1}
+                        max={10}
+                        value={sentencesPerParagraph}
+                        onChange={(e) =>
+                          setSentencesPerParagraph(Number(e.target.value))
+                        }
+                        className="w-28 accent-primary"
+                        aria-label="Sentences per paragraph"
+                      />
+                    </div>
+                  ),
+                },
+              ]
+            : []),
+          {
+            label: "Options",
+            children: (
+              <div className="flex flex-col gap-1.5">
+                <label className="flex cursor-pointer items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={startWithClassic}
+                    onChange={(e) => setStartWithClassic(e.target.checked)}
+                    className="rounded border-border-light text-primary focus:ring-primary dark:border-border-dark"
+                  />
+                  <span className="text-xs text-slate-600 dark:text-slate-400">
+                    Start with &quot;Lorem ipsum&quot;
+                  </span>
+                </label>
+                <label className="flex cursor-pointer items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={asHtml}
+                    onChange={(e) => setAsHtml(e.target.checked)}
+                    className="rounded border-border-light text-primary focus:ring-primary dark:border-border-dark"
+                  />
+                  <span className="text-xs text-slate-600 dark:text-slate-400">
+                    HTML output
+                  </span>
+                </label>
+              </div>
+            ),
+          },
+          {
+            end: true,
+            children: (
+              <button
+                type="button"
+                onClick={handleRegenerate}
+                title="Regenerate with different text"
+                className="flex items-center gap-1.5 rounded border border-border-light px-3 py-1.5 text-xs font-medium text-slate-500 transition-colors hover:border-primary/30 hover:text-primary dark:border-border-dark"
+              >
+                <span className="material-symbols-outlined text-[14px]">refresh</span>
+                Regenerate
+              </button>
+            ),
+          },
+        ]}
+      />
     </div>
   );
 }

@@ -6,11 +6,11 @@ import { ConfirmButton } from "../ui/ConfirmButton";
 
 const STORAGE_SUMMARY_ROWS = [
   {
-    icon: "timer",
+    icon: "history",
     label: "Session history",
-    detail: "Kept in memory · cleared when you close the app",
-    badge: "Memory only" as const,
-    iconClass: "text-slate-400",
+    detail: "Saved locally · persists across sessions",
+    badge: "Persisted" as const,
+    iconClass: "text-primary",
   },
   {
     icon: "star",

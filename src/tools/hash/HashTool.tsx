@@ -6,7 +6,7 @@ import {
   useState,
   type ChangeEvent,
 } from "react";
-import { CopyButton, FileUploadButton } from "../../components/tool";
+import { CopyButton, FileUploadButton, ToolbarFooter } from "../../components/tool";
 import { callTool } from "../../bridge";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useFileDrop } from "../../hooks/useFileDrop";
@@ -45,6 +45,7 @@ function HashTool() {
   const [fileDropError, setFileDropError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [fileName, setFileName] = useState<string | null>(null);
+  const isEmpty = input.trim().length === 0;
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
@@ -347,23 +348,30 @@ function HashTool() {
         </div>
       </div>
 
-      <footer className="flex items-center gap-3 px-4 py-2 border-t border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0">
-        <button
-          type="button"
-          onClick={handleClear}
-          className="px-3 py-1 text-sm text-slate-700 dark:text-slate-300 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
-        >
-          Clear
-        </button>
-        <div className="ml-auto">
-          <CopyButton
-            value={copyAllValue || undefined}
-            label="Copy all"
-            variant="primary"
-            className="py-1 text-sm"
-          />
-        </div>
-      </footer>
+      <ToolbarFooter
+        groups={[
+          {
+            end: true,
+            children: (
+              <>
+                <button
+                  type="button"
+                  onClick={handleClear}
+                  disabled={isEmpty}
+                  className="rounded-full px-3 py-1 text-xs font-medium text-slate-500 transition-colors hover:text-red-500 disabled:cursor-not-allowed disabled:opacity-40 dark:text-slate-400 dark:hover:text-red-400"
+                >
+                  Clear
+                </button>
+                <CopyButton
+                  value={copyAllValue || undefined}
+                  label="Copy all"
+                  variant="primary"
+                />
+              </>
+            ),
+          },
+        ]}
+      />
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState, type ChangeEvent } from "react";
 import { callTool } from "../../bridge";
-import { CopyButton, FileUploadButton } from "../../components/tool";
+import { CopyButton, FileUploadButton, ToolbarFooter } from "../../components/tool";
 import { CodeBlock } from "../../components/ui/CodeBlock";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useFileDrop } from "../../hooks/useFileDrop";
@@ -18,6 +18,7 @@ export default function YamlFormatterTool() {
   const [inputValue, setInputValue] = useState("");
   useRestoreStringDraft(TOOL_ID, setInputValue);
   const [output, setOutput] = useState<YamlFormatOutput | null>(null);
+  const isEmpty = inputValue.trim().length === 0;
   const [fileName, setFileName] = useState<string | null>(null);
   const [fileDropError, setFileDropError] = useState<string | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -148,7 +149,7 @@ export default function YamlFormatterTool() {
               {fileDropError}
             </p>
           ) : null}
-          <div className="flex items-center justify-between border-b border-border-light bg-panel-light px-4 py-2 dark:border-border-dark dark:bg-panel-dark min-h-[41px]">
+          <div className="flex items-center justify-between border-b border-border-light bg-panel-light px-4 py-2 dark:border-border-dark dark:bg-panel-dark min-h-[46px]">
             <div className="flex items-center gap-2">
               <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">{fileName ?? "INPUT"}</span>
               <FileUploadButton
@@ -170,7 +171,7 @@ export default function YamlFormatterTool() {
           />
         </div>
         <div className="flex min-w-0 flex-1 flex-col">
-          <div className="flex items-center justify-between border-b border-border-light bg-panel-light px-4 py-2 dark:border-border-dark dark:bg-panel-dark min-h-[41px]">
+          <div className="flex items-center justify-between border-b border-border-light bg-panel-light px-4 py-2 dark:border-border-dark dark:bg-panel-dark min-h-[46px]">
             <span className="text-xs uppercase tracking-wider text-slate-500">OUTPUT (YAML)</span>
             {output ? <span className="text-xs text-slate-600">{output.lineCount.toLocaleString()} lines</span> : null}
           </div>
@@ -180,13 +181,39 @@ export default function YamlFormatterTool() {
           {output?.error ? <div className="border-t border-red-200 bg-red-50 px-4 py-2 text-xs text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-400">{output.error}</div> : null}
         </div>
       </div>
-      <footer className="shrink-0 border-t border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark px-4 py-3">
-        <div className="flex items-center gap-2 ml-auto justify-end">
-          {output?.result && !output.error ? <button type="button" onClick={() => handleDownload(output.result)} className="rounded-lg border border-border-light bg-panel-light px-3 py-1.5 text-xs text-slate-500 transition-colors hover:text-slate-700 dark:border-border-dark dark:bg-panel-dark dark:text-slate-400 dark:hover:text-slate-200">Download .yaml</button> : null}
-          <CopyButton value={output?.result && !output.error ? output.result : undefined} label="Copy" variant="primary" className="py-1.5 text-[11px] font-semibold uppercase tracking-wider" />
-          <button type="button" onClick={handleClear} className="rounded-md border border-border-light bg-panel-light px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider transition-colors hover:bg-slate-100 dark:border-border-dark dark:bg-panel-dark dark:hover:bg-white/5">Clear</button>
-        </div>
-      </footer>
+      <ToolbarFooter
+        groups={[
+          {
+            end: true,
+            children: (
+              <>
+                {output?.result && !output.error ? (
+                  <button
+                    type="button"
+                    onClick={() => handleDownload(output.result)}
+                    className="rounded-full border border-border-light px-3 py-1 text-xs font-medium text-slate-500 transition-colors hover:border-primary/40 hover:text-primary dark:border-border-dark dark:text-slate-400 dark:hover:border-primary/40 dark:hover:text-primary"
+                  >
+                    Download .yaml
+                  </button>
+                ) : null}
+                <CopyButton
+                  value={output?.result && !output.error ? output.result : undefined}
+                  label="Copy"
+                  variant="primary"
+                />
+                <button
+                  type="button"
+                  onClick={handleClear}
+                  disabled={isEmpty}
+                  className="rounded-full px-3 py-1 text-xs font-medium text-slate-500 transition-colors hover:text-red-500 disabled:cursor-not-allowed disabled:opacity-40 dark:text-slate-400 dark:hover:text-red-400"
+                >
+                  Clear
+                </button>
+              </>
+            ),
+          },
+        ]}
+      />
     </div>
   );
 }

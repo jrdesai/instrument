@@ -460,14 +460,12 @@ function JsonDiffTool() {
                 <CopyButton
                   value={leftInput || undefined}
                   label="Copy Left"
-                  variant="outline"
-                  className="px-3 py-2"
+                  variant="primary"
                 />
                 <CopyButton
                   value={rightInput || undefined}
                   label="Copy Right"
                   variant="outline"
-                  className="px-3 py-2"
                 />
               </>
             ),
@@ -485,7 +483,8 @@ function JsonDiffTool() {
                 <button
                   type="button"
                   onClick={handleClear}
-                  className="rounded-lg border border-border-light bg-panel-light px-4 py-2 text-sm text-slate-500 transition-colors hover:border-slate-400 hover:text-slate-800 dark:border-border-dark dark:bg-panel-dark dark:text-slate-400 dark:hover:border-slate-500 dark:hover:text-slate-200"
+                  disabled={isEmpty}
+                  className="rounded-full px-3 py-1 text-xs font-medium text-slate-500 transition-colors hover:text-red-500 disabled:cursor-not-allowed disabled:opacity-40 dark:text-slate-400 dark:hover:text-red-400"
                 >
                   Clear
                 </button>

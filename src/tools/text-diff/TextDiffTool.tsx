@@ -310,7 +310,7 @@ function TextDiffTool() {
               {leftFileDropError}
             </p>
           ) : null}
-          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border-light bg-panel-light px-4 py-2 dark:border-border-dark dark:bg-panel-dark min-h-[41px]">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border-light bg-panel-light px-4 py-2 dark:border-border-dark dark:bg-panel-dark min-h-[46px]">
             <div className="flex min-w-0 flex-wrap items-center gap-2">
               <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                 {leftFileName ?? "Before"}
@@ -368,7 +368,7 @@ function TextDiffTool() {
               {rightFileDropError}
             </p>
           ) : null}
-          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border-light bg-panel-light px-4 py-2 dark:border-border-dark dark:bg-panel-dark min-h-[41px]">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border-light bg-panel-light px-4 py-2 dark:border-border-dark dark:bg-panel-dark min-h-[46px]">
             <div className="flex min-w-0 flex-wrap items-center gap-2">
               <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                 {rightFileName ?? "After"}
@@ -578,14 +578,12 @@ function TextDiffTool() {
                 <CopyButton
                   value={leftInput || undefined}
                   label="Copy Left"
-                  variant="outline"
-                  className="px-3 py-2"
+                  variant="primary"
                 />
                 <CopyButton
                   value={rightInput || undefined}
                   label="Copy Right"
                   variant="outline"
-                  className="px-3 py-2"
                 />
               </>
             ),
@@ -603,7 +601,8 @@ function TextDiffTool() {
                 <button
                   type="button"
                   onClick={handleClear}
-                  className="rounded-lg border border-border-light bg-panel-light px-4 py-2 text-sm text-slate-500 transition-colors hover:border-slate-400 hover:text-slate-800 dark:border-border-dark dark:bg-panel-dark dark:text-slate-400 dark:hover:border-slate-500 dark:hover:text-slate-200"
+                  disabled={isEmpty}
+                  className="rounded-full px-3 py-1 text-xs font-medium text-slate-500 transition-colors hover:text-red-500 disabled:cursor-not-allowed disabled:opacity-40 dark:text-slate-400 dark:hover:text-red-400"
                 >
                   Clear
                 </button>

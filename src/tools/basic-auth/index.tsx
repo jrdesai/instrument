@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
-import { CopyButton } from "../../components/tool";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { CopyButton, PillButton } from "../../components/tool";
 import { callTool } from "../../bridge";
 import type { BasicAuthInput } from "../../bindings/BasicAuthInput";
 import type { BasicAuthMode } from "../../bindings/BasicAuthMode";
@@ -8,29 +8,6 @@ import type { BasicAuthOutput } from "../../bindings/BasicAuthOutput";
 const RUST_COMMAND = "tool_basic_auth";
 const DEBOUNCE_MS = 150;
 
-function OptionPill({
-  active,
-  onClick,
-  children,
-}: {
-  active: boolean;
-  onClick: () => void;
-  children: ReactNode;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
-        active
-          ? "border-primary/30 bg-primary/10 text-primary"
-          : "border-border-light text-slate-500 hover:bg-slate-100 dark:border-border-dark dark:text-slate-400 dark:hover:bg-white/5"
-      }`}
-    >
-      {children}
-    </button>
-  );
-}
 
 export default function BasicAuthTool() {
   const [mode, setMode] = useState<BasicAuthMode>("encode");
@@ -103,12 +80,12 @@ export default function BasicAuthTool() {
     <div className="flex h-full flex-col bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100">
       <div className="shrink-0 border-b border-border-light px-4 py-3 dark:border-border-dark">
         <div className="flex flex-wrap gap-2">
-          <OptionPill active={mode === "encode"} onClick={() => setMode("encode")}>
+          <PillButton size="sm" active={mode === "encode"} onClick={() => setMode("encode")}>
             Encode
-          </OptionPill>
-          <OptionPill active={mode === "decode"} onClick={() => setMode("decode")}>
+          </PillButton>
+          <PillButton size="sm" active={mode === "decode"} onClick={() => setMode("decode")}>
             Decode
-          </OptionPill>
+          </PillButton>
         </div>
       </div>
 

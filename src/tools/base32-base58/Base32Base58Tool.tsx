@@ -3,11 +3,11 @@ import {
   useEffect,
   useRef,
   useState,
-  type ReactNode,
 } from "react";
 import { callTool } from "../../bridge";
 import {
   CopyButton,
+  PillButton,
   ToolbarFooter,
   type FooterGroup,
 } from "../../components/tool";
@@ -24,34 +24,11 @@ const RUST_COMMAND = "tool_base32_base58_process";
 const DEBOUNCE_MS = 150;
 const HISTORY_DEBOUNCE_MS = 1500;
 
-function OptionPill({
-  active,
-  onClick,
-  children,
-}: {
-  active: boolean;
-  onClick: () => void;
-  children: ReactNode;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
-        active
-          ? "border-primary/30 bg-primary/10 text-primary"
-          : "border-border-light bg-transparent text-slate-500 hover:text-primary dark:border-border-dark dark:text-slate-400"
-      }`}
-    >
-      {children}
-    </button>
-  );
-}
-
 export default function Base32Base58Tool() {
   const { setDraft } = useDraftInput(TOOL_ID);
   const [input, setInput] = useState("");
   useRestoreStringDraft(TOOL_ID, setInput);
+  const isEmpty = input.trim().length === 0;
   const [encoding, setEncoding] = useState<BaseNEncoding>("base32");
   const [mode, setMode] = useState<BaseNMode>("encode");
   const [base32Variant, setBase32Variant] =
@@ -144,13 +121,15 @@ export default function Base32Base58Tool() {
     children: (
       <div className="flex flex-wrap gap-1">
         {(["base32", "base58"] as const).map((enc) => (
-          <OptionPill
+          <PillButton
             key={enc}
             active={encoding === enc}
             onClick={() => setEncoding(enc)}
+            size="sm"
+            shape="full"
           >
             {enc === "base32" ? "Base32" : "Base58"}
-          </OptionPill>
+          </PillButton>
         ))}
       </div>
     ),
@@ -161,9 +140,15 @@ export default function Base32Base58Tool() {
     children: (
       <div className="flex flex-wrap gap-1">
         {(["encode", "decode"] as const).map((m) => (
-          <OptionPill key={m} active={mode === m} onClick={() => setMode(m)}>
+          <PillButton
+            key={m}
+            active={mode === m}
+            onClick={() => setMode(m)}
+            size="sm"
+            shape="full"
+          >
             {m.charAt(0).toUpperCase() + m.slice(1)}
-          </OptionPill>
+          </PillButton>
         ))}
       </div>
     ),
@@ -176,13 +161,15 @@ export default function Base32Base58Tool() {
           children: (
             <div className="flex flex-wrap gap-1">
               {(["standard", "crockford"] as const).map((v) => (
-                <OptionPill
+                <PillButton
                   key={v}
                   active={base32Variant === v}
                   onClick={() => setBase32Variant(v)}
+                  size="sm"
+                  shape="full"
                 >
                   {v.charAt(0).toUpperCase() + v.slice(1)}
-                </OptionPill>
+                </PillButton>
               ))}
             </div>
           ),
@@ -196,13 +183,14 @@ export default function Base32Base58Tool() {
         <CopyButton
           value={resultText || undefined}
           label="Copy"
-          variant="outline"
+          variant="primary"
           className="py-1 text-sm"
         />
         <button
           type="button"
           onClick={handleClear}
-          className="rounded-lg px-3 py-1 text-sm text-slate-700 transition-colors hover:bg-slate-100 hover:text-primary dark:text-slate-300 dark:hover:bg-slate-700"
+          disabled={isEmpty}
+          className="rounded-full px-3 py-1 text-xs font-medium text-slate-500 transition-colors hover:text-red-500 disabled:cursor-not-allowed disabled:opacity-40 dark:text-slate-400 dark:hover:text-red-400"
         >
           Clear
         </button>

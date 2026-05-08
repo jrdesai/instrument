@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { callTool } from "../../bridge";
-import { CopyButton } from "../../components/tool";
+import { CopyButton, PillButton, ToolbarFooter } from "../../components/tool";
 import { usePopoverBootstrapStore } from "../../store";
 import type { TotpAlgorithm } from "../../bindings/TotpAlgorithm";
 import type { TotpInput } from "../../bindings/TotpInput";
@@ -17,29 +17,6 @@ function formatCode(code: string): string {
 }
 
 /** Pill button used for algorithm / digits / period selectors */
-function OptionPill({
-  active,
-  onClick,
-  children,
-}: {
-  active: boolean;
-  onClick: () => void;
-  children: React.ReactNode;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors ${
-        active
-          ? "bg-primary/10 text-primary border-primary/30"
-          : "text-slate-500 dark:text-slate-400 border-border-light dark:border-border-dark hover:bg-slate-100 dark:hover:bg-white/5"
-      }`}
-    >
-      {children}
-    </button>
-  );
-}
 
 export default function TotpGeneratorTool() {
   const [secret, setSecret] = useState("");
@@ -175,61 +152,56 @@ export default function TotpGeneratorTool() {
         )}
       </div>
 
-      {/* Footer — actions + options */}
-      <footer className="shrink-0 border-t border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark px-4 py-3">
-        <div className="flex flex-wrap items-start gap-x-6 gap-y-3 text-xs text-slate-500 dark:text-slate-400">
-
-          {/* Algorithm */}
-          <div className="flex flex-col gap-1">
-            <span className="text-[10px] uppercase tracking-wider">Algorithm</span>
-            <div className="flex gap-1">
-              {(["sha1", "sha256", "sha512"] as const).map((id) => (
-                <OptionPill key={id} active={algorithm === id} onClick={() => setAlgorithm(id)}>
-                  {id === "sha1" ? "SHA-1" : id === "sha256" ? "SHA-256" : "SHA-512"}
-                </OptionPill>
-              ))}
-            </div>
-          </div>
-
-          <div className="hidden md:block w-px h-6 bg-border-light dark:bg-border-dark self-center" />
-
-          {/* Digits */}
-          <div className="flex flex-col gap-1">
-            <span className="text-[10px] uppercase tracking-wider">Digits</span>
-            <div className="flex gap-1">
-              {([6, 8] as const).map((d) => (
-                <OptionPill key={d} active={digits === d} onClick={() => setDigits(d)}>
-                  {d}
-                </OptionPill>
-              ))}
-            </div>
-          </div>
-
-          <div className="hidden md:block w-px h-6 bg-border-light dark:bg-border-dark self-center" />
-
-          {/* Period */}
-          <div className="flex flex-col gap-1">
-            <span className="text-[10px] uppercase tracking-wider">Period</span>
-            <div className="flex gap-1">
-              {([30, 60] as const).map((p) => (
-                <OptionPill key={p} active={period === p} onClick={() => setPeriod(p)}>
-                  {p}s
-                </OptionPill>
-              ))}
-            </div>
-          </div>
-
-          {/* Copy — pushed to right */}
-          <div className="ml-auto shrink-0 flex items-center self-center">
-            <CopyButton
-              value={hasCode ? code : undefined}
-              label="Copy"
-              variant="primary"
-              className="py-1.5 text-[11px] font-semibold uppercase tracking-wider"
-            />
-          </div>
-        </div>
-      </footer>
+      <ToolbarFooter
+        groups={[
+          {
+            label: "Algorithm",
+            children: (
+              <div className="flex gap-1">
+                {(["sha1", "sha256", "sha512"] as const).map((id) => (
+                  <PillButton size="sm" key={id} active={algorithm === id} onClick={() => setAlgorithm(id)}>
+                    {id === "sha1" ? "SHA-1" : id === "sha256" ? "SHA-256" : "SHA-512"}
+                  </PillButton>
+                ))}
+              </div>
+            ),
+          },
+          {
+            label: "Digits",
+            children: (
+              <div className="flex gap-1">
+                {([6, 8] as const).map((d) => (
+                  <PillButton size="sm" key={d} active={digits === d} onClick={() => setDigits(d)}>
+                    {d}
+                  </PillButton>
+                ))}
+              </div>
+            ),
+          },
+          {
+            label: "Period",
+            children: (
+              <div className="flex gap-1">
+                {([30, 60] as const).map((p) => (
+                  <PillButton size="sm" key={p} active={period === p} onClick={() => setPeriod(p)}>
+                    {p}s
+                  </PillButton>
+                ))}
+              </div>
+            ),
+          },
+          {
+            end: true,
+            children: (
+              <CopyButton
+                value={hasCode ? code : undefined}
+                label="Copy"
+                variant="primary"
+              />
+            ),
+          },
+        ]}
+      />
     </div>
   );
 }

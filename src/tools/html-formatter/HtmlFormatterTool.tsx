@@ -219,7 +219,7 @@ export default function HtmlFormatterTool() {
               {fileDropError}
             </p>
           ) : null}
-          <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b border-border-light bg-panel-light px-4 py-2 dark:border-border-dark dark:bg-panel-dark min-h-[41px]">
+          <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b border-border-light bg-panel-light px-4 py-2 dark:border-border-dark dark:bg-panel-dark min-h-[46px]">
             <div className="flex min-w-0 flex-wrap items-center gap-2">
               <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                 Input
@@ -247,15 +247,14 @@ export default function HtmlFormatterTool() {
                   {inputValue.length.toLocaleString()} chars
                 </span>
               ) : null}
-              {!isEmpty ? (
-                <button
-                  type="button"
-                  onClick={handleClear}
-                  className="text-xs font-medium text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
-                >
-                  Clear
-                </button>
-              ) : null}
+              <button
+                type="button"
+                onClick={handleClear}
+                disabled={isEmpty}
+                className="rounded-full px-3 py-1 text-xs font-medium text-slate-500 transition-colors hover:text-red-500 disabled:cursor-not-allowed disabled:opacity-40 dark:text-slate-400 dark:hover:text-red-400"
+              >
+                Clear
+              </button>
             </div>
           </div>
           <textarea
@@ -273,7 +272,7 @@ export default function HtmlFormatterTool() {
         </div>
 
         <div className="flex min-h-[180px] min-w-0 flex-1 flex-col md:min-h-0">
-          <div className="flex shrink-0 items-center justify-between gap-2 border-b border-border-light bg-panel-light px-4 py-2 dark:border-border-dark dark:bg-panel-dark min-h-[41px]">
+          <div className="flex shrink-0 items-center justify-between gap-2 border-b border-border-light bg-panel-light px-4 py-2 dark:border-border-dark dark:bg-panel-dark min-h-[46px]">
             <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
               Output
             </span>
@@ -287,7 +286,7 @@ export default function HtmlFormatterTool() {
                 <CopyButton
                   value={output.formatted}
                   label="Copy"
-                  variant="outline"
+                  variant="primary"
                   className="py-1 text-[11px] font-semibold uppercase tracking-wider"
                 />
               ) : null}

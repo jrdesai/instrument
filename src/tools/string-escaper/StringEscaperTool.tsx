@@ -35,6 +35,7 @@ function StringEscaperTool() {
   const [output, setOutput] = useState<StringEscaperOutput | null>(null);
   const [mode, setMode] = useState<EscapeMode>("escape");
   const [target, setTarget] = useState<EscapeTarget>("json");
+  const isEmpty = input.trim().length === 0;
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [leftPanelPercent, setLeftPanelPercent] = useState(50);
@@ -276,7 +277,7 @@ function StringEscaperTool() {
                   type="button"
                   aria-label="Swap input and output"
                   onClick={handleSwap}
-                  className="rounded-lg px-3 py-1 text-sm text-slate-700 transition-colors hover:bg-slate-100 hover:text-primary dark:text-slate-300 dark:hover:bg-slate-700"
+                  className="rounded-full px-3 py-1 text-xs font-medium text-slate-500 transition-colors hover:text-red-500 disabled:cursor-not-allowed disabled:opacity-40 dark:text-slate-400 dark:hover:text-red-400"
                 >
                   Swap
                 </button>
@@ -284,7 +285,8 @@ function StringEscaperTool() {
                   type="button"
                   aria-label="Clear input and output"
                   onClick={handleClear}
-                  className="rounded-lg px-3 py-1 text-sm text-slate-700 transition-colors hover:bg-slate-100 hover:text-primary dark:text-slate-300 dark:hover:bg-slate-700"
+                  disabled={isEmpty}
+                  className="rounded-full px-3 py-1 text-xs font-medium text-slate-500 transition-colors hover:text-red-500 disabled:cursor-not-allowed disabled:opacity-40 dark:text-slate-400 dark:hover:text-red-400"
                 >
                   Clear
                 </button>

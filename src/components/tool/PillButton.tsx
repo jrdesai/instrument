@@ -10,7 +10,7 @@ interface PillButtonProps {
   variant?: "filled" | "outlined";
   /** "sm" = text-xs px-2 py-1. "md" = text-sm px-3 py-1. Default: "md" */
   size?: "sm" | "md";
-  /** "lg" = rounded-lg. "full" = rounded-full. Default: "lg" */
+  /** "lg" = rounded-lg. "full" = rounded-full. Default: "full" */
   shape?: "lg" | "full";
   className?: string;
   "aria-label"?: string;
@@ -23,7 +23,7 @@ export function PillButton({
   children,
   variant = "filled",
   size = "md",
-  shape = "lg",
+  shape = "full",
   className,
   "aria-label": ariaLabel,
 }: PillButtonProps) {

@@ -546,22 +546,22 @@ function JsonFormatterTool() {
                           "application/json"
                         )
                       }
-                      className="rounded-lg border border-border-light bg-panel-light px-3 py-2 text-xs text-slate-500 transition-colors hover:text-slate-700 dark:border-border-dark dark:bg-panel-dark dark:text-slate-400 dark:hover:text-slate-200"
+                      className="rounded-full border border-border-light px-3 py-1 text-xs font-medium text-slate-500 transition-colors hover:border-primary/40 hover:text-primary dark:border-border-dark dark:text-slate-400 dark:hover:border-primary/40 dark:hover:text-primary"
                     >
                       Download
                     </button>
                     <CopyButton
                       value={output.result}
                       label="Copy"
-                      variant="outline"
-                      className="px-3 py-2"
+                      variant="primary"
                     />
                   </>
                 ) : null}
                 <button
                   type="button"
                   onClick={handleClear}
-                  className="rounded-lg border border-border-light bg-panel-light px-4 py-2 text-sm text-slate-500 transition-colors hover:border-slate-400 hover:text-slate-800 dark:border-border-dark dark:bg-panel-dark dark:text-slate-400 dark:hover:border-slate-500 dark:hover:text-slate-200"
+                  disabled={isEmpty}
+                  className="rounded-full px-3 py-1 text-xs font-medium text-slate-500 transition-colors hover:text-red-500 disabled:cursor-not-allowed disabled:opacity-40 dark:text-slate-400 dark:hover:text-red-400"
                 >
                   Clear
                 </button>

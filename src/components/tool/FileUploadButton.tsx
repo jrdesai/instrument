@@ -17,7 +17,7 @@ export function FileUploadButton({
     <label
       title={label}
       aria-label={label}
-      className="cursor-pointer rounded-lg border border-border-light bg-panel-light p-1.5 text-slate-500 transition-colors hover:text-slate-700 dark:border-border-dark dark:bg-panel-dark dark:text-slate-400 dark:hover:text-slate-200"
+      className="inline-flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg border border-border-light bg-panel-light text-slate-500 transition-colors hover:text-slate-700 dark:border-border-dark dark:bg-panel-dark dark:text-slate-400 dark:hover:text-slate-200"
     >
       <span className="material-symbols-outlined text-[16px] leading-none">
         upload_file

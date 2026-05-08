@@ -111,6 +111,7 @@ function EnvParserTool() {
   const [maskValues, setMaskValues] = useState(true);
   const [severityFilter, setSeverityFilter] = useState<"all" | "error" | "warning">("all");
   const [output, setOutput] = useState<EnvParseOutput | null>(null);
+  const isEmpty = content.trim().length === 0;
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
@@ -183,6 +184,14 @@ function EnvParserTool() {
     },
     [addHistoryEntry]
   );
+
+  const handleClear = useCallback(() => {
+    setContent("");
+    setFileName(null);
+    setFileDropError(null);
+    setDraft("");
+    setOutput(null);
+  }, [setDraft]);
 
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -408,7 +417,7 @@ function EnvParserTool() {
                 <CopyButton
                   value={output?.normalizedEnv || undefined}
                   label="Copy .env"
-                  variant="outline"
+                  variant="primary"
                 />
               </>
             ),
@@ -418,14 +427,9 @@ function EnvParserTool() {
             children: (
               <button
                 type="button"
-                onClick={() => {
-                  setContent("");
-                  setFileName(null);
-                  setFileDropError(null);
-                  setDraft("");
-                  setOutput(null);
-                }}
-                className="rounded-lg border border-border-light bg-panel-light px-3 py-1.5 text-xs text-slate-500 transition-colors hover:text-slate-700 dark:border-border-dark dark:bg-panel-dark dark:text-slate-400 dark:hover:text-slate-200"
+                onClick={handleClear}
+                disabled={isEmpty}
+                className="rounded-full px-3 py-1 text-xs font-medium text-slate-500 transition-colors hover:text-red-500 disabled:cursor-not-allowed disabled:opacity-40 dark:text-slate-400 dark:hover:text-red-400"
               >
                 Clear
               </button>

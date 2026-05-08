@@ -9,6 +9,8 @@ export interface FooterGroup {
   children: ReactNode;
   /** If true, this group is pushed to the right end */
   end?: boolean;
+  /** Merged onto the group column wrapper (e.g. `min-w-0 flex-1` for a growing preview row). */
+  className?: string;
 }
 
 interface ToolbarFooterProps {
@@ -39,7 +41,8 @@ export function ToolbarFooter({ groups, className }: ToolbarFooterProps) {
           <div
             className={twMerge(
               "flex min-w-0 flex-col gap-1",
-              group.end ? "ml-auto" : ""
+              group.end ? "ml-auto" : "",
+              group.className
             )}
             role="group"
             aria-label={group.ariaLabel ?? group.label}

@@ -107,11 +107,6 @@ function NanoIdGeneratorTool() {
     }
   }, [ids]);
 
-  const handleClear = useCallback(() => {
-    setIds([]);
-    setError(null);
-  }, []);
-
   const handleCountChange = useCallback((value: number) => {
     if (Number.isNaN(value)) return;
     setCount(Math.min(100, Math.max(1, value)));
@@ -320,16 +315,6 @@ function NanoIdGeneratorTool() {
           {copyAllLabel}
         </button>
 
-        {/* Clear */}
-        {ids.length > 0 && (
-          <button
-            type="button"
-            onClick={handleClear}
-            className="px-4 py-2 text-sm bg-panel-light dark:bg-panel-dark text-slate-500 dark:text-slate-400 border border-border-light dark:border-border-dark rounded-lg hover:text-slate-800 dark:hover:text-slate-200 hover:border-slate-400 dark:hover:border-slate-500 transition-colors"
-          >
-            Clear
-          </button>
-        )}
       </footer>
     </div>
   );

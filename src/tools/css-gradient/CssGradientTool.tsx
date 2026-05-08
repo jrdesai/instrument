@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { CopyButton } from "../../components/tool/CopyButton";
+import { CopyButton, PillButton, ToolbarFooter } from "../../components/tool";
 
 interface ColorStop {
   id: string;
@@ -58,29 +58,6 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
   );
 }
 
-function OptionPill({
-  active,
-  onClick,
-  children,
-}: {
-  active: boolean;
-  onClick: () => void;
-  children: React.ReactNode;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`px-3 py-1 rounded-full text-xs font-medium transition-colors border ${
-        active
-          ? "bg-primary/10 text-primary border-primary/30"
-          : "bg-transparent text-slate-500 border-border-light dark:border-border-dark hover:text-primary"
-      }`}
-    >
-      {children}
-    </button>
-  );
-}
 
 function CssGradientTool() {
   const [gradientType, setGradientType] = useState<GradientType>("linear");
@@ -122,24 +99,24 @@ function CssGradientTool() {
           <div>
             <SectionLabel>Type</SectionLabel>
             <div className="flex flex-wrap gap-2">
-              <OptionPill
+              <PillButton size="sm"
                 active={gradientType === "linear"}
                 onClick={() => setGradientType("linear")}
               >
                 Linear
-              </OptionPill>
-              <OptionPill
+              </PillButton>
+              <PillButton size="sm"
                 active={gradientType === "radial"}
                 onClick={() => setGradientType("radial")}
               >
                 Radial
-              </OptionPill>
-              <OptionPill
+              </PillButton>
+              <PillButton size="sm"
                 active={gradientType === "conic"}
                 onClick={() => setGradientType("conic")}
               >
                 Conic
-              </OptionPill>
+              </PillButton>
             </div>
           </div>
 
@@ -148,13 +125,13 @@ function CssGradientTool() {
               <SectionLabel>Direction</SectionLabel>
               <div className="mb-3 flex flex-wrap gap-2">
                 {DIRECTION_PRESETS.map((preset) => (
-                  <OptionPill
+                  <PillButton size="sm"
                     key={preset.label}
                     active={angle === preset.value}
                     onClick={() => setAngle(preset.value)}
                   >
                     {preset.label}
-                  </OptionPill>
+                  </PillButton>
                 ))}
               </div>
               <div className="flex items-center gap-2">
@@ -186,22 +163,22 @@ function CssGradientTool() {
             <div>
               <SectionLabel>Radial</SectionLabel>
               <div className="mb-3 flex flex-wrap gap-2">
-                <OptionPill
+                <PillButton size="sm"
                   active={radialShape === "circle"}
                   onClick={() => setRadialShape("circle")}
                 >
                   Circle
-                </OptionPill>
-                <OptionPill
+                </PillButton>
+                <PillButton size="sm"
                   active={radialShape === "ellipse"}
                   onClick={() => setRadialShape("ellipse")}
                 >
                   Ellipse
-                </OptionPill>
+                </PillButton>
               </div>
               <div className="flex flex-wrap gap-2">
                 {RADIAL_POSITION_PRESETS.map((position) => (
-                  <OptionPill
+                  <PillButton size="sm"
                     key={position}
                     active={radialPosition === position}
                     onClick={() => setRadialPosition(position)}
@@ -210,7 +187,7 @@ function CssGradientTool() {
                       .split(" ")
                       .map((word) => word[0].toUpperCase() + word.slice(1))
                       .join(" ")}
-                  </OptionPill>
+                  </PillButton>
                 ))}
               </div>
             </div>
@@ -287,12 +264,23 @@ function CssGradientTool() {
         </div>
       </div>
 
-      <div className="flex shrink-0 items-center gap-3 border-t border-border-light px-4 py-3 dark:border-border-dark">
-        <code className="flex-1 truncate font-mono text-xs text-slate-600 dark:text-slate-400">
-          {cssBackground}
-        </code>
-        <CopyButton value={cssBackground} />
-      </div>
+      <ToolbarFooter
+        groups={[
+          {
+            label: "CSS",
+            className: "min-w-0 flex-1",
+            children: (
+              <code className="min-w-0 flex-1 truncate font-mono text-xs text-slate-600 dark:text-slate-400">
+                {cssBackground}
+              </code>
+            ),
+          },
+          {
+            end: true,
+            children: <CopyButton value={cssBackground} />,
+          },
+        ]}
+      />
     </div>
   );
 }

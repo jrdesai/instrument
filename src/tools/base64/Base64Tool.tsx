@@ -31,6 +31,7 @@ function Base64Tool() {
   const [output, setOutput] = useState("");
   const [mode, setMode] = useState<Base64Mode>("encode");
   const [urlSafe, setUrlSafe] = useState(false);
+  const isEmpty = input.trim().length === 0;
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [fileDropError, setFileDropError] = useState<string | null>(null);
@@ -364,10 +365,19 @@ function Base64Tool() {
                   type="button"
                   aria-label="Swap input and output"
                   onClick={handleSwap}
-                  className="rounded-lg px-3 py-1 text-sm text-slate-700 transition-colors hover:bg-slate-100 hover:text-primary dark:text-slate-300 dark:hover:bg-slate-700"
+                  className="rounded-full px-3 py-1 text-xs font-medium text-slate-500 transition-colors hover:text-primary disabled:cursor-not-allowed disabled:opacity-40 dark:text-slate-400 dark:hover:text-primary"
                 >
                   Swap
                 </button>
+                {mode === "decode" && output && !error ? (
+                  <button
+                    type="button"
+                    onClick={handleBinaryDownload}
+                    className="rounded-full border border-border-light px-3 py-1 text-xs font-medium text-slate-500 transition-colors hover:border-primary/40 hover:text-primary dark:border-border-dark dark:text-slate-400 dark:hover:border-primary/40 dark:hover:text-primary"
+                  >
+                    Download
+                  </button>
+                ) : null}
                 <CopyButton
                   value={output || undefined}
                   label="Copy"
@@ -375,20 +385,12 @@ function Base64Tool() {
                   className="py-1"
                   aria-label="Copy output to clipboard"
                 />
-                {mode === "decode" && output && !error ? (
-                  <button
-                    type="button"
-                    onClick={handleBinaryDownload}
-                    className="rounded-lg border border-border-light bg-panel-light px-3 py-1 text-xs text-slate-500 transition-colors hover:text-slate-700 dark:border-border-dark dark:bg-panel-dark dark:text-slate-400 dark:hover:text-slate-200"
-                  >
-                    Download
-                  </button>
-                ) : null}
                 <button
                   type="button"
                   aria-label="Clear input and output"
                   onClick={handleClear}
-                  className="rounded-lg px-3 py-1 text-sm text-slate-700 transition-colors hover:bg-slate-100 hover:text-primary dark:text-slate-300 dark:hover:bg-slate-700"
+                  disabled={isEmpty}
+                  className="rounded-full px-3 py-1 text-xs font-medium text-slate-500 transition-colors hover:text-red-500 disabled:cursor-not-allowed disabled:opacity-40 dark:text-slate-400 dark:hover:text-red-400"
                 >
                   Clear
                 </button>

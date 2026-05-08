@@ -5,7 +5,7 @@ import {
   useState,
 } from "react";
 import { callTool } from "../../bridge";
-import { CopyButton } from "../../components/tool";
+import { CopyButton, PillButton, ToolbarFooter } from "../../components/tool";
 import { useDraftInput, useRestoreDraft } from "../../hooks/useDraftInput";
 import { extractErrorMessage } from "../../lib/extractErrorMessage";
 import { useHistoryStore } from "../../store";
@@ -99,6 +99,7 @@ function FindReplaceTool() {
   const [output, setOutput] = useState<FindReplaceOutput | null>(null);
   const [matchRanges, setMatchRanges] = useState<number[][]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const isEmpty = text.trim().length === 0 && find.trim().length === 0 && replace.trim().length === 0;
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const highlightRef = useRef<HTMLDivElement>(null);
@@ -328,92 +329,66 @@ function FindReplaceTool() {
         </pre>
       </div>
 
-      {/* Footer: Options | Actions */}
-      <footer className="flex items-end gap-2 px-4 py-3 border-t border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0">
-        {/* Options */}
-        <div
-          className="flex flex-col gap-1"
-          role="group"
-          aria-label="Options"
-        >
-          <span className="text-slate-600 text-xs uppercase tracking-wider">
-            Options
-          </span>
-          <div className="flex items-center gap-1 flex-wrap">
-            <button
-              type="button"
-              aria-label="Case sensitive"
-              onClick={() => setCaseSensitive((v) => !v)}
-              className={`px-3 py-1 text-sm font-medium rounded-lg transition-colors ${
-                caseSensitive
-                  ? "bg-primary text-white"
-                  : "text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
-              }`}
-            >
-              Case sensitive
-            </button>
-            <button
-              type="button"
-              aria-label="Whole word"
-              disabled={regexMode}
-              onClick={() => !regexMode && setWholeWord((v) => !v)}
-              className={`px-3 py-1 text-sm font-medium rounded-lg transition-colors ${
-                regexMode
-                  ? "opacity-50 cursor-not-allowed text-slate-500"
-                  : wholeWord
-                    ? "bg-primary text-white"
-                    : "text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
-              }`}
-            >
-              Whole word
-            </button>
-            <button
-              type="button"
-              aria-label="Regex mode"
-              onClick={() => setRegexMode((v) => !v)}
-              className={`px-3 py-1 text-sm font-medium rounded-lg transition-colors ${
-                regexMode
-                  ? "bg-primary text-white"
-                  : "text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
-              }`}
-            >
-              Regex
-            </button>
-            <button
-              type="button"
-              aria-label="Replace all"
-              onClick={() => setReplaceAll((v) => !v)}
-              className={`px-3 py-1 text-sm font-medium rounded-lg transition-colors ${
-                replaceAll
-                  ? "bg-primary text-white"
-                  : "text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
-              }`}
-            >
-              Replace all
-            </button>
-          </div>
-        </div>
-
-        <div className="w-px h-6 bg-border-light dark:bg-border-dark self-center mx-3" />
-
-        {/* Actions */}
-        <div
-          className="flex flex-col gap-1 ml-auto"
-          role="group"
-          aria-label="Actions"
-        >
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              aria-label="Clear all"
-              onClick={handleClear}
-              className="px-3 py-1 text-sm text-slate-700 dark:text-slate-300 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
-            >
-              Clear
-            </button>
-          </div>
-        </div>
-      </footer>
+      <ToolbarFooter
+        groups={[
+          {
+            label: "Options",
+            ariaLabel: "Options",
+            children: (
+              <>
+                <PillButton
+                  size="sm"
+                  active={caseSensitive}
+                  onClick={() => setCaseSensitive((v) => !v)}
+                  aria-label="Case sensitive"
+                >
+                  Case sensitive
+                </PillButton>
+                <PillButton
+                  size="sm"
+                  active={wholeWord}
+                  disabled={regexMode}
+                  onClick={() => setWholeWord((v) => !v)}
+                  aria-label="Whole word"
+                >
+                  Whole word
+                </PillButton>
+                <PillButton
+                  size="sm"
+                  active={regexMode}
+                  onClick={() => setRegexMode((v) => !v)}
+                  aria-label="Regex mode"
+                >
+                  Regex
+                </PillButton>
+                <PillButton
+                  size="sm"
+                  active={replaceAll}
+                  onClick={() => setReplaceAll((v) => !v)}
+                  aria-label="Replace all"
+                >
+                  Replace all
+                </PillButton>
+              </>
+            ),
+          },
+          {
+            end: true,
+            ariaLabel: "Actions",
+            children: (
+              <button
+                type="button"
+                aria-label="Clear all"
+                onClick={handleClear}
+                disabled={isEmpty}
+                className="rounded-full px-3 py-1 text-xs font-medium text-slate-500 transition-colors hover:text-red-500 disabled:cursor-not-allowed disabled:opacity-40 dark:text-slate-400 dark:hover:text-red-400"
+              >
+                Clear
+              </button>
+            ),
+          },
+        ]}
+      />
     </div>
   );
 }

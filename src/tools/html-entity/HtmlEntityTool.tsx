@@ -25,6 +25,7 @@ function HtmlEntityTool() {
   const [output, setOutput] = useState("");
   const [mode, setMode] = useState<HtmlEntityMode>("encode");
   const [encodeType, setEncodeType] = useState<HtmlEntityEncodeType>("named");
+  const isEmpty = input.trim().length === 0;
   const [entitiesFound, setEntitiesFound] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -274,7 +275,7 @@ function HtmlEntityTool() {
                   type="button"
                   aria-label="Swap input and output"
                   onClick={handleSwap}
-                  className="rounded-lg px-3 py-1 text-sm text-slate-700 transition-colors hover:bg-slate-100 hover:text-primary dark:text-slate-300 dark:hover:bg-slate-700"
+                  className="rounded-full px-3 py-1 text-xs font-medium text-slate-500 transition-colors hover:text-red-500 disabled:cursor-not-allowed disabled:opacity-40 dark:text-slate-400 dark:hover:text-red-400"
                 >
                   Swap
                 </button>
@@ -282,7 +283,8 @@ function HtmlEntityTool() {
                   type="button"
                   aria-label="Clear input and output"
                   onClick={handleClear}
-                  className="rounded-lg px-3 py-1 text-sm text-slate-700 transition-colors hover:bg-slate-100 hover:text-primary dark:text-slate-300 dark:hover:bg-slate-700"
+                  disabled={isEmpty}
+                  className="rounded-full px-3 py-1 text-xs font-medium text-slate-500 transition-colors hover:text-red-500 disabled:cursor-not-allowed disabled:opacity-40 dark:text-slate-400 dark:hover:text-red-400"
                 >
                   Clear
                 </button>

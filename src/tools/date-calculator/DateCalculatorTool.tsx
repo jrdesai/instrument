@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { CopyButton } from "../../components/tool/CopyButton";
+import { CopyButton, PillButton } from "../../components/tool";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 
 interface DateDiff {
@@ -219,29 +219,6 @@ function calcAddSub(
   };
 }
 
-function OptionPill({
-  active,
-  onClick,
-  children,
-}: {
-  active: boolean;
-  onClick: () => void;
-  children: React.ReactNode;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
-        active
-          ? "border-primary/30 bg-primary/10 text-primary"
-          : "border-border-light bg-transparent text-slate-500 hover:text-primary dark:border-border-dark"
-      }`}
-    >
-      {children}
-    </button>
-  );
-}
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
@@ -312,15 +289,15 @@ function DateCalculatorTool() {
     <div className="flex h-full min-h-0 flex-col bg-background-light font-display text-slate-900 dark:bg-background-dark dark:text-slate-100">
       <div className="shrink-0 border-b border-border-light bg-panel-light px-4 py-3 dark:border-border-dark dark:bg-panel-dark">
         <div className="flex items-center gap-2">
-          <OptionPill active={mode === "age"} onClick={() => setMode("age")}>
+          <PillButton size="sm" active={mode === "age"} onClick={() => setMode("age")}>
             Age
-          </OptionPill>
-          <OptionPill active={mode === "duration"} onClick={() => setMode("duration")}>
+          </PillButton>
+          <PillButton size="sm" active={mode === "duration"} onClick={() => setMode("duration")}>
             Duration
-          </OptionPill>
-          <OptionPill active={mode === "add"} onClick={() => setMode("add")}>
+          </PillButton>
+          <PillButton size="sm" active={mode === "add"} onClick={() => setMode("add")}>
             Add / Subtract
-          </OptionPill>
+          </PillButton>
         </div>
       </div>
 
@@ -407,15 +384,15 @@ function DateCalculatorTool() {
                 <div className="flex flex-col gap-1">
                   <SectionLabel>Operation</SectionLabel>
                   <div className="flex gap-1">
-                    <OptionPill active={addSubOp === "add"} onClick={() => setAddSubOp("add")}>
+                    <PillButton size="sm" active={addSubOp === "add"} onClick={() => setAddSubOp("add")}>
                       Add
-                    </OptionPill>
-                    <OptionPill
+                    </PillButton>
+                    <PillButton size="sm"
                       active={addSubOp === "subtract"}
                       onClick={() => setAddSubOp("subtract")}
                     >
                       Subtract
-                    </OptionPill>
+                    </PillButton>
                   </div>
                 </div>
               </div>

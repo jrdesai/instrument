@@ -6,7 +6,7 @@ import {
   type ChangeEvent,
 } from "react";
 import { callTool } from "../../bridge";
-import { CopyButton, FileUploadButton } from "../../components/tool";
+import { CopyButton, FileUploadButton, ToolbarFooter } from "../../components/tool";
 import { CodeBlock } from "../../components/ui/CodeBlock";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useFileDrop } from "../../hooks/useFileDrop";
@@ -185,7 +185,7 @@ function SqlFormatterTool() {
               {fileDropError}
             </p>
           ) : null}
-          <div className="flex items-center justify-between gap-2 px-4 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0 min-h-[41px]">
+          <div className="flex items-center justify-between gap-2 px-4 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0 min-h-[46px]">
             <div className="flex min-w-0 items-center gap-2">
               <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                 {fileName ?? "Input"}
@@ -226,7 +226,7 @@ function SqlFormatterTool() {
 
         {/* Right panel — output */}
         <div className="flex flex-col flex-1 min-w-0">
-          <div className="flex items-center justify-between gap-2 px-4 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0 min-h-[41px]">
+          <div className="flex items-center justify-between gap-2 px-4 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0 min-h-[46px]">
             <span className="text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider">
               OUTPUT
             </span>
@@ -261,134 +261,127 @@ function SqlFormatterTool() {
         </div>
       </div>
 
-      {/* Footer — options + actions */}
-      <footer className="shrink-0 border-t border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark px-4 py-3">
-        <div className="flex flex-wrap items-start gap-x-6 gap-y-3 text-xs text-slate-500 dark:text-slate-400">
-          {/* Indent group */}
-          <div className="flex flex-col gap-1">
-            <span className="text-slate-500 text-[10px] uppercase tracking-wider">
-              Indent
-            </span>
-            <div className="flex items-center gap-3">
-              <label className="inline-flex items-center gap-1 cursor-pointer">
-                <input
-                  type="radio"
-                  name="sql-indent"
-                  className="h-3 w-3 accent-primary"
-                  checked={indent === "spaces2"}
-                  onChange={() => setIndent("spaces2")}
+      <ToolbarFooter
+        groups={[
+          {
+            label: "Indent",
+            children: (
+              <div className="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
+                <label className="inline-flex cursor-pointer items-center gap-1">
+                  <input
+                    type="radio"
+                    name="sql-indent"
+                    className="h-3 w-3 accent-primary"
+                    checked={indent === "spaces2"}
+                    onChange={() => setIndent("spaces2")}
+                  />
+                  <span>2 Spaces</span>
+                </label>
+                <label className="inline-flex cursor-pointer items-center gap-1">
+                  <input
+                    type="radio"
+                    name="sql-indent"
+                    className="h-3 w-3 accent-primary"
+                    checked={indent === "spaces4"}
+                    onChange={() => setIndent("spaces4")}
+                  />
+                  <span>4 Spaces</span>
+                </label>
+                <label className="inline-flex cursor-pointer items-center gap-1">
+                  <input
+                    type="radio"
+                    name="sql-indent"
+                    className="h-3 w-3 accent-primary"
+                    checked={indent === "tab"}
+                    onChange={() => setIndent("tab")}
+                  />
+                  <span>Tab</span>
+                </label>
+              </div>
+            ),
+          },
+          {
+            label: "Keywords",
+            children: (
+              <div className="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
+                <label className="inline-flex cursor-pointer items-center gap-1">
+                  <input
+                    type="radio"
+                    name="sql-keywords"
+                    className="h-3 w-3 accent-primary"
+                    checked={keywordCase === "upper"}
+                    onChange={() => setKeywordCase("upper")}
+                  />
+                  <span>Uppercase</span>
+                </label>
+                <label className="inline-flex cursor-pointer items-center gap-1">
+                  <input
+                    type="radio"
+                    name="sql-keywords"
+                    className="h-3 w-3 accent-primary"
+                    checked={keywordCase === "lower"}
+                    onChange={() => setKeywordCase("lower")}
+                  />
+                  <span>Lowercase</span>
+                </label>
+                <label className="inline-flex cursor-pointer items-center gap-1">
+                  <input
+                    type="radio"
+                    name="sql-keywords"
+                    className="h-3 w-3 accent-primary"
+                    checked={keywordCase === "preserve"}
+                    onChange={() => setKeywordCase("preserve")}
+                  />
+                  <span>Preserve</span>
+                </label>
+              </div>
+            ),
+          },
+          {
+            end: true,
+            children: (
+              <>
+                <button
+                  type="button"
+                  onClick={handleFormatNow}
+                  disabled={isEmpty}
+                  className="rounded-md bg-primary px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-white transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  Format
+                </button>
+                {output?.result && !output.error ? (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      handleDownload(
+                        output.result,
+                        fileName ?? "formatted.sql",
+                        "text/plain"
+                      )
+                    }
+                    className="rounded-full border border-border-light px-3 py-1 text-xs font-medium text-slate-500 transition-colors hover:border-primary/40 hover:text-primary dark:border-border-dark dark:text-slate-400 dark:hover:border-primary/40 dark:hover:text-primary"
+                  >
+                    Download .sql
+                  </button>
+                ) : null}
+                <CopyButton
+                  value={output?.result && !output.error ? output.result : undefined}
+                  label="Copy"
+                  variant="primary"
                 />
-                <span>2 Spaces</span>
-              </label>
-              <label className="inline-flex items-center gap-1 cursor-pointer">
-                <input
-                  type="radio"
-                  name="sql-indent"
-                  className="h-3 w-3 accent-primary"
-                  checked={indent === "spaces4"}
-                  onChange={() => setIndent("spaces4")}
-                />
-                <span>4 Spaces</span>
-              </label>
-              <label className="inline-flex items-center gap-1 cursor-pointer">
-                <input
-                  type="radio"
-                  name="sql-indent"
-                  className="h-3 w-3 accent-primary"
-                  checked={indent === "tab"}
-                  onChange={() => setIndent("tab")}
-                />
-                <span>Tab</span>
-              </label>
-            </div>
-          </div>
-
-          {/* Divider */}
-          <div className="hidden md:block w-px h-6 bg-border-light dark:bg-border-dark self-center mx-1" />
-
-          {/* Keyword case group */}
-          <div className="flex flex-col gap-1">
-            <span className="text-slate-500 text-[10px] uppercase tracking-wider">
-              Keywords
-            </span>
-            <div className="flex items-center gap-3">
-              <label className="inline-flex items-center gap-1 cursor-pointer">
-                <input
-                  type="radio"
-                  name="sql-keywords"
-                  className="h-3 w-3 accent-primary"
-                  checked={keywordCase === "upper"}
-                  onChange={() => setKeywordCase("upper")}
-                />
-                <span>Uppercase</span>
-              </label>
-              <label className="inline-flex items-center gap-1 cursor-pointer">
-                <input
-                  type="radio"
-                  name="sql-keywords"
-                  className="h-3 w-3 accent-primary"
-                  checked={keywordCase === "lower"}
-                  onChange={() => setKeywordCase("lower")}
-                />
-                <span>Lowercase</span>
-              </label>
-              <label className="inline-flex items-center gap-1 cursor-pointer">
-                <input
-                  type="radio"
-                  name="sql-keywords"
-                  className="h-3 w-3 accent-primary"
-                  checked={keywordCase === "preserve"}
-                  onChange={() => setKeywordCase("preserve")}
-                />
-                <span>Preserve</span>
-              </label>
-            </div>
-          </div>
-
-          {/* Actions */}
-          <div className="flex items-center gap-2 ml-auto shrink-0">
-            <button
-              type="button"
-              onClick={handleFormatNow}
-              disabled={isEmpty}
-              className="px-3 py-1.5 rounded-md bg-primary text-white text-[11px] font-semibold uppercase tracking-wider disabled:opacity-40 disabled:cursor-not-allowed hover:bg-primary/90 transition-colors"
-            >
-              Format
-            </button>
-            {output?.result && !output.error ? (
-              <button
-                type="button"
-                onClick={() =>
-                  handleDownload(
-                    output.result,
-                    fileName ?? "formatted.sql",
-                    "text/plain"
-                  )
-                }
-                className="rounded-lg border border-border-light bg-panel-light px-3 py-1.5 text-xs text-slate-500 transition-colors hover:text-slate-700 dark:border-border-dark dark:bg-panel-dark dark:text-slate-400 dark:hover:text-slate-200"
-              >
-                Download .sql
-              </button>
-            ) : null}
-            <CopyButton
-              value={
-                output?.result && !output.error ? output.result : undefined
-              }
-              label="Copy"
-              variant="primary"
-              className="py-1.5 text-[11px] font-semibold uppercase tracking-wider"
-            />
-            <button
-              type="button"
-              onClick={handleClear}
-              disabled={isEmpty && !output}
-              className="px-3 py-1.5 rounded-md border border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark text-[11px] font-semibold uppercase tracking-wider disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-100 dark:hover:bg-white/5 transition-colors"
-            >
-              Clear
-            </button>
-          </div>
-        </div>
-      </footer>
+                <button
+                  type="button"
+                  onClick={handleClear}
+                  disabled={isEmpty}
+                  className="rounded-full px-3 py-1 text-xs font-medium text-slate-500 transition-colors hover:text-red-500 disabled:cursor-not-allowed disabled:opacity-40 dark:text-slate-400 dark:hover:text-red-400"
+                >
+                  Clear
+                </button>
+              </>
+            ),
+          },
+        ]}
+      />
     </div>
   );
 }

@@ -10,7 +10,6 @@ import {
   tools,
 } from "../../registry";
 import { usePreferenceStore, useToolStore } from "../../store";
-import { APP_VERSION } from "../../version";
 
 const MAX_RECENT = 8;
 
@@ -49,20 +48,13 @@ const DEFAULT_CATEGORY_ACCENT = {
   text: "text-slate-500 dark:text-slate-400",
 };
 
-const ROLES = ["All", "Frontend", "Backend", "DevOps", "Security", "Data", "General"] as const;
-type RoleFilter = (typeof ROLES)[number];
-
 type HomeView =
   | { type: "categories" }
   | { type: "category"; name: string }
   | { type: "all" };
 
-function getGreeting(): string {
-  const h = new Date().getHours();
-  if (h < 12) return "Good morning";
-  if (h < 17) return "Good afternoon";
-  return "Good evening";
-}
+const ROLES = ["All", "Frontend", "Backend", "DevOps", "Security", "Data", "General"] as const;
+type RoleFilter = (typeof ROLES)[number];
 
 function WelcomeCard({ onDismiss }: { onDismiss: () => void }) {
   return (
@@ -264,40 +256,20 @@ export function DashboardPage() {
     []
   );
   const implementedTools = useMemo(
-    () =>
-      platformTools
-        .filter((t) => t.implemented)
-        .filter(
-          (t) =>
-            activeRole === "All" ||
-            t.roles.includes(activeRole.toLowerCase() as Role)
-        ),
-    [platformTools, activeRole]
+    () => platformTools.filter((t) => t.implemented),
+    [platformTools]
   );
   const displayCategories = useMemo(() => getDisplayCategories(), []);
   const totalImplemented = implementedTools.length;
   const allRoleTools = useMemo(
-    () =>
-      tools
-        .filter((t) => t.implemented)
-        .filter(
-          (t) =>
-            activeRole === "All" ||
-            t.roles.includes(activeRole.toLowerCase() as Role)
-        ),
-    [activeRole]
+    () => tools.filter((t) => t.implemented),
+    []
   );
-  const categoriesWithTools = displayCategories.length;
 
   const filteredTools = useMemo(() => {
     if (view.type !== "category") return [];
-    return getToolsByDisplayCategory(view.name)
-      .filter(
-        (t) =>
-          activeRole === "All" ||
-          t.roles.includes(activeRole.toLowerCase() as Role)
-      );
-  }, [view, activeRole]);
+    return getToolsByDisplayCategory(view.name);
+  }, [view]);
 
   const navigate = useNavigate();
   const recentToolIds = useToolStore((s) => s.recentToolIds);
@@ -305,7 +277,6 @@ export function DashboardPage() {
   const setActiveTool = useToolStore((s) => s.setActiveTool);
   const addToRecent = useToolStore((s) => s.addToRecent);
   const toggleFavourite = useToolStore((s) => s.toggleFavourite);
-  const clearRecents = useToolStore((s) => s.clearRecents);
 
   const recentTools = useMemo(
     () =>
@@ -327,13 +298,6 @@ export function DashboardPage() {
 
   const displayedRecent = recentTools.slice(0, MAX_RECENT);
 
-  const handleRoleChange = (role: RoleFilter) => {
-    setActiveRole(role);
-    // Drill-down may show zero tools for the new role — always reset to categories.
-    // "All tools" view can refilter in place, so leave it alone.
-    if (view.type === "category") setView({ type: "categories" });
-  };
-
   const handleOpenTool = (tool: Tool) => {
     setActiveTool(tool);
     addToRecent(tool);
@@ -341,17 +305,11 @@ export function DashboardPage() {
   };
 
   return (
-    <div className="flex h-full flex-col overflow-hidden bg-background-light font-display text-slate-900 dark:bg-background-dark dark:text-slate-100">
-      <header className="shrink-0 border-b border-border-light px-6 pb-4 pt-6 dark:border-border-dark">
-        {/* Centered greeting + tagline */}
-        <div className="mb-4 text-center">
-          <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">
-            {getGreeting()}
-          </h1>
-          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-            Privacy-first developer toolkit · {totalImplemented} tools, all running locally
-          </p>
-        </div>
+    <div className="flex h-full flex-col overflow-hidden bg-slate-50 font-display text-slate-900 dark:bg-background-dark dark:text-slate-100">
+      <header className="shrink-0 border-b border-border-light bg-slate-50 px-6 pb-4 pt-6 dark:border-border-dark dark:bg-background-dark">
+        <p className="mb-4 text-xs text-slate-500 dark:text-slate-400">
+          Privacy-first developer toolkit · {totalImplemented} tools, all running locally
+        </p>
 
         {!welcomeDismissed && (
           <div className="mb-4">
@@ -359,16 +317,11 @@ export function DashboardPage() {
           </div>
         )}
 
-        {/* Favourites — amber icon dock */}
-        {favouriteTools.length > 0 && (
-          <section className="mb-3" aria-label="Favourites">
-            <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-              Favourites
-            </p>
-            <div className="flex flex-wrap gap-2">
+        {(favouriteTools.length > 0 || displayedRecent.length > 0) && (
+          <section className="mb-3" aria-label="Quick access">
+            <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
               {favouriteTools.map((tool) => (
                 <div key={tool.id} className="group/fav relative shrink-0">
-                  {/* Icon button */}
                   <button
                     type="button"
                     onClick={() => handleOpenTool(tool)}
@@ -379,11 +332,9 @@ export function DashboardPage() {
                       {tool.icon}
                     </span>
                   </button>
-                  {/* Tooltip — below the icon, left-aligned to avoid edge clipping */}
                   <span className="pointer-events-none absolute left-0 top-full z-50 mt-1.5 whitespace-nowrap rounded-md bg-slate-900 px-2 py-1 text-xs text-slate-100 opacity-0 transition-opacity group-hover/fav:opacity-100 dark:bg-slate-700">
                     {tool.name}
                   </span>
-                  {/* Remove button — only on hover */}
                   <button
                     type="button"
                     onClick={() => toggleFavourite(tool)}
@@ -396,26 +347,14 @@ export function DashboardPage() {
                   </button>
                 </div>
               ))}
-            </div>
-          </section>
-        )}
 
-        {/* Recents */}
-        {displayedRecent.length > 0 && (
-          <section aria-label="Recent tools">
-            <div className="mb-1.5 flex items-center justify-between">
-              <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-                Recent
-              </p>
-              <button
-                type="button"
-                onClick={clearRecents}
-                className="text-[10px] text-slate-400 transition-colors hover:text-red-500 dark:text-slate-500 dark:hover:text-red-400"
-              >
-                Clear
-              </button>
-            </div>
-            <div className="flex items-center gap-1.5 overflow-x-auto">
+              {favouriteTools.length > 0 && displayedRecent.length > 0 && (
+                <div
+                  className="mx-1 h-6 w-px shrink-0 bg-border-light dark:bg-border-dark"
+                  aria-hidden
+                />
+              )}
+
               {displayedRecent.map((tool) => (
                 <button
                   key={tool.id}
@@ -434,30 +373,32 @@ export function DashboardPage() {
         )}
       </header>
 
-      {/* Role filter pills — persistent across all views */}
-      <div className="shrink-0 border-b border-border-light px-6 py-2.5 dark:border-border-dark">
-        <div className="flex gap-1.5 overflow-x-auto no-scrollbar">
-          {ROLES.map((role) => (
-            <button
-              key={role}
-              type="button"
-              onClick={() => handleRoleChange(role)}
-              className={`shrink-0 rounded-full px-3 py-1 text-xs font-medium transition-colors ${
-                activeRole === role
-                  ? "bg-primary text-white"
-                  : "bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-700 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-200"
-              }`}
-            >
-              {role}
-            </button>
-          ))}
-        </div>
-      </div>
-
       <div className="min-h-0 flex-1 overflow-y-auto">
         {view.type === "categories" && (
           <div className="px-6 py-5">
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+            <div className="mb-3 flex items-center justify-between gap-3">
+              <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                Browse by category
+              </span>
+              <div className="flex items-center gap-0.5 overflow-x-auto no-scrollbar">
+                {ROLES.map((role) => (
+                  <button
+                    key={role}
+                    type="button"
+                    onClick={() => setActiveRole(role)}
+                    className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium transition-colors ${
+                      activeRole === role
+                        ? "bg-primary/10 text-primary"
+                        : "text-slate-400 hover:text-slate-700 dark:text-slate-500 dark:hover:text-slate-200"
+                    }`}
+                  >
+                    {role}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4">
               {displayCategories.map((cat) => {
                 const catTools = getToolsByDisplayCategory(cat.name)
                   .filter((t) => !isWeb || t.platforms.includes("web"))
@@ -469,7 +410,6 @@ export function DashboardPage() {
 
                 if (catTools.length === 0) return null;
 
-                const preview = catTools.slice(0, 2).map((t) => t.name);
                 const subtitle = categorySubtitles[cat.name] ?? "";
                 const accent = CATEGORY_ACCENT[cat.name] ?? DEFAULT_CATEGORY_ACCENT;
                 return (
@@ -480,10 +420,10 @@ export function DashboardPage() {
                     className="group flex flex-col items-start gap-2 rounded-xl border border-border-light bg-white p-4 text-left transition-colors hover:border-primary/40 hover:bg-primary/5 dark:border-border-dark dark:bg-panel-dark"
                   >
                     <div
-                      className={`flex size-8 items-center justify-center rounded-lg transition-colors group-hover:bg-primary/10 group-hover:text-primary ${accent.bg} ${accent.text}`}
+                      className={`flex size-12 items-center justify-center rounded-lg transition-colors group-hover:bg-primary/10 group-hover:text-primary ${accent.bg} ${accent.text}`}
                     >
                       <span
-                        className="material-symbols-outlined text-[18px]"
+                        className="material-symbols-outlined text-[22px]"
                         aria-hidden
                       >
                         {cat.icon}
@@ -502,23 +442,6 @@ export function DashboardPage() {
                         {subtitle}
                       </p>
                     </div>
-                    {preview.length > 0 && (
-                      <div className="mt-auto flex flex-wrap gap-1 pt-1">
-                        {preview.map((name) => (
-                          <span
-                            key={name}
-                            className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] text-slate-500 dark:bg-slate-800 dark:text-slate-400"
-                          >
-                            {name}
-                          </span>
-                        ))}
-                        {catTools.length > 2 && (
-                          <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] text-slate-400 dark:bg-slate-800 dark:text-slate-500">
-                            +{catTools.length - 2} more
-                          </span>
-                        )}
-                      </div>
-                    )}
                   </button>
                 );
               })}
@@ -527,14 +450,17 @@ export function DashboardPage() {
             {displayCategories.every((cat) => {
               const catTools = getToolsByDisplayCategory(cat.name)
                 .filter((t) => !isWeb || t.platforms.includes("web"))
-                .filter((t) =>
-                  activeRole === "All" ||
-                  t.roles.includes(activeRole.toLowerCase() as Role)
+                .filter(
+                  (t) =>
+                    activeRole === "All" ||
+                    t.roles.includes(activeRole.toLowerCase() as Role)
                 );
               return catTools.length === 0;
             }) && (
               <p className="py-12 text-center text-sm text-slate-400 dark:text-slate-500">
-                No tools found for the {activeRole} role.
+                {activeRole === "All"
+                  ? "No tools available on this platform."
+                  : `No categories for the ${activeRole} role.`}
               </p>
             )}
 
@@ -579,9 +505,6 @@ export function DashboardPage() {
                 </span>
                 <span className="ml-auto font-mono text-xs text-slate-400 dark:text-slate-500">
                   {filteredTools.length} {filteredTools.length === 1 ? "tool" : "tools"}
-                  {activeRole !== "All" && (
-                    <span className="ml-1.5 text-primary">· {activeRole}</span>
-                  )}
                 </span>
               </div>
             </div>
@@ -633,9 +556,6 @@ export function DashboardPage() {
                 </span>
                 <span className="ml-auto font-mono text-xs text-slate-400 dark:text-slate-500">
                   {allRoleTools.length} {allRoleTools.length === 1 ? "tool" : "tools"}
-                  {activeRole !== "All" && (
-                    <span className="ml-1.5 text-primary">· {activeRole}</span>
-                  )}
                 </span>
               </div>
             </div>
@@ -665,18 +585,6 @@ export function DashboardPage() {
         )}
       </div>
 
-      <footer className="shrink-0 border-t border-border-light px-6 py-3 dark:border-border-dark">
-        <div className="flex items-center gap-4 font-mono text-xs text-slate-500 dark:text-slate-400">
-          <span>
-            {totalImplemented} {totalImplemented === 1 ? "Tool" : "Tools"}
-          </span>
-          <span>
-            {categoriesWithTools}{" "}
-            {categoriesWithTools === 1 ? "Category" : "Categories"}
-          </span>
-          <span className="ml-auto">v{APP_VERSION}</span>
-        </div>
-      </footer>
     </div>
   );
 }

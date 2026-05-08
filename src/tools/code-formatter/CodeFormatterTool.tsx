@@ -5,7 +5,7 @@ import {
   useState,
   type ChangeEvent,
 } from "react";
-import { CopyButton, FileUploadButton } from "../../components/tool";
+import { CopyButton, FileUploadButton, ToolbarFooter } from "../../components/tool";
 import { CodeBlock } from "../../components/ui/CodeBlock";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useFileDrop } from "../../hooks/useFileDrop";
@@ -305,108 +305,105 @@ function CodeFormatterTool() {
         </div>
       </div>
 
-      {/* Footer — options + actions */}
-      <footer className="shrink-0 border-t border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark px-4 py-3">
-        <div className="flex flex-wrap items-start gap-x-6 gap-y-3 text-xs text-slate-500 dark:text-slate-400">
-          {/* Language group */}
-          <div className="flex flex-col gap-1">
-            <span className="text-slate-500 text-[10px] uppercase tracking-wider">
-              Language
-            </span>
-            <div className="flex flex-wrap items-center gap-3">
-              {LANGUAGES.map(({ id, label }) => (
-                <label key={id} className="inline-flex items-center gap-1 cursor-pointer">
+      <ToolbarFooter
+        groups={[
+          {
+            label: "Language",
+            children: (
+              <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
+                {LANGUAGES.map(({ id, label }) => (
+                  <label key={id} className="inline-flex cursor-pointer items-center gap-1">
+                    <input
+                      type="radio"
+                      name="code-lang"
+                      className="h-3 w-3 accent-primary"
+                      checked={language === id}
+                      onChange={() => handleLanguageChange(id)}
+                    />
+                    <span>{label}</span>
+                  </label>
+                ))}
+              </div>
+            ),
+          },
+          {
+            label: "Tab width",
+            children: (
+              <div className="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
+                <label className="inline-flex cursor-pointer items-center gap-1">
                   <input
                     type="radio"
-                    name="code-lang"
+                    name="code-tab"
                     className="h-3 w-3 accent-primary"
-                    checked={language === id}
-                    onChange={() => handleLanguageChange(id)}
+                    checked={tabWidth === 2}
+                    onChange={() => setTabWidth(2)}
                   />
-                  <span>{label}</span>
+                  <span>2 Spaces</span>
                 </label>
-              ))}
-            </div>
-          </div>
-
-          <div className="hidden md:block w-px h-6 bg-border-light dark:bg-border-dark self-center mx-3" />
-
-          {/* Tab width group */}
-          <div className="flex flex-col gap-1">
-            <span className="text-slate-500 text-[10px] uppercase tracking-wider">
-              Tab width
-            </span>
-            <div className="flex items-center gap-3">
-              <label className="inline-flex items-center gap-1 cursor-pointer">
-                <input
-                  type="radio"
-                  name="code-tab"
-                  className="h-3 w-3 accent-primary"
-                  checked={tabWidth === 2}
-                  onChange={() => setTabWidth(2)}
+                <label className="inline-flex cursor-pointer items-center gap-1">
+                  <input
+                    type="radio"
+                    name="code-tab"
+                    className="h-3 w-3 accent-primary"
+                    checked={tabWidth === 4}
+                    onChange={() => setTabWidth(4)}
+                  />
+                  <span>4 Spaces</span>
+                </label>
+                <label className="inline-flex cursor-pointer items-center gap-1">
+                  <input
+                    type="radio"
+                    name="code-tab"
+                    className="h-3 w-3 accent-primary"
+                    checked={tabWidth === "tab"}
+                    onChange={() => setTabWidth("tab")}
+                  />
+                  <span>Tab</span>
+                </label>
+              </div>
+            ),
+          },
+          {
+            end: true,
+            children: (
+              <>
+                <button
+                  type="button"
+                  onClick={handleFormatNow}
+                  disabled={isEmpty}
+                  className="rounded-md bg-primary px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-white transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  Format
+                </button>
+                {output && !error ? (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      handleDownload(output, fileName ?? "formatted-code.txt", "text/plain")
+                    }
+                    className="rounded-full border border-border-light px-3 py-1 text-xs font-medium text-slate-500 transition-colors hover:border-primary/40 hover:text-primary dark:border-border-dark dark:text-slate-400 dark:hover:border-primary/40 dark:hover:text-primary"
+                  >
+                    Download
+                  </button>
+                ) : null}
+                <CopyButton
+                  value={output && !error ? output : undefined}
+                  label="Copy"
+                  variant="primary"
                 />
-                <span>2 Spaces</span>
-              </label>
-              <label className="inline-flex items-center gap-1 cursor-pointer">
-                <input
-                  type="radio"
-                  name="code-tab"
-                  className="h-3 w-3 accent-primary"
-                  checked={tabWidth === 4}
-                  onChange={() => setTabWidth(4)}
-                />
-                <span>4 Spaces</span>
-              </label>
-              <label className="inline-flex items-center gap-1 cursor-pointer">
-                <input
-                  type="radio"
-                  name="code-tab"
-                  className="h-3 w-3 accent-primary"
-                  checked={tabWidth === "tab"}
-                  onChange={() => setTabWidth("tab")}
-                />
-                <span>Tab</span>
-              </label>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2 ml-auto shrink-0">
-            <button
-              type="button"
-              onClick={handleFormatNow}
-              disabled={isEmpty}
-              className="px-3 py-1.5 rounded-md bg-primary text-white text-[11px] font-semibold uppercase tracking-wider disabled:opacity-40 disabled:cursor-not-allowed hover:bg-primary/90 transition-colors"
-            >
-              Format
-            </button>
-            {output && !error ? (
-              <button
-                type="button"
-                onClick={() =>
-                  handleDownload(output, fileName ?? "formatted-code.txt", "text/plain")
-                }
-                className="rounded-lg border border-border-light bg-panel-light px-3 py-1.5 text-xs text-slate-500 transition-colors hover:text-slate-700 dark:border-border-dark dark:bg-panel-dark dark:text-slate-400 dark:hover:text-slate-200"
-              >
-                Download
-              </button>
-            ) : null}
-            <CopyButton
-              value={output && !error ? output : undefined}
-              label="Copy"
-              variant="primary"
-              className="py-1.5 text-[11px] font-semibold uppercase tracking-wider"
-            />
-            <button
-              type="button"
-              onClick={handleClear}
-              disabled={isEmpty && !output}
-              className="px-3 py-1.5 rounded-md border border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark text-[11px] font-semibold uppercase tracking-wider disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-100 dark:hover:bg-white/5 transition-colors"
-            >
-              Clear
-            </button>
-          </div>
-        </div>
-      </footer>
+                <button
+                  type="button"
+                  onClick={handleClear}
+                  disabled={isEmpty}
+                  className="rounded-full px-3 py-1 text-xs font-medium text-slate-500 transition-colors hover:text-red-500 disabled:cursor-not-allowed disabled:opacity-40 dark:text-slate-400 dark:hover:text-red-400"
+                >
+                  Clear
+                </button>
+              </>
+            ),
+          },
+        ]}
+      />
     </div>
   );
 }

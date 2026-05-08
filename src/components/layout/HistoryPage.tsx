@@ -30,6 +30,72 @@ function summarise(value: unknown, maxLen = 80): string {
   }
 }
 
+function describeJsonValue(value: unknown): string {
+  if (Array.isArray(value)) {
+    return `JSON array · ${value.length} ${value.length === 1 ? "item" : "items"}`;
+  }
+  if (value !== null && typeof value === "object") {
+    const keys = Object.keys(value as object).length;
+    return `JSON object · ${keys} ${keys === 1 ? "key" : "keys"}`;
+  }
+  if (typeof value === "string") {
+    return value.length > 60 ? value.slice(0, 60) + "…" : value;
+  }
+  return String(value);
+}
+
+function describeInput(input: unknown): string {
+  if (input === null || input === undefined) return "—";
+
+  if (typeof input === "string") {
+    const trimmed = input.trim();
+    if (trimmed.length === 0) return "—";
+    try {
+      const parsed = JSON.parse(trimmed);
+      return describeJsonValue(parsed);
+    } catch {
+      const lines = trimmed.split("\n").length;
+      const chars = trimmed.length;
+      if (lines > 1) return `${lines} lines · ${chars.toLocaleString()} chars`;
+      return trimmed.length > 80 ? `${trimmed.slice(0, 80)}…` : trimmed;
+    }
+  }
+
+  if (typeof input === "object") {
+    const obj = input as Record<string, unknown>;
+    const mainText =
+      typeof obj.value === "string"
+        ? obj.value
+        : typeof obj.input === "string"
+          ? obj.input
+          : typeof obj.text === "string"
+            ? obj.text
+            : null;
+
+    if (mainText !== null) {
+      const trimmed = mainText.trim();
+      if (trimmed.length === 0) return "—";
+      try {
+        const parsed = JSON.parse(trimmed);
+        return describeJsonValue(parsed);
+      } catch {
+        const lines = trimmed.split("\n").length;
+        const chars = trimmed.length;
+        if (lines > 1) return `${lines} lines · ${chars.toLocaleString()} chars`;
+        return trimmed.length > 60 ? `${trimmed.slice(0, 60)}…` : trimmed;
+      }
+    }
+
+    const keys = Object.keys(obj).filter(
+      (k) => obj[k] !== null && obj[k] !== "" && obj[k] !== false
+    );
+    if (keys.length === 0) return "—";
+    return keys.slice(0, 3).join(", ");
+  }
+
+  return String(input).slice(0, 80);
+}
+
 type HistoryRow = {
   toolId: string;
   input: unknown;
@@ -228,13 +294,8 @@ export function HistoryPage() {
                           {formatTime(entry.timestamp)}
                         </span>
                       </div>
-                      <p className="text-xs text-slate-500 dark:text-slate-400 font-mono truncate">
-                        <span className="text-slate-400 dark:text-slate-500">in </span>
-                        {summarise(entry.input)}
-                      </p>
-                      <p className="text-xs text-slate-500 dark:text-slate-400 font-mono truncate">
-                        <span className="text-slate-400 dark:text-slate-500">out </span>
-                        {summarise(entry.output)}
+                      <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
+                        {describeInput(entry.input)}
                       </p>
                     </div>
                   </div>
@@ -269,13 +330,8 @@ export function HistoryPage() {
                         {formatTime(entry.timestamp)}
                       </span>
                     </div>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 font-mono truncate">
-                      <span className="text-slate-400 dark:text-slate-500">in  </span>
-                      {summarise(entry.input)}
-                    </p>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 font-mono truncate">
-                      <span className="text-slate-400 dark:text-slate-500">out </span>
-                      {summarise(entry.output)}
+                    <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
+                      {describeInput(entry.input)}
                     </p>
                   </div>
 

@@ -3,9 +3,8 @@ import {
   useEffect,
   useRef,
   useState,
-  type ReactNode,
 } from "react";
-import { CopyButton } from "../../components/tool";
+import { CopyButton, PillButton, ToolbarFooter } from "../../components/tool";
 import { callTool } from "../../bridge";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useHistoryStore } from "../../store";
@@ -17,29 +16,6 @@ const RUST_COMMAND = "tool_slug_generate";
 const DEBOUNCE_MS = 150;
 const HISTORY_DEBOUNCE_MS = 1500;
 
-function OptionPill({
-  active,
-  onClick,
-  children,
-}: {
-  active: boolean;
-  onClick: () => void;
-  children: ReactNode;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
-        active
-          ? "border-primary/30 bg-primary/10 text-primary"
-          : "border-border-light text-slate-500 hover:bg-slate-100 dark:border-border-dark dark:text-slate-400 dark:hover:bg-white/5"
-      }`}
-    >
-      {children}
-    </button>
-  );
-}
 
 export default function SlugGeneratorTool() {
   const { setDraft } = useDraftInput(TOOL_ID);
@@ -173,41 +149,53 @@ export default function SlugGeneratorTool() {
           </div>
         </div>
       </div>
-      <footer className="shrink-0 border-t border-border-light bg-panel-light px-4 py-3 dark:border-border-dark dark:bg-panel-dark">
-        <div className="flex flex-wrap items-center gap-3 text-xs">
-          <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">
-            Separator
-          </span>
-          {(["-", "_", "."] as const).map((s) => (
-            <OptionPill key={s} active={separator === s} onClick={() => setSeparator(s)}>
-              {s}
-            </OptionPill>
-          ))}
-          <span className="ml-2 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
-            Case
-          </span>
-          <OptionPill active={lowercase} onClick={() => setLowercase(true)}>
-            lowercase
-          </OptionPill>
-          <OptionPill active={!lowercase} onClick={() => setLowercase(false)}>
-            preserve
-          </OptionPill>
-          <label className="ml-auto flex items-center gap-2 text-slate-600 dark:text-slate-400">
-            <span className="text-[10px] font-semibold uppercase tracking-wider">Max length</span>
-            <input
-              type="text"
-              inputMode="numeric"
-              placeholder="No limit"
-              value={maxLengthRaw}
-              onChange={(e) => {
-                const v = e.target.value.replace(/\D/g, "");
-                setMaxLengthRaw(v);
-              }}
-              className="w-24 rounded-md border border-border-light bg-background-light px-2 py-1 font-mono text-xs dark:border-border-dark dark:bg-background-dark"
-            />
-          </label>
-        </div>
-      </footer>
+      <ToolbarFooter
+        groups={[
+          {
+            label: "Separator",
+            children: (
+              <>
+                {(["-", "_", "."] as const).map((s) => (
+                  <PillButton size="sm" key={s} active={separator === s} onClick={() => setSeparator(s)}>
+                    {s}
+                  </PillButton>
+                ))}
+              </>
+            ),
+          },
+          {
+            label: "Case",
+            children: (
+              <>
+                <PillButton size="sm" active={lowercase} onClick={() => setLowercase(true)}>
+                  lowercase
+                </PillButton>
+                <PillButton size="sm" active={!lowercase} onClick={() => setLowercase(false)}>
+                  preserve
+                </PillButton>
+              </>
+            ),
+          },
+          {
+            end: true,
+            label: "Max length",
+            children: (
+              <input
+                type="text"
+                inputMode="numeric"
+                placeholder="No limit"
+                value={maxLengthRaw}
+                onChange={(e) => {
+                  const v = e.target.value.replace(/\D/g, "");
+                  setMaxLengthRaw(v);
+                }}
+                className="w-24 rounded-md border border-border-light bg-background-light px-2 py-1 font-mono text-xs text-slate-600 dark:border-border-dark dark:bg-background-dark dark:text-slate-400"
+                aria-label="Max slug length"
+              />
+            ),
+          },
+        ]}
+      />
     </div>
   );
 }

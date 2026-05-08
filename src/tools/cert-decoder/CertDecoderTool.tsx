@@ -41,6 +41,7 @@ function CertDecoderTool() {
   const [fileDropError, setFileDropError] = useState<string | null>(null);
   const [output, setOutput] = useState<CertDecodeOutput | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isEmpty = pem.trim().length === 0;
 
   const run = useCallback(async (currentPem: string) => {
     if (!currentPem.trim()) {
@@ -89,6 +90,12 @@ function CertDecoderTool() {
     };
     reader.readAsText(file);
     e.target.value = "";
+  }, []);
+
+  const handleClear = useCallback(() => {
+    setPem("");
+    setFileDropError(null);
+    setOutput(null);
   }, []);
 
   return (
@@ -280,12 +287,9 @@ function CertDecoderTool() {
             children: (
               <button
                 type="button"
-                onClick={() => {
-                  setPem("");
-                  setFileDropError(null);
-                  setOutput(null);
-                }}
-                className="rounded-lg border border-border-light bg-panel-light px-3 py-1.5 text-xs text-slate-500 dark:border-border-dark dark:bg-panel-dark dark:text-slate-400"
+                onClick={handleClear}
+                disabled={isEmpty}
+                className="rounded-full px-3 py-1 text-xs font-medium text-slate-500 transition-colors hover:text-red-500 disabled:cursor-not-allowed disabled:opacity-40 dark:text-slate-400 dark:hover:text-red-400"
               >
                 Clear
               </button>

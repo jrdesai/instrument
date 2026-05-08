@@ -105,6 +105,7 @@ const ConfigConverterTool: React.FC = () => {
   const [isProcessing, setIsProcessing] = useState(false);
 
   const hasInput = input.trim().length > 0;
+  const isEmpty = !hasInput;
   const showJsonOptions = to === "Json";
 
   const runProcess = useCallback(
@@ -528,7 +529,8 @@ const ConfigConverterTool: React.FC = () => {
                 <button
                   type="button"
                   onClick={handleClear}
-                  className="rounded-md border border-border-light bg-panel-light px-3 py-1 text-xs text-slate-700 transition-colors hover:bg-slate-200 dark:border-border-dark dark:bg-panel-dark dark:text-slate-300 dark:hover:bg-panel-light/60"
+                  disabled={isEmpty}
+                  className="rounded-full px-3 py-1 text-xs font-medium text-slate-500 transition-colors hover:text-red-500 disabled:cursor-not-allowed disabled:opacity-40 dark:text-slate-400 dark:hover:text-red-400"
                 >
                   Clear
                 </button>

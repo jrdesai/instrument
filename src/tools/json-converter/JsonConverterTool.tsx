@@ -6,7 +6,7 @@ import {
   type ChangeEvent,
 } from "react";
 import { callTool } from "../../bridge";
-import { CopyButton, FileUploadButton } from "../../components/tool";
+import { CopyButton, FileUploadButton, PillButton, ToolbarFooter } from "../../components/tool";
 import { CodeBlock } from "../../components/ui/CodeBlock";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useFileDrop } from "../../hooks/useFileDrop";
@@ -237,7 +237,7 @@ function JsonConverterTool() {
               {fileDropError}
             </p>
           ) : null}
-          <div className="flex items-center justify-between gap-2 px-4 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0 min-h-[41px]">
+          <div className="flex items-center justify-between gap-2 px-4 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0 min-h-[46px]">
             <div className="flex min-w-0 items-center gap-2">
               <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                 {fileName ?? "Input"}
@@ -278,7 +278,7 @@ function JsonConverterTool() {
 
         {/* Right panel — output */}
         <div className="flex flex-col flex-1 min-w-0">
-          <div className="flex items-center justify-between gap-2 px-4 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0 min-h-[41px]">
+          <div className="flex items-center justify-between gap-2 px-4 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0 min-h-[46px]">
             <span className="text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider">
               {targetLabel(target)}
             </span>
@@ -319,119 +319,120 @@ function JsonConverterTool() {
         </div>
       </div>
 
-      {/* Footer */}
-      <footer className="shrink-0 border-t border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark px-4 py-3">
-        <div className="flex flex-wrap items-start gap-x-6 gap-y-3 text-xs text-slate-500 dark:text-slate-400">
-          {/* FORMAT group */}
-          <div className="flex flex-col gap-1" role="group" aria-label="Format">
-            <span className="text-slate-500 text-[10px] uppercase tracking-wider">Format</span>
-            <div className="flex gap-1">
-              {(["yaml", "typeScript", "csv", "xml"] as const).map((t) => (
-                <button
-                  key={t}
-                  type="button"
-                  onClick={() => setTarget(t)}
-                  className={`px-3 py-1 text-xs font-medium rounded-full transition-colors ${
-                    target === t
-                      ? "bg-primary/10 text-primary border border-primary/30"
-                      : "text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 border border-border-light dark:border-border-dark"
-                  }`}
-                >
-                  {t === "typeScript" ? "TypeScript" : t.toUpperCase()}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* OPTIONS group — only for TypeScript and XML */}
-          {(target === "typeScript" || target === "xml") && (
-            <>
-              <div className="hidden md:block w-px h-6 bg-border-light dark:bg-border-dark self-center" />
-              <div className="flex flex-col gap-1" role="group" aria-label="Options">
-                <span className="text-slate-500 text-[10px] uppercase tracking-wider">Options</span>
-                {target === "typeScript" && (
-                  <div className="flex items-center gap-3 flex-wrap">
-                    <label className="inline-flex items-center gap-1.5 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={tsExport}
-                        onChange={(e) => setTsExport(e.target.checked)}
-                        className="h-3 w-3 accent-primary"
-                      />
-                      <span>Export</span>
-                    </label>
-                    <label className="inline-flex items-center gap-1.5 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={tsOptional}
-                        onChange={(e) => setTsOptional(e.target.checked)}
-                        className="h-3 w-3 accent-primary"
-                      />
-                      <span>Optional fields</span>
-                    </label>
-                    <div className="flex items-center gap-1.5">
-                      <span>Interface</span>
-                      <input
-                        type="text"
-                        value={tsRootName}
-                        onChange={(e) => setTsRootName(e.target.value)}
-                        placeholder="Root"
-                        className="w-24 bg-panel-light dark:bg-panel-dark border border-border-light dark:border-border-dark rounded px-2 py-0.5 text-xs font-mono text-slate-900 dark:text-slate-100 placeholder:text-slate-500"
-                      />
-                    </div>
-                  </div>
-                )}
-                {target === "xml" && (
-                  <div className="flex items-center gap-1.5">
-                    <span>Root element</span>
-                    <input
-                      type="text"
-                      value={xmlRootElement}
-                      onChange={(e) => setXmlRootElement(e.target.value)}
-                      placeholder="root"
-                      className="w-24 bg-panel-light dark:bg-panel-dark border border-border-light dark:border-border-dark rounded px-2 py-0.5 text-xs font-mono text-slate-900 dark:text-slate-100 placeholder:text-slate-500"
-                    />
-                  </div>
-                )}
+      <ToolbarFooter
+        groups={[
+          {
+            label: "Format",
+            ariaLabel: "Format",
+            children: (
+              <div className="flex flex-wrap gap-1">
+                {(["yaml", "typeScript", "csv", "xml"] as const).map((t) => (
+                  <PillButton
+                    key={t}
+                    size="sm"
+                    active={target === t}
+                    onClick={() => setTarget(t)}
+                  >
+                    {t === "typeScript" ? "TypeScript" : t.toUpperCase()}
+                  </PillButton>
+                ))}
               </div>
-            </>
-          )}
-
-          {/* ACTIONS */}
-          <div className="flex items-center gap-2 ml-auto shrink-0">
-            {hasResult && output?.result ? (
-              <button
-                type="button"
-                onClick={() => {
-                  const meta = FORMAT_META[target];
-                  handleDownload(
-                    output.result,
-                    fileName ? `${fileName}.${meta.ext}` : `converted.${meta.ext}`,
-                    meta.mime
-                  );
-                }}
-                className="rounded-lg border border-border-light bg-panel-light px-3 py-1.5 text-xs text-slate-500 transition-colors hover:text-slate-700 dark:border-border-dark dark:bg-panel-dark dark:text-slate-400 dark:hover:text-slate-200"
-              >
-                Download .{FORMAT_META[target].ext}
-              </button>
-            ) : null}
-            <CopyButton
-              value={hasResult && output?.result ? output.result : undefined}
-              label="Copy"
-              variant="primary"
-              className="py-1.5 text-[11px] font-semibold uppercase tracking-wider"
-            />
-            <button
-              type="button"
-              onClick={handleClear}
-              disabled={isEmpty && !output}
-              className="px-3 py-1.5 rounded-md border border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark text-[11px] font-semibold uppercase tracking-wider disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-100 dark:hover:bg-white/5 transition-colors"
-            >
-              Clear
-            </button>
-          </div>
-        </div>
-      </footer>
+            ),
+          },
+          ...(target === "typeScript" || target === "xml"
+            ? [
+                {
+                  label: "Options",
+                  ariaLabel: "Options",
+                  children: (
+                    <>
+                      {target === "typeScript" && (
+                        <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
+                          <label className="inline-flex cursor-pointer items-center gap-1.5">
+                            <input
+                              type="checkbox"
+                              checked={tsExport}
+                              onChange={(e) => setTsExport(e.target.checked)}
+                              className="h-3 w-3 accent-primary"
+                            />
+                            <span>Export</span>
+                          </label>
+                          <label className="inline-flex cursor-pointer items-center gap-1.5">
+                            <input
+                              type="checkbox"
+                              checked={tsOptional}
+                              onChange={(e) => setTsOptional(e.target.checked)}
+                              className="h-3 w-3 accent-primary"
+                            />
+                            <span>Optional fields</span>
+                          </label>
+                          <div className="flex items-center gap-1.5">
+                            <span>Interface</span>
+                            <input
+                              type="text"
+                              value={tsRootName}
+                              onChange={(e) => setTsRootName(e.target.value)}
+                              placeholder="Root"
+                              className="w-24 rounded border border-border-light bg-panel-light px-2 py-0.5 font-mono text-xs text-slate-900 placeholder:text-slate-500 dark:border-border-dark dark:bg-panel-dark dark:text-slate-100"
+                            />
+                          </div>
+                        </div>
+                      )}
+                      {target === "xml" && (
+                        <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
+                          <span>Root element</span>
+                          <input
+                            type="text"
+                            value={xmlRootElement}
+                            onChange={(e) => setXmlRootElement(e.target.value)}
+                            placeholder="root"
+                            className="w-24 rounded border border-border-light bg-panel-light px-2 py-0.5 font-mono text-xs text-slate-900 placeholder:text-slate-500 dark:border-border-dark dark:bg-panel-dark dark:text-slate-100"
+                          />
+                        </div>
+                      )}
+                    </>
+                  ),
+                },
+              ]
+            : []),
+          {
+            end: true,
+            children: (
+              <>
+                {hasResult && output?.result ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const meta = FORMAT_META[target];
+                      handleDownload(
+                        output.result,
+                        fileName ? `${fileName}.${meta.ext}` : `converted.${meta.ext}`,
+                        meta.mime
+                      );
+                    }}
+                    className="rounded-full border border-border-light px-3 py-1 text-xs font-medium text-slate-500 transition-colors hover:border-primary/40 hover:text-primary dark:border-border-dark dark:text-slate-400 dark:hover:border-primary/40 dark:hover:text-primary"
+                  >
+                    Download .{FORMAT_META[target].ext}
+                  </button>
+                ) : null}
+                <CopyButton
+                  value={hasResult && output?.result ? output.result : undefined}
+                  label="Copy"
+                  variant="primary"
+                />
+                <button
+                  type="button"
+                  onClick={handleClear}
+                  disabled={isEmpty}
+                  className="rounded-full px-3 py-1 text-xs font-medium text-slate-500 transition-colors hover:text-red-500 disabled:cursor-not-allowed disabled:opacity-40 dark:text-slate-400 dark:hover:text-red-400"
+                >
+                  Clear
+                </button>
+              </>
+            ),
+          },
+        ]}
+      />
     </div>
   );
 }

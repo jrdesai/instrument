@@ -16,6 +16,7 @@ const HISTORY_DEBOUNCE_MS = 1500;
 export default function XmlFormatterTool() {
   const { setDraft } = useDraftInput(TOOL_ID);
   const [inputValue, setInputValue] = useState("");
+  const isEmpty = inputValue.trim().length === 0;
   useRestoreStringDraft(TOOL_ID, setInputValue);
   const [indentSize, setIndentSize] = useState<2 | 4>(2);
   const [output, setOutput] = useState<XmlFormatOutput | null>(null);
@@ -149,7 +150,7 @@ export default function XmlFormatterTool() {
               {fileDropError}
             </p>
           ) : null}
-          <div className="flex items-center justify-between border-b border-border-light bg-panel-light px-4 py-2 dark:border-border-dark dark:bg-panel-dark min-h-[41px]">
+          <div className="flex items-center justify-between border-b border-border-light bg-panel-light px-4 py-2 dark:border-border-dark dark:bg-panel-dark min-h-[46px]">
             <div className="flex items-center gap-2">
               <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">{fileName ?? "INPUT"}</span>
               <FileUploadButton
@@ -171,7 +172,7 @@ export default function XmlFormatterTool() {
           />
         </div>
         <div className="flex min-w-0 flex-1 flex-col">
-          <div className="flex items-center justify-between border-b border-border-light bg-panel-light px-4 py-2 dark:border-border-dark dark:bg-panel-dark min-h-[41px]">
+          <div className="flex items-center justify-between border-b border-border-light bg-panel-light px-4 py-2 dark:border-border-dark dark:bg-panel-dark min-h-[46px]">
             <span className="text-xs uppercase tracking-wider text-slate-500">OUTPUT (XML)</span>
             {output ? <span className="text-xs text-slate-600">{output.lineCount.toLocaleString()} lines</span> : null}
           </div>
@@ -187,9 +188,9 @@ export default function XmlFormatterTool() {
           <label className="inline-flex items-center gap-1 cursor-pointer"><input type="radio" className="h-3 w-3 accent-primary" checked={indentSize === 2} onChange={() => setIndentSize(2)} />2 spaces</label>
           <label className="inline-flex items-center gap-1 cursor-pointer"><input type="radio" className="h-3 w-3 accent-primary" checked={indentSize === 4} onChange={() => setIndentSize(4)} />4 spaces</label>
           <div className="ml-auto flex items-center gap-2">
-            {output?.result && !output.error ? <button type="button" onClick={() => handleDownload(output.result)} className="rounded-lg border border-border-light bg-panel-light px-3 py-1.5 text-xs text-slate-500 transition-colors hover:text-slate-700 dark:border-border-dark dark:bg-panel-dark dark:text-slate-400 dark:hover:text-slate-200">Download .xml</button> : null}
+            {output?.result && !output.error ? <button type="button" onClick={() => handleDownload(output.result)} className="rounded-full border border-border-light px-3 py-1 text-xs font-medium text-slate-500 transition-colors hover:border-primary/40 hover:text-primary dark:border-border-dark dark:text-slate-400 dark:hover:border-primary/40 dark:hover:text-primary">Download .xml</button> : null}
             <CopyButton value={output?.result && !output?.error ? output.result : undefined} label="Copy" variant="primary" className="py-1.5 text-[11px] font-semibold uppercase tracking-wider" />
-            <button type="button" onClick={handleClear} className="rounded-md border border-border-light bg-panel-light px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider transition-colors hover:bg-slate-100 dark:border-border-dark dark:bg-panel-dark dark:hover:bg-white/5">Clear</button>
+            <button type="button" onClick={handleClear} disabled={isEmpty} className="rounded-full px-3 py-1 text-xs font-medium text-slate-500 transition-colors hover:text-red-500 disabled:cursor-not-allowed disabled:opacity-40 dark:text-slate-400 dark:hover:text-red-400">Clear</button>
           </div>
         </div>
       </footer>

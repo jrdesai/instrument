@@ -7,7 +7,7 @@ import {
 } from "react";
 import { useNavigate } from "react-router-dom";
 import { callTool } from "../../bridge";
-import { CopyButton, FileUploadButton } from "../../components/tool";
+import { CopyButton, FileUploadButton, ToolbarFooter } from "../../components/tool";
 import { CodeBlock } from "../../components/ui/CodeBlock";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useFileDrop } from "../../hooks/useFileDrop";
@@ -274,7 +274,7 @@ function CsvToJsonTool() {
               {fileDropError}
             </p>
           ) : null}
-          <div className="flex items-center justify-between gap-2 px-4 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0 min-h-[41px]">
+          <div className="flex items-center justify-between gap-2 px-4 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0 min-h-[46px]">
             <div className="flex min-w-0 items-center gap-2">
               <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                 {fileName ?? "Input"}
@@ -324,7 +324,7 @@ function CsvToJsonTool() {
 
         {/* Right panel — output */}
         <div className="flex flex-col flex-1 min-w-0">
-          <div className="flex items-center justify-between gap-2 px-4 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0 min-h-[41px]">
+          <div className="flex items-center justify-between gap-2 px-4 py-2 border-b border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0 min-h-[46px]">
             <span className="text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider">
               OUTPUT ({outputLabel})
             </span>
@@ -364,171 +364,171 @@ function CsvToJsonTool() {
         </div>
       </div>
 
-      {/* Footer — options + actions */}
-      <footer className="shrink-0 border-t border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark px-4 py-3">
-        <div className="flex flex-wrap items-start gap-x-6 gap-y-3 text-xs text-slate-500 dark:text-slate-400">
-          {direction === "csv-to-json" && (
-            <div className="flex flex-col gap-1">
-              <span className="text-slate-500 text-[10px] uppercase tracking-wider">Headers</span>
-              <label className="inline-flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  className="h-3 w-3 accent-primary"
-                  checked={hasHeaders}
-                  onChange={(e) => setHasHeaders(e.target.checked)}
-                />
-                <span>First row is header</span>
-              </label>
-            </div>
-          )}
-
-          {/* Divider */}
-          <div className="hidden md:block w-px h-6 bg-border-light dark:bg-border-dark self-center mx-1" />
-
-          {/* Delimiter group */}
-          <div className="flex flex-col gap-1">
-            <span className="text-slate-500 text-[10px] uppercase tracking-wider">
-              Delimiter
-            </span>
-            <div className="flex items-center gap-3">
-              <label className="inline-flex items-center gap-1 cursor-pointer">
-                <input
-                  type="radio"
-                  name="csv-delimiter"
-                  className="h-3 w-3 accent-primary"
-                  checked={delimiter === ","}
-                  onChange={() => setDelimiter(",")}
-                />
-                <span>Comma</span>
-              </label>
-              <label className="inline-flex items-center gap-1 cursor-pointer">
-                <input
-                  type="radio"
-                  name="csv-delimiter"
-                  className="h-3 w-3 accent-primary"
-                  checked={delimiter === "\t"}
-                  onChange={() => setDelimiter("\t")}
-                />
-                <span>Tab</span>
-              </label>
-              <label className="inline-flex items-center gap-1 cursor-pointer">
-                <input
-                  type="radio"
-                  name="csv-delimiter"
-                  className="h-3 w-3 accent-primary"
-                  checked={delimiter === "|"}
-                  onChange={() => setDelimiter("|")}
-                />
-                <span>Pipe</span>
-              </label>
-              <label className="inline-flex items-center gap-1 cursor-pointer">
-                <input
-                  type="radio"
-                  name="csv-delimiter"
-                  className="h-3 w-3 accent-primary"
-                  checked={delimiter === ";"}
-                  onChange={() => setDelimiter(";")}
-                />
-                <span>Semicolon</span>
-              </label>
-            </div>
-          </div>
-
-          {direction === "csv-to-json" && (
-            <>
-              <div className="hidden md:block w-px h-6 bg-border-light dark:bg-border-dark self-center mx-1" />
-              <div className="flex flex-col gap-1">
-                <span className="text-slate-500 text-[10px] uppercase tracking-wider">Format</span>
-                <div className="flex items-center gap-3">
-                  <label className="inline-flex items-center gap-1 cursor-pointer">
-                    <input
-                      type="radio"
-                      name="csv-format"
-                      className="h-3 w-3 accent-primary"
-                      checked={outputFormat === "arrayOfObjects"}
-                      onChange={() => setOutputFormat("arrayOfObjects")}
-                    />
-                    <span>Array of Objects</span>
-                  </label>
-                  <label className="inline-flex items-center gap-1 cursor-pointer">
-                    <input
-                      type="radio"
-                      name="csv-format"
-                      className="h-3 w-3 accent-primary"
-                      checked={outputFormat === "arrayOfArrays"}
-                      onChange={() => setOutputFormat("arrayOfArrays")}
-                    />
-                    <span>Array of Arrays</span>
-                  </label>
-                </div>
+      <ToolbarFooter
+        groups={[
+          ...(direction === "csv-to-json"
+            ? [
+                {
+                  label: "Headers",
+                  children: (
+                    <label className="inline-flex cursor-pointer items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+                      <input
+                        type="checkbox"
+                        className="h-3 w-3 accent-primary"
+                        checked={hasHeaders}
+                        onChange={(e) => setHasHeaders(e.target.checked)}
+                      />
+                      <span>First row is header</span>
+                    </label>
+                  ),
+                },
+              ]
+            : []),
+          {
+            label: "Delimiter",
+            children: (
+              <div className="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
+                <label className="inline-flex cursor-pointer items-center gap-1">
+                  <input
+                    type="radio"
+                    name="csv-delimiter"
+                    className="h-3 w-3 accent-primary"
+                    checked={delimiter === ","}
+                    onChange={() => setDelimiter(",")}
+                  />
+                  <span>Comma</span>
+                </label>
+                <label className="inline-flex cursor-pointer items-center gap-1">
+                  <input
+                    type="radio"
+                    name="csv-delimiter"
+                    className="h-3 w-3 accent-primary"
+                    checked={delimiter === "\t"}
+                    onChange={() => setDelimiter("\t")}
+                  />
+                  <span>Tab</span>
+                </label>
+                <label className="inline-flex cursor-pointer items-center gap-1">
+                  <input
+                    type="radio"
+                    name="csv-delimiter"
+                    className="h-3 w-3 accent-primary"
+                    checked={delimiter === "|"}
+                    onChange={() => setDelimiter("|")}
+                  />
+                  <span>Pipe</span>
+                </label>
+                <label className="inline-flex cursor-pointer items-center gap-1">
+                  <input
+                    type="radio"
+                    name="csv-delimiter"
+                    className="h-3 w-3 accent-primary"
+                    checked={delimiter === ";"}
+                    onChange={() => setDelimiter(";")}
+                  />
+                  <span>Semicolon</span>
+                </label>
               </div>
-            </>
-          )}
-
-          {/* Actions */}
-          <div className="flex items-center gap-2 ml-auto shrink-0">
-            <button
-              type="button"
-              onClick={handleConvertNow}
-              disabled={isEmpty}
-              className="px-3 py-1.5 rounded-md bg-primary text-white text-[11px] font-semibold uppercase tracking-wider disabled:opacity-40 disabled:cursor-not-allowed hover:bg-primary/90 transition-colors"
-            >
-              Convert
-            </button>
-            {activeResult?.result && !activeResult.error ? (
+            ),
+          },
+          ...(direction === "csv-to-json"
+            ? [
+                {
+                  label: "Format",
+                  children: (
+                    <div className="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
+                      <label className="inline-flex cursor-pointer items-center gap-1">
+                        <input
+                          type="radio"
+                          name="csv-format"
+                          className="h-3 w-3 accent-primary"
+                          checked={outputFormat === "arrayOfObjects"}
+                          onChange={() => setOutputFormat("arrayOfObjects")}
+                        />
+                        <span>Array of Objects</span>
+                      </label>
+                      <label className="inline-flex cursor-pointer items-center gap-1">
+                        <input
+                          type="radio"
+                          name="csv-format"
+                          className="h-3 w-3 accent-primary"
+                          checked={outputFormat === "arrayOfArrays"}
+                          onChange={() => setOutputFormat("arrayOfArrays")}
+                        />
+                        <span>Array of Arrays</span>
+                      </label>
+                    </div>
+                  ),
+                },
+              ]
+            : []),
+          {
+            end: true,
+            children: (
               <>
                 <button
                   type="button"
-                  onClick={() =>
-                    handleDownload(
-                      activeResult.result,
-                      fileName
-                        ? `${fileName.replace(/\.[^.]+$/, "")}.${direction === "csv-to-json" ? "json" : "csv"}`
-                        : `output.${direction === "csv-to-json" ? "json" : "csv"}`,
-                      direction === "csv-to-json" ? "application/json" : "text/csv"
-                    )
-                  }
-                  className="rounded-lg border border-border-light bg-panel-light px-3 py-1.5 text-xs text-slate-500 transition-colors hover:text-slate-700 dark:border-border-dark dark:bg-panel-dark dark:text-slate-400 dark:hover:text-slate-200"
+                  onClick={handleConvertNow}
+                  disabled={isEmpty}
+                  className="rounded-md bg-primary px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-white transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-40"
                 >
-                  Download .{direction === "csv-to-json" ? "json" : "csv"}
+                  Convert
                 </button>
-                {direction === "json-to-csv" && jsonToCsvOutput?.result && (
-                  <button
-                    type="button"
-                    onClick={() =>
-                      navigate("/tools/csv-previewer", {
-                        state: { csv: jsonToCsvOutput.result, delimiter },
-                      })
-                    }
-                    className="flex items-center gap-1.5 rounded-lg border border-border-light bg-panel-light px-3 py-1.5 text-xs text-slate-500 transition-colors hover:text-primary dark:border-border-dark dark:bg-panel-dark dark:text-slate-400 dark:hover:text-primary"
-                  >
-                    <span className="material-symbols-outlined text-[14px]" aria-hidden>
-                      table_view
-                    </span>
-                    Preview
-                  </button>
-                )}
+                {activeResult?.result && !activeResult.error ? (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        handleDownload(
+                          activeResult.result,
+                          fileName
+                            ? `${fileName.replace(/\.[^.]+$/, "")}.${direction === "csv-to-json" ? "json" : "csv"}`
+                            : `output.${direction === "csv-to-json" ? "json" : "csv"}`,
+                          direction === "csv-to-json" ? "application/json" : "text/csv"
+                        )
+                      }
+                      className="rounded-full border border-border-light px-3 py-1 text-xs font-medium text-slate-500 transition-colors hover:border-primary/40 hover:text-primary dark:border-border-dark dark:text-slate-400 dark:hover:border-primary/40 dark:hover:text-primary"
+                    >
+                      Download .{direction === "csv-to-json" ? "json" : "csv"}
+                    </button>
+                    {direction === "json-to-csv" && jsonToCsvOutput?.result && (
+                      <button
+                        type="button"
+                        onClick={() =>
+                          navigate("/tools/csv-previewer", {
+                            state: { csv: jsonToCsvOutput.result, delimiter },
+                          })
+                        }
+                        className="flex items-center gap-1.5 rounded-full border border-border-light px-3 py-1 text-xs font-medium text-slate-500 transition-colors hover:border-primary/40 hover:text-primary dark:border-border-dark dark:text-slate-400 dark:hover:border-primary/40 dark:hover:text-primary"
+                      >
+                        <span className="material-symbols-outlined text-[14px]" aria-hidden>
+                          table_view
+                        </span>
+                        Preview
+                      </button>
+                    )}
+                  </>
+                ) : null}
+                <CopyButton
+                  value={
+                    activeResult?.result && !activeResult.error ? activeResult.result : undefined
+                  }
+                  label="Copy"
+                  variant="primary"
+                />
+                <button
+                  type="button"
+                  onClick={handleClear}
+                  disabled={isEmpty}
+                  className="rounded-full px-3 py-1 text-xs font-medium text-slate-500 transition-colors hover:text-red-500 disabled:cursor-not-allowed disabled:opacity-40 dark:text-slate-400 dark:hover:text-red-400"
+                >
+                  Clear
+                </button>
               </>
-            ) : null}
-            <CopyButton
-              value={
-                activeResult?.result && !activeResult.error ? activeResult.result : undefined
-              }
-              label="Copy"
-              variant="primary"
-              className="py-1.5 text-[11px] font-semibold uppercase tracking-wider"
-            />
-            <button
-              type="button"
-              onClick={handleClear}
-              disabled={isEmpty && !output}
-              className="px-3 py-1.5 rounded-md border border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark text-[11px] font-semibold uppercase tracking-wider disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-100 dark:hover:bg-white/5 transition-colors"
-            >
-              Clear
-            </button>
-          </div>
-        </div>
-      </footer>
+            ),
+          },
+        ]}
+      />
     </div>
   );
 }
