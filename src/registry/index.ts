@@ -2638,9 +2638,9 @@ export const tools: Tool[] = [
     name: "Colour Contrast Checker",
     description:
       "Check foreground/background colour pairs against WCAG AA and AAA contrast ratio requirements.",
-    category: "numbers",
-    displayCategory: "Numbers",
-    displayCategoryIcon: "numbers",
+    category: "design",
+    displayCategory: "Design",
+    displayCategoryIcon: "gradient",
     roles: ["frontend", "general"],
     icon: "contrast",
     platforms: ["desktop", "web"],
