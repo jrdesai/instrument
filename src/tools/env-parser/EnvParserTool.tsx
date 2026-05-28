@@ -9,7 +9,6 @@ import {
 } from "../../components/tool";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useFileDrop } from "../../hooks/useFileDrop";
-import { useHistoryStore } from "../../store";
 import type { EnvFileFormat } from "../../bindings/EnvFileFormat";
 import type { EnvEntry } from "../../bindings/EnvEntry";
 import type { EnvParseInput } from "../../bindings/EnvParseInput";
@@ -18,7 +17,6 @@ import type { EnvParseOutput } from "../../bindings/EnvParseOutput";
 const TOOL_ID = "env-parser";
 const RUST_COMMAND = "tool_env_parse";
 const DEBOUNCE_MS = 150;
-const HISTORY_DEBOUNCE_MS = 1500;
 
 const FORMAT_LABELS: Record<EnvFileFormat, string> = {
   auto: "Auto",
@@ -113,8 +111,6 @@ function EnvParserTool() {
   const [output, setOutput] = useState<EnvParseOutput | null>(null);
   const isEmpty = content.trim().length === 0;
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
   useRestoreStringDraft(TOOL_ID, setContent);
 
   const { isDragging, dropZoneProps } = useFileDrop({
@@ -175,14 +171,8 @@ function EnvParserTool() {
         skipHistory: true,
       })) as EnvParseOutput;
       setOutput(result);
-
-      if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
-      historyDebounceRef.current = setTimeout(() => {
-        addHistoryEntry(TOOL_ID, { input: payload, output: result, timestamp: Date.now() });
-        historyDebounceRef.current = null;
-      }, HISTORY_DEBOUNCE_MS);
     },
-    [addHistoryEntry]
+    []
   );
 
   const handleClear = useCallback(() => {

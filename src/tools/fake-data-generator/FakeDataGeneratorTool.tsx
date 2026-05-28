@@ -285,7 +285,6 @@ function downloadCsv(json: string): void {
     a.click();
     URL.revokeObjectURL(url);
   } catch (e) {
-    console.error("CSV export failed:", e);
     throw e instanceof Error ? e : new Error(String(e));
   }
 }

@@ -248,6 +248,7 @@ const historyStoreImpl = persist(
 
     addHistoryEntry: (toolId, entry) =>
       set((state) => {
+        if (getToolById(toolId)?.sensitive === true) return;
         if (!state.history[toolId]) state.history[toolId] = [];
         state.history[toolId].unshift(entry);
         if (state.history[toolId].length > MAX_HISTORY_PER_TOOL) {
