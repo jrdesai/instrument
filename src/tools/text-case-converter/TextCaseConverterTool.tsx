@@ -5,7 +5,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { CopyButton } from "../../components/tool";
+import { CopyButton, ToolbarFooter } from "../../components/tool";
 import { callTool } from "../../bridge";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { extractErrorMessage } from "../../lib/extractErrorMessage";
@@ -179,27 +179,32 @@ function TextCaseConverterTool() {
         )}
       </div>
 
-      {/* Footer */}
-      <footer className="flex items-center gap-4 px-4 py-3 border-t border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0">
-        <CopyButton
-          value={copyAllValue || undefined}
-          label="Copy all"
-          variant="outline"
-          className="px-3 py-2"
-        />
-
-        <button
-          type="button"
-          onClick={handleClear}
-          className="px-4 py-2 text-sm bg-panel-light dark:bg-panel-dark text-slate-500 dark:text-slate-400 border border-border-light dark:border-border-dark rounded-lg hover:text-slate-700 dark:hover:text-slate-200 hover:border-slate-400 dark:hover:border-slate-500 transition-colors"
-        >
-          Clear
-        </button>
-
-        {isLoading && (
-          <span className="ml-auto text-xs text-primary">Processing…</span>
-        )}
-      </footer>
+      <ToolbarFooter
+        groups={[
+          {
+            end: true,
+            children: (
+              <>
+                <CopyButton
+                  value={copyAllValue || undefined}
+                  label="Copy all"
+                  variant="outline"
+                />
+                <button
+                  type="button"
+                  onClick={handleClear}
+                  className="rounded-full px-3 py-1 text-xs font-medium text-slate-500 transition-colors hover:text-red-500 dark:text-slate-400 dark:hover:text-red-400"
+                >
+                  Clear
+                </button>
+                {isLoading ? (
+                  <span className="text-xs text-primary">Processing…</span>
+                ) : null}
+              </>
+            ),
+          },
+        ]}
+      />
     </div>
   );
 }

@@ -5,6 +5,7 @@ import {
   useState,
 } from "react";
 import { callTool } from "../../bridge";
+import { ToolbarFooter } from "../../components/tool";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useHistoryStore } from "../../store";
 import type { UnicodeChar } from "../../bindings/UnicodeChar";
@@ -167,22 +168,27 @@ export default function UnicodeInspectorTool() {
         )}
       </div>
 
-      <footer className="shrink-0 border-t border-border-light bg-panel-light px-4 py-2 text-xs text-slate-600 dark:border-border-dark dark:bg-panel-dark dark:text-slate-400">
-        {output && !output.error ? (
-          <span>
-            <span className="font-semibold text-slate-800 dark:text-slate-200">
-              {output.totalChars.toLocaleString()}
-            </span>{" "}
-            characters ·{" "}
-            <span className="font-semibold text-slate-800 dark:text-slate-200">
-              {output.totalBytes.toLocaleString()}
-            </span>{" "}
-            UTF-8 bytes
-          </span>
-        ) : (
-          <span>—</span>
-        )}
-      </footer>
+      <ToolbarFooter
+        groups={[
+          {
+            label: "Summary",
+            children: output && !output.error ? (
+              <span className="text-xs text-slate-600 dark:text-slate-400">
+                <span className="font-semibold text-slate-800 dark:text-slate-200">
+                  {output.totalChars.toLocaleString()}
+                </span>{" "}
+                characters ·{" "}
+                <span className="font-semibold text-slate-800 dark:text-slate-200">
+                  {output.totalBytes.toLocaleString()}
+                </span>{" "}
+                UTF-8 bytes
+              </span>
+            ) : (
+              <span className="text-xs text-slate-600 dark:text-slate-400">—</span>
+            ),
+          },
+        ]}
+      />
     </div>
   );
 }

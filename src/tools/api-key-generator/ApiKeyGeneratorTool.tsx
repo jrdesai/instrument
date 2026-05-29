@@ -3,7 +3,7 @@ import {
   useState,
 } from "react";
 import { callTool } from "../../bridge";
-import { CopyButton } from "../../components/tool";
+import { CopyButton, PillButton, ToolbarFooter } from "../../components/tool";
 import type { ApiKeyCharset } from "../../bindings/ApiKeyCharset";
 import type { ApiKeyFormat } from "../../bindings/ApiKeyFormat";
 import type { ApiKeyInput } from "../../bindings/ApiKeyInput";
@@ -144,241 +144,194 @@ function ApiKeyGeneratorTool() {
         </div>
       </div>
 
-      {/* Footer controls */}
-      <footer className="flex items-end gap-2 px-4 py-3 border-t border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0">
-        {/* Format */}
-        <div className="flex flex-col gap-1" role="group" aria-label="Format">
-          <span className="text-slate-600 text-xs uppercase tracking-wider">
-            Format
-          </span>
-          <div className="flex items-center gap-1">
-            <button
-              type="button"
-              onClick={() => setFormat("raw")}
-              className={`px-3 py-1 text-xs font-medium rounded-full transition-colors ${
-                format === "raw"
-                  ? "bg-primary text-white"
-                  : "text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
-              }`}
-            >
-              Raw
-            </button>
-            <button
-              type="button"
-              onClick={() => setFormat("grouped")}
-              className={`px-3 py-1 text-xs font-medium rounded-full transition-colors ${
-                format === "grouped"
-                  ? "bg-primary text-white"
-                  : "text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
-              }`}
-            >
-              Grouped
-            </button>
-            <button
-              type="button"
-              onClick={() => setFormat("prefixed")}
-              className={`px-3 py-1 text-xs font-medium rounded-full transition-colors ${
-                format === "prefixed"
-                  ? "bg-primary text-white"
-                  : "text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
-              }`}
-            >
-              Prefixed
-            </button>
-          </div>
-          {showGroupedNote && (
-            <span className="text-slate-500 text-xs">
-              Length rounded to nearest multiple of 4
-            </span>
-          )}
-        </div>
-
-        <div className="w-px h-6 bg-border-light dark:bg-border-dark self-center mx-3" />
-
-        {/* Length */}
-        <div className="flex flex-col gap-1" role="group" aria-label="Length">
-          <span className="text-slate-600 text-xs uppercase tracking-wider">
-            Length
-          </span>
-          <div className="flex items-center gap-1">
-            <button
-              type="button"
-              aria-label="Decrease length"
-              onClick={() => handleLengthChange(length - 1)}
-              className="px-2 py-1 text-xs rounded-lg bg-background-light dark:bg-background-dark text-slate-700 dark:text-slate-300 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
-            >
-              -
-            </button>
-            <input
-              type="number"
-              min={8}
-              max={256}
-              value={length}
-              onChange={(e) => handleLengthChange(Number(e.target.value))}
-              className="w-16 px-2 py-1 text-xs bg-background-light dark:bg-background-dark border border-border-light dark:border-border-dark rounded-lg text-center text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-primary"
-            />
-            <button
-              type="button"
-              aria-label="Increase length"
-              onClick={() => handleLengthChange(length + 1)}
-              className="px-2 py-1 text-xs rounded-lg bg-background-light dark:bg-background-dark text-slate-700 dark:text-slate-300 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
-            >
-              +
-            </button>
-          </div>
-        </div>
-
-        <div className="w-px h-6 bg-border-light dark:bg-border-dark self-center mx-3" />
-
-        {/* Charset */}
-        <div className="flex flex-col gap-1" role="group" aria-label="Charset">
-          <span className="text-slate-600 text-xs uppercase tracking-wider">
-            Charset
-          </span>
-          <div className="flex items-center gap-1">
-            <button
-              type="button"
-              onClick={() => setCharset("alphanumeric")}
-              className={`px-2 py-1 text-[10px] font-medium rounded-full transition-colors ${
-                charset === "alphanumeric"
-                  ? "bg-primary text-white"
-                  : "text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
-              }`}
-            >
-              Alphanumeric
-            </button>
-            <button
-              type="button"
-              onClick={() => setCharset("alphaOnly")}
-              className={`px-2 py-1 text-[10px] font-medium rounded-full transition-colors ${
-                charset === "alphaOnly"
-                  ? "bg-primary text-white"
-                  : "text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
-              }`}
-            >
-              Alpha
-            </button>
-            <button
-              type="button"
-              onClick={() => setCharset("hexOnly")}
-              className={`px-2 py-1 text-[10px] font-medium rounded-full transition-colors ${
-                charset === "hexOnly"
-                  ? "bg-primary text-white"
-                  : "text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
-              }`}
-            >
-              Hex
-            </button>
-            <button
-              type="button"
-              onClick={() => setCharset("urlSafe")}
-              className={`px-2 py-1 text-[10px] font-medium rounded-full transition-colors ${
-                charset === "urlSafe"
-                  ? "bg-primary text-white"
-                  : "text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
-              }`}
-            >
-              URL Safe
-            </button>
-          </div>
-        </div>
-
-        <div className="w-px h-6 bg-border-light dark:bg-border-dark self-center mx-3" />
-
-        {/* Count */}
-        <div className="flex flex-col gap-1" role="group" aria-label="Count">
-          <span className="text-slate-600 text-xs uppercase tracking-wider">
-            Count
-          </span>
-          <div className="flex items-center gap-1">
-            <button
-              type="button"
-              aria-label="Decrease count"
-              onClick={() => handleCountChange(count - 1)}
-              className="px-2 py-1 text-xs rounded-lg bg-background-light dark:bg-background-dark text-slate-700 dark:text-slate-300 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
-            >
-              -
-            </button>
-            <input
-              type="number"
-              min={1}
-              max={100}
-              value={count}
-              onChange={(e) => handleCountChange(Number(e.target.value))}
-              className="w-16 px-2 py-1 text-xs bg-background-light dark:bg-background-dark border border-border-light dark:border-border-dark rounded-lg text-center text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-primary"
-            />
-            <button
-              type="button"
-              aria-label="Increase count"
-              onClick={() => handleCountChange(count + 1)}
-              className="px-2 py-1 text-xs rounded-lg bg-background-light dark:bg-background-dark text-slate-700 dark:text-slate-300 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
-            >
-              +
-            </button>
-          </div>
-        </div>
-
-        {showPrefixInput && (
-          <>
-            <div className="w-px h-6 bg-border-light dark:bg-border-dark self-center mx-3" />
-            {/* Prefix */}
-            <div className="flex flex-col gap-1" role="group" aria-label="Prefix">
-              <span className="text-slate-600 text-xs uppercase tracking-wider">
-                Prefix
-              </span>
-              <input
-                type="text"
-                maxLength={32}
-                value={prefix}
-                placeholder="sk_live_"
-                onChange={(e) => setPrefix(e.target.value)}
-                className="w-[140px] px-2 py-1 text-xs bg-background-light dark:bg-background-dark border border-border-light dark:border-border-dark rounded-lg text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-primary"
-              />
-            </div>
-          </>
-        )}
-
-        <div className="w-px h-6 bg-border-light dark:bg-border-dark self-center mx-3" />
-
-        {/* Actions (no label) */}
-        <div
-          className="flex flex-col gap-1 ml-auto"
-          role="group"
-          aria-label="Actions"
-        >
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={handleGenerate}
-              className="px-4 py-2 text-sm font-medium bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
-              disabled={isLoading}
-            >
-              {isLoading && (
-                <span
-                  className="w-3 h-3 rounded-full border-2 border-border-dark border-t-white animate-spin"
-                  aria-hidden
+      <ToolbarFooter
+        groups={[
+          {
+            label: "Format",
+            children: (
+              <div className="flex flex-col gap-1">
+                <div className="flex items-center gap-1">
+                  <PillButton
+                    size="sm"
+                    active={format === "raw"}
+                    onClick={() => setFormat("raw")}
+                  >
+                    Raw
+                  </PillButton>
+                  <PillButton
+                    size="sm"
+                    active={format === "grouped"}
+                    onClick={() => setFormat("grouped")}
+                  >
+                    Grouped
+                  </PillButton>
+                  <PillButton
+                    size="sm"
+                    active={format === "prefixed"}
+                    onClick={() => setFormat("prefixed")}
+                  >
+                    Prefixed
+                  </PillButton>
+                </div>
+                {showGroupedNote && (
+                  <span className="text-xs text-slate-500">
+                    Length rounded to nearest multiple of 4
+                  </span>
+                )}
+              </div>
+            ),
+          },
+          {
+            label: "Length",
+            children: (
+              <div className="flex items-center gap-1">
+                <button
+                  type="button"
+                  aria-label="Decrease length"
+                  onClick={() => handleLengthChange(length - 1)}
+                  className="rounded-lg bg-background-light px-2 py-1 text-xs text-slate-700 transition-colors hover:bg-slate-100 hover:text-primary dark:bg-background-dark dark:text-slate-300 dark:hover:bg-slate-700"
+                >
+                  -
+                </button>
+                <input
+                  type="number"
+                  min={8}
+                  max={256}
+                  value={length}
+                  onChange={(e) => handleLengthChange(Number(e.target.value))}
+                  className="w-16 rounded-lg border border-border-light bg-background-light px-2 py-1 text-center text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-primary dark:border-border-dark dark:bg-background-dark dark:text-slate-100"
                 />
-              )}
-              {isLoading ? "Generating..." : "Generate"}
-            </button>
-            <CopyButton
-              value={keys.length ? keys.join("\n") : undefined}
-              label="Copy all"
-              variant="primary"
-              className="py-2 text-xs"
-            />
-            {keys.length > 0 && (
-              <button
-                type="button"
-                onClick={handleClear}
-                className="px-4 py-2 text-sm bg-panel-light dark:bg-panel-dark text-slate-500 dark:text-slate-400 border border-border-light dark:border-border-dark rounded-lg hover:text-slate-800 dark:hover:text-slate-200 hover:border-slate-400 dark:hover:border-slate-500 transition-colors"
-              >
-                Clear
-              </button>
-            )}
-          </div>
-        </div>
-      </footer>
+                <button
+                  type="button"
+                  aria-label="Increase length"
+                  onClick={() => handleLengthChange(length + 1)}
+                  className="rounded-lg bg-background-light px-2 py-1 text-xs text-slate-700 transition-colors hover:bg-slate-100 hover:text-primary dark:bg-background-dark dark:text-slate-300 dark:hover:bg-slate-700"
+                >
+                  +
+                </button>
+              </div>
+            ),
+          },
+          {
+            label: "Charset",
+            children: (
+              <>
+                <PillButton
+                  size="sm"
+                  active={charset === "alphanumeric"}
+                  onClick={() => setCharset("alphanumeric")}
+                >
+                  Alphanumeric
+                </PillButton>
+                <PillButton
+                  size="sm"
+                  active={charset === "alphaOnly"}
+                  onClick={() => setCharset("alphaOnly")}
+                >
+                  Alpha
+                </PillButton>
+                <PillButton
+                  size="sm"
+                  active={charset === "hexOnly"}
+                  onClick={() => setCharset("hexOnly")}
+                >
+                  Hex
+                </PillButton>
+                <PillButton
+                  size="sm"
+                  active={charset === "urlSafe"}
+                  onClick={() => setCharset("urlSafe")}
+                >
+                  URL Safe
+                </PillButton>
+              </>
+            ),
+          },
+          {
+            label: "Count",
+            children: (
+              <div className="flex items-center gap-1">
+                <button
+                  type="button"
+                  aria-label="Decrease count"
+                  onClick={() => handleCountChange(count - 1)}
+                  className="rounded-lg bg-background-light px-2 py-1 text-xs text-slate-700 transition-colors hover:bg-slate-100 hover:text-primary dark:bg-background-dark dark:text-slate-300 dark:hover:bg-slate-700"
+                >
+                  -
+                </button>
+                <input
+                  type="number"
+                  min={1}
+                  max={100}
+                  value={count}
+                  onChange={(e) => handleCountChange(Number(e.target.value))}
+                  className="w-16 rounded-lg border border-border-light bg-background-light px-2 py-1 text-center text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-primary dark:border-border-dark dark:bg-background-dark dark:text-slate-100"
+                />
+                <button
+                  type="button"
+                  aria-label="Increase count"
+                  onClick={() => handleCountChange(count + 1)}
+                  className="rounded-lg bg-background-light px-2 py-1 text-xs text-slate-700 transition-colors hover:bg-slate-100 hover:text-primary dark:bg-background-dark dark:text-slate-300 dark:hover:bg-slate-700"
+                >
+                  +
+                </button>
+              </div>
+            ),
+          },
+          ...(showPrefixInput
+            ? [
+                {
+                  label: "Prefix",
+                  children: (
+                    <input
+                      type="text"
+                      maxLength={32}
+                      value={prefix}
+                      placeholder="sk_live_"
+                      onChange={(e) => setPrefix(e.target.value)}
+                      className="w-[140px] rounded-lg border border-border-light bg-background-light px-2 py-1 text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-primary dark:border-border-dark dark:bg-background-dark dark:text-slate-100"
+                    />
+                  ),
+                },
+              ]
+            : []),
+          {
+            end: true,
+            children: (
+              <>
+                <button
+                  type="button"
+                  onClick={handleGenerate}
+                  disabled={isLoading}
+                  className="flex items-center gap-2 rounded-full bg-primary px-4 py-1.5 text-xs font-medium text-white transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {isLoading && (
+                    <span
+                      className="h-3 w-3 animate-spin rounded-full border-2 border-border-dark border-t-white"
+                      aria-hidden
+                    />
+                  )}
+                  {isLoading ? "Generating..." : "Generate"}
+                </button>
+                <CopyButton
+                  value={keys.length ? keys.join("\n") : undefined}
+                  label="Copy all"
+                  variant="primary"
+                />
+                {keys.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={handleClear}
+                    className="rounded-full px-3 py-1 text-xs font-medium text-slate-500 transition-colors hover:text-red-500 dark:text-slate-400 dark:hover:text-red-400"
+                  >
+                    Clear
+                  </button>
+                )}
+              </>
+            ),
+          },
+        ]}
+      />
     </div>
   );
 }

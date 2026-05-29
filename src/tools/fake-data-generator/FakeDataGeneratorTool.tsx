@@ -7,7 +7,7 @@ import {
 } from "react";
 import { useNavigate } from "react-router-dom";
 import { callTool } from "../../bridge";
-import { CopyButton, PanelHeader } from "../../components/tool";
+import { CopyButton, PanelHeader, ToolbarFooter } from "../../components/tool";
 import { CodeBlock } from "../../components/ui/CodeBlock";
 import { useDraftInput, useRestoreDraft } from "../../hooks/useDraftInput";
 import { useHistoryStore } from "../../store";
@@ -647,58 +647,74 @@ function FakeDataGeneratorTool() {
             ) : (
               <EmptyState />
             )}
-            {showDownloads && (
-              <div className="flex shrink-0 flex-col gap-2 border-t border-border-light bg-panel-light px-4 py-2 dark:border-border-dark dark:bg-panel-dark">
-                {downloadError ? (
-                  <p className="text-xs text-red-600 dark:text-red-400">{downloadError}</p>
-                ) : null}
-                <div className="flex items-center justify-end gap-2">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setDownloadError(null);
-                      downloadJson(output!.json);
-                    }}
-                    className="flex items-center gap-1.5 rounded-lg border border-border-light px-3 py-1 text-xs text-slate-600 transition-colors hover:text-primary dark:border-border-dark dark:text-slate-400"
-                  >
-                    <span className="material-symbols-outlined text-[14px]">download</span>
-                    JSON
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setDownloadError(null);
-                      try {
-                        downloadCsv(output!.json);
-                      } catch (e) {
-                        setDownloadError(e instanceof Error ? e.message : String(e));
-                      }
-                    }}
-                    className="flex items-center gap-1.5 rounded-lg border border-border-light px-3 py-1 text-xs text-slate-600 transition-colors hover:text-primary dark:border-border-dark dark:text-slate-400"
-                  >
-                    <span className="material-symbols-outlined text-[14px]">download</span>
-                    CSV
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      try {
-                        const csv = buildCsvString(output!.json);
-                        navigate("/tools/csv-previewer", {
-                          state: { csv, delimiter: "," },
-                        });
-                      } catch {
-                        // silently ignore if build fails
-                      }
-                    }}
-                    className="flex items-center gap-1.5 rounded-lg border border-border-light px-3 py-1 text-xs text-slate-600 transition-colors hover:text-primary dark:border-border-dark dark:text-slate-400"
-                  >
-                    <span className="material-symbols-outlined text-[14px]">table_view</span>
-                    Preview
-                  </button>
-                </div>
-              </div>
-            )}
+            {showDownloads ? (
+              <ToolbarFooter
+                groups={[
+                  ...(downloadError
+                    ? [
+                        {
+                          label: "Error",
+                          children: (
+                            <p className="text-xs text-red-600 dark:text-red-400">
+                              {downloadError}
+                            </p>
+                          ),
+                        },
+                      ]
+                    : []),
+                  {
+                    end: true,
+                    children: (
+                      <>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setDownloadError(null);
+                            downloadJson(output!.json);
+                          }}
+                          className="flex items-center gap-1.5 rounded-full border border-border-light px-3 py-1 text-xs font-medium text-slate-500 transition-colors hover:border-primary/40 hover:text-primary dark:border-border-dark dark:text-slate-400"
+                        >
+                          <span className="material-symbols-outlined text-[14px]">download</span>
+                          JSON
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setDownloadError(null);
+                            try {
+                              downloadCsv(output!.json);
+                            } catch (e) {
+                              setDownloadError(e instanceof Error ? e.message : String(e));
+                            }
+                          }}
+                          className="flex items-center gap-1.5 rounded-full border border-border-light px-3 py-1 text-xs font-medium text-slate-500 transition-colors hover:border-primary/40 hover:text-primary dark:border-border-dark dark:text-slate-400"
+                        >
+                          <span className="material-symbols-outlined text-[14px]">download</span>
+                          CSV
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            try {
+                              const csv = buildCsvString(output!.json);
+                              navigate("/tools/csv-previewer", {
+                                state: { csv, delimiter: "," },
+                              });
+                            } catch {
+                              // silently ignore if build fails
+                            }
+                          }}
+                          className="flex items-center gap-1.5 rounded-full border border-border-light px-3 py-1 text-xs font-medium text-slate-500 transition-colors hover:border-primary/40 hover:text-primary dark:border-border-dark dark:text-slate-400"
+                        >
+                          <span className="material-symbols-outlined text-[14px]">table_view</span>
+                          Preview
+                        </button>
+                      </>
+                    ),
+                  },
+                ]}
+              />
+            ) : null}
           </div>
         </div>
       </div>

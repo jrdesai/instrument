@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { callTool } from "../../bridge";
+import { ToolbarFooter } from "../../components/tool";
 import type { PassphraseInput } from "../../bindings/PassphraseInput";
 import type { PassphraseOutput } from "../../bindings/PassphraseOutput";
 import type { PassphraseSeparator } from "../../bindings/PassphraseSeparator";
@@ -234,134 +235,141 @@ function PassphraseGeneratorTool() {
           )}
         </div>
 
-        <div className="border-t border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark px-4 py-3 space-y-3">
-          <div className="flex items-center gap-3">
-            <span className="text-xs text-slate-600 dark:text-slate-400 uppercase tracking-wider w-20 shrink-0">
-              Words
-            </span>
-            <button
-              type="button"
-              aria-label="Decrease word count"
-              onClick={() => handleWordCountChange(wordCount - 1)}
-              className="px-2 py-1 text-xs rounded-lg bg-background-light dark:bg-background-dark text-slate-700 dark:text-slate-300 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 border border-border-light dark:border-border-dark transition-colors"
-            >
-              –
-            </button>
-            <input
-              type="number"
-              min={3}
-              max={12}
-              value={wordCount}
-              onChange={(e) => handleWordCountChange(Number(e.target.value))}
-              className="w-14 px-2 py-1 text-xs bg-background-light dark:bg-background-dark border border-border-light dark:border-border-dark rounded-lg text-center text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-primary"
-              aria-label="Words per passphrase"
-            />
-            <button
-              type="button"
-              aria-label="Increase word count"
-              onClick={() => handleWordCountChange(wordCount + 1)}
-              className="px-2 py-1 text-xs rounded-lg bg-background-light dark:bg-background-dark text-slate-700 dark:text-slate-300 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 border border-border-light dark:border-border-dark transition-colors"
-            >
-              +
-            </button>
-          </div>
-
-          <fieldset className="space-y-2 border-0 p-0 m-0">
-            <legend className="text-xs text-slate-600 dark:text-slate-400 uppercase tracking-wider sr-only">
-              Separator
-            </legend>
-            <div className="text-xs text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">
-              Separator
-            </div>
-            <div className="flex flex-wrap gap-x-3 gap-y-2">
-              {SEPARATOR_OPTIONS.map(({ value, label }) => (
-                <label
-                  key={value}
-                  className="flex items-center gap-1.5 text-sm cursor-pointer select-none"
-                >
+        <ToolbarFooter
+          groups={[
+            {
+              label: "Words",
+              children: (
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    aria-label="Decrease word count"
+                    onClick={() => handleWordCountChange(wordCount - 1)}
+                    className="rounded-lg border border-border-light bg-background-light px-2 py-1 text-xs text-slate-700 transition-colors hover:bg-slate-100 hover:text-primary dark:border-border-dark dark:bg-background-dark dark:text-slate-300 dark:hover:bg-slate-700"
+                  >
+                    –
+                  </button>
                   <input
-                    type="radio"
-                    name="passphrase-separator"
-                    checked={separator === value}
-                    onChange={() => setSeparator(value)}
-                    className="accent-primary"
+                    type="number"
+                    min={3}
+                    max={12}
+                    value={wordCount}
+                    onChange={(e) => handleWordCountChange(Number(e.target.value))}
+                    className="w-14 rounded-lg border border-border-light bg-background-light px-2 py-1 text-center text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-primary dark:border-border-dark dark:bg-background-dark dark:text-slate-100"
+                    aria-label="Words per passphrase"
                   />
-                  <span>{label}</span>
-                </label>
-              ))}
-            </div>
-          </fieldset>
-
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-            <label className="flex items-center gap-1.5 text-sm cursor-pointer select-none">
-              <input
-                type="checkbox"
-                checked={capitalize}
-                onChange={(e) => setCapitalize(e.target.checked)}
-                className="accent-primary w-3.5 h-3.5"
-              />
-              <span>Capitalize</span>
-            </label>
-            <label className="flex items-center gap-1.5 text-sm cursor-pointer select-none">
-              <input
-                type="checkbox"
-                checked={includeNumber}
-                onChange={(e) => setIncludeNumber(e.target.checked)}
-                className="accent-primary w-3.5 h-3.5"
-              />
-              <span>Add number</span>
-            </label>
-            <label className="flex items-center gap-1.5 text-sm cursor-pointer select-none">
-              <input
-                type="checkbox"
-                checked={includeSymbol}
-                onChange={(e) => setIncludeSymbol(e.target.checked)}
-                className="accent-primary w-3.5 h-3.5"
-              />
-              <span>Add symbol</span>
-            </label>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-slate-600 dark:text-slate-400 uppercase tracking-wider w-20 shrink-0">
-              Count
-            </span>
-            <button
-              type="button"
-              aria-label="Decrease count"
-              onClick={() => handleCountChange(count - 1)}
-              className="px-2 py-1 text-xs rounded-lg bg-background-light dark:bg-background-dark text-slate-700 dark:text-slate-300 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 border border-border-light dark:border-border-dark transition-colors"
-            >
-              –
-            </button>
-            <input
-              type="number"
-              min={1}
-              max={50}
-              value={count}
-              onChange={(e) => handleCountChange(Number(e.target.value))}
-              className="w-14 px-2 py-1 text-xs bg-background-light dark:bg-background-dark border border-border-light dark:border-border-dark rounded-lg text-center text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-primary"
-              aria-label="Number of passphrases"
-            />
-            <button
-              type="button"
-              aria-label="Increase count"
-              onClick={() => handleCountChange(count + 1)}
-              className="px-2 py-1 text-xs rounded-lg bg-background-light dark:bg-background-dark text-slate-700 dark:text-slate-300 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 border border-border-light dark:border-border-dark transition-colors"
-            >
-              +
-            </button>
-          </div>
-
-          <div className="flex items-baseline gap-2 flex-wrap">
-            <span className="text-xs text-slate-600 dark:text-slate-400 uppercase tracking-wider">
-              Entropy
-            </span>
-            <span className="text-xs text-slate-700 dark:text-slate-300">
-              {entropyBits.toFixed(1)} bits · {wordlistSize} words in list
-            </span>
-          </div>
-        </div>
+                  <button
+                    type="button"
+                    aria-label="Increase word count"
+                    onClick={() => handleWordCountChange(wordCount + 1)}
+                    className="rounded-lg border border-border-light bg-background-light px-2 py-1 text-xs text-slate-700 transition-colors hover:bg-slate-100 hover:text-primary dark:border-border-dark dark:bg-background-dark dark:text-slate-300 dark:hover:bg-slate-700"
+                  >
+                    +
+                  </button>
+                </div>
+              ),
+            },
+            {
+              label: "Separator",
+              children: (
+                <fieldset className="m-0 border-0 p-0">
+                  <legend className="sr-only">Separator</legend>
+                  <div className="flex flex-wrap gap-x-3 gap-y-2">
+                    {SEPARATOR_OPTIONS.map(({ value, label }) => (
+                      <label
+                        key={value}
+                        className="flex cursor-pointer select-none items-center gap-1.5 text-sm"
+                      >
+                        <input
+                          type="radio"
+                          name="passphrase-separator"
+                          checked={separator === value}
+                          onChange={() => setSeparator(value)}
+                          className="accent-primary"
+                        />
+                        <span>{label}</span>
+                      </label>
+                    ))}
+                  </div>
+                </fieldset>
+              ),
+            },
+            {
+              label: "Options",
+              children: (
+                <>
+                  <label className="flex cursor-pointer select-none items-center gap-1.5 text-sm">
+                    <input
+                      type="checkbox"
+                      checked={capitalize}
+                      onChange={(e) => setCapitalize(e.target.checked)}
+                      className="h-3.5 w-3.5 accent-primary"
+                    />
+                    <span>Capitalize</span>
+                  </label>
+                  <label className="flex cursor-pointer select-none items-center gap-1.5 text-sm">
+                    <input
+                      type="checkbox"
+                      checked={includeNumber}
+                      onChange={(e) => setIncludeNumber(e.target.checked)}
+                      className="h-3.5 w-3.5 accent-primary"
+                    />
+                    <span>Add number</span>
+                  </label>
+                  <label className="flex cursor-pointer select-none items-center gap-1.5 text-sm">
+                    <input
+                      type="checkbox"
+                      checked={includeSymbol}
+                      onChange={(e) => setIncludeSymbol(e.target.checked)}
+                      className="h-3.5 w-3.5 accent-primary"
+                    />
+                    <span>Add symbol</span>
+                  </label>
+                </>
+              ),
+            },
+            {
+              label: "Count",
+              children: (
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    aria-label="Decrease count"
+                    onClick={() => handleCountChange(count - 1)}
+                    className="rounded-lg border border-border-light bg-background-light px-2 py-1 text-xs text-slate-700 transition-colors hover:bg-slate-100 hover:text-primary dark:border-border-dark dark:bg-background-dark dark:text-slate-300 dark:hover:bg-slate-700"
+                  >
+                    –
+                  </button>
+                  <input
+                    type="number"
+                    min={1}
+                    max={50}
+                    value={count}
+                    onChange={(e) => handleCountChange(Number(e.target.value))}
+                    className="w-14 rounded-lg border border-border-light bg-background-light px-2 py-1 text-center text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-primary dark:border-border-dark dark:bg-background-dark dark:text-slate-100"
+                    aria-label="Number of passphrases"
+                  />
+                  <button
+                    type="button"
+                    aria-label="Increase count"
+                    onClick={() => handleCountChange(count + 1)}
+                    className="rounded-lg border border-border-light bg-background-light px-2 py-1 text-xs text-slate-700 transition-colors hover:bg-slate-100 hover:text-primary dark:border-border-dark dark:bg-background-dark dark:text-slate-300 dark:hover:bg-slate-700"
+                  >
+                    +
+                  </button>
+                </div>
+              ),
+            },
+            {
+              label: "Entropy",
+              children: (
+                <span className="text-xs text-slate-700 dark:text-slate-300">
+                  {entropyBits.toFixed(1)} bits · {wordlistSize} words in list
+                </span>
+              ),
+            },
+          ]}
+        />
       </div>
     </div>
   );

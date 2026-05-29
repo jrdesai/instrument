@@ -6,7 +6,7 @@ import React, {
   type ChangeEvent,
 } from "react";
 import { useLocation } from "react-router-dom";
-import { CopyButton, PillButton } from "../../components/tool";
+import { CopyButton, PillButton, ToolbarFooter } from "../../components/tool";
 import { callTool } from "../../bridge";
 import { extractErrorMessage } from "../../lib/extractErrorMessage";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
@@ -337,54 +337,68 @@ function CsvPreviewerTool() {
         </div>
       </div>
 
-      {/* Footer */}
-      <footer className="flex shrink-0 flex-wrap items-center gap-4 border-t border-border-light bg-panel-light px-4 py-2 dark:border-border-dark dark:bg-panel-dark">
-        <label className="flex cursor-pointer items-center gap-2">
-          <input
-            type="checkbox"
-            aria-label="First row is header"
-            checked={hasHeaders}
-            onChange={(e) => setHasHeaders(e.target.checked)}
-            className="rounded border-border-light bg-background-light text-primary focus:ring-primary dark:border-border-dark dark:bg-background-dark"
-          />
-          <span className="text-sm text-slate-700 dark:text-slate-300">First row is header</span>
-        </label>
-
-        <div className="flex items-center gap-1" role="group" aria-label="Delimiter">
-          <PillButton active={delimiter === ","} onClick={() => setDelimiter(",")}>
-            CSV
-          </PillButton>
-          <PillButton active={delimiter === "\t"} onClick={() => setDelimiter("\t")}>
-            TSV
-          </PillButton>
-          <PillButton active={delimiter === "|"} onClick={() => setDelimiter("|")}>
-            Pipe
-          </PillButton>
-          <PillButton active={delimiter === ";"} onClick={() => setDelimiter(";")}>
-            Semi
-          </PillButton>
-        </div>
-
-        <button
-          type="button"
-          aria-label="Clear input and output"
-          onClick={handleClear}
-          disabled={isEmpty}
-          className="rounded-lg px-3 py-1 text-sm text-slate-700 transition-colors hover:bg-slate-100 hover:text-primary disabled:cursor-not-allowed disabled:opacity-40 dark:text-slate-300 dark:hover:bg-slate-700"
-        >
-          Clear
-        </button>
-
-        <div className="ml-auto">
-          <CopyButton
-            value={inputValue || undefined}
-            label="Copy CSV"
-            variant="primary"
-            className="py-1"
-            aria-label="Copy raw CSV to clipboard"
-          />
-        </div>
-      </footer>
+      <ToolbarFooter
+        groups={[
+          {
+            label: "Options",
+            children: (
+              <label className="flex cursor-pointer items-center gap-2">
+                <input
+                  type="checkbox"
+                  aria-label="First row is header"
+                  checked={hasHeaders}
+                  onChange={(e) => setHasHeaders(e.target.checked)}
+                  className="rounded border-border-light bg-background-light text-primary focus:ring-primary dark:border-border-dark dark:bg-background-dark"
+                />
+                <span className="text-sm text-slate-700 dark:text-slate-300">
+                  First row is header
+                </span>
+              </label>
+            ),
+          },
+          {
+            label: "Delimiter",
+            children: (
+              <>
+                <PillButton size="sm" active={delimiter === ","} onClick={() => setDelimiter(",")}>
+                  CSV
+                </PillButton>
+                <PillButton size="sm" active={delimiter === "\t"} onClick={() => setDelimiter("\t")}>
+                  TSV
+                </PillButton>
+                <PillButton size="sm" active={delimiter === "|"} onClick={() => setDelimiter("|")}>
+                  Pipe
+                </PillButton>
+                <PillButton size="sm" active={delimiter === ";"} onClick={() => setDelimiter(";")}>
+                  Semi
+                </PillButton>
+              </>
+            ),
+          },
+          {
+            end: true,
+            children: (
+              <>
+                <button
+                  type="button"
+                  aria-label="Clear input and output"
+                  onClick={handleClear}
+                  disabled={isEmpty}
+                  className="rounded-full px-3 py-1 text-xs font-medium text-slate-500 transition-colors hover:text-red-500 disabled:cursor-not-allowed disabled:opacity-40 dark:text-slate-400 dark:hover:text-red-400"
+                >
+                  Clear
+                </button>
+                <CopyButton
+                  value={inputValue || undefined}
+                  label="Copy CSV"
+                  variant="primary"
+                  aria-label="Copy raw CSV to clipboard"
+                />
+              </>
+            ),
+          },
+        ]}
+      />
     </div>
   );
 }

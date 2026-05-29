@@ -5,6 +5,7 @@ import {
   useState,
 } from "react";
 import { callTool } from "../../bridge";
+import { ToolbarFooter } from "../../components/tool";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useHistoryStore } from "../../store";
 import type { UrlParseInput } from "../../bindings/UrlParseInput";
@@ -266,27 +267,35 @@ function UrlParserTool() {
         )}
       </div>
 
-      {/* Footer */}
-      <footer className="flex items-center justify-end gap-2 px-4 py-3 border-t border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0">
-        {isLoading && (
-          <span className="text-xs text-primary mr-2">Parsing…</span>
-        )}
-        <button
-          type="button"
-          onClick={handleClear}
-          className="px-3 py-1.5 text-sm text-slate-500 dark:text-slate-400 border border-border-light dark:border-border-dark rounded-lg hover:text-slate-800 dark:hover:text-slate-200 hover:border-slate-400 dark:hover:border-slate-500 transition-colors"
-        >
-          Clear
-        </button>
-        <button
-          type="button"
-          onClick={handleCopyUrl}
-          disabled={!input}
-          className="px-3 py-1.5 text-sm font-medium bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-        >
-          {copyLabel}
-        </button>
-      </footer>
+      <ToolbarFooter
+        groups={[
+          {
+            end: true,
+            children: (
+              <>
+                {isLoading ? (
+                  <span className="text-xs text-primary">Parsing…</span>
+                ) : null}
+                <button
+                  type="button"
+                  onClick={handleClear}
+                  className="rounded-full px-3 py-1 text-xs font-medium text-slate-500 transition-colors hover:text-red-500 dark:text-slate-400 dark:hover:text-red-400"
+                >
+                  Clear
+                </button>
+                <button
+                  type="button"
+                  onClick={handleCopyUrl}
+                  disabled={!input}
+                  className="rounded-full bg-primary px-3 py-1 text-xs font-medium text-white transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  {copyLabel}
+                </button>
+              </>
+            ),
+          },
+        ]}
+      />
     </div>
   );
 }

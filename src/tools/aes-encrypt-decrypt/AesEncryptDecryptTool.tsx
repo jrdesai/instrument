@@ -5,12 +5,12 @@ import React, {
   useState,
 } from "react";
 import { callTool } from "../../bridge";
+import { CopyButton, PillButton, ToolbarFooter } from "../../components/tool";
 import type { AesInput } from "../../bindings/AesInput";
 import type { AesOutput } from "../../bindings/AesOutput";
 
 const RUST_COMMAND = "tool_aes_process";
 const DEBOUNCE_MS = 150;
-const COPIED_DURATION_MS = 1500;
 const MAX_PASSPHRASE_CHARS = 10_000;
 const MAX_INPUT_BYTES = 10 * 1024 * 1024; // 10 MB
 
@@ -22,7 +22,6 @@ function AesEncryptDecryptTool() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [leftPanelPercent, setLeftPanelPercent] = useState(50);
-  const [copyLabel, setCopyLabel] = useState("Copy output");
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const runProcess = useCallback(
@@ -94,18 +93,6 @@ function AesEncryptDecryptTool() {
     setOutput("");
     setError(null);
   }, []);
-
-  const handleCopy = useCallback(async () => {
-    if (!output) return;
-    try {
-      await navigator.clipboard.writeText(output);
-      setCopyLabel("Copied");
-      setTimeout(() => setCopyLabel("Copy output"), COPIED_DURATION_MS);
-    } catch {
-      setCopyLabel("Copy failed");
-      setTimeout(() => setCopyLabel("Copy output"), COPIED_DURATION_MS);
-    }
-  }, [output]);
 
   const lines = input.split("\n").length;
   const charCount = input.length;
@@ -197,102 +184,74 @@ function AesEncryptDecryptTool() {
         </div>
       </div>
 
-      <footer className="shrink-0 border-t border-border-light bg-panel-light px-4 py-3 dark:border-border-dark dark:bg-panel-dark">
-        {/* Three aligned columns: label row, control row, helper row (spacers mirror passphrase helper height). */}
-        <div className="flex flex-col gap-3 sm:flex-row sm:flex-nowrap sm:items-stretch sm:gap-4">
-          <div
-            className="flex flex-col gap-1 border-border-light pb-2 sm:border-r sm:pr-4 dark:border-border-dark sm:pb-0"
-            role="group"
-            aria-label="Mode"
-          >
-            <span className="h-4 text-xs font-medium uppercase leading-4 tracking-wider text-slate-600 dark:text-slate-400">
-              Mode
-            </span>
-            <div className="flex gap-1">
-              <button
-                type="button"
-                aria-label="Encrypt mode"
-                onClick={() => setMode("encrypt")}
-                className={`rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
-                  mode === "encrypt"
-                    ? "bg-primary text-white"
-                    : "text-slate-500 hover:bg-slate-200 dark:text-slate-400 dark:hover:bg-slate-700"
-                }`}
-              >
-                Encrypt
-              </button>
-              <button
-                type="button"
-                aria-label="Decrypt mode"
-                onClick={() => setMode("decrypt")}
-                className={`rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
-                  mode === "decrypt"
-                    ? "bg-primary text-white"
-                    : "text-slate-500 hover:bg-slate-200 dark:text-slate-400 dark:hover:bg-slate-700"
-                }`}
-              >
-                Decrypt
-              </button>
-            </div>
-            <p className="pointer-events-none select-none text-[11px] leading-snug text-transparent" aria-hidden>
-              Your passphrase and data never leave this device.
-            </p>
-          </div>
-
-          <div className="flex min-w-0 flex-1 flex-col gap-1">
-            <label
-              htmlFor="aes-passphrase"
-              className="h-4 text-xs font-medium uppercase leading-4 tracking-wider text-slate-600 dark:text-slate-400"
-            >
-              Passphrase
-            </label>
-            <input
-              id="aes-passphrase"
-              type="password"
-              autoComplete="off"
-              className="w-full rounded-lg border border-border-light bg-background-light px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-primary dark:border-border-dark dark:bg-background-dark dark:text-slate-100"
-              placeholder="Enter passphrase…"
-              value={passphrase}
-              onChange={(e) => setPassphrase(e.target.value)}
-            />
-            <p className="text-[11px] leading-snug text-slate-500 dark:text-slate-500">
-              Your passphrase and data never leave this device.
-            </p>
-          </div>
-
-          <div
-            className="flex flex-col gap-1 sm:ml-0 sm:shrink-0"
-            role="group"
-            aria-label="Actions"
-          >
-            <span className="h-4 text-xs font-medium uppercase leading-4 tracking-wider text-slate-600 dark:text-slate-400">
-              Actions
-            </span>
-            <div className="flex flex-wrap items-center gap-2">
-              <button
-                type="button"
-                aria-label="Copy output to clipboard"
-                onClick={handleCopy}
-                disabled={!output}
-                className="rounded-lg bg-primary px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                {copyLabel}
-              </button>
-              <button
-                type="button"
-                aria-label="Clear all fields"
-                onClick={handleClear}
-                className="rounded-lg px-3 py-2 text-sm text-slate-700 transition-colors hover:bg-slate-100 hover:text-primary dark:text-slate-300 dark:hover:bg-slate-700"
-              >
-                Clear
-              </button>
-            </div>
-            <p className="pointer-events-none select-none text-[11px] leading-snug text-transparent" aria-hidden>
-              Your passphrase and data never leave this device.
-            </p>
-          </div>
-        </div>
-      </footer>
+      <ToolbarFooter
+        groups={[
+          {
+            label: "Mode",
+            children: (
+              <>
+                <PillButton
+                  size="sm"
+                  active={mode === "encrypt"}
+                  onClick={() => setMode("encrypt")}
+                  aria-label="Encrypt mode"
+                >
+                  Encrypt
+                </PillButton>
+                <PillButton
+                  size="sm"
+                  active={mode === "decrypt"}
+                  onClick={() => setMode("decrypt")}
+                  aria-label="Decrypt mode"
+                >
+                  Decrypt
+                </PillButton>
+              </>
+            ),
+          },
+          {
+            label: "Passphrase",
+            className: "min-w-0 flex-1",
+            children: (
+              <div className="flex min-w-0 flex-1 flex-col gap-1">
+                <input
+                  id="aes-passphrase"
+                  type="password"
+                  autoComplete="off"
+                  className="w-full rounded-lg border border-border-light bg-background-light px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-primary dark:border-border-dark dark:bg-background-dark dark:text-slate-100"
+                  placeholder="Enter passphrase…"
+                  value={passphrase}
+                  onChange={(e) => setPassphrase(e.target.value)}
+                />
+                <p className="text-[11px] leading-snug text-slate-500 dark:text-slate-500">
+                  Your passphrase and data never leave this device.
+                </p>
+              </div>
+            ),
+          },
+          {
+            end: true,
+            children: (
+              <>
+                <CopyButton
+                  value={output || undefined}
+                  label="Copy output"
+                  variant="primary"
+                  aria-label="Copy output to clipboard"
+                />
+                <button
+                  type="button"
+                  aria-label="Clear all fields"
+                  onClick={handleClear}
+                  className="rounded-full px-3 py-1 text-xs font-medium text-slate-500 transition-colors hover:text-red-500 dark:text-slate-400 dark:hover:text-red-400"
+                >
+                  Clear
+                </button>
+              </>
+            ),
+          },
+        ]}
+      />
     </div>
   );
 }

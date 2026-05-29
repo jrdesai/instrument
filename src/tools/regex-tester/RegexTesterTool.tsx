@@ -7,6 +7,7 @@ import {
   explainPattern,
   ExplainToken,
 } from "../../hooks/useRegexExplain";
+import { ToolbarFooter } from "../../components/tool";
 import { CodeBlock } from "../../components/ui/CodeBlock";
 import { QuickReference } from "./QuickReference";
 
@@ -1155,48 +1156,56 @@ const RegexTesterTool: React.FC = () => {
         </div>
       </div>
 
-      {/* Footer actions */}
-      <div className="border-t border-border-light dark:border-border-dark px-4 py-2 flex items-center gap-4">
-        <button
-          type="button"
-          onClick={async () => {
-            if (!matches.length) return;
-            try {
-              await navigator.clipboard.writeText(
-                matches.map((m) => m.value).join("\n")
-              );
-            } catch {
-              // ignore
-            }
-          }}
-          disabled={matches.length === 0}
-          className="text-xs text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-        >
-          Copy matches
-        </button>
-        <button
-          type="button"
-          onClick={async () => {
-            if (!pattern) return;
-            try {
-              await navigator.clipboard.writeText(pattern);
-            } catch {
-              // ignore
-            }
-          }}
-          disabled={!pattern}
-          className="text-xs text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-        >
-          Copy pattern
-        </button>
-        <button
-          type="button"
-          onClick={clearAll}
-          className="ml-auto text-xs text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors"
-        >
-          Clear
-        </button>
-      </div>
+      <ToolbarFooter
+        groups={[
+          {
+            end: true,
+            children: (
+              <>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    if (!matches.length) return;
+                    try {
+                      await navigator.clipboard.writeText(
+                        matches.map((m) => m.value).join("\n")
+                      );
+                    } catch {
+                      // ignore
+                    }
+                  }}
+                  disabled={matches.length === 0}
+                  className="rounded-full border border-border-light px-3 py-1 text-xs font-medium text-slate-500 transition-colors hover:border-primary/40 hover:text-primary disabled:cursor-not-allowed disabled:opacity-40 dark:border-border-dark dark:text-slate-400"
+                >
+                  Copy matches
+                </button>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    if (!pattern) return;
+                    try {
+                      await navigator.clipboard.writeText(pattern);
+                    } catch {
+                      // ignore
+                    }
+                  }}
+                  disabled={!pattern}
+                  className="rounded-full border border-border-light px-3 py-1 text-xs font-medium text-slate-500 transition-colors hover:border-primary/40 hover:text-primary disabled:cursor-not-allowed disabled:opacity-40 dark:border-border-dark dark:text-slate-400"
+                >
+                  Copy pattern
+                </button>
+                <button
+                  type="button"
+                  onClick={clearAll}
+                  className="rounded-full px-3 py-1 text-xs font-medium text-slate-500 transition-colors hover:text-red-500 dark:text-slate-400 dark:hover:text-red-400"
+                >
+                  Clear
+                </button>
+              </>
+            ),
+          },
+        ]}
+      />
     </div>
   );
 };

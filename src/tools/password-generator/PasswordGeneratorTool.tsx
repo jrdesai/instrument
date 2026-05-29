@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { callTool } from "../../bridge";
+import { ToolbarFooter } from "../../components/tool";
 import type { PasswordInput } from "../../bindings/PasswordInput";
 import type { PasswordOutput } from "../../bindings/PasswordOutput";
 import type { PasswordStrength } from "../../bindings/PasswordStrength";
@@ -259,147 +260,161 @@ function PasswordGeneratorTool() {
           )}
         </div>
 
-        {/* Controls — directly below passwords, no dead space */}
-        <div className="border-t border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark px-4 py-3 space-y-3">
-        {/* Length row */}
-        <div className="flex items-center gap-3">
-          <span className="text-xs text-slate-600 dark:text-slate-400 uppercase tracking-wider w-20 shrink-0">
-            Length
-          </span>
-          <input
-            type="range"
-            min={4}
-            max={128}
-            step={1}
-            value={length}
-            onChange={(e) => handleLengthChange(Number(e.target.value))}
-            className="flex-1 accent-primary"
-            aria-label="Password length slider"
-          />
-          <input
-            type="number"
-            min={4}
-            max={128}
-            value={length}
-            onChange={(e) => handleLengthChange(Number(e.target.value))}
-            className="w-16 px-2 py-1 text-xs bg-background-light dark:bg-background-dark border border-border-light dark:border-border-dark rounded-lg text-center text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-primary"
-            aria-label="Password length"
-          />
-        </div>
-
-        {/* Checkboxes row */}
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-          {(
-            [
-              { label: "Uppercase", value: includeUppercase, setter: setIncludeUppercase },
-              { label: "Lowercase", value: includeLowercase, setter: setIncludeLowercase },
-              { label: "Numbers",   value: includeNumbers,   setter: setIncludeNumbers },
-            ] as const
-          ).map(({ label, value, setter }) => (
-            <label key={label} className="flex items-center gap-1.5 text-sm cursor-pointer select-none">
-              <input
-                type="checkbox"
-                checked={value}
-                onChange={(e) => setter(e.target.checked)}
-                className="accent-primary w-3.5 h-3.5"
-              />
-              <span>{label}</span>
-            </label>
-          ))}
-          <label className="flex items-center gap-1.5 text-sm cursor-pointer select-none">
-            <input
-              type="checkbox"
-              checked={includeSymbols}
-              onChange={(e) => handleToggleSymbols(e.target.checked)}
-              className="accent-primary w-3.5 h-3.5"
-            />
-            <span>Symbols</span>
-          </label>
-          <label className="flex items-center gap-1.5 text-sm cursor-pointer select-none text-slate-600 dark:text-slate-400">
-            <input
-              type="checkbox"
-              checked={excludeAmbiguous}
-              onChange={(e) => setExcludeAmbiguous(e.target.checked)}
-              className="accent-primary w-3.5 h-3.5"
-            />
-            <span>Exclude ambiguous <span className="font-mono text-xs">(0 O o 1 I l)</span></span>
-          </label>
-        </div>
-
-        {/* Symbols input — only shown when symbols enabled */}
-        {includeSymbols && (
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-slate-600 dark:text-slate-400 uppercase tracking-wider w-20 shrink-0">
-              Symbols
-            </span>
-            <input
-              type="text"
-              value={symbols}
-              onChange={(e) => setSymbols(e.target.value)}
-              placeholder={DEFAULT_SYMBOLS}
-              className="flex-1 px-2 py-1 text-xs font-mono bg-background-light dark:bg-background-dark border border-border-light dark:border-border-dark rounded-lg text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-primary"
-              aria-label="Custom symbol set"
-            />
-          </div>
-        )}
-
-        {/* Count row */}
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-slate-600 dark:text-slate-400 uppercase tracking-wider w-20 shrink-0">
-            Count
-          </span>
-          <button
-            type="button"
-            aria-label="Decrease count"
-            onClick={() => handleCountChange(count - 1)}
-            className="px-2 py-1 text-xs rounded-lg bg-background-light dark:bg-background-dark text-slate-700 dark:text-slate-300 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 border border-border-light dark:border-border-dark transition-colors"
-          >
-            –
-          </button>
-          <input
-            type="number"
-            min={1}
-            max={50}
-            value={count}
-            onChange={(e) => handleCountChange(Number(e.target.value))}
-            className="w-14 px-2 py-1 text-xs bg-background-light dark:bg-background-dark border border-border-light dark:border-border-dark rounded-lg text-center text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-primary"
-            aria-label="Number of passwords"
-          />
-          <button
-            type="button"
-            aria-label="Increase count"
-            onClick={() => handleCountChange(count + 1)}
-            className="px-2 py-1 text-xs rounded-lg bg-background-light dark:bg-background-dark text-slate-700 dark:text-slate-300 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 border border-border-light dark:border-border-dark transition-colors"
-          >
-            +
-          </button>
-        </div>
-
-        {/* Strength bar */}
-        <div className="flex items-center gap-3">
-          <span className="text-xs text-slate-600 dark:text-slate-400 uppercase tracking-wider w-20 shrink-0">
-            Strength
-          </span>
-          <div className="flex gap-1" aria-label={`Password strength: ${strengthLabel(strength)}`}>
-            {Array.from({ length: 5 }, (_, i) => (
-              <div
-                key={i}
-                className={`h-2 w-8 rounded-full transition-colors ${
-                  i < filled
-                    ? color
-                    : "bg-slate-200 dark:bg-slate-700"
-                }`}
-              />
-            ))}
-          </div>
-          <span className="text-xs font-medium text-slate-700 dark:text-slate-300">
-            {strengthLabel(strength)}
-          </span>
-          <span className="text-xs text-slate-500 dark:text-slate-400">
-            · {entropyBits.toFixed(1)} bits · {alphabetSize} chars
-          </span>
-        </div>
-        </div> {/* end controls */}
+        <ToolbarFooter
+          groups={[
+            {
+              label: "Length",
+              className: "min-w-[12rem] flex-1",
+              children: (
+                <div className="flex min-w-0 flex-1 items-center gap-2">
+                  <input
+                    type="range"
+                    min={4}
+                    max={128}
+                    step={1}
+                    value={length}
+                    onChange={(e) => handleLengthChange(Number(e.target.value))}
+                    className="min-w-0 flex-1 accent-primary"
+                    aria-label="Password length slider"
+                  />
+                  <input
+                    type="number"
+                    min={4}
+                    max={128}
+                    value={length}
+                    onChange={(e) => handleLengthChange(Number(e.target.value))}
+                    className="w-16 rounded-lg border border-border-light bg-background-light px-2 py-1 text-center text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-primary dark:border-border-dark dark:bg-background-dark dark:text-slate-100"
+                    aria-label="Password length"
+                  />
+                </div>
+              ),
+            },
+            {
+              label: "Options",
+              children: (
+                <>
+                  {(
+                    [
+                      { label: "Uppercase", value: includeUppercase, setter: setIncludeUppercase },
+                      { label: "Lowercase", value: includeLowercase, setter: setIncludeLowercase },
+                      { label: "Numbers", value: includeNumbers, setter: setIncludeNumbers },
+                    ] as const
+                  ).map(({ label, value, setter }) => (
+                    <label
+                      key={label}
+                      className="flex cursor-pointer select-none items-center gap-1.5 text-sm"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={value}
+                        onChange={(e) => setter(e.target.checked)}
+                        className="h-3.5 w-3.5 accent-primary"
+                      />
+                      <span>{label}</span>
+                    </label>
+                  ))}
+                  <label className="flex cursor-pointer select-none items-center gap-1.5 text-sm">
+                    <input
+                      type="checkbox"
+                      checked={includeSymbols}
+                      onChange={(e) => handleToggleSymbols(e.target.checked)}
+                      className="h-3.5 w-3.5 accent-primary"
+                    />
+                    <span>Symbols</span>
+                  </label>
+                  <label className="flex cursor-pointer select-none items-center gap-1.5 text-sm text-slate-600 dark:text-slate-400">
+                    <input
+                      type="checkbox"
+                      checked={excludeAmbiguous}
+                      onChange={(e) => setExcludeAmbiguous(e.target.checked)}
+                      className="h-3.5 w-3.5 accent-primary"
+                    />
+                    <span>
+                      Exclude ambiguous{" "}
+                      <span className="font-mono text-xs">(0 O o 1 I l)</span>
+                    </span>
+                  </label>
+                </>
+              ),
+            },
+            ...(includeSymbols
+              ? [
+                  {
+                    label: "Symbols",
+                    className: "min-w-0 flex-1",
+                    children: (
+                      <input
+                        type="text"
+                        value={symbols}
+                        onChange={(e) => setSymbols(e.target.value)}
+                        placeholder={DEFAULT_SYMBOLS}
+                        className="min-w-[8rem] flex-1 rounded-lg border border-border-light bg-background-light px-2 py-1 font-mono text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-primary dark:border-border-dark dark:bg-background-dark dark:text-slate-100"
+                        aria-label="Custom symbol set"
+                      />
+                    ),
+                  },
+                ]
+              : []),
+            {
+              label: "Count",
+              children: (
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    aria-label="Decrease count"
+                    onClick={() => handleCountChange(count - 1)}
+                    className="rounded-lg border border-border-light bg-background-light px-2 py-1 text-xs text-slate-700 transition-colors hover:bg-slate-100 hover:text-primary dark:border-border-dark dark:bg-background-dark dark:text-slate-300 dark:hover:bg-slate-700"
+                  >
+                    –
+                  </button>
+                  <input
+                    type="number"
+                    min={1}
+                    max={50}
+                    value={count}
+                    onChange={(e) => handleCountChange(Number(e.target.value))}
+                    className="w-14 rounded-lg border border-border-light bg-background-light px-2 py-1 text-center text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-primary dark:border-border-dark dark:bg-background-dark dark:text-slate-100"
+                    aria-label="Number of passwords"
+                  />
+                  <button
+                    type="button"
+                    aria-label="Increase count"
+                    onClick={() => handleCountChange(count + 1)}
+                    className="rounded-lg border border-border-light bg-background-light px-2 py-1 text-xs text-slate-700 transition-colors hover:bg-slate-100 hover:text-primary dark:border-border-dark dark:bg-background-dark dark:text-slate-300 dark:hover:bg-slate-700"
+                  >
+                    +
+                  </button>
+                </div>
+              ),
+            },
+            {
+              label: "Strength",
+              children: (
+                <>
+                  <div
+                    className="flex gap-1"
+                    aria-label={`Password strength: ${strengthLabel(strength)}`}
+                  >
+                    {Array.from({ length: 5 }, (_, i) => (
+                      <div
+                        key={i}
+                        className={`h-2 w-8 rounded-full transition-colors ${
+                          i < filled ? color : "bg-slate-200 dark:bg-slate-700"
+                        }`}
+                      />
+                    ))}
+                  </div>
+                  <span className="text-xs font-medium text-slate-700 dark:text-slate-300">
+                    {strengthLabel(strength)}
+                  </span>
+                  <span className="text-xs text-slate-500 dark:text-slate-400">
+                    · {entropyBits.toFixed(1)} bits · {alphabetSize} chars
+                  </span>
+                </>
+              ),
+            },
+          ]}
+        />
       </div> {/* end scrollable body */}
     </div>
   );

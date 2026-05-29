@@ -6,6 +6,7 @@ import {
   useState,
 } from "react";
 import { callTool } from "../../bridge";
+import { ToolbarFooter } from "../../components/tool";
 import { FormatHint } from "../../components/ui/FormatHint";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { extractErrorMessage } from "../../lib/extractErrorMessage";
@@ -407,27 +408,35 @@ function TimezoneConverterTool() {
         )}
       </div>
 
-      {/* Footer */}
-      <footer className="flex items-center gap-4 px-4 py-3 border-t border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0">
-        <button
-          type="button"
-          onClick={handleCopyAll}
-          disabled={!displayOutput}
-          className="px-3 py-2 text-xs font-medium bg-panel-light dark:bg-panel-dark text-slate-700 dark:text-slate-300 border border-border-light dark:border-border-dark rounded-lg hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-        >
-          {copyAllLabel}
-        </button>
-        <button
-          type="button"
-          onClick={handleClear}
-          className="px-4 py-2 text-sm bg-panel-light dark:bg-panel-dark text-slate-500 dark:text-slate-400 border border-border-light dark:border-border-dark rounded-lg hover:text-slate-800 dark:hover:text-slate-200 hover:border-slate-400 dark:hover:border-slate-500 transition-colors"
-        >
-          Clear
-        </button>
-        {isLoading && (
-          <span className="ml-auto text-xs text-primary">Processing…</span>
-        )}
-      </footer>
+      <ToolbarFooter
+        groups={[
+          {
+            end: true,
+            children: (
+              <>
+                <button
+                  type="button"
+                  onClick={handleCopyAll}
+                  disabled={!displayOutput}
+                  className="rounded-full border border-border-light px-3 py-1 text-xs font-medium text-slate-500 transition-colors hover:border-primary/40 hover:text-primary disabled:cursor-not-allowed disabled:opacity-40 dark:border-border-dark dark:text-slate-400"
+                >
+                  {copyAllLabel}
+                </button>
+                <button
+                  type="button"
+                  onClick={handleClear}
+                  className="rounded-full px-3 py-1 text-xs font-medium text-slate-500 transition-colors hover:text-red-500 dark:text-slate-400 dark:hover:text-red-400"
+                >
+                  Clear
+                </button>
+                {isLoading ? (
+                  <span className="text-xs text-primary">Processing…</span>
+                ) : null}
+              </>
+            ),
+          },
+        ]}
+      />
     </div>
   );
 }

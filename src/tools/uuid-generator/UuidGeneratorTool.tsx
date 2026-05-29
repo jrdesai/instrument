@@ -5,6 +5,7 @@ import {
   useState,
 } from "react";
 import { callTool } from "../../bridge";
+import { PillButton, ToolbarFooter } from "../../components/tool";
 import type { UuidInput } from "../../bindings/UuidInput";
 import type { UuidInspectInput } from "../../bindings/UuidInspectInput";
 import type { UuidInspectOutput } from "../../bindings/UuidInspectOutput";
@@ -287,160 +288,137 @@ function UuidGeneratorTool() {
             )}
           </div>
 
-          {/* Footer controls */}
-          <footer className="flex items-end gap-2 px-4 py-3 border-t border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0">
-            {/* Version */}
-            <div
-              className="flex flex-col gap-1"
-              role="group"
-              aria-label="UUID version"
-            >
-              <span className="text-slate-600 text-xs uppercase tracking-wider">
-                Version
-              </span>
-              <div className="flex items-center gap-1">
-                <button
-                  type="button"
-                  onClick={() => setVersion("v1")}
-                  className={`px-3 py-1 text-xs font-medium rounded-full transition-colors ${
-                    version === "v1"
-                      ? "bg-primary text-white"
-                      : "text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
-                  }`}
-                >
-                  V1
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setVersion("v4")}
-                  className={`px-3 py-1 text-xs font-medium rounded-full transition-colors ${
-                    version === "v4"
-                      ? "bg-primary text-white"
-                      : "text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
-                  }`}
-                >
-                  V4 — Random
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setVersion("v7")}
-                  className={`px-3 py-1 text-xs font-medium rounded-full transition-colors ${
-                    version === "v7"
-                      ? "bg-primary text-white"
-                      : "text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
-                  }`}
-                >
-                  V7 — Time-ordered
-                </button>
-              </div>
-              {version === "v1" && (
-                <span className="text-slate-500 text-xs">
-                  Time-based · Fixed node
-                </span>
-              )}
-            </div>
-
-            <div className="w-px h-6 bg-border-light dark:bg-border-dark self-center mx-3" />
-
-            {/* Count */}
-            <div className="flex flex-col gap-1" role="group" aria-label="Count">
-              <span className="text-slate-600 text-xs uppercase tracking-wider">
-                Count
-              </span>
-              <div className="flex items-center gap-1">
-                <button
-                  type="button"
-                  aria-label="Decrease count"
-                  onClick={() => handleCountChange(count - 1)}
-                  className="px-2 py-1 text-xs rounded-lg bg-background-light dark:bg-background-dark text-slate-700 dark:text-slate-300 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
-                >
-                  -
-                </button>
-                <input
-                  type="number"
-                  min={1}
-                  max={100}
-                  value={count}
-                  onChange={(e) => handleCountChange(Number(e.target.value))}
-                  className="w-16 px-2 py-1 text-xs bg-background-light dark:bg-background-dark border border-border-light dark:border-border-dark rounded-lg text-center text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-primary"
-                />
-                <button
-                  type="button"
-                  aria-label="Increase count"
-                  onClick={() => handleCountChange(count + 1)}
-                  className="px-2 py-1 text-xs rounded-lg bg-background-light dark:bg-background-dark text-slate-700 dark:text-slate-300 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
-                >
-                  +
-                </button>
-              </div>
-            </div>
-
-            <div className="w-px h-6 bg-border-light dark:bg-border-dark self-center mx-3" />
-
-            {/* Options */}
-            <div className="flex flex-col gap-1" role="group" aria-label="Options">
-              <span className="text-slate-600 text-xs uppercase tracking-wider">
-                Options
-              </span>
-              <div className="flex items-center gap-2">
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    aria-label="Uppercase UUIDs (A–F)"
-                    checked={uppercase}
-                    onChange={(e) => setUppercase(e.target.checked)}
-                    className="rounded border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark text-primary focus:ring-primary"
-                  />
-                  <span className="text-xs text-slate-700 dark:text-slate-300">Uppercase</span>
-                </label>
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    aria-label="Include hyphens"
-                    checked={includeHyphens}
-                    onChange={(e) => setIncludeHyphens(e.target.checked)}
-                    className="rounded border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark text-primary focus:ring-primary"
-                  />
-                  <span className="text-xs text-slate-700 dark:text-slate-300">Include hyphens</span>
-                </label>
-              </div>
-            </div>
-
-            <div className="w-px h-6 bg-border-light dark:bg-border-dark self-center mx-3" />
-
-            {/* Actions (no label) */}
-            <div
-              className="flex flex-col gap-1 ml-auto"
-              role="group"
-              aria-label="Actions"
-            >
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={handleGenerate}
-                  className="px-4 py-2 text-sm font-medium bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
-                  disabled={isLoading}
-                >
-                  {isLoading && (
-                    <span
-                      className="w-3 h-3 rounded-full border-2 border-border-dark border-t-white animate-spin"
-                      aria-hidden
+          <ToolbarFooter
+            groups={[
+              {
+                label: "Version",
+                ariaLabel: "UUID version",
+                children: (
+                  <div className="flex flex-col gap-1">
+                    <div className="flex items-center gap-1">
+                      <PillButton
+                        size="sm"
+                        active={version === "v1"}
+                        onClick={() => setVersion("v1")}
+                      >
+                        V1
+                      </PillButton>
+                      <PillButton
+                        size="sm"
+                        active={version === "v4"}
+                        onClick={() => setVersion("v4")}
+                      >
+                        V4 — Random
+                      </PillButton>
+                      <PillButton
+                        size="sm"
+                        active={version === "v7"}
+                        onClick={() => setVersion("v7")}
+                      >
+                        V7 — Time-ordered
+                      </PillButton>
+                    </div>
+                    {version === "v1" && (
+                      <span className="text-xs text-slate-500">
+                        Time-based · Fixed node
+                      </span>
+                    )}
+                  </div>
+                ),
+              },
+              {
+                label: "Count",
+                children: (
+                  <div className="flex items-center gap-1">
+                    <button
+                      type="button"
+                      aria-label="Decrease count"
+                      onClick={() => handleCountChange(count - 1)}
+                      className="rounded-lg bg-background-light px-2 py-1 text-xs text-slate-700 transition-colors hover:text-primary dark:bg-background-dark dark:text-slate-300"
+                    >
+                      -
+                    </button>
+                    <input
+                      type="number"
+                      min={1}
+                      max={100}
+                      value={count}
+                      onChange={(e) => handleCountChange(Number(e.target.value))}
+                      className="w-16 rounded-lg border border-border-light bg-background-light px-2 py-1 text-center text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-primary dark:border-border-dark dark:bg-background-dark dark:text-slate-100"
                     />
-                  )}
-                  {isLoading ? "Generating..." : "Generate"}
-                </button>
-                <button
-                  type="button"
-                  onClick={handleCopyAll}
-                  disabled={!uuids.length}
-                  className="px-3 py-2 text-xs font-medium bg-panel-light dark:bg-panel-dark text-slate-700 dark:text-slate-300 border border-border-light dark:border-border-dark rounded-lg hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                >
-                  {copyAllLabel}
-                </button>
-
-              </div>
-            </div>
-          </footer>
+                    <button
+                      type="button"
+                      aria-label="Increase count"
+                      onClick={() => handleCountChange(count + 1)}
+                      className="rounded-lg bg-background-light px-2 py-1 text-xs text-slate-700 transition-colors hover:text-primary dark:bg-background-dark dark:text-slate-300"
+                    >
+                      +
+                    </button>
+                  </div>
+                ),
+              },
+              {
+                label: "Options",
+                children: (
+                  <>
+                    <label className="flex cursor-pointer items-center gap-2">
+                      <input
+                        type="checkbox"
+                        aria-label="Uppercase UUIDs (A–F)"
+                        checked={uppercase}
+                        onChange={(e) => setUppercase(e.target.checked)}
+                        className="rounded border-border-light bg-background-light text-primary focus:ring-primary dark:border-border-dark dark:bg-background-dark"
+                      />
+                      <span className="text-xs text-slate-700 dark:text-slate-300">
+                        Uppercase
+                      </span>
+                    </label>
+                    <label className="flex cursor-pointer items-center gap-2">
+                      <input
+                        type="checkbox"
+                        aria-label="Include hyphens"
+                        checked={includeHyphens}
+                        onChange={(e) => setIncludeHyphens(e.target.checked)}
+                        className="rounded border-border-light bg-background-light text-primary focus:ring-primary dark:border-border-dark dark:bg-background-dark"
+                      />
+                      <span className="text-xs text-slate-700 dark:text-slate-300">
+                        Include hyphens
+                      </span>
+                    </label>
+                  </>
+                ),
+              },
+              {
+                end: true,
+                children: (
+                  <>
+                    <button
+                      type="button"
+                      onClick={handleGenerate}
+                      disabled={isLoading}
+                      className="flex items-center gap-2 rounded-full bg-primary px-4 py-1.5 text-xs font-medium text-white transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      {isLoading && (
+                        <span
+                          className="h-3 w-3 animate-spin rounded-full border-2 border-border-dark border-t-white"
+                          aria-hidden
+                        />
+                      )}
+                      {isLoading ? "Generating..." : "Generate"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleCopyAll}
+                      disabled={!uuids.length}
+                      className="rounded-full border border-border-light px-3 py-1 text-xs font-medium text-slate-500 transition-colors hover:border-primary/40 hover:text-primary disabled:cursor-not-allowed disabled:opacity-40 dark:border-border-dark dark:text-slate-400"
+                    >
+                      {copyAllLabel}
+                    </button>
+                  </>
+                ),
+              },
+            ]}
+          />
         </>
       )}
 

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { callTool } from "../../bridge";
-import { CopyButton } from "../../components/tool";
+import { CopyButton, ToolbarFooter } from "../../components/tool";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import type { ExprEvalInput } from "../../bindings/ExprEvalInput";
 import type { ExprEvalOutput } from "../../bindings/ExprEvalOutput";
@@ -116,29 +116,32 @@ function ExpressionEvaluatorTool() {
         </div>
       </div>
 
-      {/* Footer */}
-      <footer className="shrink-0 border-t border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark px-4 py-3">
-        <div className="flex items-center gap-6 text-xs text-slate-500 dark:text-slate-400">
-          <div className="flex items-center gap-2 ml-auto">
-            <CopyButton
-              value={
-                output?.success && output.result ? output.result : undefined
-              }
-              label="Copy"
-              variant="primary"
-              className="py-1.5 text-[11px] font-semibold uppercase tracking-wider"
-            />
-            <button
-              type="button"
-              onClick={handleClear}
-              disabled={isEmpty && !output}
-              className="px-3 py-1.5 rounded-md border border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark text-[11px] font-semibold uppercase tracking-wider disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-100 dark:hover:bg-white/5 transition-colors"
-            >
-              Clear
-            </button>
-          </div>
-        </div>
-      </footer>
+      <ToolbarFooter
+        groups={[
+          {
+            end: true,
+            children: (
+              <>
+                <CopyButton
+                  value={
+                    output?.success && output.result ? output.result : undefined
+                  }
+                  label="Copy"
+                  variant="primary"
+                />
+                <button
+                  type="button"
+                  onClick={handleClear}
+                  disabled={isEmpty && !output}
+                  className="rounded-full px-3 py-1 text-xs font-medium text-slate-500 transition-colors hover:text-red-500 disabled:cursor-not-allowed disabled:opacity-40 dark:text-slate-400 dark:hover:text-red-400"
+                >
+                  Clear
+                </button>
+              </>
+            ),
+          },
+        ]}
+      />
     </div>
   );
 }

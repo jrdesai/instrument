@@ -4,7 +4,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { CopyButton, PillButton } from "../../components/tool";
+import { CopyButton, PillButton, ToolbarFooter } from "../../components/tool";
 import { callTool } from "../../bridge";
 import { extractErrorMessage } from "../../lib/extractErrorMessage";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
@@ -188,52 +188,62 @@ function NatoPhoneticTool() {
         </div>
       </div>
 
-      <footer className="flex shrink-0 items-center gap-4 border-t border-border-light bg-panel-light px-4 py-2 dark:border-border-dark dark:bg-panel-dark">
-        <div className="flex items-center gap-1" role="group" aria-label="Encode or decode mode">
-          <PillButton
-            active={mode === "encode"}
-            onClick={() => setMode("encode")}
-            aria-label="Encode mode"
-          >
-            Encode
-          </PillButton>
-          <PillButton
-            active={mode === "decode"}
-            onClick={() => setMode("decode")}
-            aria-label="Decode mode"
-          >
-            Decode
-          </PillButton>
-        </div>
-
-        <button
-          type="button"
-          aria-label="Swap input and output"
-          onClick={handleSwap}
-          className="rounded-lg px-3 py-1 text-sm text-slate-700 transition-colors hover:bg-slate-100 hover:text-primary dark:text-slate-300 dark:hover:bg-slate-700"
-        >
-          Swap
-        </button>
-
-        <button
-          type="button"
-          aria-label="Clear input and output"
-          onClick={handleClear}
-          className="rounded-lg px-3 py-1 text-sm text-slate-700 transition-colors hover:bg-slate-100 hover:text-primary dark:text-slate-300 dark:hover:bg-slate-700"
-        >
-          Clear
-        </button>
-
-        <div className="ml-auto">
-          <CopyButton
-            value={output || undefined}
-            label="Copy"
-            variant="primary"
-            className="py-1"
-            aria-label="Copy output to clipboard"
-          />
-        </div>
-      </footer>
+      <ToolbarFooter
+        groups={[
+          {
+            label: "Mode",
+            children: (
+              <>
+                <PillButton
+                  size="sm"
+                  active={mode === "encode"}
+                  onClick={() => setMode("encode")}
+                  aria-label="Encode mode"
+                >
+                  Encode
+                </PillButton>
+                <PillButton
+                  size="sm"
+                  active={mode === "decode"}
+                  onClick={() => setMode("decode")}
+                  aria-label="Decode mode"
+                >
+                  Decode
+                </PillButton>
+              </>
+            ),
+          },
+          {
+            end: true,
+            children: (
+              <>
+                <button
+                  type="button"
+                  aria-label="Swap input and output"
+                  onClick={handleSwap}
+                  className="rounded-full border border-border-light px-3 py-1 text-xs font-medium text-slate-500 transition-colors hover:border-primary/40 hover:text-primary dark:border-border-dark dark:text-slate-400"
+                >
+                  Swap
+                </button>
+                <button
+                  type="button"
+                  aria-label="Clear input and output"
+                  onClick={handleClear}
+                  className="rounded-full px-3 py-1 text-xs font-medium text-slate-500 transition-colors hover:text-red-500 dark:text-slate-400 dark:hover:text-red-400"
+                >
+                  Clear
+                </button>
+                <CopyButton
+                  value={output || undefined}
+                  label="Copy"
+                  variant="primary"
+                  aria-label="Copy output to clipboard"
+                />
+              </>
+            ),
+          },
+        ]}
+      />
     </div>
   );
 }

@@ -5,6 +5,7 @@ import {
   useState,
   type ChangeEvent,
 } from "react";
+import { ToolbarFooter } from "../../components/tool";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useFileDrop } from "../../hooks/useFileDrop";
 
@@ -245,17 +246,22 @@ export default function HtmlPreviewerTool() {
         )}
       </div>
 
-      <div className="flex shrink-0 items-center gap-3 border-t border-border-light bg-panel-light px-4 py-1.5 dark:border-border-dark dark:bg-panel-dark">
-        {fileDropError ? (
-          <span className="text-xs text-red-600 dark:text-red-400">{fileDropError}</span>
-        ) : (
-          <span className="text-xs tabular-nums text-slate-400 dark:text-slate-500">
-            {isEmpty
-              ? "Empty"
-              : `${charCount.toLocaleString()} chars · ${lineCount.toLocaleString()} lines`}
-          </span>
-        )}
-      </div>
+      <ToolbarFooter
+        groups={[
+          {
+            label: "Document",
+            children: fileDropError ? (
+              <span className="text-xs text-red-600 dark:text-red-400">{fileDropError}</span>
+            ) : (
+              <span className="text-xs tabular-nums text-slate-400 dark:text-slate-500">
+                {isEmpty
+                  ? "Empty"
+                  : `${charCount.toLocaleString()} chars · ${lineCount.toLocaleString()} lines`}
+              </span>
+            ),
+          },
+        ]}
+      />
     </div>
   );
 }

@@ -5,6 +5,7 @@ import {
   useState,
 } from "react";
 import { callTool } from "../../bridge";
+import { ToolbarFooter } from "../../components/tool";
 import type { UlidInput } from "../../bindings/UlidInput";
 import type { UlidInspectInput } from "../../bindings/UlidInspectInput";
 import type { UlidInspectOutput } from "../../bindings/UlidInspectOutput";
@@ -272,74 +273,85 @@ function UlidGeneratorTool() {
             )}
           </div>
 
-          {/* Footer controls */}
-          <footer className="flex items-center gap-4 px-4 py-3 border-t border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0">
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-slate-500 dark:text-slate-400">Count</span>
-              <div className="flex items-center gap-1">
-                <button
-                  type="button"
-                  aria-label="Decrease count"
-                  onClick={() => handleCountChange(count - 1)}
-                  className="px-2 py-1 text-xs rounded-lg bg-background-light dark:bg-background-dark text-slate-700 dark:text-slate-300 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
-                >
-                  -
-                </button>
-                <input
-                  type="number"
-                  min={1}
-                  max={100}
-                  value={count}
-                  onChange={(e) => handleCountChange(Number(e.target.value))}
-                  className="w-16 px-2 py-1 text-xs bg-background-light dark:bg-background-dark border border-border-light dark:border-border-dark rounded-lg text-center text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-primary"
-                />
-                <button
-                  type="button"
-                  aria-label="Increase count"
-                  onClick={() => handleCountChange(count + 1)}
-                  className="px-2 py-1 text-xs rounded-lg bg-background-light dark:bg-background-dark text-slate-700 dark:text-slate-300 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
-                >
-                  +
-                </button>
-              </div>
-            </div>
-
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                aria-label="Uppercase ULIDs"
-                checked={uppercase}
-                onChange={(e) => setUppercase(e.target.checked)}
-                className="rounded border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark text-primary focus:ring-primary"
-              />
-              <span className="text-xs text-slate-700 dark:text-slate-300">Uppercase</span>
-            </label>
-
-            <button
-              type="button"
-              onClick={handleGenerate}
-              className="ml-auto px-4 py-2 text-sm font-medium bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
-              disabled={isLoading}
-            >
-              {isLoading && (
-                <span
-                  className="w-3 h-3 rounded-full border-2 border-border-dark border-t-white animate-spin"
-                  aria-hidden
-                />
-              )}
-              {isLoading ? "Generating..." : "Generate"}
-            </button>
-
-            <button
-              type="button"
-              onClick={handleCopyAll}
-              disabled={!ulids.length}
-              className="px-3 py-2 text-xs font-medium bg-panel-light dark:bg-panel-dark text-slate-700 dark:text-slate-300 border border-border-light dark:border-border-dark rounded-lg hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              {copyAllLabel}
-            </button>
-
-          </footer>
+          <ToolbarFooter
+            groups={[
+              {
+                label: "Count",
+                children: (
+                  <div className="flex items-center gap-1">
+                    <button
+                      type="button"
+                      aria-label="Decrease count"
+                      onClick={() => handleCountChange(count - 1)}
+                      className="rounded-lg border border-border-light bg-background-light px-2 py-1 text-xs text-slate-700 transition-colors hover:text-primary dark:border-border-dark dark:bg-background-dark dark:text-slate-300"
+                    >
+                      -
+                    </button>
+                    <input
+                      type="number"
+                      min={1}
+                      max={100}
+                      value={count}
+                      onChange={(e) => handleCountChange(Number(e.target.value))}
+                      className="w-16 rounded-lg border border-border-light bg-background-light px-2 py-1 text-center text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-primary dark:border-border-dark dark:bg-background-dark dark:text-slate-100"
+                    />
+                    <button
+                      type="button"
+                      aria-label="Increase count"
+                      onClick={() => handleCountChange(count + 1)}
+                      className="rounded-lg border border-border-light bg-background-light px-2 py-1 text-xs text-slate-700 transition-colors hover:text-primary dark:border-border-dark dark:bg-background-dark dark:text-slate-300"
+                    >
+                      +
+                    </button>
+                  </div>
+                ),
+              },
+              {
+                label: "Options",
+                children: (
+                  <label className="flex cursor-pointer items-center gap-2">
+                    <input
+                      type="checkbox"
+                      aria-label="Uppercase ULIDs"
+                      checked={uppercase}
+                      onChange={(e) => setUppercase(e.target.checked)}
+                      className="rounded border-border-light bg-background-light text-primary focus:ring-primary dark:border-border-dark dark:bg-background-dark"
+                    />
+                    <span className="text-xs text-slate-700 dark:text-slate-300">Uppercase</span>
+                  </label>
+                ),
+              },
+              {
+                end: true,
+                children: (
+                  <>
+                    <button
+                      type="button"
+                      onClick={handleGenerate}
+                      className="flex items-center gap-2 rounded-full bg-primary px-4 py-1.5 text-xs font-medium text-white transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
+                      disabled={isLoading}
+                    >
+                      {isLoading ? (
+                        <span
+                          className="h-3 w-3 animate-spin rounded-full border-2 border-white/30 border-t-white"
+                          aria-hidden
+                        />
+                      ) : null}
+                      {isLoading ? "Generating..." : "Generate"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleCopyAll}
+                      disabled={!ulids.length}
+                      className="rounded-full border border-border-light px-3 py-1 text-xs font-medium text-slate-500 transition-colors hover:border-primary/40 hover:text-primary disabled:cursor-not-allowed disabled:opacity-40 dark:border-border-dark dark:text-slate-400"
+                    >
+                      {copyAllLabel}
+                    </button>
+                  </>
+                ),
+              },
+            ]}
+          />
         </>
       )}
 

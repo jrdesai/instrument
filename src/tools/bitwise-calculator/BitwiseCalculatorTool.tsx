@@ -5,7 +5,7 @@ import {
   useState,
 } from "react";
 import { callTool } from "../../bridge";
-import { CopyButton } from "../../components/tool";
+import { CopyButton, PillButton, ToolbarFooter } from "../../components/tool";
 import { useDraftInput, useRestoreDraft } from "../../hooks/useDraftInput";
 import { extractErrorMessage } from "../../lib/extractErrorMessage";
 import { useHistoryStore } from "../../store";
@@ -364,71 +364,58 @@ function BitwiseCalculatorTool() {
         )}
       </div>
 
-      {/* Footer: Bit Width | Shift | Actions */}
-      <footer className="flex items-end gap-2 px-4 py-3 border-t border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0">
-        {/* Bit Width */}
-        <div className="flex flex-col gap-1" role="group" aria-label="Bit width">
-          <span className="text-slate-600 text-xs uppercase tracking-wider">
-            Bit Width
-          </span>
-          <div className="flex items-center gap-1">
-            {BIT_WIDTH_OPTIONS.map(({ id, label }) => (
-              <button
-                key={id}
-                type="button"
-                onClick={() => setBitWidth(id)}
-                className={`px-2 py-1 text-xs font-medium rounded transition-colors ${
-                  bitWidth === id
-                    ? "bg-primary text-white"
-                    : "bg-panel-light dark:bg-panel-dark text-slate-500 dark:text-slate-400 border border-border-light dark:border-border-dark hover:text-slate-800 dark:hover:text-slate-200"
-                }`}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className="w-px h-6 bg-border-light dark:bg-border-dark self-center mx-3" />
-
-        {/* Shift */}
-        <div className="flex flex-col gap-1" role="group" aria-label="Shift">
-          <span className="text-slate-600 text-xs uppercase tracking-wider">
-            Shift
-          </span>
-          <input
-            type="number"
-            min={0}
-            max={maxShift}
-            aria-label="Shift amount"
-            value={shiftAmount}
-            onChange={(e) => setShiftAmount(parseInt(e.target.value, 10) || 0)}
-            className="w-20 px-2 py-1 bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-mono text-sm border border-border-light dark:border-border-dark rounded focus:ring-1 focus:ring-primary"
-          />
-        </div>
-
-        <div className="w-px h-6 bg-border-light dark:bg-border-dark self-center mx-3" />
-
-        {/* Actions (no label) */}
-        <div
-          className="flex flex-col gap-1 ml-auto"
-          role="group"
-          aria-label="Actions"
-        >
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={handleClear}
-              className="px-4 py-2 text-sm bg-panel-light dark:bg-panel-dark text-slate-500 dark:text-slate-400 border border-border-light dark:border-border-dark rounded-lg hover:text-slate-800 dark:hover:text-slate-200 hover:border-slate-400 dark:hover:border-slate-500 transition-colors"
-            >
-              Clear
-            </button>
-            {isLoading && (
-              <span className="text-xs text-primary">Processing…</span>
-            )}
-          </div>
-        </div>
-      </footer>
+      <ToolbarFooter
+        groups={[
+          {
+            label: "Bit width",
+            children: (
+              <>
+                {BIT_WIDTH_OPTIONS.map(({ id, label }) => (
+                  <PillButton
+                    key={id}
+                    size="sm"
+                    active={bitWidth === id}
+                    onClick={() => setBitWidth(id)}
+                  >
+                    {label}
+                  </PillButton>
+                ))}
+              </>
+            ),
+          },
+          {
+            label: "Shift",
+            children: (
+              <input
+                type="number"
+                min={0}
+                max={maxShift}
+                aria-label="Shift amount"
+                value={shiftAmount}
+                onChange={(e) => setShiftAmount(parseInt(e.target.value, 10) || 0)}
+                className="w-20 rounded border border-border-light bg-background-light px-2 py-1 font-mono text-sm text-slate-900 focus:ring-1 focus:ring-primary dark:border-border-dark dark:bg-background-dark dark:text-slate-100"
+              />
+            ),
+          },
+          {
+            end: true,
+            children: (
+              <>
+                <button
+                  type="button"
+                  onClick={handleClear}
+                  className="rounded-full px-3 py-1 text-xs font-medium text-slate-500 transition-colors hover:text-red-500 dark:text-slate-400 dark:hover:text-red-400"
+                >
+                  Clear
+                </button>
+                {isLoading ? (
+                  <span className="text-xs text-primary">Processing…</span>
+                ) : null}
+              </>
+            ),
+          },
+        ]}
+      />
     </div>
   );
 }

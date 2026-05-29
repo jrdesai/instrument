@@ -7,7 +7,7 @@ import {
 import { callTool } from "../../bridge";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useHistoryStore } from "../../store";
-import { CopyButton } from "../../components/tool";
+import { CopyButton, ToolbarFooter } from "../../components/tool";
 import { CodeBlock } from "../../components/ui/CodeBlock";
 import type { JsonValidateInput } from "../../bindings/JsonValidateInput";
 import type { JsonValidateOutput } from "../../bindings/JsonValidateOutput";
@@ -404,38 +404,32 @@ function JsonValidatorTool() {
         </div>
       </div>
 
-      {/* Footer — actions only */}
-      <footer className="flex items-end gap-2 px-4 py-3 border-t border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0">
-        <div
-          className="flex flex-col gap-1 ml-auto"
-          role="group"
-          aria-label="Actions"
-        >
-          <div className="flex items-center gap-2">
-            <CopyButton
-              value={inputValue || undefined}
-              label="Copy Input"
-              variant="outline"
-              className="py-2 text-xs"
-            />
-            {isValid && output?.formatted ? (
-              <CopyButton
-                value={output.formatted}
-                label="Copy"
-                variant="primary"
-                className="py-2 text-xs"
-              />
-            ) : null}
-            <button
-              type="button"
-              onClick={handleClear}
-              className="px-4 py-2 text-sm bg-panel-light dark:bg-panel-dark text-slate-500 dark:text-slate-400 border border-border-light dark:border-border-dark rounded-lg hover:text-slate-800 dark:hover:text-slate-200 hover:border-slate-400 dark:hover:border-slate-500 transition-colors"
-            >
-              Clear
-            </button>
-          </div>
-        </div>
-      </footer>
+      <ToolbarFooter
+        groups={[
+          {
+            end: true,
+            children: (
+              <>
+                <CopyButton
+                  value={inputValue || undefined}
+                  label="Copy Input"
+                  variant="outline"
+                />
+                {isValid && output?.formatted ? (
+                  <CopyButton value={output.formatted} label="Copy" variant="primary" />
+                ) : null}
+                <button
+                  type="button"
+                  onClick={handleClear}
+                  className="rounded-full px-3 py-1 text-xs font-medium text-slate-500 transition-colors hover:text-red-500 dark:text-slate-400 dark:hover:text-red-400"
+                >
+                  Clear
+                </button>
+              </>
+            ),
+          },
+        ]}
+      />
     </div>
   );
 }

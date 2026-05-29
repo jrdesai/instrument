@@ -6,7 +6,7 @@ import {
   useState,
 } from "react";
 import { callTool } from "../../bridge";
-import { CopyButton } from "../../components/tool";
+import { CopyButton, ToolbarFooter } from "../../components/tool";
 import { CodeBlock } from "../../components/ui/CodeBlock";
 import { useDraftInput, useRestoreDraft } from "../../hooks/useDraftInput";
 import { useHistoryStore } from "../../store";
@@ -367,23 +367,31 @@ function JsonPathTool() {
         </div>
       )}
 
-      {/* Footer */}
-      <footer className="flex items-center gap-2 px-4 py-3 border-t border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark shrink-0">
-        {hasMatches && (
-          <CopyButton
-            value={allMatchesText || undefined}
-            label="Copy All"
-            variant="primary"
-          />
-        )}
-        <button
-          type="button"
-          onClick={handleClear}
-          className="ml-auto px-4 py-2 text-sm bg-panel-light dark:bg-panel-dark text-slate-500 dark:text-slate-400 border border-border-light dark:border-border-dark rounded-lg hover:text-slate-800 dark:hover:text-slate-200 hover:border-slate-400 dark:hover:border-slate-500 transition-colors"
-        >
-          Clear
-        </button>
-      </footer>
+      <ToolbarFooter
+        groups={[
+          {
+            end: true,
+            children: (
+              <>
+                {hasMatches ? (
+                  <CopyButton
+                    value={allMatchesText || undefined}
+                    label="Copy All"
+                    variant="primary"
+                  />
+                ) : null}
+                <button
+                  type="button"
+                  onClick={handleClear}
+                  className="rounded-full px-3 py-1 text-xs font-medium text-slate-500 transition-colors hover:text-red-500 dark:text-slate-400 dark:hover:text-red-400"
+                >
+                  Clear
+                </button>
+              </>
+            ),
+          },
+        ]}
+      />
     </div>
   );
 }

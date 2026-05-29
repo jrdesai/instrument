@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState, type ChangeEvent } from "react";
 import { callTool } from "../../bridge";
-import { CopyButton, FileUploadButton } from "../../components/tool";
+import { CopyButton, FileUploadButton, ToolbarFooter } from "../../components/tool";
 import { CodeBlock } from "../../components/ui/CodeBlock";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useFileDrop } from "../../hooks/useFileDrop";
@@ -182,18 +182,64 @@ export default function XmlFormatterTool() {
           {output?.error ? <div className="border-t border-red-200 bg-red-50 px-4 py-2 text-xs text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-400">{output.error}</div> : null}
         </div>
       </div>
-      <footer className="shrink-0 border-t border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark px-4 py-3">
-        <div className="flex flex-wrap items-center gap-3 text-xs">
-          <span className="text-[10px] uppercase tracking-wider text-slate-500">Indent</span>
-          <label className="inline-flex items-center gap-1 cursor-pointer"><input type="radio" className="h-3 w-3 accent-primary" checked={indentSize === 2} onChange={() => setIndentSize(2)} />2 spaces</label>
-          <label className="inline-flex items-center gap-1 cursor-pointer"><input type="radio" className="h-3 w-3 accent-primary" checked={indentSize === 4} onChange={() => setIndentSize(4)} />4 spaces</label>
-          <div className="ml-auto flex items-center gap-2">
-            {output?.result && !output.error ? <button type="button" onClick={() => handleDownload(output.result)} className="rounded-full border border-border-light px-3 py-1 text-xs font-medium text-slate-500 transition-colors hover:border-primary/40 hover:text-primary dark:border-border-dark dark:text-slate-400 dark:hover:border-primary/40 dark:hover:text-primary">Download .xml</button> : null}
-            <CopyButton value={output?.result && !output?.error ? output.result : undefined} label="Copy" variant="primary" className="py-1.5 text-[11px] font-semibold uppercase tracking-wider" />
-            <button type="button" onClick={handleClear} disabled={isEmpty} className="rounded-full px-3 py-1 text-xs font-medium text-slate-500 transition-colors hover:text-red-500 disabled:cursor-not-allowed disabled:opacity-40 dark:text-slate-400 dark:hover:text-red-400">Clear</button>
-          </div>
-        </div>
-      </footer>
+      <ToolbarFooter
+        groups={[
+          {
+            label: "Indent",
+            children: (
+              <>
+                <label className="inline-flex cursor-pointer items-center gap-1 text-xs">
+                  <input
+                    type="radio"
+                    className="h-3 w-3 accent-primary"
+                    checked={indentSize === 2}
+                    onChange={() => setIndentSize(2)}
+                  />
+                  2 spaces
+                </label>
+                <label className="inline-flex cursor-pointer items-center gap-1 text-xs">
+                  <input
+                    type="radio"
+                    className="h-3 w-3 accent-primary"
+                    checked={indentSize === 4}
+                    onChange={() => setIndentSize(4)}
+                  />
+                  4 spaces
+                </label>
+              </>
+            ),
+          },
+          {
+            end: true,
+            children: (
+              <>
+                {output?.result && !output.error ? (
+                  <button
+                    type="button"
+                    onClick={() => handleDownload(output.result)}
+                    className="rounded-full border border-border-light px-3 py-1 text-xs font-medium text-slate-500 transition-colors hover:border-primary/40 hover:text-primary dark:border-border-dark dark:text-slate-400 dark:hover:border-primary/40 dark:hover:text-primary"
+                  >
+                    Download .xml
+                  </button>
+                ) : null}
+                <CopyButton
+                  value={output?.result && !output.error ? output.result : undefined}
+                  label="Copy"
+                  variant="primary"
+                />
+                <button
+                  type="button"
+                  onClick={handleClear}
+                  disabled={isEmpty}
+                  className="rounded-full px-3 py-1 text-xs font-medium text-slate-500 transition-colors hover:text-red-500 disabled:cursor-not-allowed disabled:opacity-40 dark:text-slate-400 dark:hover:text-red-400"
+                >
+                  Clear
+                </button>
+              </>
+            ),
+          },
+        ]}
+      />
     </div>
   );
 }
