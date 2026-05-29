@@ -198,6 +198,7 @@ export const tools: Tool[] = [
     icon: "find_in_page",
     platforms: ["desktop", "web"],
     rustCommand: "tool_regex_test",
+    wasmExport: "regex_match",
     keywords: [
       "regex",
       "regular expression",

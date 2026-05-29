@@ -31,7 +31,7 @@ self.onmessage = async (e: MessageEvent<RegexWorkerRequest>) => {
 
   try {
     if (explain) {
-      const result = await callToolWeb("tool_regex_explain", {
+      const result = await callToolWeb("regex_explain", {
         pattern,
         engine,
       });

@@ -30,6 +30,7 @@
     "typecheck": "pnpm run gen:types && tsc --noEmit",
     "check:pure": "grep -r 'std::fs\\|use tauri\\|use tokio' src-core/instrument-core/src/ --include='*.rs' --exclude-dir=bin && echo 'PURITY VIOLATION' || echo 'instrument-core is pure'",
     "check:commands": "python3 .claude/check-commands.py",
+    "check:wasm": "python3 .claude/check-wasm.py",
     "gen:og-image": "node scripts/generate-og-image.mjs",
     "gen:pwa-icons": "node scripts/generate-pwa-icons.mjs"
   },

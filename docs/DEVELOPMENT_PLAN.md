@@ -205,11 +205,11 @@ Build tools in the order of the table in §2 to reuse patterns and contain risk.
 
 ---
 
-## 5. Current status (as of v1.0.0)
+## 5. Current status (as of v1.3.0)
 
-Phases 1–6 are complete. 37 tools implemented (36 from v0.5.0 + Password Generator),
-tested, and available on both desktop and web. The web version is deployed to Cloudflare
-Pages. All deferred technical improvements (§6.1–6.6) are shipped.
+Phases 1–6 are complete. 84 tools implemented, tested, and available on both desktop
+and web (2 desktop-only). The web version is deployed to Cloudflare Pages. All deferred
+technical improvements (§6.1–6.6) are shipped.
 
 ---
 
