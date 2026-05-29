@@ -75,8 +75,8 @@ function WelcomeCard({ onDismiss }: { onDismiss: () => void }) {
           Welcome to Instrument
         </p>
         <p className="mx-auto mt-1.5 max-w-md text-sm leading-relaxed text-slate-500 dark:text-slate-400">
-          A privacy-first developer toolkit. Every tool runs locally — no data ever
-          leaves your device.
+          A privacy-first developer toolkit. Tools run locally on your device —
+          and the few that use the network are clearly marked.
         </p>
       </div>
 

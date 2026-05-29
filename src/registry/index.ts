@@ -97,6 +97,13 @@ export interface Tool {
   sensitive?: boolean;
 
   /**
+   * If true, this tool sends data off the device over the network (e.g. DNS
+   * Lookup queries the system resolver). Surfaces a "Uses network" badge so the
+   * privacy distinction from fully-local tools is visible at the point of use.
+   */
+  network?: boolean;
+
+  /**
    * Override for the WASM export name when it differs from rustCommand.
    * Example: rustCommand "tool_regex_explain" → wasmExport "regex_explain"
    * If omitted, rustCommand is used as-is for both desktop and web.
@@ -1696,6 +1703,7 @@ export const tools: Tool[] = [
     roles: ["backend", "devops", "general"],
     icon: "dns",
     platforms: ["desktop"],
+    network: true,
     rustCommand: "tool_dns_lookup",
     trayPopover: true,
     keywords: [

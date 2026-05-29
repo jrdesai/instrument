@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import type { Tool } from "../../registry";
-import { StorageBadge } from "../tool";
+import { StorageBadge, NetworkBadge } from "../tool";
 import { useToolStore } from "../../store";
 import { BookmarkButton } from "../ui/BookmarkButton";
 
@@ -28,6 +28,7 @@ export function ToolHeader({ tool }: { tool: Tool }) {
               {tool.name}
             </h1>
             <StorageBadge tool={tool} />
+            <NetworkBadge tool={tool} />
           </div>
           <p className="truncate text-sm text-slate-500 dark:text-slate-400">
             {tool.description}

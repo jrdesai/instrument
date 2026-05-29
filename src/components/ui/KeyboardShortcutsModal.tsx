@@ -120,7 +120,7 @@ export function KeyboardShortcutsModal({ isOpen, onClose }: KeyboardShortcutsMod
 
         <div className="px-4 py-3 border-t border-slate-100 dark:border-border-dark">
           <p className="text-[11px] text-slate-500 dark:text-slate-400 text-center">
-            All tool processing runs locally. No data leaves your device.
+            Tools run locally by default. Any tool that uses the network is clearly marked.
           </p>
         </div>
       </div>

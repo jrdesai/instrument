@@ -276,7 +276,7 @@ export function OnboardingModal() {
                   Welcome to Instrument
                 </h1>
                 <p className="max-w-xs text-sm text-slate-500 dark:text-slate-400">
-                  Privacy-first developer tools. Everything runs locally on your device — always.
+                  Privacy-first developer tools that run locally on your device. Any tool that uses the network is clearly marked.
                 </p>
                 <button
                   type="button"
