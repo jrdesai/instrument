@@ -283,9 +283,9 @@ const ConfigConverterTool: React.FC = () => {
     <div className="flex flex-col h-full w-full bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
       <div className="flex-1 flex flex-col min-h-0 border border-border-light dark:border-border-dark rounded-lg overflow-hidden bg-panel-light/60 dark:bg-panel-dark/60">
       {/* Two-panel row */}
-      <div className="flex-1 flex flex-row min-h-0">
+      <div className="flex-1 flex flex-col md:flex-row min-h-0">
         <div
-          className="relative flex flex-col w-1/2 border-r border-border-light dark:border-border-dark bg-panel-light/60 dark:bg-panel-dark/60"
+          className="relative flex flex-col w-full min-h-[40vh] border-b md:min-h-0 md:w-1/2 md:border-b-0 md:border-r border-border-light dark:border-border-dark bg-panel-light/60 dark:bg-panel-dark/60"
           {...dropZoneProps}
         >
           {isDragging && (
@@ -345,7 +345,7 @@ const ConfigConverterTool: React.FC = () => {
           />
         </div>
 
-        <div className="flex flex-col w-1/2 bg-panel-light/40 dark:bg-panel-dark/40">
+        <div className="flex flex-col w-full min-h-[40vh] md:min-h-0 md:w-1/2 bg-panel-light/40 dark:bg-panel-dark/40">
           <PanelHeader
             className="border-border-light/80 bg-panel-light/80 dark:border-border-dark dark:bg-panel-dark/80"
             prependChildren

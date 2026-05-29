@@ -280,9 +280,9 @@ export function JwtBuildPane({ onOpenInDecodeTab }: JwtBuildPaneProps) {
           For testing only. Never use real secrets or sign tokens with production keys here.
         </span>
       </div>
-      <div className="flex flex-1 min-h-0">
+      <div className="flex flex-col md:flex-row flex-1 min-h-0">
         {/* Left panel — configuration */}
-        <div className="w-[40%] min-w-0 flex flex-col border-r border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark overflow-y-auto">
+        <div className="w-full min-h-[40vh] border-b md:min-h-0 md:w-[40%] md:border-b-0 md:border-r min-w-0 flex flex-col border-border-light dark:border-border-dark bg-panel-light dark:bg-panel-dark overflow-y-auto">
           <div className="p-4 space-y-6">
             {/* Section 1 — Algorithm and Secret */}
             <section>
@@ -563,7 +563,7 @@ export function JwtBuildPane({ onOpenInDecodeTab }: JwtBuildPaneProps) {
         </div>
 
         {/* Right panel — output */}
-        <div className="flex-1 min-w-0 flex flex-col overflow-y-auto p-4">
+        <div className="flex-1 min-w-0 min-h-[40vh] md:min-h-0 flex flex-col overflow-y-auto p-4">
           {!hasToken && !output?.error && (
             <p className="text-slate-500 text-sm">
               Configure claims and click Build JWT

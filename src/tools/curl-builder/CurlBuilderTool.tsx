@@ -254,8 +254,8 @@ export default function CurlBuilderTool() {
   const { method, url, queryParams, headers, auth, body, options } = state;
 
   return (
-    <div className="flex h-full min-h-0 bg-background-light font-display dark:bg-background-dark">
-      <div className="flex min-h-0 w-[55%] shrink-0 flex-col overflow-y-auto border-r border-border-light bg-background-light dark:border-border-dark dark:bg-background-dark">
+    <div className="flex flex-col md:flex-row h-full min-h-0 bg-background-light font-display dark:bg-background-dark">
+      <div className="flex w-full min-h-[50vh] shrink-0 flex-col overflow-y-auto border-b md:min-h-0 md:w-[55%] md:border-b-0 md:border-r border-border-light bg-background-light dark:border-border-dark dark:bg-background-dark">
         <div className="flex gap-2 border-b border-border-light bg-background-light px-4 py-3 dark:border-border-dark dark:bg-background-dark">
           <div
             className={`relative shrink-0 rounded-lg border-2 bg-background-light dark:bg-background-dark ${methodSelectAccent(method)} focus-within:ring-2 focus-within:ring-primary/35`}
@@ -599,7 +599,7 @@ export default function CurlBuilderTool() {
         </div>
       </div>
 
-      <div className="flex min-h-0 min-w-0 flex-1 flex-col bg-background-light dark:bg-background-dark">
+      <div className="flex min-h-[40vh] md:min-h-0 min-w-0 flex-1 flex-col bg-background-light dark:bg-background-dark">
         <div className="flex min-h-[41px] shrink-0 items-center justify-between border-b border-border-light bg-panel-light px-4 py-2 dark:border-border-dark dark:bg-panel-dark">
           <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
             cURL Command
