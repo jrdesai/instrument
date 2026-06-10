@@ -154,6 +154,8 @@ function ToolGridCard({
       <button
         type="button"
         onClick={onClick}
+        onMouseEnter={() => tool.preload?.()}
+        onFocus={() => tool.preload?.()}
         aria-label={tool.name}
         className={`absolute inset-0 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
           desktopOnly ? "pointer-events-none cursor-not-allowed" : ""
@@ -320,11 +322,18 @@ export function DashboardPage() {
         {(favouriteTools.length > 0 || displayedRecent.length > 0) && (
           <section className="mb-3" aria-label="Quick access">
             <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
-              {favouriteTools.map((tool) => (
+              {favouriteTools.length > 0 && (
+                <>
+                  <span className="shrink-0 text-[10px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                    Pinned
+                  </span>
+                  {favouriteTools.map((tool) => (
                 <div key={tool.id} className="group/fav relative shrink-0">
                   <button
                     type="button"
                     onClick={() => handleOpenTool(tool)}
+                    onMouseEnter={() => tool.preload?.()}
+                    onFocus={() => tool.preload?.()}
                     aria-label={tool.name}
                     className="flex size-9 items-center justify-center rounded-lg border border-amber-300 bg-amber-100 text-amber-600 transition-colors hover:border-amber-400 hover:bg-amber-200 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-400 dark:hover:bg-amber-900/40"
                   >
@@ -347,12 +356,19 @@ export function DashboardPage() {
                   </button>
                 </div>
               ))}
+                </>
+              )}
 
               {favouriteTools.length > 0 && displayedRecent.length > 0 && (
-                <div
-                  className="mx-1 h-6 w-px shrink-0 bg-border-light dark:bg-border-dark"
-                  aria-hidden
-                />
+                <span className="shrink-0 text-[10px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                  Recent
+                </span>
+              )}
+
+              {displayedRecent.length > 0 && favouriteTools.length === 0 && (
+                <span className="shrink-0 text-[10px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                  Recent
+                </span>
               )}
 
               {displayedRecent.map((tool) => (
@@ -360,6 +376,8 @@ export function DashboardPage() {
                   key={tool.id}
                   type="button"
                   onClick={() => handleOpenTool(tool)}
+                  onMouseEnter={() => tool.preload?.()}
+                  onFocus={() => tool.preload?.()}
                   className="flex h-7 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border border-border-light bg-white px-2.5 text-xs text-slate-600 transition-colors hover:border-primary/40 hover:text-primary dark:border-border-dark dark:bg-panel-dark dark:text-slate-400"
                 >
                   <span className="material-symbols-outlined text-[12px]" aria-hidden>
@@ -412,6 +430,9 @@ export function DashboardPage() {
 
                 const subtitle = categorySubtitles[cat.name] ?? "";
                 const accent = CATEGORY_ACCENT[cat.name] ?? DEFAULT_CATEGORY_ACCENT;
+                const implementedCatTools = catTools.filter((t) => t.implemented);
+                const firstThree = implementedCatTools.slice(0, 3);
+                const more = implementedCatTools.length - firstThree.length;
                 return (
                   <button
                     key={cat.name}
@@ -441,6 +462,12 @@ export function DashboardPage() {
                       <p className="mt-0.5 line-clamp-2 text-[11px] leading-snug text-slate-500 dark:text-slate-400">
                         {subtitle}
                       </p>
+                      {firstThree.length > 0 ? (
+                        <p className="mt-1 truncate text-[11px] text-slate-400 dark:text-slate-500">
+                          {firstThree.map((t) => t.name).join(" · ")}
+                          {more > 0 ? " …" : ""}
+                        </p>
+                      ) : null}
                     </div>
                   </button>
                 );

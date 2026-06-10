@@ -121,6 +121,9 @@ export interface Tool {
    * Example: "base64" → `instrument base64 --help`
    */
   cliCommand?: string;
+
+  /** Preloads the lazy chunk. */
+  preload?: () => void;
 }
 
 /** Placeholder lazy component for future tools (currently unused). */
@@ -157,6 +160,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/base64").then((m) => ({ default: m.default }))
     ),
+    preload: () => { void import("../tools/base64"); },
     trayPopover: true,
     cliCommand: "base64",
     implemented: true,
@@ -190,6 +194,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/base32-base58").then((m) => ({ default: m.default }))
     ),
+    preload: () => { void import("../tools/base32-base58"); },
     trayPopover: true,
     implemented: true,
     chainable: true,
@@ -225,6 +230,7 @@ export const tools: Tool[] = [
           default: React.ComponentType<unknown>;
         }>
     ),
+    preload: () => { void import("../tools/regex-tester"); },
     trayPopover: true,
     implemented: true,
     chainable: true,
@@ -249,6 +255,7 @@ export const tools: Tool[] = [
           default: React.ComponentType<unknown>;
         }>
     ),
+    preload: () => { void import("../tools/regex-tester"); },
     implemented: false,
   },
   {
@@ -278,6 +285,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/url-encoder").then((m) => ({ default: m.default }))
     ),
+    preload: () => { void import("../tools/url-encoder"); },
     trayPopover: true,
     cliCommand: "url",
     implemented: true,
@@ -309,6 +317,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/html-entity").then((m) => ({ default: m.default }))
     ),
+    preload: () => { void import("../tools/html-entity"); },
     trayPopover: true,
     cliCommand: "html-entity",
     implemented: true,
@@ -343,6 +352,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/morse-code").then((m) => ({ default: m.default }))
     ),
+    preload: () => { void import("../tools/morse-code"); },
     trayPopover: true,
     cliCommand: "morse",
     implemented: true,
@@ -384,6 +394,7 @@ export const tools: Tool[] = [
         default: m.default,
       }))
     ),
+    preload: () => { void import("../tools/ascii-table/AsciiTableTool"); },
     implemented: true,
   },
   {
@@ -411,6 +422,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/hex-converter").then((m) => ({ default: m.default }))
     ),
+    preload: () => { void import("../tools/hex-converter"); },
     trayPopover: true,
     cliCommand: "hex",
     implemented: true,
@@ -450,6 +462,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/color-converter").then((m) => ({ default: m.default }))
     ),
+    preload: () => { void import("../tools/color-converter"); },
     trayPopover: true,
     implemented: true,
     chainable: true,
@@ -482,6 +495,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/qr-code").then((m) => ({ default: m.default }))
     ),
+    preload: () => { void import("../tools/qr-code"); },
     trayPopover: true,
     implemented: true,
   },
@@ -519,6 +533,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/hash/HashTool").then((m) => ({ default: m.default }))
     ),
+    preload: () => { void import("../tools/hash/HashTool"); },
     trayPopover: true,
     cliCommand: "hash",
     implemented: true,
@@ -561,6 +576,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/cert-decoder").then((m) => ({ default: m.default }))
     ),
+    preload: () => { void import("../tools/cert-decoder"); },
     implemented: true,
     chainable: true,
   },
@@ -579,6 +595,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/uuid-generator").then((m) => ({ default: m.default }))
     ),
+    preload: () => { void import("../tools/uuid-generator"); },
     trayPopover: true,
     cliCommand: "uuid",
     implemented: true,
@@ -598,6 +615,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/ulid-generator").then((m) => ({ default: m.default }))
     ),
+    preload: () => { void import("../tools/ulid-generator"); },
     trayPopover: true,
     cliCommand: "ulid",
     implemented: true,
@@ -629,6 +647,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/nano-id-generator").then((m) => ({ default: m.default }))
     ),
+    preload: () => { void import("../tools/nano-id-generator"); },
     trayPopover: true,
     cliCommand: "nanoid",
     implemented: true,
@@ -667,6 +686,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/jwt/JwtTool").then((m) => ({ default: m.default }))
     ),
+    preload: () => { void import("../tools/jwt/JwtTool"); },
     trayPopover: true,
     cliCommand: "jwt",
     implemented: true,
@@ -702,6 +722,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/basic-auth").then((m) => ({ default: m.default }))
     ),
+    preload: () => { void import("../tools/basic-auth"); },
     implemented: true,
   },
   {
@@ -720,6 +741,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/api-key-generator").then((m) => ({ default: m.default }))
     ),
+    preload: () => { void import("../tools/api-key-generator"); },
     trayPopover: true,
     implemented: true,
     sensitive: true,
@@ -753,6 +775,7 @@ export const tools: Tool[] = [
         default: m.default,
       }))
     ),
+    preload: () => { void import("../tools/password-generator/PasswordGeneratorTool"); },
     trayPopover: true,
     cliCommand: "password",
     implemented: true,
@@ -790,6 +813,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/rsa-keygen").then((m) => ({ default: m.default }))
     ),
+    preload: () => { void import("../tools/rsa-keygen"); },
     trayPopover: false,
     implemented: true,
   },
@@ -828,6 +852,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/bcrypt").then((m) => ({ default: m.default }))
     ),
+    preload: () => { void import("../tools/bcrypt"); },
     trayPopover: false,
     implemented: true,
     chainable: true,
@@ -865,6 +890,7 @@ export const tools: Tool[] = [
         default: m.default,
       }))
     ),
+    preload: () => { void import("../tools/sri-generator/SriGeneratorTool"); },
     implemented: true,
   },
   {
@@ -896,6 +922,7 @@ export const tools: Tool[] = [
         default: m.default,
       }))
     ),
+    preload: () => { void import("../tools/passphrase-generator/PassphraseGeneratorTool"); },
     trayPopover: true,
     implemented: true,
   },
@@ -929,6 +956,7 @@ export const tools: Tool[] = [
         default: m.default,
       }))
     ),
+    preload: () => { void import("../tools/aes-encrypt-decrypt/AesEncryptDecryptTool"); },
     implemented: true,
     chainable: true,
   },
@@ -965,6 +993,7 @@ export const tools: Tool[] = [
         default: m.default,
       }))
     ),
+    preload: () => { void import("../tools/totp-generator/TotpGeneratorTool"); },
     implemented: true,
   },
   {
@@ -993,6 +1022,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/json-formatter").then((m) => ({ default: m.default }))
     ),
+    preload: () => { void import("../tools/json-formatter"); },
     trayPopover: true,
     cliCommand: "json",
     implemented: true,
@@ -1023,6 +1053,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/json-validator").then((m) => ({ default: m.default }))
     ),
+    preload: () => { void import("../tools/json-validator"); },
     trayPopover: true,
     cliCommand: "json",
     implemented: true,
@@ -1059,6 +1090,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/json-schema-validator").then((m) => ({ default: m.default }))
     ),
+    preload: () => { void import("../tools/json-schema-validator"); },
     implemented: true,
     chainable: true,
   },
@@ -1087,6 +1119,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/json-diff").then((m) => ({ default: m.default }))
     ),
+    preload: () => { void import("../tools/json-diff"); },
     implemented: true,
   },
   {
@@ -1115,6 +1148,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/json-path").then((m) => ({ default: m.default }))
     ),
+    preload: () => { void import("../tools/json-path"); },
     trayPopover: true,
     implemented: true,
     chainable: true,
@@ -1149,6 +1183,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/json-converter").then((m) => ({ default: m.default }))
     ),
+    preload: () => { void import("../tools/json-converter"); },
     implemented: true,
     chainable: true,
   },
@@ -1185,6 +1220,7 @@ export const tools: Tool[] = [
           default: React.ComponentType<unknown>;
         }>
     ),
+    preload: () => { void import("../tools/config-converter/ConfigConverterTool"); },
     implemented: true,
     chainable: true,
   },
@@ -1226,6 +1262,7 @@ export const tools: Tool[] = [
         default: m.default,
       }))
     ),
+    preload: () => { void import("../tools/csv-to-json/CsvToJsonTool"); },
     trayPopover: true,
     implemented: true,
     chainable: true,
@@ -1259,6 +1296,7 @@ export const tools: Tool[] = [
         default: m.default,
       }))
     ),
+    preload: () => { void import("../tools/csv-previewer"); },
     trayPopover: false,
     implemented: true,
   },
@@ -1298,6 +1336,7 @@ export const tools: Tool[] = [
         default: m.default,
       }))
     ),
+    preload: () => { void import("../tools/image-converter/ImageConverterTool"); },
     implemented: true,
   },
   {
@@ -1333,6 +1372,7 @@ export const tools: Tool[] = [
         default: m.default,
       }))
     ),
+    preload: () => { void import("../tools/xml-formatter/XmlFormatterTool"); },
     cliCommand: "xml",
     implemented: true,
     chainable: true,
@@ -1370,6 +1410,7 @@ export const tools: Tool[] = [
         default: m.default,
       }))
     ),
+    preload: () => { void import("../tools/html-formatter/HtmlFormatterTool"); },
     implemented: true,
     chainable: true,
   },
@@ -1406,6 +1447,7 @@ export const tools: Tool[] = [
         default: m.default,
       }))
     ),
+    preload: () => { void import("../tools/html-previewer/HtmlPreviewerTool"); },
     implemented: true,
   },
   {
@@ -1442,6 +1484,7 @@ export const tools: Tool[] = [
         default: m.default,
       }))
     ),
+    preload: () => { void import("../tools/yaml-formatter/YamlFormatterTool"); },
     cliCommand: "yaml",
     implemented: true,
     chainable: true,
@@ -1479,6 +1522,7 @@ export const tools: Tool[] = [
         default: m.default,
       }))
     ),
+    preload: () => { void import("../tools/url-parser/UrlParserTool"); },
     trayPopover: true,
     implemented: true,
     chainable: true,
@@ -1515,6 +1559,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/cidr-calculator").then((m) => ({ default: m.default }))
     ),
+    preload: () => { void import("../tools/cidr-calculator"); },
     implemented: true,
   },
   {
@@ -1564,6 +1609,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/http-status-codes").then((m) => ({ default: m.default }))
     ),
+    preload: () => { void import("../tools/http-status-codes"); },
     trayPopover: true,
     cliCommand: "http-status",
     implemented: true,
@@ -1606,6 +1652,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/curl-builder/CurlBuilderTool").then((m) => ({ default: m.default }))
     ),
+    preload: () => { void import("../tools/curl-builder/CurlBuilderTool"); },
     cliCommand: "curl-build",
     implemented: true,
   },
@@ -1651,6 +1698,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/user-agent-parser/UserAgentParserTool").then((m) => ({ default: m.default }))
     ),
+    preload: () => { void import("../tools/user-agent-parser/UserAgentParserTool"); },
     implemented: true,
     chainable: true,
   },
@@ -1690,6 +1738,7 @@ export const tools: Tool[] = [
         default: m.default,
       }))
     ),
+    preload: () => { void import("../tools/ip-inspector/IpInspectorTool"); },
     implemented: true,
   },
   {
@@ -1727,6 +1776,7 @@ export const tools: Tool[] = [
         default: m.default,
       }))
     ),
+    preload: () => { void import("../tools/dns-lookup/DnsLookupTool"); },
     implemented: true,
   },
   {
@@ -1767,6 +1817,7 @@ export const tools: Tool[] = [
         default: m.default,
       }))
     ),
+    preload: () => { void import("../tools/mac-address/MacAddressTool"); },
     cliCommand: "mac",
     implemented: true,
   },
@@ -1804,6 +1855,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/env-parser").then((m) => ({ default: m.default }))
     ),
+    preload: () => { void import("../tools/env-parser"); },
     implemented: true,
     chainable: true,
   },
@@ -1835,6 +1887,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/line-tools").then((m) => ({ default: m.default }))
     ),
+    preload: () => { void import("../tools/line-tools"); },
     cliCommand: "lines",
     implemented: true,
     chainable: true,
@@ -1879,6 +1932,7 @@ export const tools: Tool[] = [
         default: m.default,
       }))
     ),
+    preload: () => { void import("../tools/fake-data-generator/FakeDataGeneratorTool"); },
     implemented: true,
   },
   {
@@ -1912,6 +1966,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/text-case-converter").then((m) => ({ default: m.default }))
     ),
+    preload: () => { void import("../tools/text-case-converter"); },
     trayPopover: true,
     cliCommand: "case",
     implemented: true,
@@ -1943,6 +1998,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/word-counter").then((m) => ({ default: m.default }))
     ),
+    preload: () => { void import("../tools/word-counter"); },
     trayPopover: true,
     cliCommand: "word-count",
     implemented: true,
@@ -1978,6 +2034,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/unicode-inspector").then((m) => ({ default: m.default }))
     ),
+    preload: () => { void import("../tools/unicode-inspector"); },
     implemented: true,
     chainable: true,
   },
@@ -2008,6 +2065,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/slug-generator").then((m) => ({ default: m.default }))
     ),
+    preload: () => { void import("../tools/slug-generator"); },
     trayPopover: true,
     cliCommand: "slug",
     implemented: true,
@@ -2044,6 +2102,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/nato-phonetic").then((m) => ({ default: m.default }))
     ),
+    preload: () => { void import("../tools/nato-phonetic"); },
     trayPopover: false,
     implemented: true,
     chainable: true,
@@ -2074,6 +2133,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/string-escaper").then((m) => ({ default: m.default }))
     ),
+    preload: () => { void import("../tools/string-escaper"); },
     trayPopover: true,
     implemented: true,
     chainable: true,
@@ -2104,6 +2164,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/find-replace").then((m) => ({ default: m.default }))
     ),
+    preload: () => { void import("../tools/find-replace"); },
     implemented: true,
     chainable: true,
   },
@@ -2134,6 +2195,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/text-diff").then((m) => ({ default: m.default }))
     ),
+    preload: () => { void import("../tools/text-diff"); },
     implemented: true,
   },
   {
@@ -2163,6 +2225,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/lorem-ipsum").then((m) => ({ default: m.default }))
     ),
+    preload: () => { void import("../tools/lorem-ipsum"); },
     implemented: true,
   },
   {
@@ -2195,6 +2258,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/markdown-editor").then((m) => ({ default: m.default }))
     ),
+    preload: () => { void import("../tools/markdown-editor"); },
     implemented: true,
   },
   {
@@ -2225,6 +2289,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/timestamp-converter").then((m) => ({ default: m.default }))
     ),
+    preload: () => { void import("../tools/timestamp-converter"); },
     trayPopover: true,
     cliCommand: "timestamp",
     implemented: true,
@@ -2257,6 +2322,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/timezone-converter").then((m) => ({ default: m.default }))
     ),
+    preload: () => { void import("../tools/timezone-converter"); },
     trayPopover: true,
     implemented: true,
     chainable: true,
@@ -2288,6 +2354,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/iso8601-formatter").then((m) => ({ default: m.default }))
     ),
+    preload: () => { void import("../tools/iso8601-formatter"); },
     implemented: true,
     chainable: true,
   },
@@ -2322,6 +2389,7 @@ export const tools: Tool[] = [
         default: m.default,
       }))
     ),
+    preload: () => { void import("../tools/cron-parser/CronParserTool"); },
     implemented: true,
     chainable: true,
   },
@@ -2363,6 +2431,7 @@ export const tools: Tool[] = [
         default: m.default,
       }))
     ),
+    preload: () => { void import("../tools/date-calculator/DateCalculatorTool"); },
     cliCommand: "date",
     implemented: true,
   },
@@ -2394,6 +2463,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/number-base-converter").then((m) => ({ default: m.default }))
     ),
+    preload: () => { void import("../tools/number-base-converter"); },
     trayPopover: true,
     implemented: true,
     chainable: true,
@@ -2428,6 +2498,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/semver").then((m) => ({ default: m.default }))
     ),
+    preload: () => { void import("../tools/semver"); },
     cliCommand: "semver",
     implemented: true,
     chainable: true,
@@ -2474,6 +2545,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/unit-converter").then((m) => ({ default: m.default }))
     ),
+    preload: () => { void import("../tools/unit-converter"); },
     trayPopover: true,
     implemented: true,
   },
@@ -2503,6 +2575,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/bitwise-calculator").then((m) => ({ default: m.default }))
     ),
+    preload: () => { void import("../tools/bitwise-calculator"); },
     implemented: true,
   },
   {
@@ -2540,6 +2613,7 @@ export const tools: Tool[] = [
           default: React.ComponentType<unknown>;
         }>
     ),
+    preload: () => { void import("../tools/chmod-calculator/ChmodCalculatorTool"); },
     implemented: true,
     chainable: true,
   },
@@ -2570,6 +2644,7 @@ export const tools: Tool[] = [
         default: m.default,
       }))
     ),
+    preload: () => { void import("../tools/expression-evaluator"); },
     implemented: true,
     chainable: true,
   },
@@ -2604,6 +2679,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/percentage-calculator").then((m) => ({ default: m.default }))
     ),
+    preload: () => { void import("../tools/percentage-calculator"); },
     cliCommand: "percent",
     implemented: true,
   },
@@ -2638,6 +2714,7 @@ export const tools: Tool[] = [
     component: React.lazy(() =>
       import("../tools/roman-numerals").then((m) => ({ default: m.default }))
     ),
+    preload: () => { void import("../tools/roman-numerals"); },
     cliCommand: "roman",
     implemented: true,
   },
@@ -2673,6 +2750,7 @@ export const tools: Tool[] = [
         default: m.default,
       }))
     ),
+    preload: () => { void import("../tools/color-contrast/ColorContrastTool"); },
     implemented: true,
   },
   {
@@ -2709,6 +2787,7 @@ export const tools: Tool[] = [
         default: m.default,
       }))
     ),
+    preload: () => { void import("../tools/keycode-info/KeycodeInfoTool"); },
     implemented: true,
     trayPopover: true,
   },
@@ -2748,6 +2827,7 @@ export const tools: Tool[] = [
         default: m.default,
       }))
     ),
+    preload: () => { void import("../tools/git-cheatsheet/GitCheatsheetTool"); },
     implemented: true,
     trayPopover: true,
   },
@@ -2783,6 +2863,7 @@ export const tools: Tool[] = [
         default: m.default,
       }))
     ),
+    preload: () => { void import("../tools/mime-lookup/MimeLookupTool"); },
     cliCommand: "mime",
     implemented: true,
   },
@@ -2817,6 +2898,7 @@ export const tools: Tool[] = [
         default: m.default,
       }))
     ),
+    preload: () => { void import("../tools/code-formatter/CodeFormatterTool"); },
     implemented: true,
   },
   {
@@ -2849,6 +2931,7 @@ export const tools: Tool[] = [
         default: m.default,
       }))
     ),
+    preload: () => { void import("../tools/sql-formatter/SqlFormatterTool"); },
     cliCommand: "sql",
     implemented: true,
     chainable: true,
@@ -2883,6 +2966,7 @@ export const tools: Tool[] = [
         default: m.default,
       }))
     ),
+    preload: () => { void import("../tools/css-gradient/CssGradientTool"); },
     implemented: true,
   },
   {
@@ -2916,6 +3000,7 @@ export const tools: Tool[] = [
         default: m.default,
       }))
     ),
+    preload: () => { void import("../tools/box-shadow-builder/BoxShadowBuilderTool"); },
     implemented: true,
   },
 ];

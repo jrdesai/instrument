@@ -203,6 +203,13 @@ function CsvToJsonTool() {
     setJsonToCsvOutput(null);
   }, [setDraft]);
 
+  const handleSample = useCallback(() => {
+    const sample = "name,role\nAda,Engineer\nGrace,Admiral";
+    setFileDropError(null);
+    setInputValue(sample);
+    setDraft(sample);
+  }, [setDraft]);
+
   const handleConvertNow = useCallback(() => {
     if (debounceRef.current) {
       clearTimeout(debounceRef.current);
@@ -344,10 +351,21 @@ function CsvToJsonTool() {
                 className="h-full"
               />
             ) : (
-              <div className="h-full flex items-center justify-center text-xs text-slate-500 px-4">
-                {isEmpty
-                  ? `Enter ${inputLabel} on the left to see ${outputLabel} output here.`
-                  : "Converting..."}
+              <div className="flex h-full flex-col items-center justify-center px-4 text-xs text-slate-500">
+                <span>
+                  {isEmpty
+                    ? `Enter ${inputLabel} on the left to see ${outputLabel} output here.`
+                    : "Converting..."}
+                </span>
+                {isEmpty ? (
+                  <button
+                    type="button"
+                    onClick={handleSample}
+                    className="mt-2 rounded-full border border-border-light px-3 py-1 text-xs font-medium text-slate-500 transition-colors hover:border-primary/40 hover:text-primary dark:border-border-dark dark:text-slate-400"
+                  >
+                    Try a sample
+                  </button>
+                ) : null}
               </div>
             )}
           </div>

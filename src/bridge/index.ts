@@ -9,6 +9,7 @@
 
 import { getToolByRustCommand } from "../registry";
 import { useHistoryStore } from "../store";
+import { useLastRunStore } from "../store/lastRun";
 
 export type { TrayToolItem } from "../bindings/tauri";
 
@@ -62,6 +63,7 @@ export async function callTool(
       result = await callToolWeb(wasmExportName, input);
     }
     const duration = performance.now() - start;
+    useLastRunStore.getState().update(tool?.id ?? toolId, duration);
     if (import.meta.env.DEV) {
       if (duration > 500) {
         console.error(

@@ -148,6 +148,12 @@ function TimestampConverterTool() {
     setOutput(null);
   }, [setDraft]);
 
+  const handleSample = useCallback(() => {
+    setMode("toHuman");
+    setValue("1718000000");
+    setDraft("1718000000");
+  }, [setDraft]);
+
   const handleCopyValue = useCallback(async (text: string) => {
     if (!text) return;
     try {
@@ -286,6 +292,15 @@ function TimestampConverterTool() {
                 ))}
               </div>
             )}
+            {!value.trim() ? (
+              <button
+                type="button"
+                onClick={handleSample}
+                className="mt-2 rounded-full border border-border-light px-3 py-1 text-xs font-medium text-slate-500 transition-colors hover:border-primary/40 hover:text-primary dark:border-border-dark dark:text-slate-400"
+              >
+                Try a sample
+              </button>
+            ) : null}
           </div>
         )}
       </div>

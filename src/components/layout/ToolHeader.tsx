@@ -15,24 +15,24 @@ export function ToolHeader({ tool }: { tool: Tool }) {
   const isFavourite = favouriteToolIds.includes(tool.id);
 
   return (
-    <header className="flex items-center justify-between px-8 py-4 border-b border-border-light dark:border-border-dark bg-white dark:bg-panel-dark">
-      <div className="flex items-center gap-4 min-w-0">
-        <div className="size-10 rounded bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400">
-          <span className="material-symbols-outlined text-[24px]" aria-hidden>
+    <header className="flex items-center justify-between border-b border-border-light bg-white px-6 py-2 dark:border-border-dark dark:bg-panel-dark">
+      <div className="flex min-w-0 items-center gap-4">
+        <div className="flex size-8 items-center justify-center rounded bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+          <span className="material-symbols-outlined text-[20px]" aria-hidden>
             {tool.icon}
           </span>
         </div>
         <div className="min-w-0">
           <div className="flex min-w-0 flex-wrap items-center gap-2">
-            <h1 className="truncate text-lg font-medium text-slate-900 dark:text-slate-100">
+            <h1
+              className="truncate text-lg font-medium text-slate-900 dark:text-slate-100"
+              title={tool.description}
+            >
               {tool.name}
             </h1>
             <StorageBadge tool={tool} />
             <NetworkBadge tool={tool} />
           </div>
-          <p className="truncate text-sm text-slate-500 dark:text-slate-400">
-            {tool.description}
-          </p>
         </div>
       </div>
       <div className="flex items-center gap-2 flex-wrap justify-end">

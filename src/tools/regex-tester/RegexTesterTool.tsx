@@ -654,6 +654,15 @@ const RegexTesterTool: React.FC = () => {
     setExecutionMs(null);
   }, [setDraft]);
 
+  const handleSample = useCallback(() => {
+    const samplePattern = String.raw`\b\w+@\w+\.\w{2,}\b`;
+    const sampleText = "Contact ada@example.com or grace@mail.org";
+    setPattern(samplePattern);
+    setText(sampleText);
+    setDraft({ pattern: samplePattern, testInput: sampleText });
+    evaluate(samplePattern, sampleText, engine);
+  }, [engine, evaluate, setDraft]);
+
   const insertToken = useCallback(
     (token: string) => {
       const input = patternInputRef.current;
@@ -873,6 +882,15 @@ const RegexTesterTool: React.FC = () => {
                     onChange={handleTextChange}
                     spellCheck={false}
                   />
+                  {!pattern.trim() && !text.trim() ? (
+                    <button
+                      type="button"
+                      onClick={handleSample}
+                      className="mt-2 rounded-full border border-border-light px-3 py-1 text-xs font-medium text-slate-500 transition-colors hover:border-primary/40 hover:text-primary dark:border-border-dark dark:text-slate-400"
+                    >
+                      Try a sample
+                    </button>
+                  ) : null}
                 </div>
                 {matches.length > 0 && (
                   <div>

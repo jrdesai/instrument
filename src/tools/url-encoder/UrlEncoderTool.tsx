@@ -119,6 +119,14 @@ function UrlEncoderTool() {
     setError(null);
   }, [setDraft]);
 
+  const handleSample = useCallback(() => {
+    const sample = "https://example.com/search?q=hello world&lang=en";
+    setInput(sample);
+    setDraft(sample);
+  }, [setDraft]);
+
+  const isInputEmpty = input.trim() === "";
+
   const lines = input.split("\n").length;
   const charCount = input.length;
 
@@ -190,11 +198,20 @@ function UrlEncoderTool() {
           </div>
           {!error && !output && !isLoading ? (
             <div
-              className="flex flex-1 items-center justify-center"
+              className="flex flex-1 flex-col items-center justify-center"
               aria-live="polite"
               aria-label="URL encoder output"
             >
               <span className="text-sm text-slate-400">Output will appear here</span>
+              {isInputEmpty ? (
+                <button
+                  type="button"
+                  onClick={handleSample}
+                  className="mt-2 rounded-full border border-border-light px-3 py-1 text-xs font-medium text-slate-500 transition-colors hover:border-primary/40 hover:text-primary dark:border-border-dark dark:text-slate-400"
+                >
+                  Try a sample
+                </button>
+              ) : null}
             </div>
           ) : (
             <pre

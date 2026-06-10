@@ -7,6 +7,7 @@ import { OnboardingModal } from "../onboarding/OnboardingModal";
 import { KeyboardShortcutsModal } from "../ui/KeyboardShortcutsModal";
 import { PwaInstallBanner } from "../ui/PwaInstallBanner";
 import { SearchModal } from "../ui/SearchModal";
+import { StatusBar } from "./StatusBar";
 
 const SIDEBAR_WIDTH = 48;
 
@@ -158,6 +159,7 @@ export function AppShell() {
         <main className="flex min-h-0 flex-1 flex-col overflow-y-auto md:overflow-hidden">
           <Outlet />
         </main>
+        <StatusBar />
       </div>
 
       <nav

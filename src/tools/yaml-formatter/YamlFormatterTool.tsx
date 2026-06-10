@@ -126,6 +126,13 @@ export default function YamlFormatterTool() {
     setOutput(null);
   }, [setDraft]);
 
+  const handleSample = useCallback(() => {
+    const sample = "name: instrument\ntools:\n  - base64\n  - jwt";
+    setFileDropError(null);
+    setInputValue(sample);
+    setDraft(sample);
+  }, [setDraft]);
+
   return (
     <div className="flex h-full flex-col bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
       <div className="flex min-h-0 flex-1 flex-col md:flex-row">
@@ -176,7 +183,20 @@ export default function YamlFormatterTool() {
             {output ? <span className="text-xs text-slate-600">{output.lineCount.toLocaleString()} lines</span> : null}
           </div>
           <div className="custom-scrollbar min-h-0 flex-1 overflow-auto">
-            {output?.result ? <CodeBlock language="yaml" code={output.result} className="h-full" /> : <div className="h-full flex items-center justify-center text-xs text-slate-500">Enter YAML on the left.</div>}
+            {output?.result ? <CodeBlock language="yaml" code={output.result} className="h-full" /> : (
+              <div className="flex h-full flex-col items-center justify-center text-xs text-slate-500">
+                <span>Enter YAML on the left.</span>
+                {isEmpty ? (
+                  <button
+                    type="button"
+                    onClick={handleSample}
+                    className="mt-2 rounded-full border border-border-light px-3 py-1 text-xs font-medium text-slate-500 transition-colors hover:border-primary/40 hover:text-primary dark:border-border-dark dark:text-slate-400"
+                  >
+                    Try a sample
+                  </button>
+                ) : null}
+              </div>
+            )}
           </div>
           {output?.error ? <div className="border-t border-red-200 bg-red-50 px-4 py-2 text-xs text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-400">{output.error}</div> : null}
         </div>

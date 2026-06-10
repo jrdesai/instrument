@@ -316,7 +316,11 @@ export function SearchModal({
                     }}
                     role="option"
                     aria-selected={isSelected}
-                    onMouseEnter={() => setSelectedIndex(i)}
+                    onMouseEnter={() => {
+                      setSelectedIndex(i);
+                      tool.preload?.();
+                    }}
+                    onFocus={() => tool.preload?.()}
                     onMouseDown={(e) => {
                       e.preventDefault();
                       openTool(tool);

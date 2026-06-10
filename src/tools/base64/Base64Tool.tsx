@@ -195,6 +195,15 @@ function Base64Tool() {
     setFileName(null);
   }, [setDraft]);
 
+  const handleSample = useCallback(() => {
+    setMode("decode");
+    const sample = "SGVsbG8sIEluc3RydW1lbnQh";
+    setInput(sample);
+    setDraft(sample);
+  }, [setDraft]);
+
+  const isInputEmpty = input.trim() === "";
+
   const lines = input.split("\n").length;
   const charCount = input.length;
   const byteCount = new TextEncoder().encode(input).length;
@@ -299,11 +308,20 @@ function Base64Tool() {
           </div>
           {!error && !output && !isLoading ? (
             <div
-              className="flex flex-1 items-center justify-center"
+              className="flex flex-1 flex-col items-center justify-center"
               aria-live="polite"
               aria-label="Base64 output"
             >
               <span className="text-sm text-slate-400">Output will appear here</span>
+              {isInputEmpty ? (
+                <button
+                  type="button"
+                  onClick={handleSample}
+                  className="mt-2 rounded-full border border-border-light px-3 py-1 text-xs font-medium text-slate-500 transition-colors hover:border-primary/40 hover:text-primary dark:border-border-dark dark:text-slate-400"
+                >
+                  Try a sample
+                </button>
+              ) : null}
             </div>
           ) : (
             <pre

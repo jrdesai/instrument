@@ -283,6 +283,14 @@ function TextDiffTool() {
     setError(null);
   }, [setDraft]);
 
+  const handleSample = useCallback(() => {
+    const left = "The quick brown fox";
+    const right = "The quick red fox jumps";
+    setLeftInput(left);
+    setRightInput(right);
+    setDraft({ left, right });
+  }, [setDraft]);
+
   const isEmpty = leftInput.trim() === "" && rightInput.trim() === "";
   const bothHaveContent = leftInput.trim() !== "" && rightInput.trim() !== "";
   const hasResult = output != null;
@@ -489,8 +497,15 @@ function TextDiffTool() {
 
       <div className="flex flex-1 min-h-0 flex-col overflow-hidden">
         {isEmpty && (
-          <div className="flex flex-1 items-center justify-center text-slate-600 text-sm">
-            Paste text into both panels to compare
+          <div className="flex flex-1 flex-col items-center justify-center text-slate-600 text-sm">
+            <span>Paste text into both panels to compare</span>
+            <button
+              type="button"
+              onClick={handleSample}
+              className="mt-2 rounded-full border border-border-light px-3 py-1 text-xs font-medium text-slate-500 transition-colors hover:border-primary/40 hover:text-primary dark:border-border-dark dark:text-slate-400"
+            >
+              Try a sample
+            </button>
           </div>
         )}
         {!isEmpty && (

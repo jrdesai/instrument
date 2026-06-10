@@ -225,9 +225,10 @@ interface OutputSectionProps {
   expression: string;
   output: CronOutput | null;
   emptyHint?: string;
+  onTrySample?: () => void;
 }
 
-function OutputSection({ expression, output, emptyHint }: OutputSectionProps) {
+function OutputSection({ expression, output, emptyHint, onTrySample }: OutputSectionProps) {
   const isEmpty = expression.trim() === "";
   return (
     <>
@@ -258,9 +259,20 @@ function OutputSection({ expression, output, emptyHint }: OutputSectionProps) {
           </>
         )}
         {isEmpty && (
-          <p className="text-sm text-slate-500 dark:text-slate-400">
-            {emptyHint ?? "Enter a 5-field cron expression (UTC). Results update as you type."}
-          </p>
+          <div>
+            <p className="text-sm text-slate-500 dark:text-slate-400">
+              {emptyHint ?? "Enter a 5-field cron expression (UTC). Results update as you type."}
+            </p>
+            {onTrySample ? (
+              <button
+                type="button"
+                onClick={onTrySample}
+                className="mt-2 rounded-full border border-border-light px-3 py-1 text-xs font-medium text-slate-500 transition-colors hover:border-primary/40 hover:text-primary dark:border-border-dark dark:text-slate-400"
+              >
+                Try a sample
+              </button>
+            ) : null}
+          </div>
         )}
       </div>
 
@@ -783,6 +795,12 @@ function CronParserTool() {
     }
   }, [expression]);
 
+  const handleSample = useCallback(() => {
+    const sample = "*/15 9-17 * * 1-5";
+    setExpression(sample);
+    setDraft(sample);
+  }, [setDraft]);
+
   const isEmpty = expression.trim() === "";
 
   return (
@@ -891,7 +909,7 @@ function CronParserTool() {
             </div>
 
             {/* Output */}
-            <OutputSection expression={expression} output={output} />
+            <OutputSection expression={expression} output={output} onTrySample={handleSample} />
           </>
         )}
 

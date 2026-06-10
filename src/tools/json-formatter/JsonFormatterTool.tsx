@@ -280,6 +280,13 @@ function JsonFormatterTool() {
     setOutput(null);
   }, [setDraft]);
 
+  const handleSample = useCallback(() => {
+    const sample = '{"name":"Ada","languages":["rust","ts"],"active":true}';
+    setFileDropError(null);
+    setInputValue(sample);
+    setDraft(sample);
+  }, [setDraft]);
+
   const isEmpty = inputValue.trim() === "";
   const showValidBadge = !isEmpty && output != null;
   const isValid = output?.isValid === true;
@@ -426,9 +433,18 @@ function JsonFormatterTool() {
 
           <div className="flex-1 min-h-0 overflow-hidden flex flex-col px-4 pt-4 pb-4">
             {isEmpty && (
-              <p className="text-slate-600 text-sm m-0">
-                Formatted JSON will appear here
-              </p>
+              <div>
+                <p className="text-slate-600 text-sm m-0">
+                  Formatted JSON will appear here
+                </p>
+                <button
+                  type="button"
+                  onClick={handleSample}
+                  className="mt-2 rounded-full border border-border-light px-3 py-1 text-xs font-medium text-slate-500 transition-colors hover:border-primary/40 hover:text-primary dark:border-border-dark dark:text-slate-400"
+                >
+                  Try a sample
+                </button>
+              </div>
             )}
             {!isEmpty && output && !output.isValid && (
               <div className="text-red-600 dark:text-red-400 text-xs font-mono">

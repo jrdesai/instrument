@@ -214,6 +214,12 @@ export function JwtDecodePane() {
     setOutput(null);
   }, []);
 
+  const handleSample = useCallback(() => {
+    setToken(
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+    );
+  }, []);
+
   const handleCopyToken = useCallback(async () => {
     if (!token.trim()) return;
     try {
@@ -280,9 +286,18 @@ export function JwtDecodePane() {
       {/* Content */}
       <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar p-4">
         {showEmptyState && (
-          <p className="text-slate-500 text-sm">
-            Paste a JWT token above to decode it.
-          </p>
+          <div>
+            <p className="text-slate-500 text-sm">
+              Paste a JWT token above to decode it.
+            </p>
+            <button
+              type="button"
+              onClick={handleSample}
+              className="mt-2 rounded-full border border-border-light px-3 py-1 text-xs font-medium text-slate-500 transition-colors hover:border-primary/40 hover:text-primary dark:border-border-dark dark:text-slate-400"
+            >
+              Try a sample
+            </button>
+          </div>
         )}
 
         {showError && (
