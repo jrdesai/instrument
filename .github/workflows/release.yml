@@ -74,7 +74,12 @@ jobs:
           releaseBody: |
             ### macOS (Apple Silicon)
 
-            Download the `.dmg` below. The app is not yet signed/notarized, so on
-            first launch macOS may report it as from an unidentified developer:
-            right-click the app → Open, or run
-            `xattr -cr /Applications/Instrument.app`.
+            Download the `.dmg` below. The app is not yet notarized, so macOS
+            will report it as "damaged" on first launch. It isn't — that is
+            Gatekeeper quarantine. After moving the app to Applications, run:
+
+            ```
+            xattr -cr /Applications/Instrument.app
+            ```
+
+            then open it normally.

@@ -140,7 +140,7 @@ Releases are built by `.github/workflows/release.yml` (currently macOS Apple Sil
    ```
 3. The workflow builds the app (including the CLI sidecar) and uploads the `.dmg` to a **draft** GitHub Release — review and publish it from the Releases tab.
 
-> The app is not yet signed/notarized. macOS will warn on first launch; users can right-click → Open, or run `xattr -cr /Applications/Instrument.app`. Signing requires an Apple Developer account — the workflow picks up the standard `APPLE_*` secrets automatically if added later.
+> The app is not yet notarized. macOS reports downloaded builds as **"damaged"** on first launch (right-click → Open does *not* bypass this variant); the fix is `xattr -cr /Applications/Instrument.app`. Removing this friction requires notarization via an Apple Developer account — the workflow picks up the standard `APPLE_*` secrets automatically if added later.
 
 ---
 
