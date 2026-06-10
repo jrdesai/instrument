@@ -70,7 +70,7 @@ jobs:
         with:
           tagName: v__VERSION__
           releaseName: "Instrument v__VERSION__"
-          releaseDraft: true
+          releaseDraft: false
           releaseBody: |
             ### macOS (Apple Silicon)
 
