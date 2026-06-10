@@ -128,6 +128,22 @@ pnpm run build:web    # wasm + vite build → dist/
 
 ---
 
+## Releasing the desktop app
+
+Releases are built by `.github/workflows/release.yml` (currently macOS Apple Silicon only).
+
+1. Bump the version in `src-tauri/tauri.conf.json` and `package.json`, commit, and push.
+2. Tag and push:
+   ```bash
+   git tag v1.4.0
+   git push origin v1.4.0
+   ```
+3. The workflow builds the app (including the CLI sidecar) and uploads the `.dmg` to a **draft** GitHub Release — review and publish it from the Releases tab.
+
+> The app is not yet signed/notarized. macOS will warn on first launch; users can right-click → Open, or run `xattr -cr /Applications/Instrument.app`. Signing requires an Apple Developer account — the workflow picks up the standard `APPLE_*` secrets automatically if added later.
+
+---
+
 ## Running tests
 
 ```bash

@@ -1,0 +1,80 @@
+name: Release
+
+# Builds the desktop app and uploads installers to a draft GitHub Release.
+# Trigger: push a version tag (git tag v1.4.0 && git push origin v1.4.0),
+# or run manually from the Actions tab (workflow_dispatch).
+#
+# Currently Apple Silicon (aarch64) macOS only. To add more platforms later,
+# convert the single job into a matrix (macos-13 for Intel, windows-latest,
+# ubuntu-22.04) — the steps are identical apart from the runner.
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+# Required for tauri-action to create the release and upload assets,
+# regardless of the repo-level "Workflow permissions" setting.
+permissions:
+  contents: write
+
+jobs:
+  release-macos-arm:
+    name: macOS (Apple Silicon)
+    runs-on: macos-latest # ARM (M-series) runner
+    env:
+      # Tauri CLI requires CI to be literally "true"/"false"; GitHub sets CI=1-style
+      # values in some contexts and scripts/tauri-build.mjs is bypassed by tauri-action.
+      CI: "true"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: "10"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "pnpm"
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            src-core/target
+            src-tauri/target
+          key: ${{ runner.os }}-aarch64-cargo-release-${{ hashFiles('src-core/Cargo.lock', 'src-tauri/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-aarch64-cargo-release-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # tauri-action runs `tauri build`, whose beforeBuildCommand
+      # (src-tauri/tauri.conf.json) builds the CLI sidecar for the host
+      # triple (aarch64-apple-darwin here) and then the Vite frontend.
+      - name: Build and upload to draft release
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: v__VERSION__
+          releaseName: "Instrument v__VERSION__"
+          releaseDraft: true
+          releaseBody: |
+            ### macOS (Apple Silicon)
+
+            Download the `.dmg` below. The app is not yet signed/notarized, so on
+            first launch macOS may report it as from an unidentified developer:
+            right-click the app → Open, or run
+            `xattr -cr /Applications/Instrument.app`.
