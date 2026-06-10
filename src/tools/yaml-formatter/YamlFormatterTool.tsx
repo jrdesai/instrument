@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState, type ChangeEvent } from "react";
 import { callTool } from "../../bridge";
-import { CopyButton, FileUploadButton, ToolbarFooter } from "../../components/tool";
+import { CodeInput, CopyButton, FileUploadButton, ToolbarFooter } from "../../components/tool";
 import { CodeBlock } from "../../components/ui/CodeBlock";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useFileDrop } from "../../hooks/useFileDrop";
@@ -166,8 +166,9 @@ export default function YamlFormatterTool() {
             </div>
             {inputValue.trim() ? <span className="text-xs text-slate-600">{inputValue.length.toLocaleString()} chars</span> : null}
           </div>
-          <textarea
-            className="flex-1 w-full min-h-[180px] md:min-h-0 p-4 font-mono text-xs bg-transparent resize-none border-none focus:outline-none leading-relaxed placeholder:text-slate-500"
+          <CodeInput
+            ariaLabel="YAML input"
+            className="flex-1 w-full min-h-[180px] md:min-h-0"
             value={inputValue}
             placeholder={`name: Alice\nage: 30\nskills:\n  - Rust\n  - TypeScript`}
             onChange={(e) => {

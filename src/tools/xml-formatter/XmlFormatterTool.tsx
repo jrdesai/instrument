@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState, type ChangeEvent } from "react";
 import { callTool } from "../../bridge";
-import { CopyButton, FileUploadButton, ToolbarFooter } from "../../components/tool";
+import { CodeInput, CopyButton, FileUploadButton, ToolbarFooter } from "../../components/tool";
 import { CodeBlock } from "../../components/ui/CodeBlock";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useFileDrop } from "../../hooks/useFileDrop";
@@ -160,8 +160,9 @@ export default function XmlFormatterTool() {
             </div>
             {inputValue.trim() ? <span className="text-xs text-slate-600">{inputValue.length.toLocaleString()} chars</span> : null}
           </div>
-          <textarea
-            className="flex-1 w-full min-h-[180px] md:min-h-0 p-4 font-mono text-xs bg-transparent resize-none border-none focus:outline-none leading-relaxed placeholder:text-slate-500"
+          <CodeInput
+            ariaLabel="XML input"
+            className="flex-1 w-full min-h-[180px] md:min-h-0"
             value={inputValue}
             placeholder={`<root>\n  <user id="1">\n    <name>Alice</name>\n  </user>\n</root>`}
             onChange={(e) => {

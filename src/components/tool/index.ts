@@ -8,3 +8,5 @@ export type { FooterGroup } from "./ToolbarFooter";
 export { PillButton } from "./PillButton";
 export { StorageBadge } from "./StorageBadge";
 export { NetworkBadge } from "./NetworkBadge";
+export { CodeInput } from "./CodeInput";
+export type { CodeInputProps } from "./CodeInput";

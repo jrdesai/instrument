@@ -7,6 +7,7 @@ import {
   type ChangeEvent,
 } from "react";
 import {
+  CodeInput,
   CopyButton,
   FileUploadButton,
   PanelHeader,
@@ -373,9 +374,9 @@ function JsonFormatterTool() {
               </>
             }
           />
-          <textarea
-            aria-label="JSON input"
-            className="flex-1 w-full min-h-0 p-4 font-mono text-xs text-slate-700 dark:text-slate-300 bg-transparent resize-none border-none focus:outline-none leading-relaxed placeholder:text-slate-500"
+          <CodeInput
+            ariaLabel="JSON input"
+            className="flex-1 w-full min-h-0"
             placeholder="Paste JSON here..."
             value={inputValue}
             onChange={(e) => {

@@ -7,7 +7,7 @@ import {
 } from "react";
 import { useNavigate } from "react-router-dom";
 import { callTool } from "../../bridge";
-import { CopyButton, FileUploadButton, ToolbarFooter } from "../../components/tool";
+import { CodeInput, CopyButton, FileUploadButton, ToolbarFooter } from "../../components/tool";
 import { CodeBlock } from "../../components/ui/CodeBlock";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useFileDrop } from "../../hooks/useFileDrop";
@@ -306,9 +306,9 @@ function CsvToJsonTool() {
               </span>
             )}
           </div>
-          <textarea
-            aria-label={`${inputLabel} input`}
-            className="flex-1 w-full min-h-[180px] md:min-h-0 p-4 font-mono text-xs text-slate-700 dark:text-slate-300 bg-transparent resize-none border-none focus:outline-none leading-relaxed placeholder:text-slate-500"
+          <CodeInput
+            ariaLabel={`${inputLabel} input`}
+            className="flex-1 w-full min-h-[180px] md:min-h-0"
             placeholder={direction === "csv-to-json"
               ? ["name,email,age", "Alice,alice@example.com,30", "Bob,bob@example.com,25"].join("\n")
               : JSON.stringify(

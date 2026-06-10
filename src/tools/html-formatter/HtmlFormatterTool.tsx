@@ -6,7 +6,7 @@ import {
   type ChangeEvent,
 } from "react";
 import { callTool } from "../../bridge";
-import { CopyButton, FileUploadButton, PillButton } from "../../components/tool";
+import { CodeInput, CopyButton, FileUploadButton, PillButton } from "../../components/tool";
 import { CodeBlock } from "../../components/ui/CodeBlock";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useFileDrop } from "../../hooks/useFileDrop";
@@ -257,9 +257,9 @@ export default function HtmlFormatterTool() {
               </button>
             </div>
           </div>
-          <textarea
-            aria-label="HTML input"
-            className="min-h-0 w-full flex-1 resize-none border-none bg-transparent p-4 font-mono text-xs leading-relaxed text-slate-700 placeholder:text-slate-500 focus:outline-none dark:text-slate-300"
+          <CodeInput
+            ariaLabel="HTML input"
+            className="min-h-0 w-full flex-1"
             placeholder="Paste HTML here…"
             value={inputValue}
             onChange={(e) => {

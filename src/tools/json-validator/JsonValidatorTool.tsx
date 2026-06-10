@@ -7,7 +7,7 @@ import {
 import { callTool } from "../../bridge";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useHistoryStore } from "../../store";
-import { CopyButton, ToolbarFooter } from "../../components/tool";
+import { CodeInput, CopyButton, ToolbarFooter } from "../../components/tool";
 import { CodeBlock } from "../../components/ui/CodeBlock";
 import type { JsonValidateInput } from "../../bindings/JsonValidateInput";
 import type { JsonValidateOutput } from "../../bindings/JsonValidateOutput";
@@ -147,9 +147,9 @@ function JsonValidatorTool() {
               </span>
             )}
           </div>
-          <textarea
-            aria-label="JSON input"
-            className="flex-1 w-full min-h-0 p-4 font-mono text-xs text-slate-700 dark:text-slate-300 bg-transparent resize-none border-none focus:outline-none leading-relaxed placeholder:text-slate-500"
+          <CodeInput
+            ariaLabel="JSON input"
+            className="flex-1 w-full min-h-0"
             placeholder="Paste JSON to validate..."
             value={inputValue}
             onChange={(e) => {
