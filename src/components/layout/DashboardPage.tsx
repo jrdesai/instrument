@@ -298,7 +298,9 @@ export function DashboardPage() {
     [favouriteToolIds]
   );
 
-  const displayedRecent = recentTools.slice(0, MAX_RECENT);
+  const displayedRecent = recentTools
+    .filter((tool) => !favouriteToolIds.includes(tool.id))
+    .slice(0, MAX_RECENT);
 
   const handleOpenTool = (tool: Tool) => {
     setActiveTool(tool);
@@ -320,73 +322,63 @@ export function DashboardPage() {
         )}
 
         {(favouriteTools.length > 0 || displayedRecent.length > 0) && (
-          <section className="mb-3" aria-label="Quick access">
-            <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
-              {favouriteTools.length > 0 && (
-                <>
-                  <span className="shrink-0 text-[10px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-                    Pinned
-                  </span>
-                  {favouriteTools.map((tool) => (
-                <div key={tool.id} className="group/fav relative shrink-0">
+          <section className="mb-3 flex flex-col gap-2" aria-label="Quick access">
+            {favouriteTools.length > 0 && (
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="w-14 shrink-0 text-[10px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                  Pinned
+                </span>
+                {favouriteTools.map((tool) => (
+                  <div key={tool.id} className="group/fav relative">
+                    <button
+                      type="button"
+                      onClick={() => handleOpenTool(tool)}
+                      onMouseEnter={() => tool.preload?.()}
+                      onFocus={() => tool.preload?.()}
+                      className="flex h-7 items-center gap-1.5 whitespace-nowrap rounded-full border border-amber-300 bg-amber-50 px-2.5 text-xs text-amber-700 transition-colors hover:border-amber-400 hover:bg-amber-100 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-400 dark:hover:bg-amber-900/40"
+                    >
+                      <span className="material-symbols-outlined text-[12px]" aria-hidden>
+                        {tool.icon}
+                      </span>
+                      {tool.name}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => toggleFavourite(tool)}
+                      aria-label={`Remove ${tool.name} from favourites`}
+                      className="absolute -right-1 -top-1 z-10 flex size-4 items-center justify-center rounded-full bg-slate-500 text-white opacity-0 transition-opacity hover:bg-red-500 group-hover/fav:opacity-100 dark:bg-slate-600 dark:hover:bg-red-500"
+                    >
+                      <span className="material-symbols-outlined text-[10px]" aria-hidden>
+                        close
+                      </span>
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {displayedRecent.length > 0 && (
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="w-14 shrink-0 text-[10px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                  Recent
+                </span>
+                {displayedRecent.map((tool) => (
                   <button
+                    key={tool.id}
                     type="button"
                     onClick={() => handleOpenTool(tool)}
                     onMouseEnter={() => tool.preload?.()}
                     onFocus={() => tool.preload?.()}
-                    aria-label={tool.name}
-                    className="flex size-9 items-center justify-center rounded-lg border border-amber-300 bg-amber-100 text-amber-600 transition-colors hover:border-amber-400 hover:bg-amber-200 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-400 dark:hover:bg-amber-900/40"
+                    className="flex h-7 items-center gap-1.5 whitespace-nowrap rounded-full border border-border-light bg-white px-2.5 text-xs text-slate-600 transition-colors hover:border-primary/40 hover:text-primary dark:border-border-dark dark:bg-panel-dark dark:text-slate-400"
                   >
-                    <span className="material-symbols-outlined text-[18px]" aria-hidden>
+                    <span className="material-symbols-outlined text-[12px]" aria-hidden>
                       {tool.icon}
                     </span>
-                  </button>
-                  <span className="pointer-events-none absolute left-0 top-full z-50 mt-1.5 whitespace-nowrap rounded-md bg-slate-900 px-2 py-1 text-xs text-slate-100 opacity-0 transition-opacity group-hover/fav:opacity-100 dark:bg-slate-700">
                     {tool.name}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => toggleFavourite(tool)}
-                    aria-label={`Remove ${tool.name} from favourites`}
-                    className="absolute -right-1 -top-1 z-10 flex size-4 items-center justify-center rounded-full bg-slate-500 text-white opacity-0 transition-opacity hover:bg-red-500 group-hover/fav:opacity-100 dark:bg-slate-600 dark:hover:bg-red-500"
-                  >
-                    <span className="material-symbols-outlined text-[10px]" aria-hidden>
-                      close
-                    </span>
                   </button>
-                </div>
-              ))}
-                </>
-              )}
-
-              {favouriteTools.length > 0 && displayedRecent.length > 0 && (
-                <span className="shrink-0 text-[10px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-                  Recent
-                </span>
-              )}
-
-              {displayedRecent.length > 0 && favouriteTools.length === 0 && (
-                <span className="shrink-0 text-[10px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-                  Recent
-                </span>
-              )}
-
-              {displayedRecent.map((tool) => (
-                <button
-                  key={tool.id}
-                  type="button"
-                  onClick={() => handleOpenTool(tool)}
-                  onMouseEnter={() => tool.preload?.()}
-                  onFocus={() => tool.preload?.()}
-                  className="flex h-7 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border border-border-light bg-white px-2.5 text-xs text-slate-600 transition-colors hover:border-primary/40 hover:text-primary dark:border-border-dark dark:bg-panel-dark dark:text-slate-400"
-                >
-                  <span className="material-symbols-outlined text-[12px]" aria-hidden>
-                    {tool.icon}
-                  </span>
-                  {tool.name}
-                </button>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </section>
         )}
       </header>
