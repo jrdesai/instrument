@@ -274,7 +274,8 @@ Tool code remains lazy-loaded via `React.lazy()`.
 `AppShell` switches to `flex-col` below `md` (768px): sidebar hidden, bottom nav bar
 appears with the same four nav items. Header shows a logo mark on mobile. `<main>` is
 `overflow-y-auto` on mobile so tool routes scroll. Safe-area inset padding added in
-`App.css` for iOS home indicator. Per-tool split/stack layouts are a deferred follow-up.
+`App.css` for iOS home indicator. Per-tool split/stack layouts shipped in v1.4.x —
+all split-panel tools stack below the `md` breakpoint.
 
 ---
 
