@@ -6,7 +6,7 @@ import React, {
   type ChangeEvent,
 } from "react";
 import { useLocation } from "react-router-dom";
-import { CopyButton, PillButton, ToolbarFooter } from "../../components/tool";
+import { CodeInput, CopyButton, PillButton, ToolbarFooter } from "../../components/tool";
 import { callTool } from "../../bridge";
 import { extractErrorMessage } from "../../lib/extractErrorMessage";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
@@ -229,9 +229,9 @@ function CsvPreviewerTool() {
               </span>
             )}
           </div>
-          <textarea
-            aria-label="CSV input"
-            className="h-full w-full flex-1 resize-none border-0 bg-background-light p-4 font-mono text-xs leading-relaxed text-slate-900 outline-none focus:ring-0 dark:bg-background-dark dark:text-slate-100"
+          <CodeInput
+            ariaLabel="CSV input"
+            className="h-full w-full flex-1"
             placeholder={"name,email,age\nAlice,alice@example.com,30\nBob,bob@example.com,25"}
             value={inputValue}
             onChange={(e) => {
@@ -240,7 +240,6 @@ function CsvPreviewerTool() {
               setInputValue(v);
               setDraft(v);
             }}
-            spellCheck={false}
           />
         </div>
 

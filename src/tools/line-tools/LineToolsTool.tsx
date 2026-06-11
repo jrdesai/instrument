@@ -7,6 +7,7 @@ import {
 } from "react";
 import { callTool } from "../../bridge";
 import {
+  CodeInput,
   CopyButton,
   PanelHeader,
   PillButton,
@@ -251,9 +252,9 @@ function LineToolsTool() {
             label="Input"
             meta={`${text.split("\n").length.toLocaleString()} lines`}
           />
-          <textarea
-            aria-label="Input text"
-            className="min-h-0 flex-1 resize-none bg-transparent p-4 font-mono text-xs leading-relaxed text-slate-700 placeholder:text-slate-500 focus:outline-none dark:text-slate-300"
+          <CodeInput
+            ariaLabel="Input text"
+            className="min-h-0 flex-1"
             placeholder="Paste text..."
             value={text}
             onChange={(e) => {

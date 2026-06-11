@@ -6,6 +6,7 @@ import {
   type ChangeEvent,
 } from "react";
 import { twMerge } from "tailwind-merge";
+import { CodeInput } from "../../components/tool";
 import { callTool } from "../../bridge";
 import { useDraftInput, useRestoreDraft } from "../../hooks/useDraftInput";
 import { useFileDrop } from "../../hooks/useFileDrop";
@@ -255,9 +256,9 @@ function JsonSchemaValidatorTool() {
               </span>
             </div>
           </div>
-          <textarea
-            aria-label="JSON Document"
-            className="min-h-[180px] md:min-h-0 w-full flex-1 resize-none border-none bg-transparent p-4 font-mono text-xs leading-relaxed text-slate-700 placeholder:text-slate-500 focus:outline-none dark:text-slate-300"
+          <CodeInput
+            ariaLabel="JSON document"
+            className="min-h-[180px] md:min-h-0 w-full flex-1"
             placeholder={`Paste JSON document here…\n\nExample:\n{\n  "name": "Alice",\n  "age": 30\n}`}
             value={document}
             onChange={(e) => {
@@ -266,7 +267,6 @@ function JsonSchemaValidatorTool() {
               setDocument(value);
               setDraft({ document: value, schema, draft: selectedDraft });
             }}
-            spellCheck={false}
           />
         </div>
 
@@ -306,9 +306,9 @@ function JsonSchemaValidatorTool() {
               </span>
             </div>
           </div>
-          <textarea
-            aria-label="JSON Schema"
-            className="min-h-[180px] md:min-h-0 w-full flex-1 resize-none border-none bg-transparent p-4 font-mono text-xs leading-relaxed text-slate-700 placeholder:text-slate-500 focus:outline-none dark:text-slate-300"
+          <CodeInput
+            ariaLabel="Schema input"
+            className="min-h-[180px] md:min-h-0 w-full flex-1"
             placeholder={`Paste JSON Schema here…\n\nExample:\n{\n  "$schema": "http://json-schema.org/draft-07/schema#",\n  "type": "object",\n  "required": ["name"],\n  "properties": {\n    "name": { "type": "string" },\n    "age": { "type": "integer", "minimum": 0 }\n  }\n}`}
             value={schema}
             onChange={(e) => {
@@ -317,7 +317,6 @@ function JsonSchemaValidatorTool() {
               setSchema(value);
               setDraft({ document, schema: value, draft: selectedDraft });
             }}
-            spellCheck={false}
           />
         </div>
       </div>

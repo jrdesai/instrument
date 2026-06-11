@@ -6,7 +6,7 @@ import {
   type ChangeEvent,
 } from "react";
 import { callTool } from "../../bridge";
-import { CopyButton, FileUploadButton, PillButton, ToolbarFooter } from "../../components/tool";
+import { CodeInput, CopyButton, FileUploadButton, PillButton, ToolbarFooter } from "../../components/tool";
 import { CodeBlock } from "../../components/ui/CodeBlock";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useFileDrop } from "../../hooks/useFileDrop";
@@ -262,9 +262,9 @@ function JsonConverterTool() {
               </span>
             )}
           </div>
-          <textarea
-            aria-label="JSON input"
-            className="flex-1 w-full min-h-[180px] md:min-h-0 p-4 font-mono text-xs text-slate-700 dark:text-slate-300 bg-transparent resize-none border-none focus:outline-none leading-relaxed placeholder:text-slate-500"
+          <CodeInput
+            ariaLabel="JSON input"
+            className="flex-1 w-full min-h-[180px] md:min-h-0"
             placeholder="Paste JSON to convert..."
             value={inputValue}
             onChange={(e) => {

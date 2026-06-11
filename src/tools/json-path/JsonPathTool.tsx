@@ -6,7 +6,7 @@ import {
   useState,
 } from "react";
 import { callTool } from "../../bridge";
-import { CopyButton, ToolbarFooter } from "../../components/tool";
+import { CodeInput, CopyButton, ToolbarFooter } from "../../components/tool";
 import { CodeBlock } from "../../components/ui/CodeBlock";
 import { useDraftInput, useRestoreDraft } from "../../hooks/useDraftInput";
 import { useHistoryStore } from "../../store";
@@ -203,9 +203,9 @@ function JsonPathTool() {
               </span>
             )}
           </div>
-          <textarea
-            aria-label="JSON document"
-            className="flex-1 w-full min-h-0 p-4 font-mono text-xs text-slate-700 dark:text-slate-300 bg-transparent resize-none border-none focus:outline-none leading-relaxed placeholder:text-slate-500"
+          <CodeInput
+            ariaLabel="JSON document"
+            className="flex-1 w-full min-h-0"
             placeholder="Paste JSON document..."
             value={jsonInput}
             onChange={(e) => {

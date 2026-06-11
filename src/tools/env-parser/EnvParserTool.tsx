@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState, type ChangeEvent } from "react";
 import { callTool } from "../../bridge";
 import {
+  CodeInput,
   CopyButton,
   FileUploadButton,
   PanelHeader,
@@ -267,7 +268,9 @@ function EnvParserTool() {
               </>
             }
           />
-          <textarea
+          <CodeInput
+            ariaLabel="Environment file input"
+            className="min-h-0 flex-1"
             value={content}
             onChange={(e) => {
               setFileDropError(null);
@@ -275,7 +278,6 @@ function EnvParserTool() {
               setDraft(e.target.value);
             }}
             placeholder={FORMAT_PLACEHOLDERS[format]}
-            className="min-h-0 flex-1 resize-none bg-transparent p-4 font-mono text-xs text-slate-700 placeholder:text-slate-500 focus:outline-none dark:text-slate-300"
           />
         </div>
 

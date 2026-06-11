@@ -5,7 +5,7 @@ import {
   useState,
   type ChangeEvent,
 } from "react";
-import { ToolbarFooter } from "../../components/tool";
+import { CodeInput, ToolbarFooter } from "../../components/tool";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useFileDrop } from "../../hooks/useFileDrop";
 
@@ -20,7 +20,6 @@ export default function HtmlPreviewerTool() {
   useRestoreStringDraft(TOOL_ID, setSource);
   const [preview, setPreview] = useState("");
   const [viewMode, setViewMode] = useState<ViewMode>("split");
-  const [wordWrap, setWordWrap] = useState(true);
   const [fileName, setFileName] = useState<string | null>(null);
   const [fileDropError, setFileDropError] = useState<string | null>(null);
 
@@ -114,20 +113,6 @@ export default function HtmlPreviewerTool() {
           </button>
         ))}
 
-        <div className="mx-2 h-4 w-px bg-border-light dark:bg-border-dark" />
-
-        <button
-          type="button"
-          onClick={() => setWordWrap((w) => !w)}
-          className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${
-            wordWrap
-              ? "bg-primary/10 text-primary"
-              : "text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
-          }`}
-        >
-          Wrap
-        </button>
-
         <div className="flex-1" />
 
         <label className="cursor-pointer rounded-lg border border-border-light bg-background-light px-3 py-1.5 text-xs text-slate-500 transition-colors hover:text-slate-700 dark:border-border-dark dark:bg-background-dark dark:text-slate-400 dark:hover:text-slate-200">
@@ -199,14 +184,11 @@ export default function HtmlPreviewerTool() {
               )}
             </div>
 
-            <textarea
-              aria-label="HTML source"
-              className={`custom-scrollbar min-h-0 w-full flex-1 resize-none bg-background-light p-4 font-mono text-xs leading-relaxed text-slate-700 placeholder:text-slate-400 focus:outline-none dark:bg-background-dark dark:text-slate-300 dark:placeholder:text-slate-500 ${
-                wordWrap ? "whitespace-pre-wrap" : "overflow-x-auto whitespace-pre"
-              }`}
+            <CodeInput
+              ariaLabel="HTML source"
+              className="min-h-0 w-full flex-1"
               placeholder="Paste HTML here, or drag and drop an .html file…"
               value={source}
-              spellCheck={false}
               onChange={(e) => {
                 setFileDropError(null);
                 const v = e.target.value;

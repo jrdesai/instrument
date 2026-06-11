@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState, type ChangeEvent } from "react";
 import {
+  CodeInput,
   CopyButton,
   FileUploadButton,
   PanelHeader,
@@ -225,11 +226,6 @@ const ConfigConverterTool: React.FC = () => {
     setDraft(v);
   };
 
-  const handleBlurInput = () => {
-    if (!input.trim()) return;
-    void runProcess(input, { from, to, indent, sortKeys }, false);
-  };
-
   const handleFromChange = (f: ConfigFormat) => {
     setFrom(f);
     if (f === to) {
@@ -335,13 +331,12 @@ const ConfigConverterTool: React.FC = () => {
               onChange={handleFileUpload}
             />
           </PanelHeader>
-          <textarea
-            className="flex-1 w-full resize-none border-none outline-none bg-transparent font-mono text-xs text-slate-700 dark:text-slate-300 p-4 leading-relaxed"
+          <CodeInput
+            ariaLabel="Config input"
+            className="flex-1 w-full"
             placeholder={inputPlaceholder}
-            spellCheck={false}
             value={input}
             onChange={handleChangeInput}
-            onBlur={handleBlurInput}
           />
         </div>
 

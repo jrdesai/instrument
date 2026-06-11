@@ -5,7 +5,7 @@ import {
   useState,
   type ChangeEvent,
 } from "react";
-import { CopyButton, FileUploadButton, ToolbarFooter } from "../../components/tool";
+import { CodeInput, CopyButton, FileUploadButton, ToolbarFooter } from "../../components/tool";
 import { callTool } from "../../bridge";
 import { useDraftInput, useRestoreDraft } from "../../hooks/useDraftInput";
 import { useFileDrop } from "../../hooks/useFileDrop";
@@ -346,9 +346,9 @@ function TextDiffTool() {
               {leftInput.length.toLocaleString()} chars
             </span>
           </div>
-          <textarea
-            aria-label="Left text"
-            className="flex-1 w-full min-h-[160px] md:min-h-0 p-4 font-mono text-xs text-slate-700 dark:text-slate-300 bg-transparent resize-none border-none focus:outline-none leading-relaxed placeholder:text-slate-500"
+          <CodeInput
+            ariaLabel="Original text"
+            className="flex-1 w-full min-h-[160px] md:min-h-0"
             placeholder="Paste first text..."
             value={leftInput}
             onChange={(e) => {
@@ -404,9 +404,9 @@ function TextDiffTool() {
               {rightInput.length.toLocaleString()} chars
             </span>
           </div>
-          <textarea
-            aria-label="Right text"
-            className="flex-1 w-full min-h-[160px] md:min-h-0 p-4 font-mono text-xs text-slate-700 dark:text-slate-300 bg-transparent resize-none border-none focus:outline-none leading-relaxed placeholder:text-slate-500"
+          <CodeInput
+            ariaLabel="Modified text"
+            className="flex-1 w-full min-h-[160px] md:min-h-0"
             placeholder="Paste second text..."
             value={rightInput}
             onChange={(e) => {

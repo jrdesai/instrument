@@ -4,7 +4,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { CopyButton, PanelHeader, ToolbarFooter } from "../../components/tool";
+import { CodeInput, CopyButton, PanelHeader, ToolbarFooter } from "../../components/tool";
 import { callTool } from "../../bridge";
 import { useDraftInput, useRestoreDraft } from "../../hooks/useDraftInput";
 import { useFileDrop } from "../../hooks/useFileDrop";
@@ -221,9 +221,9 @@ function JsonDiffTool() {
             label="Left"
             meta={`${leftInput.length.toLocaleString()} chars`}
           />
-          <textarea
-            aria-label="Left JSON"
-            className="flex-1 w-full min-h-[160px] md:min-h-0 p-4 font-mono text-xs text-slate-700 dark:text-slate-300 bg-transparent resize-none border-none focus:outline-none leading-relaxed placeholder:text-slate-500"
+          <CodeInput
+            ariaLabel="Left JSON"
+            className="flex-1 w-full min-h-[160px] md:min-h-0"
             placeholder="Paste first JSON..."
             value={leftInput}
             onChange={(e) => {
@@ -255,9 +255,9 @@ function JsonDiffTool() {
             label="Right"
             meta={`${rightInput.length.toLocaleString()} chars`}
           />
-          <textarea
-            aria-label="Right JSON"
-            className="flex-1 w-full min-h-[160px] md:min-h-0 p-4 font-mono text-xs text-slate-700 dark:text-slate-300 bg-transparent resize-none border-none focus:outline-none leading-relaxed placeholder:text-slate-500"
+          <CodeInput
+            ariaLabel="Right JSON"
+            className="flex-1 w-full min-h-[160px] md:min-h-0"
             placeholder="Paste second JSON..."
             value={rightInput}
             onChange={(e) => {
