@@ -380,4 +380,34 @@ mod tests {
         assert!(out.result.contains("日本語"));
         assert!(out.result.contains("🎉"));
     }
+
+    #[test]
+    fn preserves_insertion_order_when_sort_keys_false() {
+        let input = r#"{"name":"Ada","languages":["rust","ts"],"active":true}"#;
+        let out_unsorted = process(JsonFormatInput {
+            value: input.to_string(),
+            mode: JsonFormatMode::Pretty,
+            indent: IndentStyle::Spaces2,
+            sort_keys: false,
+        });
+        assert!(out_unsorted.is_valid);
+        let name_pos = out_unsorted.result.find("\"name\"").unwrap();
+        let lang_pos = out_unsorted.result.find("\"languages\"").unwrap();
+        let act_pos = out_unsorted.result.find("\"active\"").unwrap();
+        assert!(name_pos < lang_pos);
+        assert!(lang_pos < act_pos);
+
+        let out_sorted = process(JsonFormatInput {
+            value: input.to_string(),
+            mode: JsonFormatMode::Pretty,
+            indent: IndentStyle::Spaces2,
+            sort_keys: true,
+        });
+        assert!(out_sorted.is_valid);
+        let s_act_pos = out_sorted.result.find("\"active\"").unwrap();
+        let s_lang_pos = out_sorted.result.find("\"languages\"").unwrap();
+        let s_name_pos = out_sorted.result.find("\"name\"").unwrap();
+        assert!(s_act_pos < s_lang_pos);
+        assert!(s_lang_pos < s_name_pos);
+    }
 }
