@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useMemo, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { isWeb } from "../../bridge";
 import { categorySubtitles } from "../../constants/library";
 import type { Role, Tool } from "../../registry";
@@ -235,23 +235,22 @@ function ToolGridCard({
   );
 }
 
+function isKnownCategory(name: string): boolean {
+  return getDisplayCategories().some((cat) => cat.name === name);
+}
+
 export function DashboardPage() {
-  const location = useLocation();
-  const [view, setView] = useState<HomeView>({ type: "categories" });
+  const [searchParams, setSearchParams] = useSearchParams();
+  const categoryParam = searchParams.get("category");
+  const view: HomeView =
+    categoryParam === "all"
+      ? { type: "all" }
+      : categoryParam && isKnownCategory(categoryParam)
+        ? { type: "category", name: categoryParam }
+        : { type: "categories" };
   const [activeRole, setActiveRole] = useState<RoleFilter>("All");
   const welcomeDismissed = usePreferenceStore((s) => s.welcomeDismissed);
   const setWelcomeDismissed = usePreferenceStore((s) => s.setWelcomeDismissed);
-
-  // Open a specific category if navigated here from a tool's category badge
-  useEffect(() => {
-    const incoming = (location.state as { openCategory?: string } | null)
-      ?.openCategory;
-    if (incoming) {
-      setView({ type: "category", name: incoming });
-      // Clear the state so back-navigation doesn't re-trigger
-      window.history.replaceState({}, "");
-    }
-  }, [location.state]);
 
   const platformTools = useMemo(
     () => tools.filter((t) => !isWeb || t.platforms.includes("web")),
@@ -429,7 +428,7 @@ export function DashboardPage() {
                   <button
                     key={cat.name}
                     type="button"
-                    onClick={() => setView({ type: "category", name: cat.name })}
+                    onClick={() => setSearchParams({ category: cat.name })}
                     className="group flex flex-col items-start gap-2 rounded-xl border border-border-light bg-white p-4 text-left transition-colors hover:border-primary/40 hover:bg-primary/5 dark:border-border-dark dark:bg-panel-dark"
                   >
                     <div
@@ -486,7 +485,7 @@ export function DashboardPage() {
             <div className="mt-5 flex justify-center">
               <button
                 type="button"
-                onClick={() => setView({ type: "all" })}
+                onClick={() => setSearchParams({ category: "all" })}
                 className="flex items-center gap-1.5 rounded-lg border border-border-light px-4 py-2 text-xs font-medium text-slate-600 transition-colors hover:border-primary/40 hover:text-primary dark:border-border-dark dark:text-slate-400 dark:hover:border-primary/40 dark:hover:text-primary"
               >
                 <span
@@ -507,7 +506,7 @@ export function DashboardPage() {
               <div className="flex items-center gap-3">
                 <button
                   type="button"
-                  onClick={() => setView({ type: "categories" })}
+                  onClick={() => setSearchParams({})}
                   className="flex items-center gap-1.5 text-xs text-slate-500 transition-colors hover:text-primary dark:text-slate-400"
                 >
                   <span
@@ -558,7 +557,7 @@ export function DashboardPage() {
               <div className="flex items-center gap-3">
                 <button
                   type="button"
-                  onClick={() => setView({ type: "categories" })}
+                  onClick={() => setSearchParams({})}
                   className="flex items-center gap-1.5 text-xs text-slate-500 transition-colors hover:text-primary dark:text-slate-400"
                 >
                   <span

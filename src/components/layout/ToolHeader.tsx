@@ -62,7 +62,7 @@ export function ToolHeader({ tool }: { tool: Tool }) {
         </button>
         <button
           type="button"
-          onClick={() => navigate("/", { state: { openCategory: tool.displayCategory } })}
+          onClick={() => navigate(`/?category=${encodeURIComponent(tool.displayCategory)}`)}
           className="inline-flex items-center px-2 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-semibold uppercase tracking-wider transition-colors hover:bg-primary/20"
           title={`Browse ${tool.displayCategory} tools`}
         >

@@ -15,6 +15,7 @@ import { DashboardPage } from "./components/layout/DashboardPage";
 import { ChainEditPage } from "./components/layout/ChainEditPage";
 import { ChainsPage } from "./components/layout/ChainsPage";
 import { HistoryPage } from "./components/layout/HistoryPage";
+import { NotFoundPage } from "./components/layout/NotFoundPage";
 import { SettingsPage } from "./components/layout/SettingsPage";
 import { ToolHeader } from "./components/layout/ToolHeader";
 import { ToolErrorBoundary } from "./components/ui/ToolErrorBoundary";
@@ -38,7 +39,7 @@ function ToolPage() {
     useWasmLoadFailureStore.getState().setWasmLoadFailure(null);
   }, [toolId]);
 
-  if (!tool) return <div className="p-4 text-slate-500 dark:text-slate-400">Tool not found.</div>;
+  if (!tool) return <NotFoundPage title="Tool not found" linkText="Browse all tools" />;
   const Component = tool.component;
   return (
     <div ref={containerRef} tabIndex={-1} className="flex-1 flex flex-col min-h-0 w-full bg-background-light dark:bg-background-dark outline-none">
@@ -124,6 +125,7 @@ function RoutedLayout() {
           <Route path="/chains/:chainId" element={<ChainEditPage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/tools/:toolId" element={<ToolPage />} />
+          <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Routes>
     </>
