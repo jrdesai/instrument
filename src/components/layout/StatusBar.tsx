@@ -1,12 +1,14 @@
+import { useLocation } from "react-router-dom";
 import { isDesktop } from "../../bridge";
 import { getToolById } from "../../registry";
 import { useLastRunStore } from "../../store/lastRun";
-import { useToolStore } from "../../store";
 
 export function StatusBar() {
-  const activeToolId = useToolStore((s) => s.activeToolId);
+  const location = useLocation();
+  const routeToolId = location.pathname.match(/^\/tools\/(.+)$/)?.[1] ?? null;
+  const activeTool = routeToolId ? getToolById(routeToolId) : null;
   const durationMs = useLastRunStore((s) => s.durationMs);
-  const activeTool = activeToolId ? getToolById(activeToolId) : null;
+  const lastRunToolId = useLastRunStore((s) => s.toolId);
   const usesNetwork = activeTool?.network === true;
   const version =
     typeof import.meta.env.VITE_APP_VERSION === "string"
@@ -32,7 +34,7 @@ export function StatusBar() {
         </span>
       </div>
 
-      {durationMs != null ? (
+      {routeToolId != null && lastRunToolId === routeToolId && durationMs != null ? (
         <span className="truncate text-slate-400 dark:text-slate-500">
           {isDesktop ? "rust" : "wasm"} · {durationMs.toFixed(1)} ms
         </span>

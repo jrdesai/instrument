@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { isWeb } from "../../bridge";
 import { categorySubtitles } from "../../constants/library";
@@ -252,6 +252,12 @@ export function DashboardPage() {
   const welcomeDismissed = usePreferenceStore((s) => s.welcomeDismissed);
   const setWelcomeDismissed = usePreferenceStore((s) => s.setWelcomeDismissed);
 
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    scrollContainerRef.current?.focus();
+  }, [view.type]);
+
   const platformTools = useMemo(
     () => tools.filter((t) => !isWeb || t.platforms.includes("web")),
     []
@@ -313,12 +319,6 @@ export function DashboardPage() {
         <p className="mb-4 text-xs text-slate-500 dark:text-slate-400">
           Privacy-first developer toolkit · {totalImplemented} tools, all running locally
         </p>
-
-        {!welcomeDismissed && (
-          <div className="mb-4">
-            <WelcomeCard onDismiss={() => setWelcomeDismissed(true)} />
-          </div>
-        )}
 
         {(favouriteTools.length > 0 || displayedRecent.length > 0) && (
           <section className="mb-3 flex flex-col gap-2" aria-label="Quick access">
@@ -382,28 +382,47 @@ export function DashboardPage() {
         )}
       </header>
 
-      <div className="min-h-0 flex-1 overflow-y-auto">
+      <div
+        ref={view.type === "categories" ? scrollContainerRef : undefined}
+        tabIndex={-1}
+        className="min-h-0 flex-1 overflow-y-auto outline-none"
+      >
         {view.type === "categories" && (
           <div className="px-6 py-5">
+            {!welcomeDismissed && (
+              <div className="mb-4">
+                <WelcomeCard onDismiss={() => setWelcomeDismissed(true)} />
+              </div>
+            )}
+
             <div className="mb-3 flex items-center justify-between gap-3">
               <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                 Browse by category
               </span>
-              <div className="flex items-center gap-0.5 overflow-x-auto no-scrollbar">
-                {ROLES.map((role) => (
-                  <button
-                    key={role}
-                    type="button"
-                    onClick={() => setActiveRole(role)}
-                    className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium transition-colors ${
-                      activeRole === role
-                        ? "bg-primary/10 text-primary"
-                        : "text-slate-400 hover:text-slate-700 dark:text-slate-500 dark:hover:text-slate-200"
-                    }`}
-                  >
-                    {role}
-                  </button>
-                ))}
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-0.5 overflow-x-auto no-scrollbar">
+                  {ROLES.map((role) => (
+                    <button
+                      key={role}
+                      type="button"
+                      onClick={() => setActiveRole(role)}
+                      className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium transition-colors ${
+                        activeRole === role
+                          ? "bg-primary/10 text-primary"
+                          : "text-slate-400 hover:text-slate-700 dark:text-slate-500 dark:hover:text-slate-200"
+                      }`}
+                    >
+                      {role}
+                    </button>
+                  ))}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setSearchParams({ category: "all" })}
+                  className="shrink-0 text-xs font-medium text-primary hover:underline"
+                >
+                  View all {totalImplemented} tools
+                </button>
               </div>
             </div>
 
@@ -481,22 +500,6 @@ export function DashboardPage() {
                   : `No categories for the ${activeRole} role.`}
               </p>
             )}
-
-            <div className="mt-5 flex justify-center">
-              <button
-                type="button"
-                onClick={() => setSearchParams({ category: "all" })}
-                className="flex items-center gap-1.5 rounded-lg border border-border-light px-4 py-2 text-xs font-medium text-slate-600 transition-colors hover:border-primary/40 hover:text-primary dark:border-border-dark dark:text-slate-400 dark:hover:border-primary/40 dark:hover:text-primary"
-              >
-                <span
-                  className="material-symbols-outlined text-[14px]"
-                  aria-hidden
-                >
-                  grid_view
-                </span>
-                View all {totalImplemented} tools
-              </button>
-            </div>
           </div>
         )}
 
@@ -527,7 +530,11 @@ export function DashboardPage() {
               </div>
             </div>
 
-            <div className="min-h-0 flex-1 overflow-y-auto px-6 py-4">
+            <div
+              ref={view.type === "category" ? scrollContainerRef : undefined}
+              tabIndex={-1}
+              className="min-h-0 flex-1 overflow-y-auto px-6 py-4 outline-none"
+            >
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {filteredTools.map((tool) => (
                   <ToolGridCard
@@ -578,7 +585,11 @@ export function DashboardPage() {
               </div>
             </div>
 
-            <div className="min-h-0 flex-1 overflow-y-auto px-6 py-4">
+            <div
+              ref={view.type === "all" ? scrollContainerRef : undefined}
+              tabIndex={-1}
+              className="min-h-0 flex-1 overflow-y-auto px-6 py-4 outline-none"
+            >
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {allRoleTools.map((tool) => (
                   <ToolGridCard
