@@ -269,7 +269,7 @@ pub fn inspect(input: UuidInspectInput) -> UuidInspectOutput {
         v1_node,
         v7_timestamp,
         as_uppercase: Some(upper),
-        as_braces: Some(format!("{{{}}}", &lower)),
+        as_braces: Some(format!("{{{}}}", lower)),
         as_lowercase: Some(lower),
         as_urn: Some(parsed.urn().to_string()),
         as_raw_bytes: Some(parsed.as_bytes().iter().map(|b| format!("{:02x}", b)).collect::<String>()),
