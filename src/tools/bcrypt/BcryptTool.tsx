@@ -1,5 +1,4 @@
 import { useCallback, useState } from "react";
-import { CheckCircle, Loader2, XCircle } from "lucide-react";
 import { callTool } from "../../bridge";
 import { CopyButton, PillButton } from "../../components/tool";
 import { extractErrorMessage } from "../../lib/extractErrorMessage";
@@ -212,7 +211,9 @@ function BcryptTool() {
         {isLoading && (
           <div className="flex flex-1 items-center justify-center">
             <div className="flex flex-col items-center gap-3 text-center">
-              <Loader2 className="h-7 w-7 animate-spin text-primary" />
+              <span className="material-symbols-outlined animate-spin text-[28px] text-primary" aria-hidden>
+                progress_activity
+              </span>
               <p className="text-sm font-medium text-slate-600 dark:text-slate-300">
                 {mode === "hash" ? `Hashing with cost ${cost}…` : "Verifying…"}
               </p>
@@ -254,7 +255,9 @@ function BcryptTool() {
           <div className="flex flex-1 items-start justify-center pt-6">
             {result.matches ? (
               <div className="flex flex-col items-center gap-2 text-center">
-                <CheckCircle className="h-10 w-10 text-green-500" />
+                <span className="material-symbols-outlined text-[40px] text-green-500" aria-hidden>
+                  check_circle
+                </span>
                 <p className="text-base font-semibold text-green-600 dark:text-green-400">
                   Password matches
                 </p>
@@ -264,7 +267,9 @@ function BcryptTool() {
               </div>
             ) : (
               <div className="flex flex-col items-center gap-2 text-center">
-                <XCircle className="h-10 w-10 text-red-500" />
+                <span className="material-symbols-outlined text-[40px] text-red-500" aria-hidden>
+                  cancel
+                </span>
                 <p className="text-base font-semibold text-red-600 dark:text-red-400">
                   No match
                 </p>

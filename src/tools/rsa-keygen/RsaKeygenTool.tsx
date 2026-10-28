@@ -1,5 +1,4 @@
 import { useCallback, useState } from "react";
-import { Loader2 } from "lucide-react";
 import { CopyButton, PillButton } from "../../components/tool";
 import { callTool } from "../../bridge";
 import { extractErrorMessage } from "../../lib/extractErrorMessage";
@@ -149,7 +148,9 @@ function RsaKeygenTool() {
       {isLoading && (
         <div className="flex flex-1 items-center justify-center">
           <div className="flex flex-col items-center gap-3 text-center">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <span className="material-symbols-outlined animate-spin text-[32px] text-primary" aria-hidden>
+              progress_activity
+            </span>
             <p className="text-sm font-medium text-slate-600 dark:text-slate-300">
               Generating {keySize.replace("rsa", "")}-bit RSA key pair…
             </p>
