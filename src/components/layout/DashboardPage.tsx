@@ -460,7 +460,7 @@ export function DashboardPage() {
                         {cat.icon}
                       </span>
                     </div>
-                    <div>
+                    <div className="w-full min-w-0">
                       <div className="flex items-baseline gap-1.5">
                         <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">
                           {cat.name}
