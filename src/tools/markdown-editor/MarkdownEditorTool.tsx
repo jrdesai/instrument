@@ -9,7 +9,7 @@ import {
 } from "react";
 import { twMerge } from "tailwind-merge";
 import { marked } from "marked";
-import hljs from "highlight.js";
+import hljs from "highlight.js/lib/common";
 import hljsGitHubLight from "highlight.js/styles/github.css?url";
 import hljsGitHubDark from "highlight.js/styles/github-dark.css?url";
 import { CopyButton } from "../../components/tool";
