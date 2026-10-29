@@ -203,7 +203,7 @@ Zustand devtools are only active in `import.meta.env.DEV` to avoid bundle bloat.
 - **Desktop**: `pnpm run build` → produces platform installer via Tauri bundler
 - **Web**: Push to `main` → GitHub Actions builds → Cloudflare Pages auto-deploys
 - **CI jobs**: typecheck, lint, test:ts, rust tests, clippy, web build + Cloudflare Pages deploy
-- **Check CI after push**: use the GitHub MCP tool — do not use `gh` (not installed)
+- **Check CI after push**: query the public Actions REST API (see GitHub integration below) — do not use `gh` (not installed)
 
 ---
 
@@ -214,7 +214,7 @@ GitHub MCP is configured for this project via `.mcp.json` (gitignored — contai
 
 | Task | Tool |
 |---|---|
-| Check CI status after push | `mcp__github__list_workflow_runs` |
+| Check CI status after push | `curl -s "https://api.github.com/repos/jrdesai/instrument/actions/runs?per_page=5"` — the GitHub MCP server has no Actions tools; the repo is public, so no token is needed |
 | Create a pull request | `mcp__github__create_pull_request` |
 | Read / create issues | `mcp__github__list_issues` / `mcp__github__add_issue_comment` |
 | View open PRs | `mcp__github__list_pull_requests` |
