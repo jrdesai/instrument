@@ -4,7 +4,7 @@
 
 **Instrument** is a privacy-first developer toolkit — a cross-platform desktop app (Tauri + React + TypeScript) with a web version deployed to Cloudflare Pages. All tool logic runs locally: on desktop via native Rust, on web via WebAssembly compiled from the same Rust code. Tools never send data off the device — except the few marked `network: true` in the registry (e.g. DNS Lookup), which show a "Uses network" badge.
 
-Current version: **1.5.0**
+Current version: **1.5.1**
 Web: https://instrument-wqt.pages.dev
 Stack: Tauri 2 · React 19 · TypeScript · Vite · Zustand · Rust (Cargo workspace) · wasm-pack
 

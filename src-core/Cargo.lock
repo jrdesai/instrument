@@ -2364,7 +2364,7 @@ dependencies = [
 
 [[package]]
 name = "instrument-cli"
-version = "1.5.0"
+version = "1.5.1"
 dependencies = [
  "clap",
  "instrument-core",
@@ -2373,7 +2373,7 @@ dependencies = [
 
 [[package]]
 name = "instrument-core"
-version = "1.5.0"
+version = "1.5.1"
 dependencies = [
  "aes-gcm",
  "base32 0.4.0",
@@ -2431,7 +2431,7 @@ dependencies = [
 
 [[package]]
 name = "instrument-desktop"
-version = "1.5.0"
+version = "1.5.1"
 dependencies = [
  "instrument-core",
  "log",
@@ -2445,7 +2445,7 @@ dependencies = [
 
 [[package]]
 name = "instrument-web"
-version = "1.5.0"
+version = "1.5.1"
 dependencies = [
  "getrandom 0.3.4",
  "instrument-core",
