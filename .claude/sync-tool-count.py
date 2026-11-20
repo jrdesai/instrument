@@ -14,18 +14,12 @@ _project_key = str(ROOT).replace("/", "-").lstrip("-")
 MEMORY = pathlib.Path.home() / ".claude/projects" / _project_key / "memory/project_current_state.md"
 TODAY = datetime.date.today().isoformat()
 
-# Count tools with implemented: true
-result = subprocess.run(
-    ["grep", "-c", "implemented: true", str(ROOT / "src/registry/index.ts")],
-    capture_output=True,
-    text=True,
+# Count tools with implemented: true across all registry files
+registry_dir = ROOT / "src/registry"
+COUNT = sum(
+    p.read_text(encoding="utf-8").count("implemented: true")
+    for p in sorted(registry_dir.rglob("*.ts"))
 )
-# grep exits 0 (matches found) or 1 (no matches); anything else is an error
-if result.returncode not in (0, 1):
-    print(f"sync-tool-count: grep failed — {result.stderr.strip()}", file=sys.stderr)
-    sys.exit(0)
-
-COUNT = int(result.stdout.strip() or "0")
 if COUNT == 0:
     print("sync-tool-count: count is 0, skipping", file=sys.stderr)
     sys.exit(0)

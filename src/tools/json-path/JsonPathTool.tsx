@@ -8,8 +8,8 @@ import {
 import { callTool } from "../../bridge";
 import { CodeInput, CopyButton, ToolbarFooter } from "../../components/tool";
 import { CodeBlock } from "../../components/ui/CodeBlock";
+import { useDebouncedHistory } from "../../hooks/useDebouncedHistory";
 import { useDraftInput, useRestoreDraft } from "../../hooks/useDraftInput";
-import { useHistoryStore } from "../../store";
 import type { JsonPathInput } from "../../bindings/JsonPathInput";
 import type { JsonPathMatch } from "../../bindings/JsonPathMatch";
 import type { JsonPathOutput } from "../../bindings/JsonPathOutput";
@@ -17,7 +17,6 @@ import type { JsonPathOutput } from "../../bindings/JsonPathOutput";
 const RUST_COMMAND = "tool_json_path";
 const TOOL_ID = "json-path";
 const DEBOUNCE_MS = 300;
-const HISTORY_DEBOUNCE_MS = 1500;
 
 function isJsonPathDraft(
   raw: unknown
@@ -59,8 +58,7 @@ function JsonPathTool() {
   const [output, setOutput] = useState<JsonPathOutput | null>(null);
   const [fullDocOpen, setFullDocOpen] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
+  const { schedule: scheduleHistory } = useDebouncedHistory(TOOL_ID);
 
   const runProcess = useCallback(
     async (currentQuery: string, currentJson: string) => {
@@ -80,15 +78,7 @@ function JsonPathTool() {
         })) as JsonPathOutput;
         setOutput(result);
         if (result.isValidJson && result.isValidQuery) {
-          if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
-          historyDebounceRef.current = setTimeout(() => {
-            addHistoryEntry(TOOL_ID, {
-              input: payload,
-              output: result,
-              timestamp: Date.now(),
-            });
-            historyDebounceRef.current = null;
-          }, HISTORY_DEBOUNCE_MS);
+          scheduleHistory(payload, result);
         }
       } catch (e) {
         const message =
@@ -103,14 +93,8 @@ function JsonPathTool() {
         });
       }
     },
-    [addHistoryEntry]
+    [scheduleHistory]
   );
-
-  useEffect(() => {
-    return () => {
-      if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
-    };
-  }, []);
 
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);

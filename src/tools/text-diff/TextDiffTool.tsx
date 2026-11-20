@@ -7,10 +7,10 @@ import {
 } from "react";
 import { CodeInput, CopyButton, FileUploadButton, ToolbarFooter } from "../../components/tool";
 import { callTool } from "../../bridge";
+import { useDebouncedHistory } from "../../hooks/useDebouncedHistory";
 import { useDraftInput, useRestoreDraft } from "../../hooks/useDraftInput";
 import { useFileDrop } from "../../hooks/useFileDrop";
 import { extractErrorMessage } from "../../lib/extractErrorMessage";
-import { useHistoryStore } from "../../store";
 import type { AnnotatedLine } from "../../bindings/TextDiffAnnotatedLine";
 import type { DiffGranularity } from "../../bindings/DiffGranularity";
 import type { TextDiffInput } from "../../bindings/TextDiffInput";
@@ -21,7 +21,6 @@ import type { InlineSpan } from "../../bindings/TextDiffSpan";
 const RUST_COMMAND = "tool_text_diff_process";
 const TOOL_ID = "text-diff";
 const DEBOUNCE_MS = 300;
-const HISTORY_DEBOUNCE_MS = 1500;
 
 function toAnnotatedLines(value: unknown): AnnotatedLine[] {
   if (Array.isArray(value)) return value as AnnotatedLine[];
@@ -96,11 +95,10 @@ function TextDiffTool() {
   const [leftFileDropError, setLeftFileDropError] = useState<string | null>(null);
   const [rightFileDropError, setRightFileDropError] = useState<string | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const leftRef = useRef<HTMLDivElement>(null);
   const rightRef = useRef<HTMLDivElement>(null);
   const isSyncing = useRef(false);
-  const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
+  const { schedule: scheduleHistory } = useDebouncedHistory(TOOL_ID);
 
   const { isDragging: isDraggingLeft, dropZoneProps: dropLeft } = useFileDrop({
     onFile: (text, filename) => {
@@ -213,22 +211,14 @@ function TextDiffTool() {
         setOutput(result);
         setError(null);
 
-        if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
-        historyDebounceRef.current = setTimeout(() => {
-          addHistoryEntry(TOOL_ID, {
-            input: payload,
-            output: result,
-            timestamp: Date.now(),
-          });
-          historyDebounceRef.current = null;
-        }, HISTORY_DEBOUNCE_MS);
+        scheduleHistory(payload, result);
       } catch (e) {
         const message = extractErrorMessage(e, "Diff failed");
         setError(message);
         setOutput(null);
       }
     },
-    [addHistoryEntry]
+    [scheduleHistory]
   );
 
   useEffect(() => {
@@ -241,12 +231,6 @@ function TextDiffTool() {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
   }, [leftInput, rightInput, granularity, runProcess]);
-
-  useEffect(() => {
-    return () => {
-      if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
-    };
-  }, []);
 
   const handleSwap = useCallback(() => {
     const newLeft = rightInput;

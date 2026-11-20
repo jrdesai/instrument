@@ -7,16 +7,15 @@ import {
 import { callTool } from "../../bridge";
 import { ToolbarFooter } from "../../components/tool";
 import { FormatHint } from "../../components/ui/FormatHint";
+import { useDebouncedHistory } from "../../hooks/useDebouncedHistory";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { extractErrorMessage } from "../../lib/extractErrorMessage";
-import { useHistoryStore } from "../../store";
 import type { Iso8601Input } from "../../bindings/Iso8601Input";
 import type { Iso8601Output } from "../../bindings/Iso8601Output";
 
 const RUST_COMMAND = "tool_iso8601_process";
 const TOOL_ID = "iso8601-formatter";
 const DEBOUNCE_MS = 150;
-const HISTORY_DEBOUNCE_MS = 1500;
 const COPIED_DURATION_MS = 1500;
 
 const COMPONENT_FIELDS: {
@@ -69,8 +68,7 @@ function Iso8601FormatterTool() {
   const [copyAllLabel, setCopyAllLabel] = useState("Copy All");
   const [quickRefOpen, setQuickRefOpen] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
+  const { schedule: scheduleHistory } = useDebouncedHistory(TOOL_ID);
 
   const runProcess = useCallback(
     async (currentValue: string) => {
@@ -84,15 +82,7 @@ function Iso8601FormatterTool() {
         )) as Iso8601Output;
         setOutput(result);
         if (result.isValid && !result.error) {
-          if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
-          historyDebounceRef.current = setTimeout(() => {
-            addHistoryEntry(TOOL_ID, {
-              input: payload,
-              output: result,
-              timestamp: Date.now(),
-            });
-            historyDebounceRef.current = null;
-          }, HISTORY_DEBOUNCE_MS);
+          scheduleHistory(payload, result);
         }
       } catch (e) {
         const message = extractErrorMessage(e, "Failed to run tool");
@@ -124,7 +114,7 @@ function Iso8601FormatterTool() {
         setIsLoading(false);
       }
     },
-    [addHistoryEntry]
+    [scheduleHistory]
   );
 
   useEffect(() => {
@@ -137,12 +127,6 @@ function Iso8601FormatterTool() {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
   }, [value, runProcess]);
-
-  useEffect(() => {
-    return () => {
-      if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
-    };
-  }, []);
 
   const handleClear = useCallback(() => {
     setValue("");

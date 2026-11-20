@@ -10,3 +10,5 @@ export { StorageBadge } from "./StorageBadge";
 export { NetworkBadge } from "./NetworkBadge";
 export { CodeInput } from "./CodeInput";
 export type { CodeInputProps } from "./CodeInput";
+export { SplitToolLayout } from "./SplitToolLayout";
+export type { SplitToolLayoutProps } from "./SplitToolLayout";

@@ -9,9 +9,9 @@ import { useNavigate } from "react-router-dom";
 import { callTool } from "../../bridge";
 import { CodeInput, CopyButton, FileUploadButton, ToolbarFooter } from "../../components/tool";
 import { CodeBlock } from "../../components/ui/CodeBlock";
+import { useDebouncedHistory } from "../../hooks/useDebouncedHistory";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useFileDrop } from "../../hooks/useFileDrop";
-import { useHistoryStore } from "../../store";
 import type { CsvOutputFormat } from "../../bindings/CsvOutputFormat";
 import type { CsvToJsonInput } from "../../bindings/CsvToJsonInput";
 import type { CsvToJsonOutput } from "../../bindings/CsvToJsonOutput";
@@ -20,7 +20,6 @@ import type { JsonToCsvOutput } from "../../bindings/JsonToCsvOutput";
 
 const TOOL_ID = "csv-to-json";
 const DEBOUNCE_MS = 300;
-const HISTORY_DEBOUNCE_MS = 1500;
 
 function CsvToJsonTool() {
   const navigate = useNavigate();
@@ -41,8 +40,7 @@ function CsvToJsonTool() {
   const [fileName, setFileName] = useState<string | null>(null);
   const [fileDropError, setFileDropError] = useState<string | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
+  const { schedule: scheduleHistory } = useDebouncedHistory(TOOL_ID);
 
   const runConvert = useCallback(
     async (
@@ -71,15 +69,7 @@ function CsvToJsonTool() {
           setOutput(result);
           setJsonToCsvOutput(null);
           if (!result.error) {
-            if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
-            historyDebounceRef.current = setTimeout(() => {
-              addHistoryEntry(TOOL_ID, {
-                input: payload,
-                output: result,
-                timestamp: Date.now(),
-              });
-              historyDebounceRef.current = null;
-            }, HISTORY_DEBOUNCE_MS);
+            scheduleHistory(payload, result);
           }
         } else {
           const payload: JsonToCsvInput = {
@@ -92,15 +82,7 @@ function CsvToJsonTool() {
           setJsonToCsvOutput(result);
           setOutput(null);
           if (!result.error) {
-            if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
-            historyDebounceRef.current = setTimeout(() => {
-              addHistoryEntry(TOOL_ID, {
-                input: payload,
-                output: result,
-                timestamp: Date.now(),
-              });
-              historyDebounceRef.current = null;
-            }, HISTORY_DEBOUNCE_MS);
+            scheduleHistory(payload, result);
           }
         }
       } catch (e) {
@@ -124,14 +106,8 @@ function CsvToJsonTool() {
         }
       }
     },
-    [addHistoryEntry]
+    [scheduleHistory]
   );
-
-  useEffect(() => {
-    return () => {
-      if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
-    };
-  }, []);
 
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);

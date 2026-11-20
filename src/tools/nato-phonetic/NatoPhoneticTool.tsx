@@ -7,8 +7,8 @@ import React, {
 import { CopyButton, PillButton, ToolbarFooter } from "../../components/tool";
 import { callTool } from "../../bridge";
 import { extractErrorMessage } from "../../lib/extractErrorMessage";
+import { useDebouncedHistory } from "../../hooks/useDebouncedHistory";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
-import { useHistoryStore } from "../../store";
 import type { NatoPhoneticInput } from "../../bindings/NatoPhoneticInput";
 import type { NatoPhoneticMode } from "../../bindings/NatoPhoneticMode";
 import type { NatoPhoneticOutput } from "../../bindings/NatoPhoneticOutput";
@@ -16,7 +16,6 @@ import type { NatoPhoneticOutput } from "../../bindings/NatoPhoneticOutput";
 const RUST_COMMAND = "tool_nato_phonetic_process";
 const TOOL_ID = "nato-phonetic";
 const DEBOUNCE_MS = 150;
-const HISTORY_DEBOUNCE_MS = 1500;
 
 function NatoPhoneticTool() {
   const { setDraft } = useDraftInput(TOOL_ID);
@@ -28,8 +27,7 @@ function NatoPhoneticTool() {
   const [error, setError] = useState<string | null>(null);
   const [leftPanelPercent, setLeftPanelPercent] = useState(50);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
+  const { schedule: scheduleHistory } = useDebouncedHistory(TOOL_ID);
 
   const runProcess = useCallback(
     async (text: string, currentMode: NatoPhoneticMode) => {
@@ -46,15 +44,7 @@ function NatoPhoneticTool() {
         setOutput(result.result ?? "");
         setError(result.error ?? null);
         if (!result.error && result.result) {
-          if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
-          historyDebounceRef.current = setTimeout(() => {
-            addHistoryEntry(TOOL_ID, {
-              input: payload,
-              output: result,
-              timestamp: Date.now(),
-            });
-            historyDebounceRef.current = null;
-          }, HISTORY_DEBOUNCE_MS);
+          scheduleHistory(payload, result);
         }
       } catch (e) {
         setError(extractErrorMessage(e, "Failed to run tool"));
@@ -63,7 +53,7 @@ function NatoPhoneticTool() {
         setIsLoading(false);
       }
     },
-    [addHistoryEntry]
+    [scheduleHistory]
   );
 
   useEffect(() => {
@@ -76,12 +66,6 @@ function NatoPhoneticTool() {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
   }, [input, mode, runProcess]);
-
-  useEffect(() => {
-    return () => {
-      if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
-    };
-  }, []);
 
   const handleSwap = useCallback(() => {
     const newInput = output;

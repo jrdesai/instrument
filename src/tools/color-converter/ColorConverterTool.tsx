@@ -2,15 +2,14 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { HexColorPicker } from "react-colorful";
 import { callTool } from "../../bridge";
 import { CopyButton } from "../../components/tool";
+import { useDebouncedHistory } from "../../hooks/useDebouncedHistory";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
-import { useHistoryStore } from "../../store";
 import type { ColorInput } from "../../bindings/ColorInput";
 import type { ColorOutput } from "../../bindings/ColorOutput";
 
 const RUST_COMMAND = "tool_color_convert";
 const TOOL_ID = "color-converter";
 const DEBOUNCE_MS = 150;
-const HISTORY_DEBOUNCE_MS = 1500;
 
 const FORMATS: { id: keyof Omit<ColorOutput, "name" | "error">; label: string }[] = [
   { id: "hex", label: "HEX" },
@@ -30,9 +29,8 @@ function ColorConverterTool() {
   // Tracks the picker's live colour immediately — separate from the debounced output
   const [pickerColor, setPickerColor] = useState("#000000");
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pickerRef = useRef<HTMLDivElement>(null);
-  const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
+  const { schedule: scheduleHistory } = useDebouncedHistory(TOOL_ID);
 
   const runProcess = useCallback(
     async (value: string) => {
@@ -56,15 +54,7 @@ function ColorConverterTool() {
         } else {
           setOutput(result);
           setError(null);
-          if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
-          historyDebounceRef.current = setTimeout(() => {
-            addHistoryEntry(TOOL_ID, {
-              input: payload,
-              output: result,
-              timestamp: Date.now(),
-            });
-            historyDebounceRef.current = null;
-          }, HISTORY_DEBOUNCE_MS);
+          scheduleHistory(payload, result);
         }
       } catch (e) {
         const message =
@@ -75,7 +65,7 @@ function ColorConverterTool() {
         setIsLoading(false);
       }
     },
-    [addHistoryEntry]
+    [scheduleHistory]
   );
 
   useEffect(() => {
@@ -88,12 +78,6 @@ function ColorConverterTool() {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
   }, [input, runProcess]);
-
-  useEffect(() => {
-    return () => {
-      if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
-    };
-  }, []);
 
   useEffect(() => {
     if (!pickerOpen) return;

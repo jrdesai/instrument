@@ -6,16 +6,15 @@ import {
 } from "react";
 import { callTool } from "../../bridge";
 import { CopyButton, PillButton, ToolbarFooter } from "../../components/tool";
+import { useDebouncedHistory } from "../../hooks/useDebouncedHistory";
 import { useDraftInput, useRestoreDraft } from "../../hooks/useDraftInput";
 import { extractErrorMessage } from "../../lib/extractErrorMessage";
-import { useHistoryStore } from "../../store";
 import type { FindReplaceInput } from "../../bindings/FindReplaceInput";
 import type { FindReplaceOutput } from "../../bindings/FindReplaceOutput";
 
 const RUST_COMMAND = "tool_find_replace_process";
 const TOOL_ID = "find-replace";
 const DEBOUNCE_MS = 150;
-const HISTORY_DEBOUNCE_MS = 1500;
 
 function isFindReplaceDraft(
   raw: unknown
@@ -101,9 +100,8 @@ function FindReplaceTool() {
   const [isLoading, setIsLoading] = useState(false);
   const isEmpty = text.trim().length === 0 && find.trim().length === 0 && replace.trim().length === 0;
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const highlightRef = useRef<HTMLDivElement>(null);
-  const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
+  const { schedule: scheduleHistory } = useDebouncedHistory(TOOL_ID);
 
   const runProcess = useCallback(
     async (
@@ -138,15 +136,7 @@ function FindReplaceTool() {
           setMatchRanges(result.matchRanges ?? []);
         }
         if (!result.error) {
-          if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
-          historyDebounceRef.current = setTimeout(() => {
-            addHistoryEntry(TOOL_ID, {
-              input: payload,
-              output: result,
-              timestamp: Date.now(),
-            });
-            historyDebounceRef.current = null;
-          }, HISTORY_DEBOUNCE_MS);
+          scheduleHistory(payload, result);
         }
       } catch (e) {
         const message = extractErrorMessage(e, "Failed to run tool");
@@ -162,7 +152,7 @@ function FindReplaceTool() {
         setIsLoading(false);
       }
     },
-    [addHistoryEntry]
+    [scheduleHistory]
   );
 
   useEffect(() => {
@@ -183,12 +173,6 @@ function FindReplaceTool() {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
   }, [text, find, replace, caseSensitive, wholeWord, regexMode, replaceAll, runProcess]);
-
-  useEffect(() => {
-    return () => {
-      if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
-    };
-  }, []);
 
   const handleClear = useCallback(() => {
     setText("");

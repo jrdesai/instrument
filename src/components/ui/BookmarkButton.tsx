@@ -67,9 +67,9 @@ export function BookmarkButton({ toolId }: BookmarkButtonProps) {
         onClick={() => setIsOpen((o) => !o)}
         aria-label="Input bookmarks"
         title="Input bookmarks"
-        className="text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300 transition-colors"
+        className="flex size-7 items-center justify-center rounded-md text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:text-slate-500 dark:hover:bg-slate-800 dark:hover:text-slate-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 transition-colors"
       >
-        <span className="material-symbols-outlined text-[22px]">bookmarks</span>
+        <span className="material-symbols-outlined text-[20px]" aria-hidden>bookmarks</span>
       </button>
 
       {isOpen ? (

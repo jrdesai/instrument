@@ -103,3 +103,59 @@ export async function callTool(
 export function usePlatform(): { isDesktop: boolean; isWeb: boolean } {
   return { isDesktop, isWeb };
 }
+
+/**
+ * Opens an external URL in the system browser (desktop) or a new tab (web).
+ * @param url - Destination URL
+ */
+export async function openExternalUrl(url: string): Promise<void> {
+  if (isDesktop) {
+    const { openExternalUrlDesktop } = await import("./desktop");
+    await openExternalUrlDesktop(url);
+  } else if (typeof window !== "undefined") {
+    window.open(url, "_blank", "noopener,noreferrer");
+  }
+}
+
+/**
+ * Invokes a desktop shell command (tray, hotkey, popover). No-ops on web.
+ * @param command - Tauri command name
+ * @param args - Optional command arguments
+ */
+export async function invokeDesktopCommand<T = void>(
+  command: string,
+  args?: Record<string, unknown>
+): Promise<T | undefined> {
+  if (!isDesktop) return undefined;
+  const { invokeDesktopCommand: invokeDesktop } = await import("./desktop");
+  return invokeDesktop<T>(command, args);
+}
+
+/**
+ * Subscribes to a desktop Tauri event. Returns a no-op unsubscribe function on web.
+ * @param event - Event name
+ * @param handler - Callback receiving the event payload
+ */
+export async function listenDesktopEvent<T = unknown>(
+  event: string,
+  handler: (payload: T) => void
+): Promise<() => void> {
+  if (!isDesktop) return () => {};
+  const { listenDesktopEvent: listenDesktop } = await import("./desktop");
+  return listenDesktop<T>(event, handler);
+}
+
+/** Shows and focuses the current desktop window. No-ops on web. */
+export async function showDesktopWindow(): Promise<void> {
+  if (!isDesktop) return;
+  const { showCurrentWindow } = await import("./desktop");
+  await showCurrentWindow();
+}
+
+/** Hides the current desktop window. No-ops on web. */
+export async function hideDesktopWindow(): Promise<void> {
+  if (!isDesktop) return;
+  const { hideCurrentWindow } = await import("./desktop");
+  await hideCurrentWindow();
+}
+

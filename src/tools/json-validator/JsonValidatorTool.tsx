@@ -5,8 +5,8 @@ import {
   useState,
 } from "react";
 import { callTool } from "../../bridge";
+import { useDebouncedHistory } from "../../hooks/useDebouncedHistory";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
-import { useHistoryStore } from "../../store";
 import { CodeInput, CopyButton, ToolbarFooter } from "../../components/tool";
 import { CodeBlock } from "../../components/ui/CodeBlock";
 import type { JsonValidateInput } from "../../bindings/JsonValidateInput";
@@ -15,7 +15,6 @@ import type { JsonValidateOutput } from "../../bindings/JsonValidateOutput";
 const RUST_COMMAND = "tool_json_validate";
 const TOOL_ID = "json-validator";
 const DEBOUNCE_MS = 150;
-const HISTORY_DEBOUNCE_MS = 1500;
 
 const COMMON_MISTAKES = [
   "Keys must be quoted: \"key\" not key",
@@ -45,8 +44,7 @@ function JsonValidatorTool() {
   const [showFormattedPreview, setShowFormattedPreview] = useState(false);
   const [showMistakes, setShowMistakes] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
+  const { schedule: scheduleHistory } = useDebouncedHistory(TOOL_ID);
 
   const runProcess = useCallback(async (value: string) => {
     const trimmed = value.trim();
@@ -63,15 +61,7 @@ function JsonValidatorTool() {
       )) as JsonValidateOutput;
       setOutput(result);
       if (result.isValid) {
-        if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
-        historyDebounceRef.current = setTimeout(() => {
-          addHistoryEntry(TOOL_ID, {
-            input: payload,
-            output: result,
-            timestamp: Date.now(),
-          });
-          historyDebounceRef.current = null;
-        }, HISTORY_DEBOUNCE_MS);
+        scheduleHistory(payload, result);
       }
     } catch (e) {
       const message =
@@ -97,13 +87,7 @@ function JsonValidatorTool() {
         formatted: null,
       });
     }
-  }, [addHistoryEntry]);
-
-  useEffect(() => {
-    return () => {
-      if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
-    };
-  }, []);
+  }, [scheduleHistory]);
 
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);

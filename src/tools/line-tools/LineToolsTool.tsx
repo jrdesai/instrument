@@ -14,8 +14,8 @@ import {
   ToolbarFooter,
   type FooterGroup,
 } from "../../components/tool";
+import { useDebouncedHistory } from "../../hooks/useDebouncedHistory";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
-import { useHistoryStore } from "../../store";
 import type { LineOperation } from "../../bindings/LineOperation";
 import type { LineToolsInput } from "../../bindings/LineToolsInput";
 import type { LineToolsOutput } from "../../bindings/LineToolsOutput";
@@ -23,7 +23,6 @@ import type { LineToolsOutput } from "../../bindings/LineToolsOutput";
 const RUST_COMMAND = "tool_line_tools_process";
 const TOOL_ID = "line-tools";
 const DEBOUNCE_MS = 150;
-const HISTORY_DEBOUNCE_MS = 1500;
 
 /** Sort is mutually exclusive — at most one direction, or none. */
 type SortMode =
@@ -47,8 +46,7 @@ function LineToolsTool() {
   const [output, setOutput] = useState<LineToolsOutput | null>(null);
   const [error, setError] = useState<string | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
+  const { schedule: scheduleHistory } = useDebouncedHistory(TOOL_ID);
 
   const operations = useMemo<LineOperation[]>(() => {
     const ops: LineOperation[] = [];
@@ -79,21 +77,13 @@ function LineToolsTool() {
         })) as LineToolsOutput;
         setOutput(result);
         setError(null);
-        if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
-        historyDebounceRef.current = setTimeout(() => {
-          addHistoryEntry(TOOL_ID, {
-            input: payload,
-            output: result,
-            timestamp: Date.now(),
-          });
-          historyDebounceRef.current = null;
-        }, HISTORY_DEBOUNCE_MS);
+        scheduleHistory(payload, result);
       } catch (e) {
         setError(e instanceof Error ? e.message : "Line tools failed");
         setOutput(null);
       }
     },
-    [addHistoryEntry, caseInsensitive, keepFirst]
+    [scheduleHistory, caseInsensitive, keepFirst]
   );
 
   useEffect(() => {
@@ -106,12 +96,6 @@ function LineToolsTool() {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
   }, [text, operations, runProcess]);
-
-  useEffect(() => {
-    return () => {
-      if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
-    };
-  }, []);
 
   const footerGroups: FooterGroup[] = [
     {

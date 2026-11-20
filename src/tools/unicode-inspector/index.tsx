@@ -6,8 +6,8 @@ import {
 } from "react";
 import { callTool } from "../../bridge";
 import { ToolbarFooter } from "../../components/tool";
+import { useDebouncedHistory } from "../../hooks/useDebouncedHistory";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
-import { useHistoryStore } from "../../store";
 import type { UnicodeChar } from "../../bindings/UnicodeChar";
 import type { UnicodeInspectInput } from "../../bindings/UnicodeInspectInput";
 import type { UnicodeInspectOutput } from "../../bindings/UnicodeInspectOutput";
@@ -15,7 +15,6 @@ import type { UnicodeInspectOutput } from "../../bindings/UnicodeInspectOutput";
 const TOOL_ID = "unicode-inspector";
 const RUST_COMMAND = "tool_unicode_inspect";
 const DEBOUNCE_MS = 150;
-const HISTORY_DEBOUNCE_MS = 1500;
 
 export default function UnicodeInspectorTool() {
   const { setDraft } = useDraftInput(TOOL_ID);
@@ -24,8 +23,7 @@ export default function UnicodeInspectorTool() {
   const [output, setOutput] = useState<UnicodeInspectOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
+  const { schedule: scheduleHistory } = useDebouncedHistory(TOOL_ID);
 
   const runInspect = useCallback(
     async (text: string) => {
@@ -41,15 +39,7 @@ export default function UnicodeInspectorTool() {
         })) as UnicodeInspectOutput;
         setOutput(result);
         if (!result.error) {
-          if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
-          historyDebounceRef.current = setTimeout(() => {
-            addHistoryEntry(TOOL_ID, {
-              input: payload,
-              output: result,
-              timestamp: Date.now(),
-            });
-            historyDebounceRef.current = null;
-          }, HISTORY_DEBOUNCE_MS);
+          scheduleHistory(payload, result);
         }
       } catch (e) {
         const message =
@@ -64,7 +54,7 @@ export default function UnicodeInspectorTool() {
         setIsLoading(false);
       }
     },
-    [addHistoryEntry]
+    [scheduleHistory]
   );
 
   useEffect(() => {
@@ -77,12 +67,6 @@ export default function UnicodeInspectorTool() {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
   }, [input, runInspect]);
-
-  useEffect(() => {
-    return () => {
-      if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
-    };
-  }, []);
 
   const rows = output?.chars ?? [];
   const showTable = input.length > 0 && rows.length > 0 && !output?.error;

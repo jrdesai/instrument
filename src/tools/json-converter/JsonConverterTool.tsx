@@ -8,9 +8,9 @@ import {
 import { callTool } from "../../bridge";
 import { CodeInput, CopyButton, FileUploadButton, PillButton, ToolbarFooter } from "../../components/tool";
 import { CodeBlock } from "../../components/ui/CodeBlock";
+import { useDebouncedHistory } from "../../hooks/useDebouncedHistory";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useFileDrop } from "../../hooks/useFileDrop";
-import { useHistoryStore } from "../../store";
 
 import type { ConversionTarget } from "../../bindings/ConversionTarget";
 import type { JsonConvertInput } from "../../bindings/JsonConvertInput";
@@ -19,7 +19,6 @@ import type { JsonConvertOutput } from "../../bindings/JsonConvertOutput";
 const RUST_COMMAND = "tool_json_convert";
 const TOOL_ID = "json-converter";
 const DEBOUNCE_MS = 200;
-const HISTORY_DEBOUNCE_MS = 1500;
 
 const FORMAT_META: Record<
   ConversionTarget,
@@ -70,8 +69,7 @@ function JsonConverterTool() {
   const [fileName, setFileName] = useState<string | null>(null);
   const [fileDropError, setFileDropError] = useState<string | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
+  const { schedule: scheduleHistory } = useDebouncedHistory(TOOL_ID);
 
   const runProcess = useCallback(
     async (
@@ -111,15 +109,7 @@ function JsonConverterTool() {
         })) as JsonConvertOutput;
         setOutput(result);
         if (result.isValidJson && !result.error) {
-          if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
-          historyDebounceRef.current = setTimeout(() => {
-            addHistoryEntry(TOOL_ID, {
-              input: payload,
-              output: result,
-              timestamp: Date.now(),
-            });
-            historyDebounceRef.current = null;
-          }, HISTORY_DEBOUNCE_MS);
+          scheduleHistory(payload, result);
         }
       } catch (e) {
         const message =
@@ -135,14 +125,8 @@ function JsonConverterTool() {
         });
       }
     },
-    [addHistoryEntry]
+    [scheduleHistory]
   );
-
-  useEffect(() => {
-    return () => {
-      if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
-    };
-  }, []);
 
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);

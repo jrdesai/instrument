@@ -6,18 +6,17 @@ import {
   type ChangeEvent,
 } from "react";
 import { callTool } from "../../bridge";
-import { CodeInput, CopyButton, FileUploadButton, PillButton } from "../../components/tool";
+import { CodeInput, CopyButton, FileUploadButton, PillButton, SplitToolLayout } from "../../components/tool";
 import { CodeBlock } from "../../components/ui/CodeBlock";
+import { useDebouncedHistory } from "../../hooks/useDebouncedHistory";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useFileDrop } from "../../hooks/useFileDrop";
-import { useHistoryStore } from "../../store";
 import type { HtmlFormatInput } from "../../bindings/HtmlFormatInput";
 import type { HtmlFormatOutput } from "../../bindings/HtmlFormatOutput";
 
 const TOOL_ID = "html-formatter";
 const RUST_COMMAND = "tool_html_format";
 const DEBOUNCE_MS = 300;
-const HISTORY_DEBOUNCE_MS = 1500;
 
 type IndentChoice = 2 | 4 | 0;
 
@@ -32,8 +31,7 @@ export default function HtmlFormatterTool() {
   const [fileName, setFileName] = useState<string | null>(null);
   const [fileDropError, setFileDropError] = useState<string | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
+  const { schedule: scheduleHistory } = useDebouncedHistory(TOOL_ID);
 
   const runFormat = useCallback(
     async (
@@ -59,29 +57,15 @@ export default function HtmlFormatterTool() {
         })) as HtmlFormatOutput;
         setOutput(result);
         if (!result.error && result.formatted.length > 0) {
-          if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
-          historyDebounceRef.current = setTimeout(() => {
-            addHistoryEntry(TOOL_ID, {
-              input: payload,
-              output: result,
-              timestamp: Date.now(),
-            });
-            historyDebounceRef.current = null;
-          }, HISTORY_DEBOUNCE_MS);
+          scheduleHistory(payload, result);
         }
       } catch (e) {
         const message = e instanceof Error ? e.message : String(e ?? "Format failed");
         setOutput({ formatted: "", error: message });
       }
     },
-    [addHistoryEntry]
+    [scheduleHistory]
   );
-
-  useEffect(() => {
-    return () => {
-      if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
-    };
-  }, []);
 
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -198,119 +182,122 @@ export default function HtmlFormatterTool() {
         </label>
       </div>
 
-      <div className="flex min-h-0 flex-1 flex-col md:flex-row">
-        <div
-          className="relative flex min-h-[180px] min-w-0 flex-1 flex-col border-b border-border-light dark:border-border-dark md:min-h-0 md:border-b-0 md:border-r"
-          {...dropZoneProps}
-        >
-          {isDragging && (
-            <div
-              className="pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-primary/50 bg-primary/5"
-              aria-hidden
-            >
-              <span className="material-symbols-outlined text-[32px] text-primary/60">
-                upload_file
-              </span>
-              <span className="text-sm font-medium text-primary/70">Drop file to load</span>
-            </div>
-          )}
-          {fileDropError ? (
-            <p className="shrink-0 border-b border-red-200 bg-red-50 px-4 py-1.5 text-xs text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-400">
-              {fileDropError}
-            </p>
-          ) : null}
-          <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b border-border-light bg-panel-light px-4 py-2 dark:border-border-dark dark:bg-panel-dark min-h-[46px]">
-            <div className="flex min-w-0 flex-wrap items-center gap-2">
-              <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-                Input
-              </span>
-              {fileName ? (
-                <>
-                  <span className="truncate text-xs text-slate-500 dark:text-slate-400">{fileName}</span>
-                  <button
-                    type="button"
-                    onClick={handleClear}
-                    className="text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
-                  >
-                    ✕
-                  </button>
-                </>
-              ) : null}
-              <FileUploadButton
-                accept=".html,.htm,text/html,text/plain"
-                onChange={handleFileUpload}
-              />
-            </div>
-            <div className="flex items-center gap-3">
-              {!isEmpty ? (
-                <span className="text-xs tabular-nums text-slate-500 dark:text-slate-400">
-                  {inputValue.length.toLocaleString()} chars
-                </span>
-              ) : null}
-              <button
-                type="button"
-                onClick={handleClear}
-                disabled={isEmpty}
-                className="rounded-full px-3 py-1 text-xs font-medium text-slate-500 transition-colors hover:text-red-500 disabled:cursor-not-allowed disabled:opacity-40 dark:text-slate-400 dark:hover:text-red-400"
+      <SplitToolLayout
+        left={
+          <div
+            className="relative flex min-h-0 min-w-0 flex-1 flex-col"
+            {...dropZoneProps}
+          >
+            {isDragging && (
+              <div
+                className="pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-primary/50 bg-primary/5"
+                aria-hidden
               >
-                Clear
-              </button>
-            </div>
-          </div>
-          <CodeInput
-            ariaLabel="HTML input"
-            className="min-h-0 w-full flex-1"
-            placeholder="Paste HTML here…"
-            value={inputValue}
-            onChange={(e) => {
-              setFileDropError(null);
-              const v = e.target.value;
-              setInputValue(v);
-              setDraft(v);
-            }}
-          />
-        </div>
-
-        <div className="flex min-h-[180px] min-w-0 flex-1 flex-col md:min-h-0">
-          <div className="flex shrink-0 items-center justify-between gap-2 border-b border-border-light bg-panel-light px-4 py-2 dark:border-border-dark dark:bg-panel-dark min-h-[46px]">
-            <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-              Output
-            </span>
-            <div className="flex items-center gap-3">
-              {output?.formatted && !showOutputError ? (
-                <span className="text-xs tabular-nums text-slate-500 dark:text-slate-400">
-                  {output.formatted.split("\n").length.toLocaleString()} lines
+                <span className="material-symbols-outlined text-[32px] text-primary/60">
+                  upload_file
                 </span>
-              ) : null}
-              {output?.formatted && !showOutputError ? (
-                <CopyButton
-                  value={output.formatted}
-                  label="Copy"
-                  variant="primary"
-                  className="py-1 text-[11px] font-semibold uppercase tracking-wider"
-                />
-              ) : null}
-            </div>
-          </div>
-          {showOutputError ? (
-            <div className="shrink-0 border-b border-red-200 bg-red-50 px-4 py-2 text-xs text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-400">
-              {output?.error}
-            </div>
-          ) : null}
-          <div className="custom-scrollbar min-h-0 flex-1 overflow-auto">
-            {output?.formatted && !showOutputError ? (
-              <CodeBlock
-                language="markup"
-                code={output.formatted}
-              />
-            ) : (
-              <div className="flex h-full items-center justify-center p-4 text-xs text-slate-500">
-                {isEmpty ? "Enter HTML on the left." : showOutputError ? "" : "Formatting…"}
+                <span className="text-sm font-medium text-primary/70">Drop file to load</span>
               </div>
             )}
+            {fileDropError ? (
+              <p className="shrink-0 border-b border-red-200 bg-red-50 px-4 py-1.5 text-xs text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-400">
+                {fileDropError}
+              </p>
+            ) : null}
+            <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b border-border-light bg-panel-light px-4 py-2 dark:border-border-dark dark:bg-panel-dark min-h-[46px]">
+              <div className="flex min-w-0 flex-wrap items-center gap-2">
+                <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                  Input
+                </span>
+                {fileName ? (
+                  <>
+                    <span className="truncate text-xs text-slate-500 dark:text-slate-400">{fileName}</span>
+                    <button
+                      type="button"
+                      onClick={handleClear}
+                      className="text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+                    >
+                      ✕
+                    </button>
+                  </>
+                ) : null}
+                <FileUploadButton
+                  accept=".html,.htm,text/html,text/plain"
+                  onChange={handleFileUpload}
+                />
+              </div>
+              <div className="flex items-center gap-3">
+                {!isEmpty ? (
+                  <span className="text-xs tabular-nums text-slate-500 dark:text-slate-400">
+                    {inputValue.length.toLocaleString()} chars
+                  </span>
+                ) : null}
+                <button
+                  type="button"
+                  onClick={handleClear}
+                  disabled={isEmpty}
+                  className="rounded-full px-3 py-1 text-xs font-medium text-slate-500 transition-colors hover:text-red-500 disabled:cursor-not-allowed disabled:opacity-40 dark:text-slate-400 dark:hover:text-red-400"
+                >
+                  Clear
+                </button>
+              </div>
+            </div>
+            <CodeInput
+              ariaLabel="HTML input"
+              className="min-h-0 w-full flex-1"
+              placeholder="Paste HTML here…"
+              value={inputValue}
+              onChange={(e) => {
+                setFileDropError(null);
+                const v = e.target.value;
+                setInputValue(v);
+                setDraft(v);
+              }}
+            />
           </div>
-        </div>
-      </div>
+        }
+        right={
+          <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+            <div className="flex shrink-0 items-center justify-between gap-2 border-b border-border-light bg-panel-light px-4 py-2 dark:border-border-dark dark:bg-panel-dark min-h-[46px]">
+              <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                Output
+              </span>
+              <div className="flex items-center gap-3">
+                {output?.formatted && !showOutputError ? (
+                  <span className="text-xs tabular-nums text-slate-500 dark:text-slate-400">
+                    {output.formatted.split("\n").length.toLocaleString()} lines
+                  </span>
+                ) : null}
+                {output?.formatted && !showOutputError ? (
+                  <CopyButton
+                    value={output.formatted}
+                    label="Copy"
+                    variant="primary"
+                    className="py-1 text-[11px] font-semibold uppercase tracking-wider"
+                  />
+                ) : null}
+              </div>
+            </div>
+            {showOutputError ? (
+              <div className="shrink-0 border-b border-red-200 bg-red-50 px-4 py-2 text-xs text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-400">
+                {output?.error}
+              </div>
+            ) : null}
+            <div className="custom-scrollbar min-h-0 flex-1 overflow-auto">
+              {output?.formatted && !showOutputError ? (
+                <CodeBlock
+                  language="markup"
+                  code={output.formatted}
+                />
+              ) : (
+                <div className="flex h-full items-center justify-center p-4 text-xs text-slate-500">
+                  {isEmpty ? "Enter HTML on the left." : showOutputError ? "" : "Formatting…"}
+                </div>
+              )}
+            </div>
+          </div>
+        }
+      />
     </div>
   );
 }

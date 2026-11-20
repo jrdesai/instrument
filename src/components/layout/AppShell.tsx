@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
-import { getToolById } from "../../registry";
+import { getToolById, type Tool } from "../../registry";
 import { useToolStore } from "../../store";
 import { LogoMark } from "../LogoMark";
 import { OnboardingModal } from "../onboarding/OnboardingModal";
@@ -8,8 +8,10 @@ import { KeyboardShortcutsModal } from "../ui/KeyboardShortcutsModal";
 import { PwaInstallBanner } from "../ui/PwaInstallBanner";
 import { SearchModal } from "../ui/SearchModal";
 import { StatusBar } from "./StatusBar";
+import { ToolHeader } from "./ToolHeader";
 
 const SIDEBAR_WIDTH = 48;
+const MAX_RAIL_RECENTS = 5;
 
 /** Returns the platform modifier key symbol for display purposes. */
 const isMac =
@@ -33,6 +35,29 @@ export function AppShell() {
   const activeTool = toolIdMatch ? getToolById(toolIdMatch[1]) : null;
   const toggleFavourite = useToolStore((s) => s.toggleFavourite);
   const favouriteToolIds = useToolStore((s) => s.favouriteToolIds);
+  const recentToolIds = useToolStore((s) => s.recentToolIds);
+
+  const railTools = useMemo(() => {
+    const seen = new Set<string>();
+    const favs: { tool: Tool; isFav: boolean }[] = [];
+    for (const id of favouriteToolIds) {
+      const t = getToolById(id);
+      if (t && t.implemented && !seen.has(t.id)) {
+        seen.add(t.id);
+        favs.push({ tool: t, isFav: true });
+      }
+    }
+    const recents: { tool: Tool; isFav: boolean }[] = [];
+    for (const id of recentToolIds) {
+      if (recents.length >= MAX_RAIL_RECENTS) break;
+      const t = getToolById(id);
+      if (t && t.implemented && !seen.has(t.id)) {
+        seen.add(t.id);
+        recents.push({ tool: t, isFav: false });
+      }
+    }
+    return [...favs, ...recents];
+  }, [favouriteToolIds, recentToolIds]);
 
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
@@ -87,14 +112,14 @@ export function AppShell() {
         >
           <LogoMark />
         </div>
-        <nav className="flex flex-1 flex-col items-center gap-1 py-4">
+        <nav className="flex flex-col items-center gap-1 py-3">
           {navItems.map(({ to, icon, label, shortcut }) => (
             <NavLink
               key={to}
               to={to}
               end={to === "/"}
               className={({ isActive }) =>
-                `flex size-10 items-center justify-center rounded-lg transition-colors ${
+                `flex size-9 items-center justify-center rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
                   isActive
                     ? "bg-primary/20 text-primary ring-1 ring-inset ring-primary/30"
                     : "text-slate-500 dark:text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-800 dark:hover:text-slate-300"
@@ -103,57 +128,94 @@ export function AppShell() {
               aria-label={`${label} (${shortcut})`}
               title={`${label} (${shortcut})`}
             >
-              <span className="material-symbols-outlined text-[24px]" aria-hidden>
+              <span className="material-symbols-outlined text-[22px]" aria-hidden>
                 {icon}
               </span>
             </NavLink>
           ))}
         </nav>
+
+        {railTools.length > 0 && (
+          <>
+            <div className="my-1 h-px w-6 shrink-0 bg-border-light dark:bg-border-dark" />
+            <nav
+              aria-label="Pinned and recent tools"
+              className="no-scrollbar flex min-h-0 flex-1 flex-col items-center gap-1 overflow-y-auto py-2"
+            >
+              {railTools.map(({ tool, isFav }) => (
+                <NavLink
+                  key={tool.id}
+                  to={`/tools/${tool.id}`}
+                  onMouseEnter={() => tool.preload?.()}
+                  onFocus={() => tool.preload?.()}
+                  className={({ isActive }) =>
+                    `relative flex size-9 shrink-0 items-center justify-center rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
+                      isActive
+                        ? "bg-primary/20 text-primary ring-1 ring-inset ring-primary/30"
+                        : "text-slate-500 dark:text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-800 dark:hover:text-slate-300"
+                    }`
+                  }
+                  aria-label={tool.name}
+                  title={isFav ? `${tool.name} (Favourite)` : `${tool.name} (Recent)`}
+                >
+                  <span className="material-symbols-outlined text-[19px]" aria-hidden>
+                    {tool.icon}
+                  </span>
+                  {isFav && (
+                    <span
+                      className="absolute right-1.5 top-1.5 size-1.5 rounded-full bg-amber-400"
+                      aria-hidden
+                    />
+                  )}
+                </NavLink>
+              ))}
+            </nav>
+          </>
+        )}
       </aside>
 
       <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
-        <header className="flex h-12 shrink-0 items-center gap-2 border-b border-border-light bg-background-light px-2 dark:border-border-dark dark:bg-background-dark sm:gap-3 sm:px-4">
-          <div className="flex shrink-0 items-center justify-center md:hidden" title="Instrument">
-            <LogoMark className="h-8 w-8" />
-          </div>
-          <div className="hidden min-w-0 items-center gap-1.5 md:flex">
-            <span className="select-none text-sm font-semibold tracking-tight text-slate-700 dark:text-slate-300">
-              Instrument
-            </span>
-            {activeTool && (
-              <>
-                <span className="text-slate-300 dark:text-slate-600">/</span>
-                <span className="truncate text-sm text-slate-500 dark:text-slate-400">
-                  {activeTool.name}
-                </span>
-              </>
-            )}
-          </div>
-          <button
-            type="button"
-            onClick={() => setIsSearchOpen(true)}
-            className="flex h-8 min-w-0 flex-1 items-center gap-2 rounded-lg bg-slate-100 px-2 text-left text-sm text-slate-400 transition-colors hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-500 dark:hover:bg-slate-700 sm:px-3"
-            aria-label={`Search tools (${MOD}K)`}
-          >
-            <span className="material-symbols-outlined shrink-0 text-[18px]" aria-hidden>
-              search
-            </span>
-            <span className="min-w-0 flex-1 truncate">Search tools...</span>
-            <span className="hidden shrink-0 items-center gap-1.5 sm:inline-flex">
-              <kbd className="inline-flex items-center gap-0.5 font-mono text-xs text-slate-400 dark:text-slate-500">
-                <span>{MOD}</span>
-                <span>K</span>
-              </kbd>
-              <span className="select-none text-xs text-slate-400 dark:text-slate-500" aria-hidden>
-                ·
+        {activeTool ? (
+          <ToolHeader
+            tool={activeTool}
+            onOpenSearch={() => setIsSearchOpen(true)}
+          />
+        ) : (
+          <header className="flex h-12 shrink-0 items-center gap-2 border-b border-border-light bg-background-light px-2 dark:border-border-dark dark:bg-background-dark sm:gap-3 sm:px-4">
+            <div className="flex shrink-0 items-center justify-center md:hidden" title="Instrument">
+              <LogoMark className="h-8 w-8" />
+            </div>
+            <div className="hidden min-w-0 items-center gap-1.5 md:flex">
+              <span className="select-none text-sm font-semibold tracking-tight text-slate-700 dark:text-slate-300">
+                Instrument
               </span>
-              <kbd className="inline-flex items-center gap-0.5 font-mono text-xs text-slate-400 dark:text-slate-500">
-                <span>{MOD}</span>
-                <span>/</span>
-              </kbd>
-            </span>
-          </button>
-        </header>
+            </div>
+            <button
+              type="button"
+              onClick={() => setIsSearchOpen(true)}
+              className="flex h-8 min-w-0 flex-1 items-center gap-2 rounded-lg bg-slate-100 px-2 text-left text-sm text-slate-400 transition-colors hover:bg-slate-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 dark:bg-slate-800 dark:text-slate-500 dark:hover:bg-slate-700 sm:px-3"
+              aria-label={`Search tools (${MOD}K)`}
+            >
+              <span className="material-symbols-outlined shrink-0 text-[18px]" aria-hidden>
+                search
+              </span>
+              <span className="min-w-0 flex-1 truncate">Search tools...</span>
+              <span className="hidden shrink-0 items-center gap-1.5 sm:inline-flex">
+                <kbd className="inline-flex items-center gap-0.5 font-mono text-xs text-slate-400 dark:text-slate-500">
+                  <span>{MOD}</span>
+                  <span>K</span>
+                </kbd>
+                <span className="select-none text-xs text-slate-400 dark:text-slate-500" aria-hidden>
+                  ·
+                </span>
+                <kbd className="inline-flex items-center gap-0.5 font-mono text-xs text-slate-400 dark:text-slate-500">
+                  <span>{MOD}</span>
+                  <span>/</span>
+                </kbd>
+              </span>
+            </button>
+          </header>
+        )}
 
         <PwaInstallBanner />
         <main className="flex min-h-0 flex-1 flex-col overflow-y-auto md:overflow-hidden">

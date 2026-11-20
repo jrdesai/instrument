@@ -6,9 +6,9 @@ import {
 } from "react";
 import { CopyButton, PillButton, ToolbarFooter } from "../../components/tool";
 import { callTool } from "../../bridge";
+import { useDebouncedHistory } from "../../hooks/useDebouncedHistory";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { extractErrorMessage } from "../../lib/extractErrorMessage";
-import { useHistoryStore } from "../../store";
 import type { EscapeMode } from "../../bindings/EscapeMode";
 import type { EscapeTarget } from "../../bindings/EscapeTarget";
 import type { StringEscaperInput } from "../../bindings/StringEscaperInput";
@@ -17,7 +17,6 @@ import type { StringEscaperOutput } from "../../bindings/StringEscaperOutput";
 const RUST_COMMAND = "tool_string_escaper_process";
 const TOOL_ID = "string-escaper";
 const DEBOUNCE_MS = 150;
-const HISTORY_DEBOUNCE_MS = 1500;
 
 const TARGETS: { value: EscapeTarget; label: string }[] = [
   { value: "json", label: "JSON" },
@@ -40,8 +39,7 @@ function StringEscaperTool() {
   const [error, setError] = useState<string | null>(null);
   const [leftPanelPercent, setLeftPanelPercent] = useState(50);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
+  const { schedule: scheduleHistory } = useDebouncedHistory(TOOL_ID);
 
   const runProcess = useCallback(
     async (
@@ -70,15 +68,7 @@ function StringEscaperTool() {
         setOutput(result);
         setError(result.error ?? null);
         if (!result.error) {
-          if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
-          historyDebounceRef.current = setTimeout(() => {
-            addHistoryEntry(TOOL_ID, {
-              input: payload,
-              output: result,
-              timestamp: Date.now(),
-            });
-            historyDebounceRef.current = null;
-          }, HISTORY_DEBOUNCE_MS);
+          scheduleHistory(payload, result);
         }
       } catch (e) {
         const message = extractErrorMessage(e, "Failed to run tool");
@@ -88,7 +78,7 @@ function StringEscaperTool() {
         setIsLoading(false);
       }
     },
-    [addHistoryEntry]
+    [scheduleHistory]
   );
 
   useEffect(() => {
@@ -101,12 +91,6 @@ function StringEscaperTool() {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
   }, [input, mode, target, runProcess]);
-
-  useEffect(() => {
-    return () => {
-      if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
-    };
-  }, []);
 
   const handleSwap = useCallback(() => {
     const newInput = output?.result ?? "";

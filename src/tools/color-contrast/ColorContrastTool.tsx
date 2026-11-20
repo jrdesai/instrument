@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState, type ChangeEvent } from "react";
+import { useDebouncedHistory } from "../../hooks/useDebouncedHistory";
 import { useDraftInput, useRestoreDraft } from "../../hooks/useDraftInput";
-import { useHistoryStore } from "../../store";
 import { callTool } from "../../bridge";
 import { extractErrorMessage } from "../../lib/extractErrorMessage";
 import type { ColorContrastOutput } from "../../bindings/ColorContrastOutput";
@@ -8,7 +8,6 @@ import type { ColorContrastOutput } from "../../bindings/ColorContrastOutput";
 const TOOL_ID = "color-contrast";
 const RUST_COMMAND = "tool_color_contrast_process";
 const DEBOUNCE_MS = 150;
-const HISTORY_DEBOUNCE_MS = 1500;
 
 const DEFAULT_FG = "#000000";
 const DEFAULT_BG = "#FFFFFF";
@@ -121,7 +120,7 @@ function ColourCard({
 }
 
 export default function ColorContrastTool() {
-  const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
+  const { schedule: scheduleHistory } = useDebouncedHistory(TOOL_ID);
   const { setDraft } = useDraftInput(TOOL_ID);
 
   const [fg, setFg] = useState(DEFAULT_FG);
@@ -134,7 +133,6 @@ export default function ColorContrastTool() {
   const [isLoading, setIsLoading] = useState(false);
 
   const computeDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const compute = useCallback(
     (foreground: string, background: string) => {
@@ -156,15 +154,10 @@ export default function ColorContrastTool() {
               setResult(res);
               setFgText(res.foregroundHex);
               setBgText(res.backgroundHex);
-              if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
-              historyDebounceRef.current = setTimeout(() => {
-                addHistoryEntry(TOOL_ID, {
-                  input: { foreground, background },
-                  output: { ratioDisplay: res.ratioDisplay },
-                  timestamp: Date.now(),
-                });
-                historyDebounceRef.current = null;
-              }, HISTORY_DEBOUNCE_MS);
+              scheduleHistory(
+                { foreground, background },
+                { ratioDisplay: res.ratioDisplay }
+              );
             }
           } catch (err) {
             setError(extractErrorMessage(err, "Contrast check failed"));
@@ -175,7 +168,7 @@ export default function ColorContrastTool() {
         })();
       }, DEBOUNCE_MS);
     },
-    [addHistoryEntry]
+    [scheduleHistory]
   );
 
   useRestoreDraft(TOOL_ID, (raw) => {
@@ -196,7 +189,6 @@ export default function ColorContrastTool() {
   useEffect(() => {
     return () => {
       if (computeDebounceRef.current) clearTimeout(computeDebounceRef.current);
-      if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
     };
   }, []);
 

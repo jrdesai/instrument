@@ -16,8 +16,10 @@ ROOT = pathlib.Path(__file__).parent.parent.resolve()
 
 # ── 1. Extract rustCommand values from the registry ──────────────────────────
 
-registry_path = ROOT / "src/registry/index.ts"
-registry_text = registry_path.read_text()
+registry_dir = ROOT / "src/registry"
+registry_text = "\n".join(
+    p.read_text() for p in sorted(registry_dir.rglob("*.ts"))
+)
 
 # Match rustCommand values only inside blocks that also have implemented: true
 blocks = re.split(r"\{\s*id:", registry_text)

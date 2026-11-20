@@ -75,8 +75,9 @@ Return `Result<Output, YourError>` or put `error: Option<String>` on the output 
 
 ## After any Rust change
 
+`public/wasm-pkg/` is **gitignored** and built automatically by CI on push to `main` — never commit it.
+To test web behaviour locally after changing Rust code:
+
 ```bash
-pnpm run build:wasm        # recompile → public/wasm-pkg/
-git add public/wasm-pkg/
-git commit -m "chore: rebuild wasm-pkg ..."
+pnpm run build:wasm        # recompile → public/wasm-pkg/ (local dev only)
 ```

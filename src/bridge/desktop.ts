@@ -36,3 +36,42 @@ export async function callToolDesktop(
 
   return fn(input);
 }
+
+/** Invokes a non-tool Tauri shell command (tray, popover, hotkey, clipboard). */
+export async function invokeDesktopCommand<T = void>(
+  command: string,
+  args?: Record<string, unknown>
+): Promise<T> {
+  const { invoke } = await import("@tauri-apps/api/core");
+  return invoke<T>(command, args);
+}
+
+/** Subscribes to a Tauri window/app event and returns the unlisten callback. */
+export async function listenDesktopEvent<T = unknown>(
+  event: string,
+  handler: (payload: T) => void
+): Promise<() => void> {
+  const { listen } = await import("@tauri-apps/api/event");
+  return listen<T>(event, (e) => handler(e.payload));
+}
+
+/** Shows and focuses the current Tauri window. */
+export async function showCurrentWindow(): Promise<void> {
+  const { getCurrentWindow } = await import("@tauri-apps/api/window");
+  const w = getCurrentWindow();
+  await w.show();
+  await w.setFocus();
+}
+
+/** Hides the current Tauri window. */
+export async function hideCurrentWindow(): Promise<void> {
+  const { getCurrentWindow } = await import("@tauri-apps/api/window");
+  await getCurrentWindow().hide();
+}
+
+/** Opens an external URL using the Tauri opener plugin. */
+export async function openExternalUrlDesktop(url: string): Promise<void> {
+  const { openUrl } = await import("@tauri-apps/plugin-opener");
+  await openUrl(url);
+}
+

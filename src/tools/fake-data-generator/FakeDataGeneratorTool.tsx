@@ -9,15 +9,14 @@ import { useNavigate } from "react-router-dom";
 import { callTool } from "../../bridge";
 import { CopyButton, PanelHeader, ToolbarFooter } from "../../components/tool";
 import { CodeBlock } from "../../components/ui/CodeBlock";
+import { useDebouncedHistory } from "../../hooks/useDebouncedHistory";
 import { useDraftInput, useRestoreDraft } from "../../hooks/useDraftInput";
-import { useHistoryStore } from "../../store";
 import type { FakeDataInput } from "../../bindings/FakeDataInput";
 import type { FakeDataOutput } from "../../bindings/FakeDataOutput";
 
 const RUST_COMMAND = "tool_fake_data_process";
 const TOOL_ID = "fake-data-generator";
 const DEBOUNCE_MS = 300;
-const HISTORY_DEBOUNCE_MS = 1500;
 
 const FIELD_TYPES = [
   {
@@ -312,8 +311,7 @@ function FakeDataGeneratorTool() {
   const [downloadError, setDownloadError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
+  const { schedule: scheduleHistory } = useDebouncedHistory(TOOL_ID);
 
   useRestoreDraft(TOOL_ID, (raw) => {
     if (!isToolDraft(raw)) return;
@@ -323,12 +321,6 @@ function FakeDataGeneratorTool() {
     setCount(next);
     setCountRaw(String(next));
   });
-
-  useEffect(() => {
-    return () => {
-      if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
-    };
-  }, []);
 
   useEffect(() => {
     const t = setTimeout(() => {
@@ -364,15 +356,7 @@ function FakeDataGeneratorTool() {
           })) as FakeDataOutput;
           setOutput(result);
           if (!result.error) {
-            if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
-            historyDebounceRef.current = setTimeout(() => {
-              addHistoryEntry(TOOL_ID, {
-                input: payload,
-                output: result,
-                timestamp: Date.now(),
-              });
-              historyDebounceRef.current = null;
-            }, HISTORY_DEBOUNCE_MS);
+            scheduleHistory(payload, result);
           }
         } catch (e) {
           const message =
@@ -387,7 +371,7 @@ function FakeDataGeneratorTool() {
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
-  }, [fields, count, addHistoryEntry]);
+  }, [fields, count, scheduleHistory]);
 
   useEffect(() => {
     setDownloadError(null);

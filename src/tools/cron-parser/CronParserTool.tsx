@@ -6,15 +6,14 @@ import {
   useState,
 } from "react";
 import { callTool } from "../../bridge";
+import { useDebouncedHistory } from "../../hooks/useDebouncedHistory";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
-import { useHistoryStore } from "../../store";
 import type { CronInput } from "../../bindings/CronInput";
 import type { CronOutput } from "../../bindings/CronOutput";
 
 const RUST_COMMAND = "tool_cron_process";
 const TOOL_ID = "cron-parser";
 const DEBOUNCE_MS = 150;
-const HISTORY_DEBOUNCE_MS = 1500;
 const COPIED_DURATION_MS = 1500;
 const NEXT_RUN_COUNT = 5;
 
@@ -535,8 +534,7 @@ function BuildTab() {
   const [output, setOutput]       = useState<CronOutput | null>(null);
   const [copyLabel, setCopyLabel] = useState("Copy");
   const debounceRef               = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const historyDebounceRef        = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const addHistoryEntry           = useHistoryStore((s) => s.addHistoryEntry);
+  const { schedule: scheduleHistory } = useDebouncedHistory(TOOL_ID);
 
   const expression = assembleExpression(fields);
 
@@ -549,22 +547,14 @@ function BuildTab() {
         })) as CronOutput;
         setOutput(result);
         if (result.isValid) {
-          if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
-          historyDebounceRef.current = setTimeout(() => {
-            addHistoryEntry(TOOL_ID, {
-              input: payload,
-              output: result,
-              timestamp: Date.now(),
-            });
-            historyDebounceRef.current = null;
-          }, HISTORY_DEBOUNCE_MS);
+          scheduleHistory(payload, result);
         }
       } catch (e) {
         const message = e instanceof Error ? e.message : String(e ?? "Cron parse failed");
         setOutput({ isValid: false, description: "", nextRuns: [], error: message });
       }
     },
-    [addHistoryEntry]
+    [scheduleHistory]
   );
 
   useEffect(() => {
@@ -577,12 +567,6 @@ function BuildTab() {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
   }, [expression, runProcess]);
-
-  useEffect(() => {
-    return () => {
-      if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
-    };
-  }, []);
 
   const handleCopy = useCallback(async () => {
     try {
@@ -714,8 +698,7 @@ function CronParserTool() {
   const [copyExprLabel, setCopyExprLabel] = useState("Copy expression");
   const [cheatOpen, setCheatOpen]         = useState(false);
   const debounceRef                       = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const historyDebounceRef                = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const addHistoryEntry                   = useHistoryStore((s) => s.addHistoryEntry);
+  const { schedule: scheduleHistory }     = useDebouncedHistory(TOOL_ID);
 
   const runProcess = useCallback(
     async (expr: string) => {
@@ -734,15 +717,7 @@ function CronParserTool() {
         })) as CronOutput;
         setOutput(result);
         if (result.isValid) {
-          if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
-          historyDebounceRef.current = setTimeout(() => {
-            addHistoryEntry(TOOL_ID, {
-              input: payload,
-              output: result,
-              timestamp: Date.now(),
-            });
-            historyDebounceRef.current = null;
-          }, HISTORY_DEBOUNCE_MS);
+          scheduleHistory(payload, result);
         }
       } catch (e) {
         const message =
@@ -755,7 +730,7 @@ function CronParserTool() {
         });
       }
     },
-    [addHistoryEntry]
+    [scheduleHistory]
   );
 
   useEffect(() => {
@@ -775,12 +750,6 @@ function CronParserTool() {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
   }, [expression, runProcess]);
-
-  useEffect(() => {
-    return () => {
-      if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
-    };
-  }, []);
 
   const handleCopyExpression = useCallback(async () => {
     const text = expression.trim();

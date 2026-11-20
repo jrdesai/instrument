@@ -1,4 +1,10 @@
 import { Suspense, useCallback, useEffect, useState } from "react";
+import {
+  hideDesktopWindow,
+  invokeDesktopCommand,
+  listenDesktopEvent,
+  showDesktopWindow,
+} from "../../bridge";
 import { getToolById } from "../../registry";
 import { isClipboardRelevant } from "../../lib/clipboardRelevance";
 import {
@@ -34,108 +40,87 @@ export function PopoverApp() {
 
   const handlePickerSelect = useCallback((selectedToolId: string) => {
     setShowPicker(false);
-    void import("@tauri-apps/api/core").then(({ invoke }) => {
-      void invoke<string | null>("consume_popover_clipboard_seed")
-        .then((raw) => {
-          applyTrayClipboardFromRaw(selectedToolId, raw ?? undefined);
-          return invoke<string>("read_clipboard_text");
-        })
-        .then((text) => {
-          applyTrayClipboardFromRaw(selectedToolId, text);
-        })
-        .catch(() => {})
-        .finally(() => {
-          setToolId(selectedToolId);
-        });
-    });
+    void invokeDesktopCommand<string | null>("consume_popover_clipboard_seed")
+      .then((raw) => {
+        applyTrayClipboardFromRaw(selectedToolId, raw ?? undefined);
+        return invokeDesktopCommand<string>("read_clipboard_text");
+      })
+      .then((text) => {
+        applyTrayClipboardFromRaw(selectedToolId, text);
+      })
+      .catch(() => {})
+      .finally(() => {
+        setToolId(selectedToolId);
+      });
   }, []);
 
   const handlePickerClose = useCallback(() => {
     setShowPicker(false);
     if (toolId === null) {
-      void import("@tauri-apps/api/window").then(({ getCurrentWindow }) => {
-        void getCurrentWindow().hide();
-      });
+      void hideDesktopWindow();
     }
   }, [toolId]);
 
   useEffect(() => {
-    void import("@tauri-apps/api/core").then(({ invoke }) => {
-      void invoke<string>("get_popover_tool").then((id) => {
-        if (!id) {
-          setShowPicker(true);
-          void import("@tauri-apps/api/window").then(({ getCurrentWindow }) => {
-            const w = getCurrentWindow();
-            void w.show();
-            void w.setFocus();
-          });
-        } else {
-          void invoke<string | null>("consume_popover_clipboard_seed").then((raw) => {
-            applyTrayClipboardFromRaw(id, raw ?? undefined);
-            setToolId(id);
-          });
-        }
-        setBootDone(true);
-      });
-    });
-  }, []);
-
-  useEffect(() => {
-    let unlisten: (() => void) | undefined;
-    void import("@tauri-apps/api/event").then(({ listen }) => {
-      void listen<string>("popover-navigate", (event) => {
-        const id = event.payload;
-        setShowPicker(false);
-        void import("@tauri-apps/api/core").then(({ invoke }) => {
-          void invoke<string | null>("consume_popover_clipboard_seed").then((raw) => {
-            applyTrayClipboardFromRaw(id, raw ?? undefined);
-            setToolId(id);
-          });
-        });
-      }).then((fn) => {
-        unlisten = fn;
-      });
-    });
-    return () => unlisten?.();
-  }, []);
-
-  useEffect(() => {
-    let unlisten: (() => void) | undefined;
-    void import("@tauri-apps/api/event").then(({ listen }) => {
-      void listen("popover-show-picker", () => {
+    void invokeDesktopCommand<string>("get_popover_tool").then((id) => {
+      if (!id) {
         setShowPicker(true);
-        void import("@tauri-apps/api/window").then(({ getCurrentWindow }) => {
-          const w = getCurrentWindow();
-          void w.show();
-          void w.setFocus();
+        void showDesktopWindow();
+      } else {
+        void invokeDesktopCommand<string | null>(
+          "consume_popover_clipboard_seed"
+        ).then((raw) => {
+          applyTrayClipboardFromRaw(id, raw ?? undefined);
+          setToolId(id);
         });
-      }).then((fn) => {
-        unlisten = fn;
+      }
+      setBootDone(true);
+    });
+  }, []);
+
+  useEffect(() => {
+    let unlisten: (() => void) | undefined;
+    void listenDesktopEvent<string>("popover-navigate", (id) => {
+      setShowPicker(false);
+      void invokeDesktopCommand<string | null>(
+        "consume_popover_clipboard_seed"
+      ).then((raw) => {
+        applyTrayClipboardFromRaw(id, raw ?? undefined);
+        setToolId(id);
       });
+    }).then((fn) => {
+      unlisten = fn;
     });
     return () => unlisten?.();
   }, []);
 
   useEffect(() => {
     let unlisten: (() => void) | undefined;
-    void import("@tauri-apps/api/event").then(({ listen }) => {
-      void listen<{ toolId: string; text: string }>("popover-clipboard", (event) => {
-        const { toolId: eventToolId, text } = event.payload;
+    void listenDesktopEvent("popover-show-picker", () => {
+      setShowPicker(true);
+      void showDesktopWindow();
+    }).then((fn) => {
+      unlisten = fn;
+    });
+    return () => unlisten?.();
+  }, []);
+
+  useEffect(() => {
+    let unlisten: (() => void) | undefined;
+    void listenDesktopEvent<{ toolId: string; text: string }>(
+      "popover-clipboard",
+      ({ toolId: eventToolId, text }) => {
         applyTrayClipboardFromRaw(eventToolId, text);
-      }).then((fn) => {
-        unlisten = fn;
-      });
+      }
+    ).then((fn) => {
+      unlisten = fn;
     });
     return () => unlisten?.();
   }, []);
 
   useEffect(() => {
     if (!toolId || showPicker) return;
-    void import("@tauri-apps/api/window").then(({ getCurrentWindow }) => {
-      const w = getCurrentWindow();
-      void w.show();
-      void w.setFocus();
-    });
+    void showDesktopWindow();
   }, [toolId, showPicker]);
 
   useEffect(() => {
@@ -200,9 +185,7 @@ export function PopoverApp() {
             type="button"
             title="Open in main window"
             onClick={() => {
-              void import("@tauri-apps/api/core").then(({ invoke }) => {
-                void invoke("open_main_and_navigate", { toolId });
-              });
+              void invokeDesktopCommand("open_main_and_navigate", { toolId });
             }}
             className="flex items-center rounded p-1 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-800 dark:hover:text-slate-200"
           >
@@ -215,9 +198,7 @@ export function PopoverApp() {
             type="button"
             title="Close"
             onClick={() => {
-              void import("@tauri-apps/api/window").then(({ getCurrentWindow }) => {
-                void getCurrentWindow().hide();
-              });
+              void hideDesktopWindow();
             }}
             className="flex items-center rounded p-1 text-slate-400 transition-colors hover:bg-slate-100 hover:text-red-500 dark:hover:bg-slate-800 dark:hover:text-red-400"
           >

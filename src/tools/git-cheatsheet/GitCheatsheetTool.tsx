@@ -1,5 +1,5 @@
 import { useMemo, useState, type MouseEvent } from "react";
-import { isDesktop } from "../../bridge";
+import { isDesktop, openExternalUrl } from "../../bridge";
 import { CopyButton } from "../../components/tool";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import {
@@ -49,9 +49,7 @@ export default function GitCheatsheetTool() {
   const openDocs = (e: MouseEvent<HTMLAnchorElement>) => {
     if (isDesktop) {
       e.preventDefault();
-      void import("@tauri-apps/plugin-opener").then(({ openUrl }) =>
-        void openUrl("https://git-scm.com/docs")
-      );
+      void openExternalUrl("https://git-scm.com/docs");
     }
   };
 

@@ -2,24 +2,13 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <script>
-      (function () {
-        try {
-          var prefs = localStorage.getItem("instrument-preferences");
-          var theme = prefs ? (JSON.parse(prefs).theme) : "dark";
-          if (theme === "dark") document.documentElement.classList.add("dark");
-          else document.documentElement.classList.remove("dark");
-        } catch (_) {
-          document.documentElement.classList.add("dark");
-        }
-      })();
-    </script>
+    <script src="/theme-init.js"></script>
     <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
     <link rel="apple-touch-icon" href="/favicon-256.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Instrument</title>
-    <meta name="description" content="Privacy-first developer toolkit. 34+ tools for encoding, formatting, hashing, JWT, regex, and more — all running locally in your browser." />
+    <meta name="description" content="Privacy-first developer toolkit. 83+ tools for encoding, formatting, hashing, JWT, regex, and more — all running locally in your browser." />
     <meta name="theme-color" content="#3b6ef8" />
     <link rel="canonical" href="https://instrument-wqt.pages.dev/" />
     <meta property="og:title" content="Instrument" />

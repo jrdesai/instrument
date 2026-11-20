@@ -6,8 +6,8 @@ import React, {
 } from "react";
 import { CopyButton, PillButton, ToolbarFooter } from "../../components/tool";
 import { callTool } from "../../bridge";
+import { useDebouncedHistory } from "../../hooks/useDebouncedHistory";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
-import { useHistoryStore } from "../../store";
 import type { HexInput } from "../../bindings/HexInput";
 import type { HexMode } from "../../bindings/HexMode";
 import type { HexOutput } from "../../bindings/HexOutput";
@@ -16,7 +16,6 @@ import type { HexSeparator } from "../../bindings/HexSeparator";
 const RUST_COMMAND = "tool_hex_process";
 const TOOL_ID = "hex-converter";
 const DEBOUNCE_MS = 150;
-const HISTORY_DEBOUNCE_MS = 1500;
 
 function HexConverterTool() {
   const { setDraft } = useDraftInput(TOOL_ID);
@@ -30,8 +29,7 @@ function HexConverterTool() {
   const [byteCount, setByteCount] = useState(0);
   const [leftPanelPercent, setLeftPanelPercent] = useState(50);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
+  const { schedule: scheduleHistory } = useDebouncedHistory(TOOL_ID);
 
   const runProcess = useCallback(
     async (
@@ -58,15 +56,7 @@ function HexConverterTool() {
         setError(result.error ?? null);
         setByteCount(result.byteCount ?? 0);
         if (!result.error) {
-          if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
-          historyDebounceRef.current = setTimeout(() => {
-            addHistoryEntry(TOOL_ID, {
-              input: payload,
-              output: result,
-              timestamp: Date.now(),
-            });
-            historyDebounceRef.current = null;
-          }, HISTORY_DEBOUNCE_MS);
+          scheduleHistory(payload, result);
         }
       } catch (e) {
         const message =
@@ -86,7 +76,7 @@ function HexConverterTool() {
         setIsLoading(false);
       }
     },
-    [addHistoryEntry]
+    [scheduleHistory]
   );
 
   useEffect(() => {
@@ -99,12 +89,6 @@ function HexConverterTool() {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
   }, [input, mode, separator, runProcess]);
-
-  useEffect(() => {
-    return () => {
-      if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
-    };
-  }, []);
 
   const handleSwap = useCallback(() => {
     const newInput = output;

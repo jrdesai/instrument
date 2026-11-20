@@ -6,9 +6,9 @@ import {
 } from "react";
 import { callTool } from "../../bridge";
 import { CopyButton, PillButton, ToolbarFooter } from "../../components/tool";
+import { useDebouncedHistory } from "../../hooks/useDebouncedHistory";
 import { useDraftInput, useRestoreDraft } from "../../hooks/useDraftInput";
 import { extractErrorMessage } from "../../lib/extractErrorMessage";
-import { useHistoryStore } from "../../store";
 import type { BitwiseBase } from "../../bindings/BitwiseBase";
 import type { BitwiseInput } from "../../bindings/BitwiseInput";
 import type { BitwiseOutput } from "../../bindings/BitwiseOutput";
@@ -18,7 +18,6 @@ import type { BitwiseWidth } from "../../bindings/BitwiseWidth";
 const RUST_COMMAND = "tool_bitwise_process";
 const TOOL_ID = "bitwise-calculator";
 const DEBOUNCE_MS = 150;
-const HISTORY_DEBOUNCE_MS = 1500;
 
 const BASE_PILLS: { id: BitwiseBase; label: string }[] = [
   { id: "decimal", label: "Dec" },
@@ -94,8 +93,7 @@ function BitwiseCalculatorTool() {
   const [output, setOutput] = useState<BitwiseOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
+  const { schedule: scheduleHistory } = useDebouncedHistory(TOOL_ID);
 
   const maxShift = BIT_WIDTH_OPTIONS.find((o) => o.id === bitWidth)?.maxShift ?? 7;
   const clampedShift = Math.min(Math.max(0, shiftAmount), maxShift);
@@ -129,15 +127,7 @@ function BitwiseCalculatorTool() {
         )) as BitwiseOutput;
         setOutput(result);
         if (!result.error) {
-          if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
-          historyDebounceRef.current = setTimeout(() => {
-            addHistoryEntry(TOOL_ID, {
-              input: payload,
-              output: result,
-              timestamp: Date.now(),
-            });
-            historyDebounceRef.current = null;
-          }, HISTORY_DEBOUNCE_MS);
+          scheduleHistory(payload, result);
         }
       } catch (e) {
         const message = extractErrorMessage(e, "Failed to run tool");
@@ -162,7 +152,7 @@ function BitwiseCalculatorTool() {
         setIsLoading(false);
       }
     },
-    [addHistoryEntry]
+    [scheduleHistory]
   );
 
   useEffect(() => {
@@ -175,12 +165,6 @@ function BitwiseCalculatorTool() {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
   }, [valueA, valueB, fromBase, bitWidth, shiftAmount, runProcess]);
-
-  useEffect(() => {
-    return () => {
-      if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
-    };
-  }, []);
 
   const handleClear = useCallback(() => {
     setValueA("");

@@ -9,73 +9,24 @@ import {
 } from "react";
 import { twMerge } from "tailwind-merge";
 import { marked } from "marked";
-import hljs from "highlight.js/lib/common";
-import hljsGitHubLight from "highlight.js/styles/github.css?url";
-import hljsGitHubDark from "highlight.js/styles/github-dark.css?url";
-import { CopyButton } from "../../components/tool";
+import DOMPurify from "dompurify";
+import { CopyButton, SplitToolLayout } from "../../components/tool";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useFileDrop } from "../../hooks/useFileDrop";
-import { usePreferenceStore } from "../../store";
-
-const HLJS_LINK_ID = "instrument-markdown-hljs-theme";
+import { highlightCode, injectPrismTheme } from "../../lib/prism";
 
 marked.use({
   gfm: true,
   breaks: true,
   renderer: {
     code({ text, lang }) {
-      const raw = lang?.trim() ?? "";
-      const language = raw && hljs.getLanguage(raw) ? raw : "plaintext";
-      const highlighted = hljs.highlight(text, { language }).value;
-      return `<pre><code class="hljs language-${language}">${highlighted}</code></pre>`;
+      const { language, html } = highlightCode(text, lang);
+      return `<pre class="language-${language}"><code class="language-${language}">${html}</code></pre>`;
     },
   },
 });
 
 type ViewMode = "split" | "editor" | "preview";
-
-function useEffectiveDark(): boolean {
-  const theme = usePreferenceStore((s) => s.theme);
-  const [dark, setDark] = useState(() => {
-    if (theme === "dark") return true;
-    if (theme === "light") return false;
-    return window.matchMedia("(prefers-color-scheme: dark)").matches;
-  });
-
-  useEffect(() => {
-    if (theme === "dark") {
-      setDark(true);
-      return;
-    }
-    if (theme === "light") {
-      setDark(false);
-      return;
-    }
-    const mq = window.matchMedia("(prefers-color-scheme: dark)");
-    setDark(mq.matches);
-    const onChange = (e: MediaQueryListEvent) => setDark(e.matches);
-    mq.addEventListener("change", onChange);
-    return () => mq.removeEventListener("change", onChange);
-  }, [theme]);
-
-  return dark;
-}
-
-function useHljsStylesheet(isDark: boolean) {
-  useEffect(() => {
-    let link = document.getElementById(HLJS_LINK_ID) as HTMLLinkElement | null;
-    if (!link) {
-      link = document.createElement("link");
-      link.id = HLJS_LINK_ID;
-      link.rel = "stylesheet";
-      document.head.appendChild(link);
-    }
-    link.href = isDark ? hljsGitHubDark : hljsGitHubLight;
-    return () => {
-      link?.remove();
-    };
-  }, [isDark]);
-}
 
 function escapeHtmlAttr(text: string): string {
   return text
@@ -90,8 +41,9 @@ type ToolbarItem =
   | { label: React.ReactNode; title: string; action: () => void };
 
 function MarkdownEditorTool() {
-  const isDark = useEffectiveDark();
-  useHljsStylesheet(isDark);
+  useEffect(() => {
+    injectPrismTheme();
+  }, []);
   const { setDraft } = useDraftInput("markdown-editor");
 
   const [source, setSource] = useState("");
@@ -108,7 +60,8 @@ function MarkdownEditorTool() {
   useEffect(() => {
     const timer = window.setTimeout(() => {
       try {
-        setHtml(marked.parse(source) as string);
+        const rawHtml = marked.parse(source) as string;
+        setHtml(DOMPurify.sanitize(rawHtml));
       } catch {
         setHtml("<p class=\"text-red-500 text-sm\">Could not parse Markdown.</p>");
       }
@@ -392,13 +345,10 @@ function MarkdownEditorTool() {
         </div>
       ) : null}
 
-      <div className="flex min-h-0 flex-1 flex-col md:flex-row">
-        {showEditor ? (
+      {(() => {
+        const editorPane = (
           <div
-            className={twMerge(
-              "relative flex min-h-0 min-w-0 flex-col border-border-light dark:border-border-dark",
-              showPreview ? "md:w-1/2 md:border-r" : "flex-1"
-            )}
+            className="relative flex min-h-0 min-w-0 flex-1 flex-col"
             {...dropZoneProps}
           >
             {isDragging && (
@@ -446,15 +396,10 @@ function MarkdownEditorTool() {
               )}
             />
           </div>
-        ) : null}
+        );
 
-        {showPreview ? (
-          <div
-            className={twMerge(
-              "flex min-h-0 min-w-0 flex-col",
-              showEditor ? "md:w-1/2" : "flex-1"
-            )}
-          >
+        const previewPane = (
+          <div className="flex min-h-0 min-w-0 flex-1 flex-col">
             <div className="flex min-h-[41px] items-center justify-between border-b border-border-light px-4 py-2 dark:border-border-dark">
               <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                 Preview
@@ -476,8 +421,18 @@ function MarkdownEditorTool() {
               }}
             />
           </div>
-        ) : null}
-      </div>
+        );
+
+        if (showEditor && showPreview) {
+          return <SplitToolLayout left={editorPane} right={previewPane} />;
+        }
+
+        return (
+          <div className="flex min-h-0 flex-1 flex-col">
+            {showEditor ? editorPane : previewPane}
+          </div>
+        );
+      })()}
     </div>
   );
 }

@@ -1,16 +1,15 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useDebouncedCallback } from "use-debounce";
 import { callTool } from "../../bridge";
 import { CopyButton, PanelHeader } from "../../components/tool";
+import { useDebouncedHistory } from "../../hooks/useDebouncedHistory";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
-import { useHistoryStore } from "../../store";
 import type { IpInspectInput } from "../../bindings/IpInspectInput";
 import type { IpInspectOutput } from "../../bindings/IpInspectOutput";
 
 const TOOL_ID = "ip-inspector";
 const RUST_COMMAND = "tool_ip_inspect";
 const DEBOUNCE_MS = 150;
-const HISTORY_DEBOUNCE_MS = 1500;
 
 function versionBadgeClass(version: string): string {
   const base =
@@ -86,8 +85,7 @@ function IpInspectorTool() {
   useRestoreStringDraft(TOOL_ID, setAddress);
   const [output, setOutput] = useState<IpInspectOutput | null>(null);
   const [parseError, setParseError] = useState<string | null>(null);
-  const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
+  const { schedule: scheduleHistory } = useDebouncedHistory(TOOL_ID);
 
   const runInspect = useCallback(
     async (value: string) => {
@@ -108,18 +106,10 @@ function IpInspectorTool() {
       setParseError(null);
       setOutput(result);
       if (result.version.length > 0) {
-        if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
-        historyDebounceRef.current = setTimeout(() => {
-          addHistoryEntry(TOOL_ID, {
-            input: payload,
-            output: result,
-            timestamp: Date.now(),
-          });
-          historyDebounceRef.current = null;
-        }, HISTORY_DEBOUNCE_MS);
+        scheduleHistory(payload, result);
       }
     },
-    [addHistoryEntry]
+    [scheduleHistory]
   );
 
   const debouncedInspect = useDebouncedCallback(runInspect, DEBOUNCE_MS);
@@ -127,12 +117,6 @@ function IpInspectorTool() {
   useEffect(() => {
     debouncedInspect(address);
   }, [address, debouncedInspect]);
-
-  useEffect(() => {
-    return () => {
-      if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
-    };
-  }, []);
 
   const showResults = Boolean(output && !parseError && output.version);
 

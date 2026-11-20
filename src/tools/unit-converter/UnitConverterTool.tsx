@@ -2,8 +2,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { twMerge } from "tailwind-merge";
 import { callTool } from "../../bridge";
 import { CopyButton, PanelHeader, ToolbarFooter } from "../../components/tool";
+import { useDebouncedHistory } from "../../hooks/useDebouncedHistory";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
-import { useHistoryStore } from "../../store";
 import type { UnitCategory } from "../../bindings/UnitCategory";
 import type { UnitConverterInput } from "../../bindings/UnitConverterInput";
 import type { UnitConverterOutput } from "../../bindings/UnitConverterOutput";
@@ -11,7 +11,6 @@ import type { UnitConverterOutput } from "../../bindings/UnitConverterOutput";
 const TOOL_ID = "unit-converter";
 const RUST_COMMAND = "tool_unit_convert";
 const DEBOUNCE_MS = 150;
-const HISTORY_DEBOUNCE_MS = 1500;
 
 const CATEGORIES: { label: string; value: UnitCategory }[] = [
   { label: "Data Size", value: "dataSize" },
@@ -118,8 +117,7 @@ function UnitConverterTool() {
   useRestoreStringDraft(TOOL_ID, setInputValue);
   const [output, setOutput] = useState<UnitConverterOutput | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
+  const { schedule: scheduleHistory } = useDebouncedHistory(TOOL_ID);
 
   const run = useCallback(
     async (val: string, cat: UnitCategory, unit: string) => {
@@ -138,13 +136,9 @@ function UnitConverterTool() {
       })) as UnitConverterOutput;
       setOutput(result);
 
-      if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
-      historyDebounceRef.current = setTimeout(() => {
-        addHistoryEntry(TOOL_ID, { input: payload, output: result, timestamp: Date.now() });
-        historyDebounceRef.current = null;
-      }, HISTORY_DEBOUNCE_MS);
+      scheduleHistory(payload, result);
     },
-    [addHistoryEntry]
+    [scheduleHistory]
   );
 
   useEffect(() => {
@@ -157,12 +151,6 @@ function UnitConverterTool() {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
   }, [inputValue, category, fromUnit, run]);
-
-  useEffect(() => {
-    return () => {
-      if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
-    };
-  }, []);
 
   const handleCategoryChange = (cat: UnitCategory) => {
     setCategory(cat);

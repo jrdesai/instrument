@@ -7,16 +7,15 @@ import {
 } from "react";
 import { CopyButton, ToolbarFooter } from "../../components/tool";
 import { callTool } from "../../bridge";
+import { useDebouncedHistory } from "../../hooks/useDebouncedHistory";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { extractErrorMessage } from "../../lib/extractErrorMessage";
-import { useHistoryStore } from "../../store";
 import type { CaseInput } from "../../bindings/CaseInput";
 import type { CaseOutput } from "../../bindings/CaseOutput";
 
 const RUST_COMMAND = "tool_case_process";
 const TOOL_ID = "text-case-converter";
 const DEBOUNCE_MS = 150;
-const HISTORY_DEBOUNCE_MS = 1500;
 
 const CASES: {
   id: keyof Omit<CaseOutput, "wordCount" | "error">;
@@ -42,8 +41,7 @@ function TextCaseConverterTool() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
+  const { schedule: scheduleHistory } = useDebouncedHistory(TOOL_ID);
 
   const runProcess = useCallback(
     async (text: string) => {
@@ -65,15 +63,7 @@ function TextCaseConverterTool() {
         setOutput(result);
         setError(result.error ?? null);
         if (!result.error) {
-          if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
-          historyDebounceRef.current = setTimeout(() => {
-            addHistoryEntry(TOOL_ID, {
-              input: payload,
-              output: result,
-              timestamp: Date.now(),
-            });
-            historyDebounceRef.current = null;
-          }, HISTORY_DEBOUNCE_MS);
+          scheduleHistory(payload, result);
         }
       } catch (e) {
         const message = extractErrorMessage(e, "Failed to run tool");
@@ -83,7 +73,7 @@ function TextCaseConverterTool() {
         setIsLoading(false);
       }
     },
-    [addHistoryEntry]
+    [scheduleHistory]
   );
 
   useEffect(() => {
@@ -96,12 +86,6 @@ function TextCaseConverterTool() {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
   }, [input, runProcess]);
-
-  useEffect(() => {
-    return () => {
-      if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
-    };
-  }, []);
 
   const handleClear = useCallback(() => {
     setInput("");

@@ -11,8 +11,8 @@ import {
   ToolbarFooter,
   type FooterGroup,
 } from "../../components/tool";
+import { useDebouncedHistory } from "../../hooks/useDebouncedHistory";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
-import { useHistoryStore } from "../../store";
 import type { Base32Variant } from "../../bindings/Base32Variant";
 import type { BaseNEncoding } from "../../bindings/BaseNEncoding";
 import type { BaseNInput } from "../../bindings/BaseNInput";
@@ -22,7 +22,6 @@ import type { BaseNOutput } from "../../bindings/BaseNOutput";
 const TOOL_ID = "base32-base58";
 const RUST_COMMAND = "tool_base32_base58_process";
 const DEBOUNCE_MS = 150;
-const HISTORY_DEBOUNCE_MS = 1500;
 
 export default function Base32Base58Tool() {
   const { setDraft } = useDraftInput(TOOL_ID);
@@ -36,8 +35,7 @@ export default function Base32Base58Tool() {
   const [output, setOutput] = useState<BaseNOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
+  const { schedule: scheduleHistory } = useDebouncedHistory(TOOL_ID);
 
   const runProcess = useCallback(
     async (
@@ -64,17 +62,7 @@ export default function Base32Base58Tool() {
         })) as BaseNOutput;
         setOutput(result);
         if (!result.error && result.result.length > 0) {
-          if (historyDebounceRef.current) {
-            clearTimeout(historyDebounceRef.current);
-          }
-          historyDebounceRef.current = setTimeout(() => {
-            addHistoryEntry(TOOL_ID, {
-              input: payload,
-              output: result,
-              timestamp: Date.now(),
-            });
-            historyDebounceRef.current = null;
-          }, HISTORY_DEBOUNCE_MS);
+          scheduleHistory(payload, result);
         }
       } catch (e) {
         setOutput({
@@ -85,7 +73,7 @@ export default function Base32Base58Tool() {
         setIsLoading(false);
       }
     },
-    [addHistoryEntry]
+    [scheduleHistory]
   );
 
   useEffect(() => {
@@ -98,14 +86,6 @@ export default function Base32Base58Tool() {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
   }, [input, encoding, mode, base32Variant, runProcess]);
-
-  useEffect(() => {
-    return () => {
-      if (historyDebounceRef.current) {
-        clearTimeout(historyDebounceRef.current);
-      }
-    };
-  }, []);
 
   const handleClear = useCallback(() => {
     setInput("");

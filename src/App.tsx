@@ -9,7 +9,11 @@ import {
   useNavigate,
 } from "react-router-dom";
 import { getPopoverTools, getToolById } from "./registry";
-import { isDesktop } from "./bridge";
+import {
+  invokeDesktopCommand,
+  isDesktop,
+  listenDesktopEvent,
+} from "./bridge";
 import { AppShell } from "./components/layout/AppShell";
 import { DashboardPage } from "./components/layout/DashboardPage";
 import { ChainEditPage } from "./components/layout/ChainEditPage";
@@ -17,7 +21,6 @@ import { ChainsPage } from "./components/layout/ChainsPage";
 import { HistoryPage } from "./components/layout/HistoryPage";
 import { NotFoundPage } from "./components/layout/NotFoundPage";
 import { SettingsPage } from "./components/layout/SettingsPage";
-import { ToolHeader } from "./components/layout/ToolHeader";
 import { ToolErrorBoundary } from "./components/ui/ToolErrorBoundary";
 import { LoadingSpinner } from "./components/ui/LoadingSpinner";
 import { usePreferenceStore, useToolStore } from "./store";
@@ -43,7 +46,6 @@ function ToolPage() {
   const Component = tool.component;
   return (
     <div ref={containerRef} tabIndex={-1} className="flex-1 flex flex-col min-h-0 w-full bg-background-light dark:bg-background-dark outline-none">
-      <ToolHeader tool={tool} />
       <ToolErrorBoundary key={toolId} toolName={tool.name}>
         <Suspense fallback={<LoadingSpinner label="Loading tool..." />}>
           <div className="relative flex min-h-0 flex-1 flex-col">
@@ -66,9 +68,7 @@ function TrayDesktopSync() {
     if (!isDesktop) return;
     const syncHotkey = () => {
       const enabled = usePreferenceStore.getState().globalHotkeyEnabled;
-      void import("@tauri-apps/api/core").then(({ invoke }) => {
-        void invoke("set_global_hotkey_enabled", { enabled }).catch(() => {});
-      });
+      void invokeDesktopCommand("set_global_hotkey_enabled", { enabled }).catch(() => {});
     };
     if (usePreferenceStore.persist.hasHydrated()) syncHotkey();
     else return usePreferenceStore.persist.onFinishHydration(syncHotkey);
@@ -76,34 +76,28 @@ function TrayDesktopSync() {
 
   useEffect(() => {
     if (!isDesktop) return;
-    void import("@tauri-apps/api/core").then(({ invoke }) => {
-      invoke("set_tray_visible", { visible: showTrayIcon }).catch(() => {});
-    });
+    void invokeDesktopCommand("set_tray_visible", { visible: showTrayIcon }).catch(() => {});
   }, [showTrayIcon]);
 
   useEffect(() => {
     if (!isDesktop) return;
-    void import("@tauri-apps/api/core").then(({ invoke }) => {
-      const popoverById = new Map(
-        getPopoverTools().map((t) => [t.id, t] as const)
-      );
-      const trayTools = favouriteToolIds
-        .map((id) => popoverById.get(id))
-        .filter((t): t is NonNullable<typeof t> => t != null)
-        .map((t) => ({ id: t.id, name: t.name }));
-      invoke("update_tray_menu", { tools: trayTools }).catch(() => {});
-    });
+    const popoverById = new Map(
+      getPopoverTools().map((t) => [t.id, t] as const)
+    );
+    const trayTools = favouriteToolIds
+      .map((id) => popoverById.get(id))
+      .filter((t): t is NonNullable<typeof t> => t != null)
+      .map((t) => ({ id: t.id, name: t.name }));
+    void invokeDesktopCommand("update_tray_menu", { tools: trayTools }).catch(() => {});
   }, [favouriteToolIds]);
 
   useEffect(() => {
     if (!isDesktop) return;
     let unlisten: (() => void) | undefined;
-    void import("@tauri-apps/api/event").then(({ listen }) => {
-      void listen<string>("navigate-to-tool", (event) => {
-        navigate(`/tools/${event.payload}`);
-      }).then((fn) => {
-        unlisten = fn;
-      });
+    void listenDesktopEvent<string>("navigate-to-tool", (toolId) => {
+      navigate(`/tools/${toolId}`);
+    }).then((fn) => {
+      unlisten = fn;
     });
     return () => {
       unlisten?.();

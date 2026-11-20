@@ -8,9 +8,9 @@ import {
 } from "react";
 import { CopyButton, FileUploadButton, ToolbarFooter } from "../../components/tool";
 import { callTool } from "../../bridge";
+import { useDebouncedHistory } from "../../hooks/useDebouncedHistory";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useFileDrop } from "../../hooks/useFileDrop";
-import { useHistoryStore } from "../../store";
 import type { HashInput } from "../../bindings/HashInput";
 import type { HashOutput } from "../../bindings/HashOutput";
 import type { HashOutputFormat } from "../../bindings/HashOutputFormat";
@@ -18,7 +18,6 @@ import type { HashOutputFormat } from "../../bindings/HashOutputFormat";
 const RUST_COMMAND = "tool_hash_process";
 const TOOL_ID = "hash";
 const DEBOUNCE_MS = 150;
-const HISTORY_DEBOUNCE_MS = 1500;
 
 function historySafeInput(payload: HashInput): HashInput {
   const key = payload.hmacKey.trim();
@@ -47,13 +46,12 @@ function HashTool() {
   const [fileName, setFileName] = useState<string | null>(null);
   const isEmpty = input.trim().length === 0;
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
+  const { schedule: scheduleHistory, cancel: cancelHistory } = useDebouncedHistory(TOOL_ID);
 
   const runProcess = useCallback(
     async (payload: HashInput) => {
       if (!payload.text.trim() && !payload.hashEmpty) {
-        if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
+        cancelHistory();
         setResults([]);
         setError(null);
         return;
@@ -65,24 +63,16 @@ function HashTool() {
           skipHistory: true,
         })) as HashOutput;
         if (result.error) {
-          if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
+          cancelHistory();
           setResults(result.results ?? []);
           setError(result.error);
           return;
         }
         setResults(result.results ?? []);
         setError(null);
-        if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
-        historyDebounceRef.current = setTimeout(() => {
-          addHistoryEntry(TOOL_ID, {
-            input: historySafeInput(payload),
-            output: result,
-            timestamp: Date.now(),
-          });
-          historyDebounceRef.current = null;
-        }, HISTORY_DEBOUNCE_MS);
+        scheduleHistory(historySafeInput(payload), result);
       } catch (e) {
-        if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
+        cancelHistory();
         const message =
           e instanceof Error
             ? e.message
@@ -99,7 +89,7 @@ function HashTool() {
         setIsLoading(false);
       }
     },
-    [addHistoryEntry]
+    [cancelHistory, scheduleHistory]
   );
 
   useEffect(() => {
@@ -119,12 +109,6 @@ function HashTool() {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
   }, [input, hmacKey, outputFormat, uppercase, hashEmpty, runProcess]);
-
-  useEffect(() => {
-    return () => {
-      if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
-    };
-  }, []);
 
   const { isDragging, dropZoneProps } = useFileDrop({
     onFile: (text, filename) => {

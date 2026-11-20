@@ -1,14 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { callTool } from "../../bridge";
+import { useDebouncedHistory } from "../../hooks/useDebouncedHistory";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
-import { useHistoryStore } from "../../store";
 import type { UaParseInput } from "../../bindings/UaParseInput";
 import type { UaParseOutput } from "../../bindings/UaParseOutput";
 
 const RUST_COMMAND = "tool_ua_parse";
 const TOOL_ID = "user-agent-parser";
 const DEBOUNCE_MS = 150;
-const HISTORY_DEBOUNCE_MS = 1500;
 
 const EXAMPLES = [
   {
@@ -52,14 +51,13 @@ function UserAgentParserTool() {
   useRestoreStringDraft(TOOL_ID, setInput);
   const [output, setOutput] = useState<UaParseOutput | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
+  const { schedule: scheduleHistory, cancel: cancelHistory } = useDebouncedHistory(TOOL_ID);
 
   const runProcess = useCallback(
     async (ua: string) => {
       const trimmed = ua.trim();
       if (!trimmed) {
-        if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
+        cancelHistory();
         setOutput(null);
         return;
       }
@@ -72,15 +70,7 @@ function UserAgentParserTool() {
         setOutput(result);
 
         if (!result.error) {
-          if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
-          historyDebounceRef.current = setTimeout(() => {
-            addHistoryEntry(TOOL_ID, {
-              input: payload,
-              output: result,
-              timestamp: Date.now(),
-            });
-            historyDebounceRef.current = null;
-          }, HISTORY_DEBOUNCE_MS);
+          scheduleHistory(payload, result);
         }
       } catch (error) {
         setOutput({
@@ -97,7 +87,7 @@ function UserAgentParserTool() {
         });
       }
     },
-    [addHistoryEntry]
+    [cancelHistory, scheduleHistory]
   );
 
   useEffect(() => {
@@ -112,12 +102,6 @@ function UserAgentParserTool() {
     };
   }, [input, runProcess]);
 
-  useEffect(() => {
-    return () => {
-      if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
-    };
-  }, []);
-
   const handleExampleClick = useCallback(
     (ua: string) => {
       setInput(ua);
@@ -128,11 +112,11 @@ function UserAgentParserTool() {
 
   const handleClear = useCallback(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
-    if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
+    cancelHistory();
     setInput("");
     setDraft("");
     setOutput(null);
-  }, [setDraft]);
+  }, [cancelHistory, setDraft]);
 
   return (
     <div className="flex h-full min-h-0 flex-col overflow-y-auto bg-background-light font-display text-slate-900 dark:bg-background-dark dark:text-slate-100">

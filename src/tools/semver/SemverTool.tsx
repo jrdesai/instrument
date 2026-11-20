@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { callTool } from "../../bridge";
 import { CopyButton, PanelHeader, ToolbarFooter } from "../../components/tool";
+import { useDebouncedHistory } from "../../hooks/useDebouncedHistory";
 import { useDraftInput, useRestoreDraft } from "../../hooks/useDraftInput";
-import { useHistoryStore } from "../../store";
 import type { SemverCompareResult } from "../../bindings/SemverCompareResult";
 import type { SemverInput } from "../../bindings/SemverInput";
 import type { SemverOutput } from "../../bindings/SemverOutput";
@@ -10,7 +10,6 @@ import type { SemverOutput } from "../../bindings/SemverOutput";
 const TOOL_ID = "semver";
 const RUST_COMMAND = "tool_semver_process";
 const DEBOUNCE_MS = 150;
-const HISTORY_DEBOUNCE_MS = 1500;
 
 type DraftShape = { version: string; compareWith: string; range: string };
 
@@ -34,8 +33,7 @@ function SemverTool() {
   const [range, setRange] = useState("");
   const [output, setOutput] = useState<SemverOutput | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
+  const { schedule: scheduleHistory } = useDebouncedHistory(TOOL_ID);
 
   useRestoreDraft(TOOL_ID, (raw) => {
     if (raw && typeof raw === "object" && !Array.isArray(raw)) {
@@ -70,18 +68,10 @@ function SemverTool() {
       })) as SemverOutput;
       setOutput(result);
       if (!result.error) {
-        if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
-        historyDebounceRef.current = setTimeout(() => {
-          addHistoryEntry(TOOL_ID, {
-            input: payload,
-            output: result,
-            timestamp: Date.now(),
-          });
-          historyDebounceRef.current = null;
-        }, HISTORY_DEBOUNCE_MS);
+        scheduleHistory(payload, result);
       }
     },
-    [addHistoryEntry]
+    [scheduleHistory]
   );
 
   useEffect(() => {
@@ -98,12 +88,6 @@ function SemverTool() {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
   }, [version, compareWith, range, run]);
-
-  useEffect(() => {
-    return () => {
-      if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
-    };
-  }, []);
 
   const hasOk = output && !output.error;
 

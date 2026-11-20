@@ -10,36 +10,27 @@ Register a lazy import in `src/registry/index.ts`.
 ## Auto-run tool pattern (most tools)
 
 ```tsx
-const DEBOUNCE_MS = 150;          // computation debounce
-const HISTORY_DEBOUNCE_MS = 1500; // history capture debounce
+import { useDebouncedHistory } from "../../hooks/useDebouncedHistory";
+
+const DEBOUNCE_MS = 150; // computation debounce
 
 // Draft persistence — REQUIRED for all non-sensitive, non-generator tools
 const { setDraft } = useDraftInput(TOOL_ID);
 const [input, setInput] = useState("");
 useRestoreStringDraft(TOOL_ID, setInput);
 
-const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
-
-// Unmount cleanup — REQUIRED whenever historyDebounceRef is used
-useEffect(() => {
-  return () => {
-    if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
-  };
-}, []);
+// History capture — defaults to 1500ms debounce and cleans up automatically on unmount.
+// Destructure `cancel: cancelHistory` as well if you need to cancel pending captures on clear/empty input.
+const { schedule: scheduleHistory } = useDebouncedHistory(TOOL_ID);
 
 // Inside runProcess():
 const result = await callTool(RUST_COMMAND, payload, { skipHistory: true }); // fast call
 setOutput(result);
 
-// History capture — use addHistoryEntry directly, NEVER a second callTool()
+// History capture — use useDebouncedHistory, NEVER a second callTool()
 // Guard: only record when result is valid (skip on error or empty output)
 if (!result.error && result.someOutputField.length > 0) {
-  if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
-  historyDebounceRef.current = setTimeout(() => {
-    addHistoryEntry(TOOL_ID, { input: payload, output: result, timestamp: Date.now() });
-    historyDebounceRef.current = null;
-  }, HISTORY_DEBOUNCE_MS);
+  scheduleHistory(payload, result);
 }
 ```
 
@@ -254,24 +245,14 @@ Wrap both the trigger button and the popover content in the same `<div ref={pick
 Some tools are `sensitive: false` overall but have one optional secret field (e.g. HashTool's HMAC key). The rules:
 
 1. **Draft**: persist the non-secret input (e.g. the text to hash) via `useDraftInput`. Do NOT call `setDraft` on the secret field's `onChange`.
-2. **History**: use a `historySafeInput()` helper that redacts the secret before passing to `addHistoryEntry`. Example: replace `hmacKey` with `"[redacted]"` when non-empty.
+2. **History**: use a `historySafeInput()` helper that redacts the secret before passing to `scheduleHistory`. Example: replace `hmacKey` with `"[redacted]"` when non-empty.
 3. **`sensitive` in registry**: keep `false` — the tool is not primarily a secrets handler.
 
 See `src/tools/hash/HashTool.tsx` for the reference implementation.
 
-## `useDebouncedCallback` and historyDebounceRef
+## `useDebouncedCallback` and `useDebouncedHistory`
 
-If a tool uses the third-party `useDebouncedCallback` hook instead of a manual `debounceRef + useEffect` pattern, `useEffect` may not be imported at all. **The `historyDebounceRef` unmount cleanup still requires a `useEffect`** — import it explicitly even if it's the only effect in the file:
-
-```ts
-// Even if useDebouncedCallback handles the compute debounce, the
-// historyDebounceRef (set inside the callback) needs its own cleanup:
-useEffect(() => {
-  return () => {
-    if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
-  };
-}, []);
-```
+`useDebouncedHistory` handles its own unmount cleanup internally, so tools using `useDebouncedCallback` for computation debounce do **not** need a separate `useEffect` for history timer cleanup. Pass a custom delay as the second argument if needed: `useDebouncedHistory(TOOL_ID, delayMs)`.
 
 See `src/tools/regex-tester/RegexTesterTool.tsx` for the reference.
 

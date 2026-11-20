@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { callTool } from "../../bridge";
 import { PillButton, ToolbarFooter } from "../../components/tool";
+import { useDebouncedHistory } from "../../hooks/useDebouncedHistory";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
-import { useHistoryStore } from "../../store";
 import type { QrCodeInput } from "../../bindings/QrCodeInput";
 import type { QrCodeOutput } from "../../bindings/QrCodeOutput";
 import type { QrEcLevel } from "../../bindings/QrEcLevel";
@@ -10,7 +10,6 @@ import type { QrEcLevel } from "../../bindings/QrEcLevel";
 const TOOL_ID = "qr-code";
 const RUST_COMMAND = "tool_qr_generate";
 const DEBOUNCE_MS = 150;
-const HISTORY_DEBOUNCE_MS = 1500;
 const DEFAULT_EC_LEVEL: QrEcLevel = "medium";
 const DEFAULT_MODULE_SIZE = 10;
 
@@ -24,8 +23,7 @@ function QrCodeTool() {
   const [margin, setMargin] = useState(4);
   const [output, setOutput] = useState<QrCodeOutput | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
+  const { schedule: scheduleHistory } = useDebouncedHistory(TOOL_ID);
   useRestoreStringDraft(TOOL_ID, setText);
 
   const run = useCallback(
@@ -54,18 +52,10 @@ function QrCodeTool() {
       })) as QrCodeOutput;
       setOutput(result);
       if (!result.error) {
-        if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
-        historyDebounceRef.current = setTimeout(() => {
-          addHistoryEntry(TOOL_ID, {
-            input: payload,
-            output: result,
-            timestamp: Date.now(),
-          });
-          historyDebounceRef.current = null;
-        }, HISTORY_DEBOUNCE_MS);
+        scheduleHistory(payload, result);
       }
     },
-    [addHistoryEntry]
+    [scheduleHistory]
   );
 
   useEffect(() => {
@@ -78,12 +68,6 @@ function QrCodeTool() {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
   }, [text, ecLevel, moduleSize, fgColor, bgColor, margin, run]);
-
-  useEffect(() => {
-    return () => {
-      if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
-    };
-  }, []);
 
   const handleClear = useCallback(() => {
     setText("");

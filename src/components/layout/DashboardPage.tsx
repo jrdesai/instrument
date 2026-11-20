@@ -239,6 +239,140 @@ function isKnownCategory(name: string): boolean {
   return getDisplayCategories().some((cat) => cat.name === name);
 }
 
+type ToolViewMode = "grid" | "list";
+const VIEW_MODE_STORAGE_KEY = "instrument:dashboard-view-mode";
+
+function readInitialViewMode(): ToolViewMode {
+  try {
+    return localStorage.getItem(VIEW_MODE_STORAGE_KEY) === "list" ? "list" : "grid";
+  } catch {
+    return "grid";
+  }
+}
+
+function ToolListRow({
+  tool,
+  isFavourite,
+  desktopOnly,
+  onClick,
+  onToggleFavourite,
+}: {
+  tool: Tool;
+  isFavourite: boolean;
+  desktopOnly: boolean;
+  onClick: () => void;
+  onToggleFavourite: (e: React.MouseEvent) => void;
+}) {
+  return (
+    <div
+      className={`group relative flex items-center gap-3 rounded-lg border border-border-light bg-white px-3 py-2 transition-colors dark:border-border-dark dark:bg-panel-dark ${
+        desktopOnly ? "opacity-60" : "hover:border-primary/40 hover:bg-primary/5"
+      }`}
+    >
+      <button
+        type="button"
+        onClick={onClick}
+        onMouseEnter={() => tool.preload?.()}
+        onFocus={() => tool.preload?.()}
+        aria-label={tool.name}
+        className={`absolute inset-0 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
+          desktopOnly ? "pointer-events-none cursor-not-allowed" : ""
+        }`}
+      />
+      <div
+        className={`flex size-7 shrink-0 items-center justify-center rounded-md bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400 ${
+          desktopOnly ? "" : "transition-colors group-hover:bg-primary/10 group-hover:text-primary"
+        }`}
+      >
+        <span className="material-symbols-outlined text-[18px]" aria-hidden>
+          {tool.icon}
+        </span>
+      </div>
+      <div className="flex min-w-0 flex-1 items-baseline gap-2.5">
+        <span className="shrink-0 text-sm font-medium text-slate-800 dark:text-slate-200">
+          {tool.name}
+        </span>
+        <span className="min-w-0 truncate text-xs text-slate-500 dark:text-slate-400">
+          {tool.description}
+        </span>
+      </div>
+      {desktopOnly ? (
+        <span className="relative z-10 shrink-0 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+          Desktop only
+        </span>
+      ) : (
+        <button
+          type="button"
+          onClick={onToggleFavourite}
+          aria-label={isFavourite ? "Remove from favourites" : "Add to favourites"}
+          className={`relative z-10 flex size-6 shrink-0 items-center justify-center rounded transition-all hover:text-amber-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
+            isFavourite
+              ? "opacity-100 text-amber-400"
+              : "opacity-0 text-slate-400 group-hover:opacity-60 focus-visible:opacity-100 dark:text-slate-500"
+          }`}
+        >
+          <span
+            className="material-symbols-outlined text-[16px]"
+            aria-hidden
+            style={{ fontVariationSettings: isFavourite ? "'FILL' 1" : "'FILL' 0" }}
+          >
+            star
+          </span>
+        </button>
+      )}
+    </div>
+  );
+}
+
+function ViewModeToggle({
+  mode,
+  onChange,
+}: {
+  mode: ToolViewMode;
+  onChange: (next: ToolViewMode) => void;
+}) {
+  return (
+    <div
+      role="group"
+      aria-label="Tool layout"
+      className="inline-flex items-center rounded-md border border-border-light bg-slate-50 p-0.5 dark:border-border-dark dark:bg-slate-800/60"
+    >
+      <button
+        type="button"
+        onClick={() => onChange("grid")}
+        aria-label="Grid view"
+        aria-pressed={mode === "grid"}
+        title="Grid view"
+        className={`flex size-6 items-center justify-center rounded transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
+          mode === "grid"
+            ? "bg-white text-primary shadow-xs dark:bg-panel-dark"
+            : "text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300"
+        }`}
+      >
+        <span className="material-symbols-outlined text-[16px]" aria-hidden>
+          grid_view
+        </span>
+      </button>
+      <button
+        type="button"
+        onClick={() => onChange("list")}
+        aria-label="Compact list view"
+        aria-pressed={mode === "list"}
+        title="Compact list view"
+        className={`flex size-6 items-center justify-center rounded transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
+          mode === "list"
+            ? "bg-white text-primary shadow-xs dark:bg-panel-dark"
+            : "text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300"
+        }`}
+      >
+        <span className="material-symbols-outlined text-[16px]" aria-hidden>
+          view_list
+        </span>
+      </button>
+    </div>
+  );
+}
+
 export function DashboardPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const categoryParam = searchParams.get("category");
@@ -249,8 +383,18 @@ export function DashboardPage() {
         ? { type: "category", name: categoryParam }
         : { type: "categories" };
   const [activeRole, setActiveRole] = useState<RoleFilter>("All");
+  const [viewMode, setViewMode] = useState<ToolViewMode>(readInitialViewMode);
   const welcomeDismissed = usePreferenceStore((s) => s.welcomeDismissed);
   const setWelcomeDismissed = usePreferenceStore((s) => s.setWelcomeDismissed);
+
+  const handleViewModeChange = (next: ToolViewMode) => {
+    setViewMode(next);
+    try {
+      localStorage.setItem(VIEW_MODE_STORAGE_KEY, next);
+    } catch {
+      // Ignore storage quota / disabled storage errors.
+    }
+  };
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -527,6 +671,7 @@ export function DashboardPage() {
                 <span className="ml-auto font-mono text-xs text-slate-400 dark:text-slate-500">
                   {filteredTools.length} {filteredTools.length === 1 ? "tool" : "tools"}
                 </span>
+                <ViewModeToggle mode={viewMode} onChange={handleViewModeChange} />
               </div>
             </div>
 
@@ -535,25 +680,47 @@ export function DashboardPage() {
               tabIndex={-1}
               className="min-h-0 flex-1 overflow-y-auto px-6 py-4 outline-none"
             >
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                {filteredTools.map((tool) => (
-                  <ToolGridCard
-                    key={tool.id}
-                    tool={tool}
-                    isFavourite={favouriteToolIds.includes(tool.id)}
-                    desktopOnly={isWeb && !tool.platforms.includes("web")}
-                    onClick={
-                      isWeb && !tool.platforms.includes("web")
-                        ? () => {}
-                        : () => handleOpenTool(tool)
-                    }
-                    onToggleFavourite={(e) => {
-                      e.stopPropagation();
-                      toggleFavourite(tool);
-                    }}
-                  />
-                ))}
-              </div>
+              {viewMode === "list" ? (
+                <div className="flex flex-col gap-1.5">
+                  {filteredTools.map((tool) => (
+                    <ToolListRow
+                      key={tool.id}
+                      tool={tool}
+                      isFavourite={favouriteToolIds.includes(tool.id)}
+                      desktopOnly={isWeb && !tool.platforms.includes("web")}
+                      onClick={
+                        isWeb && !tool.platforms.includes("web")
+                          ? () => {}
+                          : () => handleOpenTool(tool)
+                      }
+                      onToggleFavourite={(e) => {
+                        e.stopPropagation();
+                        toggleFavourite(tool);
+                      }}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                  {filteredTools.map((tool) => (
+                    <ToolGridCard
+                      key={tool.id}
+                      tool={tool}
+                      isFavourite={favouriteToolIds.includes(tool.id)}
+                      desktopOnly={isWeb && !tool.platforms.includes("web")}
+                      onClick={
+                        isWeb && !tool.platforms.includes("web")
+                          ? () => {}
+                          : () => handleOpenTool(tool)
+                      }
+                      onToggleFavourite={(e) => {
+                        e.stopPropagation();
+                        toggleFavourite(tool);
+                      }}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -582,6 +749,7 @@ export function DashboardPage() {
                 <span className="ml-auto font-mono text-xs text-slate-400 dark:text-slate-500">
                   {allRoleTools.length} {allRoleTools.length === 1 ? "tool" : "tools"}
                 </span>
+                <ViewModeToggle mode={viewMode} onChange={handleViewModeChange} />
               </div>
             </div>
 
@@ -590,25 +758,47 @@ export function DashboardPage() {
               tabIndex={-1}
               className="min-h-0 flex-1 overflow-y-auto px-6 py-4 outline-none"
             >
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                {allRoleTools.map((tool) => (
-                  <ToolGridCard
-                    key={tool.id}
-                    tool={tool}
-                    isFavourite={favouriteToolIds.includes(tool.id)}
-                    desktopOnly={isWeb && !tool.platforms.includes("web")}
-                    onClick={
-                      isWeb && !tool.platforms.includes("web")
-                        ? () => {}
-                        : () => handleOpenTool(tool)
-                    }
-                    onToggleFavourite={(e) => {
-                      e.stopPropagation();
-                      toggleFavourite(tool);
-                    }}
-                  />
-                ))}
-              </div>
+              {viewMode === "list" ? (
+                <div className="flex flex-col gap-1.5">
+                  {allRoleTools.map((tool) => (
+                    <ToolListRow
+                      key={tool.id}
+                      tool={tool}
+                      isFavourite={favouriteToolIds.includes(tool.id)}
+                      desktopOnly={isWeb && !tool.platforms.includes("web")}
+                      onClick={
+                        isWeb && !tool.platforms.includes("web")
+                          ? () => {}
+                          : () => handleOpenTool(tool)
+                      }
+                      onToggleFavourite={(e) => {
+                        e.stopPropagation();
+                        toggleFavourite(tool);
+                      }}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                  {allRoleTools.map((tool) => (
+                    <ToolGridCard
+                      key={tool.id}
+                      tool={tool}
+                      isFavourite={favouriteToolIds.includes(tool.id)}
+                      desktopOnly={isWeb && !tool.platforms.includes("web")}
+                      onClick={
+                        isWeb && !tool.platforms.includes("web")
+                          ? () => {}
+                          : () => handleOpenTool(tool)
+                      }
+                      onToggleFavourite={(e) => {
+                        e.stopPropagation();
+                        toggleFavourite(tool);
+                      }}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         )}

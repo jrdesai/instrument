@@ -46,6 +46,15 @@ jobs:
       - name: Typecheck
         run: pnpm run typecheck
 
+      - name: Verify committed bindings are up to date
+        run: git diff --exit-code src/bindings/
+
+      - name: Check core purity, command & WASM parity
+        run: |
+          pnpm run check:pure
+          pnpm run check:commands
+          pnpm run check:wasm
+
       - name: Lint
         run: pnpm run lint
 

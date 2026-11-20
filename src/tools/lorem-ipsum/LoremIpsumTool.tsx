@@ -2,7 +2,6 @@ import {
   useCallback,
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from "react";
 import { useDebouncedCallback } from "use-debounce";
@@ -11,13 +10,12 @@ import { CopyButton, PillButton, ToolbarFooter } from "../../components/tool";
 import type { LoremIpsumInput } from "../../bindings/LoremIpsumInput";
 import type { LoremIpsumOutput } from "../../bindings/LoremIpsumOutput";
 import type { LoremOutputType } from "../../bindings/LoremOutputType";
+import { useDebouncedHistory } from "../../hooks/useDebouncedHistory";
 import { extractErrorMessage } from "../../lib/extractErrorMessage";
-import { useHistoryStore } from "../../store";
 
 export const TOOL_ID = "lorem-ipsum";
 const RUST_COMMAND = "tool_lorem_ipsum_process";
 const DEBOUNCE_MS = 150;
-const HISTORY_DEBOUNCE_MS = 1500;
 
 const COUNT_RANGES = {
   paragraphs: { min: 1, max: 15, default: 3 },
@@ -41,10 +39,7 @@ function LoremIpsumTool() {
   const [output, setOutput] = useState<LoremIpsumOutput | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(
-    null
-  );
-  const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
+  const { schedule: scheduleHistory } = useDebouncedHistory(TOOL_ID);
 
   const runProcess = useCallback(
     async (
@@ -69,17 +64,7 @@ function LoremIpsumTool() {
         setOutput(result);
 
         if (!result.error && result.result.length > 0) {
-          if (historyDebounceRef.current) {
-            clearTimeout(historyDebounceRef.current);
-          }
-          historyDebounceRef.current = setTimeout(() => {
-            addHistoryEntry(TOOL_ID, {
-              input: payload,
-              output: result,
-              timestamp: Date.now(),
-            });
-            historyDebounceRef.current = null;
-          }, HISTORY_DEBOUNCE_MS);
+          scheduleHistory(payload, result);
         }
       } catch (e) {
         setOutput({
@@ -93,7 +78,7 @@ function LoremIpsumTool() {
         setIsLoading(false);
       }
     },
-    [addHistoryEntry]
+    [scheduleHistory]
   );
 
   const debouncedRun = useDebouncedCallback(runProcess, DEBOUNCE_MS, {
@@ -121,9 +106,6 @@ function LoremIpsumTool() {
   useEffect(() => {
     return () => {
       debouncedRun.cancel();
-      if (historyDebounceRef.current) {
-        clearTimeout(historyDebounceRef.current);
-      }
     };
   }, [debouncedRun]);
 

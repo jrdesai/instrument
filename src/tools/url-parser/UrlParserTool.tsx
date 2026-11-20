@@ -6,15 +6,14 @@ import {
 } from "react";
 import { callTool } from "../../bridge";
 import { ToolbarFooter } from "../../components/tool";
+import { useDebouncedHistory } from "../../hooks/useDebouncedHistory";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
-import { useHistoryStore } from "../../store";
 import type { UrlParseInput } from "../../bindings/UrlParseInput";
 import type { UrlParseOutput } from "../../bindings/UrlParseOutput";
 
 const RUST_COMMAND = "tool_url_parse";
 const TOOL_ID = "url-parser";
 const DEBOUNCE_MS = 150;
-const HISTORY_DEBOUNCE_MS = 1500;
 const COPIED_DURATION_MS = 1500;
 
 const FIELD_GROUPS: { label: string; key: keyof UrlParseOutput }[][] = [
@@ -54,8 +53,7 @@ function UrlParserTool() {
   const [isLoading, setIsLoading] = useState(false);
   const [copyLabel, setCopyLabel] = useState("Copy URL");
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
+  const { schedule: scheduleHistory } = useDebouncedHistory(TOOL_ID);
 
   const runProcess = useCallback(
     async (value: string) => {
@@ -74,15 +72,7 @@ function UrlParserTool() {
         )) as UrlParseOutput;
         setOutput(result);
         if (!result.error) {
-          if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
-          historyDebounceRef.current = setTimeout(() => {
-            addHistoryEntry(TOOL_ID, {
-              input: payload,
-              output: result,
-              timestamp: Date.now(),
-            });
-            historyDebounceRef.current = null;
-          }, HISTORY_DEBOUNCE_MS);
+          scheduleHistory(payload, result);
         }
       } catch (e) {
         const message =
@@ -110,7 +100,7 @@ function UrlParserTool() {
         setIsLoading(false);
       }
     },
-    [addHistoryEntry]
+    [scheduleHistory]
   );
 
   useEffect(() => {
@@ -123,12 +113,6 @@ function UrlParserTool() {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
   }, [input, runProcess]);
-
-  useEffect(() => {
-    return () => {
-      if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
-    };
-  }, []);
 
   const handleClear = useCallback(() => {
     setInput("");

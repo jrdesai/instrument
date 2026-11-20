@@ -1,0 +1,78 @@
+import React from "react";
+import type { Tool } from "../types";
+
+export const authTools: Tool[] = [
+  {
+    id: "jwt",
+    name: "JWT",
+    description:
+      "Decode and inspect JWT tokens, or build and sign new ones with HMAC.",
+    category: "auth",
+    displayCategory: "Auth",
+    displayCategoryIcon: "token",
+    roles: ["backend", "security", "general"],
+    icon: "token",
+    platforms: ["desktop", "web"],
+    rustCommand: "tool_jwt_decode",
+    keywords: [
+      "jwt",
+      "decode",
+      "encode",
+      "build",
+      "sign",
+      "token",
+      "auth",
+      "hmac",
+      "bearer",
+      "claims",
+      "payload",
+      "header",
+      "signature",
+      "inspect token",
+      "decode token",
+      "auth token",
+      "access token",
+    ],
+    component: React.lazy(() =>
+      import("../../tools/jwt/JwtTool").then((m) => ({ default: m.default }))
+    ),
+    preload: () => { void import("../../tools/jwt/JwtTool"); },
+    trayPopover: true,
+    cliCommand: "jwt",
+    implemented: true,
+    chainable: true,
+    sensitive: true,
+  },
+  {
+    id: "basic-auth",
+    name: "Basic Auth Header",
+    description: "Encode or decode HTTP Basic Authorization headers.",
+    category: "auth",
+    displayCategory: "Auth",
+    displayCategoryIcon: "lock",
+    roles: ["backend", "general"],
+    icon: "badge",
+    platforms: ["desktop", "web"],
+    rustCommand: "tool_basic_auth",
+    sensitive: true,
+    keywords: [
+      "basic",
+      "auth",
+      "authorization",
+      "header",
+      "base64",
+      "username",
+      "password",
+      "http auth",
+      "authorization header",
+      "encode credentials",
+      "decode credentials",
+      "username password",
+    ],
+    component: React.lazy(() =>
+      import("../../tools/basic-auth").then((m) => ({ default: m.default }))
+    ),
+    preload: () => { void import("../../tools/basic-auth"); },
+    implemented: true,
+  },
+];

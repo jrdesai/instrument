@@ -6,8 +6,8 @@ import React, {
 } from "react";
 import { CopyButton, PillButton, ToolbarFooter } from "../../components/tool";
 import { callTool } from "../../bridge";
+import { useDebouncedHistory } from "../../hooks/useDebouncedHistory";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
-import { useHistoryStore } from "../../store";
 import type { HtmlEntityEncodeType } from "../../bindings/HtmlEntityEncodeType";
 import type { HtmlEntityInput } from "../../bindings/HtmlEntityInput";
 import type { HtmlEntityMode } from "../../bindings/HtmlEntityMode";
@@ -16,7 +16,6 @@ import type { HtmlEntityOutput } from "../../bindings/HtmlEntityOutput";
 const RUST_COMMAND = "tool_html_entity_process";
 const TOOL_ID = "html-entity";
 const DEBOUNCE_MS = 150;
-const HISTORY_DEBOUNCE_MS = 1500;
 
 function HtmlEntityTool() {
   const { setDraft } = useDraftInput(TOOL_ID);
@@ -31,8 +30,7 @@ function HtmlEntityTool() {
   const [error, setError] = useState<string | null>(null);
   const [leftPanelPercent, setLeftPanelPercent] = useState(50);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
+  const { schedule: scheduleHistory } = useDebouncedHistory(TOOL_ID);
 
   const runProcess = useCallback(
     async (
@@ -59,15 +57,7 @@ function HtmlEntityTool() {
         setError(result.error ?? null);
         setEntitiesFound(result.entitiesFound ?? 0);
         if (!result.error) {
-          if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
-          historyDebounceRef.current = setTimeout(() => {
-            addHistoryEntry(TOOL_ID, {
-              input: payload,
-              output: result,
-              timestamp: Date.now(),
-            });
-            historyDebounceRef.current = null;
-          }, HISTORY_DEBOUNCE_MS);
+          scheduleHistory(payload, result);
         }
       } catch (e) {
         const message =
@@ -87,7 +77,7 @@ function HtmlEntityTool() {
         setIsLoading(false);
       }
     },
-    [addHistoryEntry]
+    [scheduleHistory]
   );
 
   useEffect(() => {
@@ -100,12 +90,6 @@ function HtmlEntityTool() {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
   }, [input, mode, encodeType, runProcess]);
-
-  useEffect(() => {
-    return () => {
-      if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
-    };
-  }, []);
 
   const handleSwap = useCallback(() => {
     const newInput = output;

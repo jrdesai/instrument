@@ -6,15 +6,14 @@ import {
 } from "react";
 import { CopyButton, PillButton, ToolbarFooter } from "../../components/tool";
 import { callTool } from "../../bridge";
+import { useDebouncedHistory } from "../../hooks/useDebouncedHistory";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
-import { useHistoryStore } from "../../store";
 import type { SlugInput } from "../../bindings/SlugInput";
 import type { SlugOutput } from "../../bindings/SlugOutput";
 
 const TOOL_ID = "slug-generator";
 const RUST_COMMAND = "tool_slug_generate";
 const DEBOUNCE_MS = 150;
-const HISTORY_DEBOUNCE_MS = 1500;
 
 
 export default function SlugGeneratorTool() {
@@ -26,8 +25,7 @@ export default function SlugGeneratorTool() {
   const [maxLengthRaw, setMaxLengthRaw] = useState("");
   const [output, setOutput] = useState<SlugOutput | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
+  const { schedule: scheduleHistory } = useDebouncedHistory(TOOL_ID);
 
   const runSlug = useCallback(
     async (
@@ -52,15 +50,7 @@ export default function SlugGeneratorTool() {
         })) as SlugOutput;
         setOutput(result);
         if (!result.error) {
-          if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
-          historyDebounceRef.current = setTimeout(() => {
-            addHistoryEntry(TOOL_ID, {
-              input: payload,
-              output: result,
-              timestamp: Date.now(),
-            });
-            historyDebounceRef.current = null;
-          }, HISTORY_DEBOUNCE_MS);
+          scheduleHistory(payload, result);
         }
       } catch (e) {
         const message =
@@ -68,7 +58,7 @@ export default function SlugGeneratorTool() {
         setOutput({ slug: "", error: message });
       }
     },
-    [addHistoryEntry]
+    [scheduleHistory]
   );
 
   const maxLengthParsed: number | null =
@@ -92,12 +82,6 @@ export default function SlugGeneratorTool() {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
   }, [input, separator, lowercase, maxLength, runSlug]);
-
-  useEffect(() => {
-    return () => {
-      if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
-    };
-  }, []);
 
   const slugText =
     output && !output.error && output.slug ? output.slug : undefined;

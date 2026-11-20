@@ -8,9 +8,9 @@ import {
 import { callTool } from "../../bridge";
 import { CodeInput, CopyButton, FileUploadButton, ToolbarFooter } from "../../components/tool";
 import { CodeBlock } from "../../components/ui/CodeBlock";
+import { useDebouncedHistory } from "../../hooks/useDebouncedHistory";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { useFileDrop } from "../../hooks/useFileDrop";
-import { useHistoryStore } from "../../store";
 import type { SqlFormatInput } from "../../bindings/SqlFormatInput";
 import type { SqlFormatOutput } from "../../bindings/SqlFormatOutput";
 import type { SqlIndentStyle } from "../../bindings/SqlIndentStyle";
@@ -19,7 +19,6 @@ import type { SqlKeywordCase } from "../../bindings/SqlKeywordCase";
 const TOOL_ID = "sql-formatter";
 const RUST_COMMAND = "tool_sql_format";
 const DEBOUNCE_MS = 300;
-const HISTORY_DEBOUNCE_MS = 1500;
 
 function SqlFormatterTool() {
   const { setDraft } = useDraftInput(TOOL_ID);
@@ -31,8 +30,7 @@ function SqlFormatterTool() {
   const [fileName, setFileName] = useState<string | null>(null);
   const [fileDropError, setFileDropError] = useState<string | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
+  const { schedule: scheduleHistory } = useDebouncedHistory(TOOL_ID);
 
   const runFormat = useCallback(
     async (value: string, currentIndent: SqlIndentStyle, currentCase: SqlKeywordCase) => {
@@ -52,15 +50,7 @@ function SqlFormatterTool() {
         })) as SqlFormatOutput;
         setOutput(result);
         if (!result.error && result.result.length > 0) {
-          if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
-          historyDebounceRef.current = setTimeout(() => {
-            addHistoryEntry(TOOL_ID, {
-              input: payload,
-              output: result,
-              timestamp: Date.now(),
-            });
-            historyDebounceRef.current = null;
-          }, HISTORY_DEBOUNCE_MS);
+          scheduleHistory(payload, result);
         }
       } catch (e) {
         const message =
@@ -73,14 +63,8 @@ function SqlFormatterTool() {
         });
       }
     },
-    [addHistoryEntry]
+    [scheduleHistory]
   );
-
-  useEffect(() => {
-    return () => {
-      if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
-    };
-  }, []);
 
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);

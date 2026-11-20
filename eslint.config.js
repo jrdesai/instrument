@@ -1,12 +1,11 @@
 /**
- * ESLint v9 flat config.
- * TypeScript (strict), React 19, Vite. Uses only @eslint/js and typescript-eslint.
- *
- * To enable React hooks rules (rules-of-hooks, exhaustive-deps), add
- * eslint-plugin-react-hooks and extend this config with its recommended rules.
+ * ESLint flat config.
+ * TypeScript (strict), React 19, Vite.
+ * Includes React hooks rules and enforces the src/bridge boundary for @tauri-apps/* imports.
  */
 
 import js from "@eslint/js";
+import reactHooks from "eslint-plugin-react-hooks";
 import tseslint from "typescript-eslint";
 
 export default tseslint.config(
@@ -29,6 +28,9 @@ export default tseslint.config(
   ...tseslint.configs.recommended,
   {
     files: ["**/*.ts", "**/*.tsx"],
+    plugins: {
+      "react-hooks": reactHooks,
+    },
     languageOptions: {
       parserOptions: {
         ecmaFeatures: { jsx: true },
@@ -41,6 +43,37 @@ export default tseslint.config(
       ],
       "@typescript-eslint/no-explicit-any": "warn",
       "no-console": "warn",
+      "react-hooks/rules-of-hooks": "error",
+      "react-hooks/exhaustive-deps": "warn",
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: ["@tauri-apps/*"],
+              message:
+                "Import Tauri APIs through src/bridge instead of @tauri-apps/* directly.",
+            },
+          ],
+        },
+      ],
+      "no-restricted-syntax": [
+        "error",
+        {
+          selector: "ImportExpression[source.value=/^@tauri-apps\\//]",
+          message:
+            "Import Tauri APIs through src/bridge instead of dynamic-importing @tauri-apps/* directly.",
+        },
+      ],
+    },
+  },
+
+  // Bridge is the only layer permitted to import @tauri-apps/*
+  {
+    files: ["src/bridge/**/*.ts"],
+    rules: {
+      "no-restricted-imports": "off",
+      "no-restricted-syntax": "off",
     },
   },
 

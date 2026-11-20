@@ -8,9 +8,9 @@ import {
 import { callTool } from "../../bridge";
 import { ToolbarFooter } from "../../components/tool";
 import { FormatHint } from "../../components/ui/FormatHint";
+import { useDebouncedHistory } from "../../hooks/useDebouncedHistory";
 import { useDraftInput, useRestoreStringDraft } from "../../hooks/useDraftInput";
 import { extractErrorMessage } from "../../lib/extractErrorMessage";
-import { useHistoryStore } from "../../store";
 import {
   formatTimezoneLabel,
   getTimezoneList,
@@ -21,7 +21,6 @@ import type { TimezoneOutput } from "../../bindings/TimezoneOutput";
 const RUST_COMMAND = "tool_timezone_process";
 const TOOL_ID = "timezone-converter";
 const DEBOUNCE_MS = 150;
-const HISTORY_DEBOUNCE_MS = 1500;
 const COPIED_DURATION_MS = 1500;
 
 const OUTPUT_CARDS: {
@@ -158,8 +157,7 @@ function TimezoneConverterTool() {
   const [isLoading, setIsLoading] = useState(false);
   const [copyAllLabel, setCopyAllLabel] = useState("Copy All");
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
+  const { schedule: scheduleHistory } = useDebouncedHistory(TOOL_ID);
 
   const timezoneList = useMemo(() => getTimezoneList(), []);
 
@@ -183,15 +181,7 @@ function TimezoneConverterTool() {
         )) as TimezoneOutput;
         setOutput(result);
         if (!result.error) {
-          if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
-          historyDebounceRef.current = setTimeout(() => {
-            addHistoryEntry(TOOL_ID, {
-              input: payload,
-              output: result,
-              timestamp: Date.now(),
-            });
-            historyDebounceRef.current = null;
-          }, HISTORY_DEBOUNCE_MS);
+          scheduleHistory(payload, result);
         }
       } catch (e) {
         const message = extractErrorMessage(e, "Failed to run tool");
@@ -211,7 +201,7 @@ function TimezoneConverterTool() {
         setIsLoading(false);
       }
     },
-    [addHistoryEntry]
+    [scheduleHistory]
   );
 
   useEffect(() => {
@@ -224,12 +214,6 @@ function TimezoneConverterTool() {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
   }, [datetime, fromTz, toTz, runProcess]);
-
-  useEffect(() => {
-    return () => {
-      if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
-    };
-  }, []);
 
   const handleSwap = useCallback(() => {
     setFromTz(toTz);

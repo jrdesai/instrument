@@ -6,9 +6,9 @@ import {
 } from "react";
 import { CodeInput, CopyButton, PanelHeader, ToolbarFooter } from "../../components/tool";
 import { callTool } from "../../bridge";
+import { useDebouncedHistory } from "../../hooks/useDebouncedHistory";
 import { useDraftInput, useRestoreDraft } from "../../hooks/useDraftInput";
 import { useFileDrop } from "../../hooks/useFileDrop";
-import { useHistoryStore } from "../../store";
 import type { AnnotatedLine } from "../../bindings/JsonDiffAnnotatedLine";
 import type { JsonDiffOutput } from "../../bindings/JsonDiffOutput";
 import type { LineAnnotation } from "../../bindings/JsonDiffLineAnnotation";
@@ -16,7 +16,6 @@ import type { LineAnnotation } from "../../bindings/JsonDiffLineAnnotation";
 const RUST_COMMAND = "tool_json_diff";
 const TOOL_ID = "json-diff";
 const DEBOUNCE_MS = 300;
-const HISTORY_DEBOUNCE_MS = 1500;
 const TRUNCATE_LEN = 40;
 
 function truncate(str: string, len: number): string {
@@ -63,11 +62,10 @@ function JsonDiffTool() {
   const [leftFileDropError, setLeftFileDropError] = useState<string | null>(null);
   const [rightFileDropError, setRightFileDropError] = useState<string | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const historyDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const leftRef = useRef<HTMLDivElement>(null);
   const rightRef = useRef<HTMLDivElement>(null);
   const isSyncing = useRef(false);
-  const addHistoryEntry = useHistoryStore((s) => s.addHistoryEntry);
+  const { schedule: scheduleHistory } = useDebouncedHistory(TOOL_ID);
 
   const handleLeftScroll = useCallback(() => {
     if (isSyncing.current || !rightRef.current || !leftRef.current) return;
@@ -102,15 +100,7 @@ function JsonDiffTool() {
         }, { skipHistory: true })) as JsonDiffOutput;
         setOutput(result);
         if (result.leftValid && result.rightValid) {
-          if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
-          historyDebounceRef.current = setTimeout(() => {
-            addHistoryEntry(TOOL_ID, {
-              input: { left: currentLeft, right: currentRight },
-              output: result,
-              timestamp: Date.now(),
-            });
-            historyDebounceRef.current = null;
-          }, HISTORY_DEBOUNCE_MS);
+          scheduleHistory({ left: currentLeft, right: currentRight }, result);
         }
       } catch (e) {
         const message =
@@ -130,14 +120,8 @@ function JsonDiffTool() {
         });
       }
     },
-    [addHistoryEntry]
+    [scheduleHistory]
   );
-
-  useEffect(() => {
-    return () => {
-      if (historyDebounceRef.current) clearTimeout(historyDebounceRef.current);
-    };
-  }, []);
 
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
